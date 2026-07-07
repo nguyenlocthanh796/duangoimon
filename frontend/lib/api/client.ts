@@ -83,6 +83,7 @@ export interface Product {
   unit: string;
   is_active: boolean;
   options: any[];
+  vat_rate: number;
   created_at: string | null;
 }
 

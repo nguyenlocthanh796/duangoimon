@@ -24,6 +24,7 @@ class OrderItemCreate(BaseModel):
     quantity: int = 1
     unit_price: float
     options: dict | None = None
+    vat_rate: float = 8
     note: str | None = None
     service_type: str = "dine_in"
     order_round: int = 1
@@ -64,11 +65,13 @@ async def list_orders(
 @router.post("/", response_model=OrderOut, status_code=201)
 async def create_order(body: OrderCreate, request: Request, db: AsyncSession = Depends(get_db), current_user: dict = Depends(get_current_user)):
     total = sum(i.unit_price * i.quantity for i in body.items)
+    total_tax = sum(round(i.unit_price * i.quantity * i.vat_rate / 100, 2) for i in body.items)
     table_uuid = None if body.table_id == "TAKEAWAY" else uuid.UUID(body.table_id)
     order = Order(
         table_id=table_uuid,
         cashier_id=uuid.UUID(current_user["sub"]),
         total_amount=total,
+        tax_amount=total_tax,
         note=body.note,
     )
     db.add(order)
@@ -82,6 +85,7 @@ async def create_order(body: OrderCreate, request: Request, db: AsyncSession = D
             quantity=item.quantity,
             unit_price=item.unit_price,
             options=item.options or {},
+            vat_rate=item.vat_rate,
             note=item.note,
             service_type=item.service_type,
             order_round=item.order_round,
@@ -196,6 +200,7 @@ async def update_order(
             quantity=item.quantity,
             unit_price=item.unit_price,
             options=item.options or {},
+            vat_rate=item.vat_rate,
             note=item.note,
             service_type=item.service_type,
             order_round=item.order_round,
@@ -204,6 +209,7 @@ async def update_order(
         db.add(oi)
 
     order.total_amount = sum(i.unit_price * i.quantity for i in body.items)
+    order.tax_amount = sum(round(i.unit_price * i.quantity * i.vat_rate / 100, 2) for i in body.items)
     if body.note is not None:
         order.note = body.note
 

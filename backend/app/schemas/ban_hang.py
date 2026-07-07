@@ -27,8 +27,11 @@ class ProductOut(BaseModel):
     image_url: str | None
     is_active: bool
     options: list | dict
+    vat_rate: float
     created_at: datetime
 
+
+from typing import Any
 
 class OrderItemOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -39,7 +42,8 @@ class OrderItemOut(BaseModel):
     product_name: str
     quantity: int
     unit_price: float
-    options: dict
+    options: Any
+    vat_rate: float
     note: str | None
     status: str
     service_type: str

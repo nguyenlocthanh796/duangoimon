@@ -23,6 +23,7 @@ export function useOrder() {
       unit_price: i.unitPrice,
       note: i.note || undefined,
       options: { size: i.selectedSize || 'Regular', toppings: i.selectedToppings || [] },
+      vat_rate: i.vatRate ?? 8,
       service_type: i.serviceType || 'dine_in',
       order_round: i.isSent ? (i.orderRound || 1) : nextRound,
       status: i.status || 'moi',
@@ -31,8 +32,7 @@ export function useOrder() {
     if (activeOrderId) {
       return await api.updateOrder(activeOrderId, { items });
     } else {
-      const params: any = { items };
-      if (tableId !== 'TAKEAWAY') params.table_id = tableId;
+      const params: any = { items, table_id: tableId };
       const res = await api.createOrder(params);
       return res;
     }

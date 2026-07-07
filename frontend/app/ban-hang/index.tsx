@@ -14,6 +14,7 @@ import CategoryTabs from '../../lib/components/pos/CategoryTabs';
 import ProductGrid from '../../lib/components/pos/ProductGrid';
 import CartPanel from '../../lib/components/pos/CartPanel';
 import ModifierSheet from '../../lib/components/pos/ModifierSheet';
+import AreaFilter from '../../lib/components/pos/AreaFilter';
 import type { Table, TableStatus } from '../../lib/components/pos/TableCard';
 
 export default function TableSelection() {
@@ -24,6 +25,7 @@ export default function TableSelection() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedArea, setSelectedArea] = useState('Tất cả');
 
   const orderState = useTableOrder(selectedTable?.id || '', selectedTable?.name || '', () => setSelectedTable(null));
   const {
@@ -37,21 +39,16 @@ export default function TableSelection() {
     getItemCartCount,
     handleProductPress, quickAdd, quickSubtract,
     updateQty, removeItem,
-    handleSendToKitchen, handleSaveTable, handlePay, handleEditNote,
+    handleSendToKitchen, handleSaveTable, handlePay, handlePrintTemporary, handleEditNote,
     setQty, cancelItem, moveItem, moveItemToTable, splitBill, mergeBill, moveTable, splitTable, mergeTable,
     openModifierForEdit, saveEditFromModal, addToCartFromModal, closeModifierSheet,
     toggleServiceType,
   } = orderState;
 
-  const minTableWidth = breakpoint === 'desktop' ? 185
-    : breakpoint === 'tablet-landscape' ? 150
-    : breakpoint === 'tablet-portrait' ? 150
-    : 130;
-  const gridWidth = containerWidth;
-  const numCols = isWide ? 4 : 3;
-  const cardWidth = Math.floor((gridWidth - hPad * 2 - gutter * (numCols - 1)) / numCols);
-  const totalGridWidth = cardWidth * numCols + gutter * (numCols - 1);
-  const gridPadding = Math.max(hPad, Math.floor((gridWidth - totalGridWidth) / 2));
+  const CARD_COLS = isWide ? 4 : 3;
+  const cardWidth = Math.floor((containerWidth - hPad * 2 - gutter * (CARD_COLS - 1)) / CARD_COLS);
+  const totalGridWidth = cardWidth * CARD_COLS + gutter * (CARD_COLS - 1);
+  const gridPadding = Math.max(hPad, Math.floor((containerWidth - totalGridWidth) / 2));
 
   const loadData = useCallback(async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true); else setLoading(true);
@@ -101,12 +98,14 @@ export default function TableSelection() {
 
   useEffect(() => { loadData(); }, [loadData]);
 
+  const areas = ['Tất cả', ...Array.from(new Set(tables.map(t => t.area).filter(Boolean) as string[]))];
+
   const sortedTables = [...tables].sort((a, b) => {
     const areaA = a.area || '', areaB = b.area || '';
     if (areaA !== areaB) return areaA.localeCompare(areaB);
     return a.name.localeCompare(b.name);
   });
-  const displayTables = sortedTables;
+  const displayTables = sortedTables.filter(t => selectedArea === 'Tất cả' || t.area === selectedArea);
 
   const handleTablePress = (table: Table) => {
     if (isWide) setSelectedTable({ id: table.id, name: table.name });
@@ -133,36 +132,37 @@ export default function TableSelection() {
       </View>
     );
     return (
-      <FlatList
-        key={isWide ? 'wide' : 'narrow'}
-        data={displayTables}
-        numColumns={numCols}
-        keyExtractor={(item) => item.id}
-        columnWrapperStyle={{ gap: gutter, justifyContent: 'center' }}
-        contentContainerStyle={{ paddingHorizontal: gridPadding, paddingBottom: 32 }}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadData(true)} tintColor={colors.brand.primary} colors={[colors.brand.primary]} />}
-        ListHeaderComponent={
-          null
-        }
-        renderItem={({ item }) => (
-          <View style={{ width: cardWidth, marginBottom: 10 }}>
-            <TableCard table={item} selected={selectedTable?.id === item.id} onPress={() => handleTablePress(item)} isWide={isWide} />
-          </View>
-        )}
-        ListEmptyComponent={
-          <View style={{ paddingTop: 60, alignItems: 'center', gap: 12 }}>
-            <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name="table-furniture" size={32} color={colors.border.strong} />
+      <View style={{ flex: 1 }}>
+        <AreaFilter areas={areas} selectedArea={selectedArea} onSelectArea={setSelectedArea} />
+        <FlatList
+          key={isWide ? 'wide' : 'narrow'}
+          data={displayTables}
+          numColumns={CARD_COLS}
+          keyExtractor={(item) => item.id}
+          columnWrapperStyle={{ gap: gutter, justifyContent: 'center' }}
+          contentContainerStyle={{ paddingHorizontal: gridPadding, paddingTop: 12, paddingBottom: 32 }}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadData(true)} tintColor={colors.brand.primary} colors={[colors.brand.primary]} />}
+          ListHeaderComponent={null}
+          renderItem={({ item }) => (
+            <View style={{ width: cardWidth, marginBottom: 10 }}>
+              <TableCard table={item} selected={selectedTable?.id === item.id} onPress={() => handleTablePress(item)} isWide={isWide} />
             </View>
-            <Text style={{ ...font.h3, color: colors.text.primary }}>
-              {tables.length === 0 ? 'Chưa có bàn nào' : 'Không tìm thấy bàn'}
-            </Text>
-            <Text style={{ ...font.caption, color: colors.text.muted, textAlign: 'center', paddingHorizontal: 16 }}>
-              {tables.length === 0 ? 'Thêm bàn trong phần cài đặt hoặc kiểm tra kết nối backend' : 'Không tìm thấy bàn'}
-            </Text>
-          </View>
-        }
-      />
+          )}
+          ListEmptyComponent={
+            <View style={{ paddingTop: 60, alignItems: 'center', gap: 12 }}>
+              <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
+                <Icon name="table-furniture" size={32} color={colors.border.strong} />
+              </View>
+              <Text style={{ ...font.h3, color: colors.text.primary }}>
+                {tables.length === 0 ? 'Chưa có bàn nào' : 'Không tìm thấy bàn'}
+              </Text>
+              <Text style={{ ...font.caption, color: colors.text.muted, textAlign: 'center', paddingHorizontal: 16 }}>
+                {tables.length === 0 ? 'Thêm bàn trong phần cài đặt hoặc kiểm tra kết nối backend' : 'Không tìm thấy bàn'}
+              </Text>
+            </View>
+          }
+        />
+      </View>
     );
   };
 
@@ -184,16 +184,17 @@ export default function TableSelection() {
                   </View>
                 </View>
                 <CategoryTabs activeCategory={activeCategory} onSelectCategory={setActiveCategory} isWide={isWide} />
-                <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingVertical: 12, paddingBottom: 32 }} showsVerticalScrollIndicator={false}>
+                <ScrollView style={{ flex: 1, marginTop: 4 }} contentContainerStyle={{ paddingVertical: 12, paddingBottom: 32 }} showsVerticalScrollIndicator={false}>
                   <ProductGrid products={filteredItems} loading={menuLoading} isWide={isWide}
-                    breakpoint={breakpoint} panelWidth={containerWidth * 0.65}
+                    breakpoint={breakpoint} panelWidth={containerWidth}
                     onProductPress={handleProductPress} onQuickAdd={quickAdd} onQuickSubtract={quickSubtract} getItemCartCount={getItemCartCount} />
                 </ScrollView>
               </>
             ) : (
               <>
                 <TableScreenHeader tablesCount={tables.length} isWide={isWide} onOpenSidebar={openSidebar}
-                  onRefresh={() => loadData(true)} lastRefreshTime={new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} />
+                  onRefresh={() => loadData(true)} lastRefreshTime={new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+                  onTakeaway={() => setSelectedTable({ id: 'TAKEAWAY', name: 'Mang Về' })} />
                 <View style={{ flex: 1 }}>{renderTableGrid()}</View>
               </>
             )}
@@ -206,6 +207,7 @@ export default function TableSelection() {
                 onMoveItem={moveItem} onMoveItemToTable={moveItemToTable}
                 onSplitBill={splitBill} onMergeBill={mergeBill} onMoveTable={moveTable} onSplitTable={splitTable} onMergeTable={mergeTable}
                 onOpenModifier={openModifierForEdit} onSendToKitchen={handleSendToKitchen} onSaveTable={handleSaveTable} onPay={handlePay}
+                onPrintTemporary={handlePrintTemporary}
                 submitting={submitting} isWide={isWide} cartSheet={cartSheet} setCartSheet={setCartSheet}
                 onToggleServiceType={toggleServiceType} onEditNote={handleEditNote} serviceChargePercent={0} tableId={selectedTable?.id} />
             ) : (

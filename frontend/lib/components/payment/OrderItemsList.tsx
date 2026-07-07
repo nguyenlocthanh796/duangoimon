@@ -7,7 +7,7 @@ function formatPriceFull(v: number) { return v.toLocaleString('vi-VN') + 'đ'; }
 
 export default function OrderItemsList({ items }: { items: any[] }) {
   return (
-    <View style={{ backgroundColor: colors.surface.card, borderRadius: 4, padding: 10, borderWidth: 1, borderColor: colors.border.default, maxHeight: 150 }}>
+    <View style={{ backgroundColor: colors.surface.card, borderRadius: 4, padding: 10, borderWidth: 1, borderColor: colors.border.default }}>
       <Text style={{ ...font.badge, textTransform: 'uppercase', letterSpacing: 0.5, color: colors.text.muted, marginBottom: 6 }}>Hóa đơn</Text>
       <ScrollView>
         {items.map((item, idx) => (

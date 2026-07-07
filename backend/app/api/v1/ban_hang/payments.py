@@ -44,6 +44,43 @@ async def process_payment(body: PaymentCreate, request: Request, db: AsyncSessio
     if order.table_id:
         await db.execute(update(Table).where(Table.id == order.table_id).values(status="trong"))
 
+    # Auto-generate Invoice and Transaction
+    from app.models.ke_toan import Invoice, Transaction
+    from datetime import date
+    import random
+
+    # 1. Create Invoice
+    existing_inv = await db.execute(
+        select(Invoice).where(Invoice.order_id == order.id).limit(1)
+    )
+    if not existing_inv.scalar_one_or_none():
+        today = date.today()
+        inv_num = f"POS-{today.strftime('%y%m%d')}-{random.randint(10000, 99999)}"
+        vat_rate = 8.0
+        vat_amount = float(order.tax_amount) if order.tax_amount else round(float(order.total_amount) * vat_rate / 100, 2)
+        invoice = Invoice(
+            order_id=order.id,
+            invoice_number=inv_num,
+            buyer_name="Khách vãng lai",
+            total_amount=order.total_amount,
+            vat_rate=vat_rate,
+            vat_amount=vat_amount,
+            status="da_xuat",
+            exported_at=datetime.now(timezone.utc),
+        )
+        db.add(invoice)
+
+    # 2. Create Transaction for general ledger
+    transaction = Transaction(
+        type="thu",
+        category="ban_hang",
+        amount=order.total_amount,
+        ref_id=order.id,
+        note=f"Thanh toán đơn #{str(order.id)[:8].upper()} - {order.payment_method}",
+        created_by=uuid.UUID(_user["sub"]),
+    )
+    db.add(transaction)
+
     await db.commit()
     await db.refresh(order)
 

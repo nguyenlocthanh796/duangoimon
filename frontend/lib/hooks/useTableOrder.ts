@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useRouter } from 'expo-router';
 import { api } from '../api';
 import { MenuItem, CartItem } from '../components/pos/types';
@@ -7,67 +7,106 @@ import { useCart } from './useCart';
 import { useModifier } from './useModifier';
 import { useOrder } from './useOrder';
 
+let cachedProducts: MenuItem[] | null = null;
+
 export function useTableOrder(tableId: string, tableName: string, onClose?: () => void) {
   const router = useRouter();
   const cart = useCart();
   const mod = useModifier();
   const order = useOrder();
 
-  const [products, setProducts] = useState<MenuItem[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [products, setProducts] = useState<MenuItem[]>(cachedProducts || []);
+  const [loading, setLoading] = useState(!cachedProducts);
   const [activeCategory, setActiveCategory] = useState('all');
   const [cartSheet, setCartSheet] = useState(false);
 
   // Reset + load when tableId changes
   useEffect(() => {
     if (!tableId) {
-      setProducts([]);
       cart.reset();
-      setLoading(false);
       return;
     }
     let cancelled = false;
     (async () => {
-      setLoading(true);
+      // Only show full screen loading if we don't have products cached yet
+      if (!cachedProducts) {
+        setLoading(true);
+      }
       cart.reset();
       setActiveCategory('all');
 
-      let loadedProducts: MenuItem[] = [];
       try {
-        const data = await api.getProducts();
-        if (cancelled) return;
-        const CAT_MAP: Record<string, string> = {
-          'SỮA CHUA': 'sua-chua',
-          'TRÀ CHANH': 'tra-chanh',
-          'ĐỒ ĂN VẶT': 'do-an-vat',
-          'CHÈ': 'che',
-          'TRÀ SỮA': 'tra-sua',
-          'SODA': 'soda',
-          'KEM': 'kem',
-        };
-        loadedProducts = data.map((p: any) => ({
-          id: p.id, name: p.name, price: Number(p.price),
-          category: CAT_MAP[p.category] || p.category || 'sua-chua',
-          image: p.image_url,
-          sizes: p.options?.filter((o: any) => o.type === 'size') || undefined,
-          toppings: p.options?.filter((o: any) => o.type === 'topping') || undefined,
-        }));
-        if (!cancelled) setProducts(loadedProducts);
-      } catch { if (!cancelled) console.error('Failed to load products'); }
+        let currentProducts = cachedProducts;
+        if (!currentProducts) {
+          const data = await api.getProducts();
+          if (cancelled) return;
+          const CAT_MAP: Record<string, string> = {
+            'SỮA CHUA': 'sua-chua',
+            'TRÀ CHANH': 'tra-chanh',
+            'ĐỒ ĂN VẶT': 'do-an-vat',
+            'CHÈ': 'che',
+            'TRÀ SỮA': 'tra-sua',
+            'SODA': 'soda',
+            'KEM': 'kem',
+          };
+          currentProducts = data.map((p: any) => ({
+            id: p.id, name: p.name, price: Number(p.price),
+            category: CAT_MAP[p.category] || p.category || 'sua-chua',
+            image: p.image_url,
+            sizes: p.options?.filter((o: any) => o.type === 'size') || undefined,
+            toppings: p.options?.filter((o: any) => o.type === 'topping') || undefined,
+            vatRate: p.vat_rate ?? 8,
+          }));
+          cachedProducts = currentProducts;
+          if (!cancelled) setProducts(currentProducts);
+        }
 
-      if (tableId !== 'TAKEAWAY') {
-        try {
-          const activeOrder = await api.getActiveOrderForTable(tableId);
-          if (!cancelled && activeOrder) {
-            cart.setActiveOrderId(activeOrder.id);
-            cart.loadOrderItems(activeOrder.items, loadedProducts);
-          }
-        } catch { /* no active order */ }
+        if (tableId !== 'TAKEAWAY') {
+          try {
+            const activeOrder = await api.getActiveOrderForTable(tableId);
+            if (!cancelled && activeOrder) {
+              cart.setActiveOrderId(activeOrder.id);
+              cart.loadOrderItems(activeOrder.items, currentProducts);
+            }
+          } catch { /* no active order */ }
+        }
+      } catch (err) {
+        console.warn('Failed to load data in useTableOrder:', err);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-      if (!cancelled) setLoading(false);
     })();
     return () => { cancelled = true; };
   }, [tableId]);
+
+  // Auto-save: debounce 1.5s — lưu bàn (ko gửi bếp)
+  const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const autoSaving = useRef(false);
+
+  useEffect(() => {
+    if (!tableId || cart.cart.length === 0 || loading || order.submitting) return;
+
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+
+    autoSaveTimer.current = setTimeout(async () => {
+      if (autoSaving.current) return;
+      autoSaving.current = true;
+      try {
+        const res = await order.submitOrder(cart.cart, tableId, cart.activeOrderId);
+        if (!cart.activeOrderId && res?.id) {
+          cart.setActiveOrderId(res.id);
+        }
+      } catch {
+        // Silent — best-effort
+      } finally {
+        autoSaving.current = false;
+      }
+    }, 1500);
+
+    return () => {
+      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    };
+  }, [cart.cart, tableId, loading, order]);
 
   const filteredItems = useMemo(() =>
     activeCategory === 'all' ? products : products.filter(i => i.category === activeCategory),
@@ -124,8 +163,39 @@ export function useTableOrder(tableId: string, tableName: string, onClose?: () =
     }
   }, [cart, order, tableId, onClose]);
 
+  const handlePrintTemporary = useCallback(() => {
+    if (cart.cart.length === 0) return;
+    if (typeof window !== 'undefined') {
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) {
+        alert('Vui lòng cho phép popup để hiển thị hóa đơn in.');
+        return;
+      }
+      const { generateReceiptHTML } = require('../components/payment/receipt');
+      const html = generateReceiptHTML({
+        tableName,
+        orderId: cart.activeOrderId || 'TAM_TINH',
+        total: cart.total,
+        items: cart.cart.map(i => ({
+          product_name: i.name,
+          quantity: i.qty,
+          unit_price: i.unitPrice,
+          note: i.note,
+          options: i.selectedSize ? { size: i.selectedSize } : undefined
+        })),
+        isTemporary: true,
+      });
+      printWindow.document.write(html);
+      printWindow.document.close();
+    } else {
+      alert('In tạm chỉ hỗ trợ trên nền tảng Web / Trình duyệt.');
+    }
+  }, [cart, tableName]);
+
   const handlePay = useCallback(() => {
+    setCartSheet(false);
     order.goToPayment(cart.cart, tableId, tableName, cart.activeOrderId, cart.total);
+    cart.reset();
   }, [cart, order, tableId, tableName]);
 
   // Biz operations (split/merge/move)
@@ -194,7 +264,7 @@ export function useTableOrder(tableId: string, tableName: string, onClose?: () =
     updateQty: cart.updateQty, removeItem: cart.removeItem,
     handleEditNote: cart.editNote, setQty: cart.setQty,
     cancelItem: cart.cancelItem, moveItemToTable, splitBill, mergeBill, moveTable,
-    handleSendToKitchen, handleSaveTable, handlePay,
+    handleSendToKitchen, handleSaveTable, handlePay, handlePrintTemporary,
     openModifierForEdit: mod.openForEdit,
     saveEditFromModal, addToCartFromModal, closeModifierSheet: mod.close,
     toggleServiceType: cart.toggleServiceType,

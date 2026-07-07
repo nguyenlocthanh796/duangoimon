@@ -31,6 +31,7 @@ interface CartPanelProps {
   onSendToKitchen: () => void;
   onSaveTable: () => void;
   onPay: () => void;
+  onPrintTemporary?: () => void;
   submitting: boolean;
   isWide: boolean;
   cartSheet: boolean;
@@ -44,7 +45,7 @@ interface CartPanelProps {
 export default function CartPanel({
   cart, total, itemCount, onUpdateQty, onSetQty, onRemoveItem, onCancelItem, onMoveItem,
   onSplitBill, onMergeBill, onMoveTable, onSplitTable, onMergeTable,
-  onOpenModifier, onSendToKitchen, onSaveTable, onPay, submitting, isWide, cartSheet, setCartSheet,
+  onOpenModifier, onSendToKitchen, onSaveTable, onPay, onPrintTemporary, submitting, isWide, cartSheet, setCartSheet,
   onToggleServiceType, onEditNote, serviceChargePercent = 0, tableId,
 }: CartPanelProps) {
 
@@ -87,6 +88,14 @@ export default function CartPanel({
 
   const serviceCharge = serviceChargePercent > 0 ? Math.round(total * serviceChargePercent / 100) : 0;
   const grandTotal = total + serviceCharge;
+  const vatAmount = React.useMemo(() => {
+    return cart.reduce((sum, item) => {
+      if (item.cancelReason) return sum;
+      const rate = item.vatRate ?? 8;
+      const itemTax = Math.round(item.qty * item.unitPrice * (rate / (100 + rate)));
+      return sum + itemTax;
+    }, 0);
+  }, [cart]);
   const hasUnsentItems = cart.some(i => !(i.isSent && i.status && !['moi', undefined, ''].includes(i.status)) && !i.cancelReason);
   const allDineIn = cart.length > 0 && cart.every(i => i.serviceType !== 'takeaway');
   const allTakeaway = cart.length > 0 && cart.every(i => i.serviceType === 'takeaway');
@@ -191,7 +200,7 @@ export default function CartPanel({
 
   const renderFooter = () => (
     <View style={{ padding: 8, gap: 8, borderTopWidth: 1, borderTopColor: colors.border.default, backgroundColor: colors.surface.card }}>
-      <CartSummary total={total} serviceChargePercent={serviceChargePercent} serviceCharge={serviceCharge} grandTotal={grandTotal} />
+      <CartSummary total={total} serviceChargePercent={serviceChargePercent} serviceCharge={serviceCharge} vatAmount={vatAmount} grandTotal={grandTotal} />
 
       {splitMode ? (
         <CartSplitActions
@@ -210,6 +219,7 @@ export default function CartPanel({
           onSendToKitchen={onSendToKitchen}
           onSaveTable={onSaveTable}
           onPay={onPay}
+          onPrintTemporary={onPrintTemporary}
           onBulkToggle={handleBulkToggle}
           bulkToggleLabel={allTakeaway ? 'Chuyển tất cả về bàn' : 'Chuyển tất cả mang về'}
         />
@@ -280,11 +290,29 @@ export default function CartPanel({
         )}
       </View>
 
-      <ScrollView style={{ flex: 1, backgroundColor: colors.surface.app }} contentContainerStyle={{ paddingHorizontal: 4, paddingTop: 8, paddingBottom: 24 }}>
-        {renderCartItems()}
-      </ScrollView>
-
-      {cart.length > 0 && renderFooter()}
+      <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+        {cart.length === 0 ? (
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+            <MaterialIcons name="shopping-basket" size={48} color={colors.icon.muted} />
+            <Text style={{ fontSize: 15, color: colors.text.secondary }}>Giỏ hàng trống</Text>
+            {!isWide && (
+              <TouchableOpacity
+                onPress={() => setCartSheet(false)}
+                style={{ paddingHorizontal: 20, paddingVertical: 10, borderRadius: 8, backgroundColor: colors.brand.primaryBg, borderWidth: 1, borderColor: colors.border.brand }}
+              >
+                <Text style={{ fontSize: 13, fontWeight: '700', color: colors.text.brand }}>Thêm món ngay</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        ) : (
+          <>
+            <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 4, paddingTop: 8, paddingBottom: 16 }} showsVerticalScrollIndicator={false}>
+              {renderCartItems()}
+            </ScrollView>
+            {renderFooter()}
+          </>
+        )}
+      </View>
 
       <NoteEditor visible={!!noteEditId} noteText={noteText} onChangeText={setNoteText} onSave={saveNote} onCancel={() => setNoteEditId(null)} />
       <MoreMenu

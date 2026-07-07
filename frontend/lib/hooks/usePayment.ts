@@ -63,14 +63,15 @@ export function usePayment({ tableId, tableName, total, orderId }: UsePaymentOpt
   useEffect(() => {
     if (paid) {
       const timer = setInterval(() => {
-        setCountdown(prev => {
-          if (prev <= 1) { clearInterval(timer); router.replace('/ban-hang'); return 0; }
-          return prev - 1;
-        });
+        setCountdown(prev => prev - 1);
       }, 1000);
       return () => clearInterval(timer);
     }
   }, [paid]);
+
+  useEffect(() => {
+    if (paid && countdown <= 0) router.replace('/ban-hang');
+  }, [paid, countdown]);
 
   useEffect(() => {
     if (method !== 'tien_mat') setCashInput(String(total));

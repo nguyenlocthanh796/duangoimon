@@ -9,8 +9,9 @@ export { PAY_METHODS };
 
 export function generateReceiptHTML(opts: {
   tableName: string; orderId: string; total: number;
-  method: string; cash?: number; change?: number;
+  method?: string; cash?: number; change?: number;
   items: Array<{ product_name: string; quantity: number; unit_price: number; note?: string; options?: Record<string, string> }>;
+  isTemporary?: boolean;
 }): string {
   const itemsHTML = opts.items.map(item => `
     <div class="item" style="align-items: flex-start; margin-bottom: 8px;">
@@ -46,7 +47,7 @@ export function generateReceiptHTML(opts: {
           <p>Địa chỉ: 123 Đường Số 1, TP. Hồ Chí Minh</p>
           <p>SĐT: 0123.456.789</p>
           <div class="divider"></div>
-          <p><strong>HÓA ĐƠN THANH TOÁN</strong></p>
+          <p><strong>${opts.isTemporary ? 'PHIẾU TẠM TÍNH (IN TẠM)' : 'HÓA ĐƠN THANH TOÁN'}</strong></p>
           <p>Bàn: ${opts.tableName}</p>
           <p>Mã HĐ: #${opts.orderId?.slice(-6).toUpperCase()}</p>
           <p>Thời gian: ${new Date().toLocaleTimeString('vi-VN')} ${new Date().toLocaleDateString('vi-VN')}</p>
@@ -55,12 +56,13 @@ export function generateReceiptHTML(opts: {
         <div style="margin-bottom: 10px;">${itemsHTML}</div>
         <div class="divider"></div>
         <div class="total">
-          <span>Tổng thanh toán</span>
+          <span>${opts.isTemporary ? 'Tạm tính' : 'Tổng thanh toán'}</span>
           <span>${opts.total.toLocaleString('vi-VN')}đ</span>
         </div>
+        ${!opts.isTemporary ? `
         <div class="item" style="margin-top: 8px;">
           <span>Phương thức</span>
-          <span>${PAY_METHODS.find(m => m.id === opts.method)?.label}</span>
+          <span>${opts.method ? (PAY_METHODS.find(m => m.id === opts.method)?.label || opts.method) : '—'}</span>
         </div>
         ${opts.method === 'tien_mat' ? `
         <div class="item">
@@ -71,6 +73,7 @@ export function generateReceiptHTML(opts: {
           <span>Tiền trả lại</span>
           <span>${Math.max(0, opts.change || 0).toLocaleString('vi-VN')}đ</span>
         </div>
+        ` : ''}
         ` : ''}
         <div class="divider"></div>
         <div class="footer">

@@ -69,6 +69,8 @@ export default function POSOrderScreen({ tableId, tableName, onClose }: POSOrder
                 breakpoint={breakpoint}
                 panelWidth={panelWidth}
                 onProductPress={ord.handleProductPress}
+                onQuickAdd={ord.quickAdd}
+                onQuickSubtract={ord.quickSubtract}
                 getItemCartCount={ord.getItemCartCount}
               />
             </ScrollView>
@@ -93,6 +95,7 @@ export default function POSOrderScreen({ tableId, tableName, onClose }: POSOrder
               onSendToKitchen={ord.handleSendToKitchen}
               onSaveTable={ord.handleSaveTable}
               onPay={ord.handlePay}
+              onPrintTemporary={ord.handlePrintTemporary}
               submitting={ord.submitting}
               isWide={isWide}
               cartSheet={ord.cartSheet}
@@ -113,6 +116,8 @@ export default function POSOrderScreen({ tableId, tableName, onClose }: POSOrder
               breakpoint={breakpoint}
               panelWidth={panelWidth}
               onProductPress={ord.handleProductPress}
+              onQuickAdd={ord.quickAdd}
+              onQuickSubtract={ord.quickSubtract}
               getItemCartCount={ord.getItemCartCount}
             />
           </ScrollView>
@@ -145,6 +150,7 @@ export default function POSOrderScreen({ tableId, tableName, onClose }: POSOrder
             onSendToKitchen={ord.handleSendToKitchen}
             onSaveTable={ord.handleSaveTable}
             onPay={ord.handlePay}
+            onPrintTemporary={ord.handlePrintTemporary}
             submitting={ord.submitting}
             isWide={isWide}
             cartSheet={ord.cartSheet}

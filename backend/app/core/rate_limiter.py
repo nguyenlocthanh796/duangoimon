@@ -6,12 +6,12 @@ from fastapi import Request, HTTPException, status
 # Per-IP request tracking
 _requests: dict[str, list[float]] = defaultdict(list)
 
-RATE_LIMIT = 60  # max requests
+RATE_LIMIT = 1000  # max requests
 RATE_WINDOW = 60  # seconds
 
 
 async def rate_limit_middleware(request: Request, call_next):
-    """Rate limit: 60 requests/min per IP."""
+    """Rate limit: 1000 requests/min per IP."""
     client_ip = request.client.host if request.client else "unknown"
     now = time.time()
     window = RATE_WINDOW

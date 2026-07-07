@@ -6,16 +6,23 @@ interface CartSummaryProps {
   total: number;
   serviceChargePercent: number;
   serviceCharge: number;
+  vatAmount?: number;
   grandTotal: number;
 }
 
-export default function CartSummary({ total, serviceChargePercent, serviceCharge, grandTotal }: CartSummaryProps) {
+export default function CartSummary({ total, serviceChargePercent, serviceCharge, vatAmount, grandTotal }: CartSummaryProps) {
   return (
     <View style={{ gap: 2 }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
         <Text style={{ fontSize: 13, color: colors.text.secondary }}>Tạm tính</Text>
         <Text style={{ fontSize: 13, fontWeight: '600', color: colors.text.primary }}>{formatPrice(total)}</Text>
       </View>
+      {vatAmount !== undefined && vatAmount > 0 && (
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Text style={{ fontSize: 13, color: colors.text.secondary }}>Thuế VAT (đã gồm)</Text>
+          <Text style={{ fontSize: 13, fontWeight: '600', color: colors.text.secondary }}>{formatPrice(vatAmount)}</Text>
+        </View>
+      )}
       {serviceCharge > 0 && (
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <Text style={{ fontSize: 13, color: colors.text.secondary }}>Phí service ({serviceChargePercent}%)</Text>

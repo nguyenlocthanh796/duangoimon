@@ -53,23 +53,59 @@ async def healthz():
     return {"status": "ok", "version": "1.0.0"}
 
 
-# Global exception handler
+# Global exception handlers
 from fastapi import Request
 from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
+def _get_cors_headers(request: Request) -> dict[str, str]:
+    origin = request.headers.get("origin")
+    if origin:
+        return {
+            "Access-Control-Allow-Origin": origin,
+            "Access-Control-Allow-Credentials": "true",
+            "Access-Control-Allow-Methods": "*",
+            "Access-Control-Allow-Headers": "*",
+        }
+    return {}
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    headers = _get_cors_headers(request)
+    if exc.headers:
+        headers.update(exc.headers)
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail},
+        headers=headers,
+    )
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    return JSONResponse(
+        status_code=422,
+        content={"detail": exc.errors()},
+        headers=_get_cors_headers(request),
+    )
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     from app.core.i18n import t
     return JSONResponse(
         status_code=500,
-        content={"detail": t("common.error"), "type": type(exc).__name__},
+        content={"detail": t("common.error"), "type": type(exc).__name__, "message": str(exc)},
+        headers=_get_cors_headers(request),
     )
 
 
 @app.exception_handler(404)
 async def not_found_handler(request: Request, exc):
-    return JSONResponse(status_code=404, content={"detail": "Not found"})
+    return JSONResponse(
+        status_code=404,
+        content={"detail": "Not found"},
+        headers=_get_cors_headers(request),
+    )
 
 
 # Auto-audit all POST/PUT/DELETE on /api/v1/...

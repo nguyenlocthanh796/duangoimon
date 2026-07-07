@@ -14,7 +14,6 @@ interface MobileCartBarProps {
 }
 
 export default function MobileCartBar({ itemCount, total, onPress, onSave, onPay, submitting }: MobileCartBarProps) {
-  if (itemCount === 0) return null;
 
   return (
     <View

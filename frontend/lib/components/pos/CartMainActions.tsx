@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { colors } from '../../theme/colors';
+import { MaterialIcons } from '@expo/vector-icons';
 
 interface CartMainActionsProps {
   hasUnsentItems: boolean;
@@ -9,13 +10,14 @@ interface CartMainActionsProps {
   onSendToKitchen: () => void;
   onSaveTable: () => void;
   onPay: () => void;
+  onPrintTemporary?: () => void;
   onBulkToggle: () => void;
   bulkToggleLabel: string;
 }
 
 export default function CartMainActions({
   hasUnsentItems, submitting, canBulkToggle,
-  onSendToKitchen, onSaveTable, onPay, onBulkToggle, bulkToggleLabel,
+  onSendToKitchen, onSaveTable, onPay, onPrintTemporary, onBulkToggle, bulkToggleLabel,
 }: CartMainActionsProps) {
   return (
     <View style={{ gap: 8 }}>
@@ -28,6 +30,27 @@ export default function CartMainActions({
           <Text style={{ fontSize: 11, fontWeight: '600', color: colors.text.brand }}>
             {bulkToggleLabel}
           </Text>
+        </TouchableOpacity>
+      )}
+
+      {/* Temporary Print Button */}
+      {onPrintTemporary && (
+        <TouchableOpacity
+          onPress={onPrintTemporary}
+          style={{
+            height: 40,
+            borderRadius: 6,
+            backgroundColor: colors.surface.disabled,
+            borderWidth: 1,
+            borderColor: colors.border.default,
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'row',
+            gap: 6
+          }}
+        >
+          <MaterialIcons name="print" size={16} color={colors.text.secondary} />
+          <Text style={{ fontSize: 12, fontWeight: '700', color: colors.text.secondary }}>IN TẠM TÍNH</Text>
         </TouchableOpacity>
       )}
 

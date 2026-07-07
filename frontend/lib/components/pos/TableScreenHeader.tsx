@@ -9,9 +9,10 @@ interface TableScreenHeaderProps {
   onOpenSidebar: () => void;
   onRefresh: () => void;
   lastRefreshTime?: string;
+  onTakeaway?: () => void;
 }
 
-export default function TableScreenHeader({ tablesCount, isWide, onOpenSidebar, onRefresh, lastRefreshTime }: TableScreenHeaderProps) {
+export default function TableScreenHeader({ tablesCount, isWide, onOpenSidebar, onRefresh, lastRefreshTime, onTakeaway }: TableScreenHeaderProps) {
   return (
     <View style={{
       paddingHorizontal: 12,
@@ -48,7 +49,19 @@ export default function TableScreenHeader({ tablesCount, isWide, onOpenSidebar, 
           <Icon name="refresh" size={18} color={colors.icon.default} />
         </TouchableOpacity>
 
-        {!isWide && (
+        {onTakeaway ? (
+          <TouchableOpacity
+            onPress={onTakeaway}
+            style={{
+              flexDirection: 'row', alignItems: 'center', gap: 6,
+              paddingHorizontal: 14, height: 36, borderRadius: 12,
+              backgroundColor: colors.brand.primaryBg, borderWidth: 1.5, borderColor: colors.border.brand,
+            }}
+          >
+            <Icon name="bag-personal" size={16} color={colors.icon.brand} />
+            <Text style={{ ...font.tab, color: colors.text.brand }}>Mang Về</Text>
+          </TouchableOpacity>
+        ) : !isWide ? (
           <TouchableOpacity
             onPress={() => router.push(`/ban-hang/pos?tableId=TAKEAWAY&tableName=Mang%20V%E1%BB%81`)}
             style={{
@@ -60,7 +73,7 @@ export default function TableScreenHeader({ tablesCount, isWide, onOpenSidebar, 
             <Icon name="bag-personal" size={16} color={colors.icon.brand} />
             <Text style={{ ...font.tab, color: colors.text.brand }}>Mang Về</Text>
           </TouchableOpacity>
-        )}
+        ) : null}
       </View>
     </View>
   );

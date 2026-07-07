@@ -35,6 +35,7 @@ class Product(Base):
     image_url: Mapped[str | None] = mapped_column(Text)
     is_active: Mapped[bool] = mapped_column(default=True)
     options: Mapped[dict] = mapped_column(JSONB, default=list)
+    vat_rate: Mapped[float] = mapped_column(Numeric(4, 2), default=8)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
 
@@ -71,6 +72,7 @@ class OrderItem(Base):
     unit_price: Mapped[float] = mapped_column(Numeric(12, 2))
     total: Mapped[float] = mapped_column(Numeric(14, 2), default=0)
     options: Mapped[dict] = mapped_column(JSONB, default=list)
+    vat_rate: Mapped[float] = mapped_column(Numeric(4, 2), default=8)
     note: Mapped[str | None] = mapped_column(Text)
     status: Mapped[str] = mapped_column(String(20), default="moi")
     service_type: Mapped[str] = mapped_column(String(20), default="dine_in")

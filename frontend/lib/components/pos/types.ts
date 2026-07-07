@@ -17,6 +17,7 @@ export interface MenuItem {
   image?: string;
   sizes?: SizeOption[];
   toppings?: Topping[];
+  vatRate?: number;
 }
 
 export interface CartItem extends MenuItem {
