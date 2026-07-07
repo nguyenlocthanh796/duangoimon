@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# Environment
+.env
+*.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/dist_tests/
+frontend/web-build/
+
+# Portable tools (local dev only)
+portable-git/
+portable-gh/
+
+# Docker volumes / data
+pgdata/
+
+# Backup
+posa-backup/
+posa-backup.zip
+
+# Project
+backend/alembic/versions/*.pyc
+frontend/.expo/

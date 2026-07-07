@@ -1,0 +1,85 @@
+import uuid
+from datetime import datetime, timezone
+
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.core.database import get_db
+from app.core.auth import get_current_user, hash_password
+from app.core.pagination import PageParams, paginate
+from app.models.user import User
+
+router = APIRouter(prefix="/quan-ly/users", tags=["quan-ly"])
+
+
+class UserCreate(BaseModel):
+    username: str
+    password: str
+    full_name: str | None = None
+    role: str = "cashier"
+    is_active: bool = True
+
+
+class UserUpdate(BaseModel):
+    full_name: str | None = None
+    role: str | None = None
+    is_active: bool | None = None
+    password: str | None = None
+
+
+@router.get("")
+async def list_users(
+    page: PageParams = Depends(),
+    db: AsyncSession = Depends(get_db),
+    _user: dict = Depends(get_current_user),
+):
+    query = select(User).order_by(User.full_name)
+    page_result = await paginate(db, query, page.page, page.page_size)
+    page_result["items"] = [
+        {
+            "id": str(u.id),
+            "username": u.username,
+            "full_name": u.full_name,
+            "role": u.role,
+            "is_active": u.is_active,
+            "created_at": u.created_at.isoformat() if u.created_at else None,
+        }
+        for u in page_result["items"]
+    ]
+    return page_result
+
+
+@router.post("", status_code=201)
+async def create_user(body: UserCreate, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)):
+    existing = await db.execute(select(User).where(User.username == body.username))
+    if existing.scalar_one_or_none():
+        raise HTTPException(status_code=400, detail="Username already exists")
+    user = User(
+        username=body.username,
+        password_hash=hash_password(body.password),
+        full_name=body.full_name,
+        role=body.role,
+        is_active=body.is_active,
+    )
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    return {"id": str(user.id), "username": user.username}
+
+
+@router.put("/{user_id}")
+async def update_user(user_id: str, body: UserUpdate, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)):
+    data = body.model_dump(exclude_unset=True)
+    result = await db.execute(select(User).where(User.id == uuid.UUID(user_id)))
+    u = result.scalar_one_or_none()
+    if not u:
+        raise HTTPException(status_code=404, detail="User not found")
+    if "password" in data:
+        data["password_hash"] = hash_password(data.pop("password"))
+    for k, v in data.items():
+        setattr(u, k, v)
+    await db.commit()
+    return {"status": "ok"}
+

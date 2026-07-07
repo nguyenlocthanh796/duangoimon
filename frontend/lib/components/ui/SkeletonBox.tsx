@@ -1,0 +1,32 @@
+import { useEffect, useRef } from 'react';
+import { Animated } from 'react-native';
+
+interface SkeletonBoxProps {
+  w: number | string;
+  h: number;
+  borderRadius?: number;
+}
+
+export default function SkeletonBox({ w, h, borderRadius = 8 }: SkeletonBoxProps) {
+  const anim = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(anim, { toValue: 1, duration: 800, useNativeDriver: true }),
+        Animated.timing(anim, { toValue: 0, duration: 800, useNativeDriver: true }),
+      ])
+    ).start();
+  }, [anim]);
+  const opacity = anim.interpolate({ inputRange: [0, 1], outputRange: [0.3, 0.7] });
+  return (
+    <Animated.View
+      style={{
+        width: w as any,
+        height: h,
+        borderRadius,
+        backgroundColor: '#CBD5E1',
+        opacity,
+      }}
+    />
+  );
+}

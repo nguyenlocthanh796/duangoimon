@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: pos_db_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install deps
+        run: |
+          cd backend
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio httpx
+
+      - name: Lint
+        run: |
+          cd backend
+          python -m compileall app/
+
+      - name: Test
+        env:
+          DATABASE_URL: postgresql+psycopg://postgres:postgres@localhost:5432/pos_db_test
+        run: |
+          cd backend
+          python -m pytest tests/ -v

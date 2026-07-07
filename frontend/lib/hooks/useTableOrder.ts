@@ -1,0 +1,205 @@
+"use client";
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useRouter } from 'expo-router';
+import { api } from '../api';
+import { MenuItem, CartItem } from '../components/pos/types';
+import { useCart } from './useCart';
+import { useModifier } from './useModifier';
+import { useOrder } from './useOrder';
+
+export function useTableOrder(tableId: string, tableName: string, onClose?: () => void) {
+  const router = useRouter();
+  const cart = useCart();
+  const mod = useModifier();
+  const order = useOrder();
+
+  const [products, setProducts] = useState<MenuItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [cartSheet, setCartSheet] = useState(false);
+
+  // Reset + load when tableId changes
+  useEffect(() => {
+    if (!tableId) {
+      setProducts([]);
+      cart.reset();
+      setLoading(false);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      setLoading(true);
+      cart.reset();
+      setActiveCategory('all');
+
+      let loadedProducts: MenuItem[] = [];
+      try {
+        const data = await api.getProducts();
+        if (cancelled) return;
+        const CAT_MAP: Record<string, string> = {
+          'SỮA CHUA': 'sua-chua',
+          'TRÀ CHANH': 'tra-chanh',
+          'ĐỒ ĂN VẶT': 'do-an-vat',
+          'CHÈ': 'che',
+          'TRÀ SỮA': 'tra-sua',
+          'SODA': 'soda',
+          'KEM': 'kem',
+        };
+        loadedProducts = data.map((p: any) => ({
+          id: p.id, name: p.name, price: Number(p.price),
+          category: CAT_MAP[p.category] || p.category || 'sua-chua',
+          image: p.image_url,
+          sizes: p.options?.filter((o: any) => o.type === 'size') || undefined,
+          toppings: p.options?.filter((o: any) => o.type === 'topping') || undefined,
+        }));
+        if (!cancelled) setProducts(loadedProducts);
+      } catch { if (!cancelled) console.error('Failed to load products'); }
+
+      if (tableId !== 'TAKEAWAY') {
+        try {
+          const activeOrder = await api.getActiveOrderForTable(tableId);
+          if (!cancelled && activeOrder) {
+            cart.setActiveOrderId(activeOrder.id);
+            cart.loadOrderItems(activeOrder.items, loadedProducts);
+          }
+        } catch { /* no active order */ }
+      }
+      if (!cancelled) setLoading(false);
+    })();
+    return () => { cancelled = true; };
+  }, [tableId]);
+
+  const filteredItems = useMemo(() =>
+    activeCategory === 'all' ? products : products.filter(i => i.category === activeCategory),
+    [activeCategory, products]
+  );
+
+  const handleProductPress = useCallback((item: MenuItem) => {
+    const hasModifiers = (item.sizes?.length ?? 0) > 0 || (item.toppings?.length ?? 0) > 0;
+    if (hasModifiers) mod.openForNew(item);
+    else cart.quickAdd(item);
+  }, [mod, cart]);
+
+  const addToCartFromModal = useCallback(() => {
+    if (!mod.modalItem) return;
+    const newItem: CartItem = {
+      ...mod.modalItem,
+      cartItemId: cart.genCartId(),
+      qty: mod.modalQty,
+      unitPrice: mod.modalPrice,
+      selectedSize: mod.modalSize || undefined,
+      selectedToppings: mod.modalToppings.length > 0 ? mod.modalToppings : undefined,
+      note: mod.modalNote || undefined,
+      isSent: false,
+      serviceType: 'dine_in',
+    };
+    cart.addItem(newItem);
+    mod.close();
+  }, [mod, cart]);
+
+  const saveEditFromModal = useCallback(() => {
+    if (!mod.modalItem || !('cartItemId' in mod.modalItem)) return;
+    const id = (mod.modalItem as CartItem).cartItemId;
+    cart.updateItem(id, {
+      qty: mod.modalQty,
+      unitPrice: mod.modalPrice,
+      selectedSize: mod.modalSize || undefined,
+      selectedToppings: mod.modalToppings.length > 0 ? mod.modalToppings : undefined,
+      note: mod.modalNote || undefined,
+    });
+    mod.close();
+  }, [mod, cart]);
+
+  const handleSendToKitchen = useCallback(async () => {
+    const id = await order.sendToKitchen(cart.cart, tableId, cart.activeOrderId);
+    if (id) { cart.setActiveOrderId(id); setCartSheet(false); }
+  }, [cart, order, tableId]);
+
+  const handleSaveTable = useCallback(async () => {
+    const ok = await order.saveTable(cart.cart, tableId, cart.activeOrderId);
+    if (ok) {
+      cart.reset();
+      setCartSheet(false);
+      onClose?.();
+    }
+  }, [cart, order, tableId, onClose]);
+
+  const handlePay = useCallback(() => {
+    order.goToPayment(cart.cart, tableId, tableName, cart.activeOrderId, cart.total);
+  }, [cart, order, tableId, tableName]);
+
+  // Biz operations (split/merge/move)
+  const splitBill = useCallback(async (selectedIds: string[]) => {
+    if (!cart.activeOrderId) { return; }
+    const realIds = selectedIds.map(cart.getRealItemId).filter(Boolean) as string[];
+    if (realIds.length === 0) { cart.filterOut(selectedIds); return; }
+    try {
+      await api.splitOrder({ order_id: cart.activeOrderId, item_ids: realIds });
+      cart.filterOut(selectedIds);
+    } catch { /* ignore */ }
+  }, [cart]);
+
+  const moveItemToTable = useCallback(async (cartItemId: string, targetTableId: string) => {
+    if (!cart.activeOrderId) return;
+    const realId = cart.getRealItemId(cartItemId);
+    if (!realId) return;
+    try {
+      await api.splitTable({ order_id: cart.activeOrderId, item_ids: [realId], new_table_id: targetTableId });
+      cart.filterOut([cartItemId]);
+    } catch { /* ignore */ }
+  }, [cart]);
+
+  const mergeBill = useCallback(async (sourceTableId?: string) => {
+    if (!sourceTableId || !cart.activeOrderId) return;
+    try {
+      const activeOrder = await api.getActiveOrderForTable(sourceTableId);
+      if (!activeOrder) return;
+      const result = await api.mergeOrders({ source_order_id: activeOrder.id, target_order_id: cart.activeOrderId });
+      const mapped = (result.items || []).map((i: any) => ({
+        id: i.product_id, name: i.product_name, price: Number(i.unit_price),
+        category: 'sua-chua',
+        cartItemId: `cart_loaded_${i.id}_${cart.genCartId()}`,
+        qty: i.quantity, unitPrice: Number(i.unit_price),
+        note: i.note || undefined,
+        selectedSize: i.options?.size || undefined,
+        selectedToppings: i.options?.toppings || undefined,
+        isSent: true,
+        serviceType: i.service_type || 'dine_in',
+        orderRound: i.order_round || 1, status: i.status || 'moi',
+      }));
+      cart.replaceAll(mapped, result.id);
+    } catch { /* ignore */ }
+  }, [cart]);
+
+  const moveTable = useCallback(async (targetTableId: string) => {
+    if (!cart.activeOrderId) return;
+    try {
+      await api.moveTable(cart.activeOrderId, { table_id: targetTableId });
+      onClose?.();
+    } catch { /* ignore */ }
+  }, [cart.activeOrderId, onClose]);
+
+  return {
+    products, loading, activeCategory, setActiveCategory,
+    filteredItems: filteredItems,
+    cart: cart.cart, total: cart.total, itemCount: cart.itemCount,
+    submitting: order.submitting, cartSheet, setCartSheet,
+    modalItem: mod.modalItem, modalQty: mod.modalQty, setModalQty: mod.setModalQty,
+    modalSize: mod.modalSize, setModalSize: mod.setModalSize,
+    modalToppings: mod.modalToppings, setModalToppings: mod.setModalToppings,
+    modalNote: mod.modalNote, setModalNote: mod.setModalNote,
+    modalPrice: mod.modalPrice,
+    getItemCartCount: cart.getItemCartCount,
+    handleProductPress, quickAdd: cart.quickAdd, quickSubtract: cart.quickSubtract,
+    updateQty: cart.updateQty, removeItem: cart.removeItem,
+    handleEditNote: cart.editNote, setQty: cart.setQty,
+    cancelItem: cart.cancelItem, moveItemToTable, splitBill, mergeBill, moveTable,
+    handleSendToKitchen, handleSaveTable, handlePay,
+    openModifierForEdit: mod.openForEdit,
+    saveEditFromModal, addToCartFromModal, closeModifierSheet: mod.close,
+    toggleServiceType: cart.toggleServiceType,
+    splitTable: moveItemToTable,
+    mergeTable: mergeBill,
+    moveItem: () => {},
+  };
+}

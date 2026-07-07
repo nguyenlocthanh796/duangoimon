@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <script>
+    // Suppress React Native / DevTools warning logs in the console
+    if (typeof console !== 'undefined') {
+      const originalWarn = console.warn;
+      console.warn = function(...args) {
+        const msg = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : String(arg)).join(' ');
+        if (msg.includes('shadow*') || msg.includes('deprecated') || msg.includes('React DevTools') || msg.includes('useNativeDriver')) {
+          return;
+        }
+        originalWarn.apply(console, args);
+      };
+
+      const originalLog = console.log;
+      console.log = function(...args) {
+        const msg = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : String(arg)).join(' ');
+        if (msg.includes('Running application') && msg.includes('appParams')) {
+          return;
+        }
+        originalLog.apply(console, args);
+      };
+
+      const originalInfo = console.info;
+      console.info = function(...args) {
+        const msg = args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : String(arg)).join(' ');
+        if (msg.includes('React DevTools') || msg.includes('react-devtools')) {
+          return;
+        }
+        originalInfo.apply(console, args);
+      };
+    }
+  </script>
+  <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <title>POS F&B — Hệ thống quản lý nhà hàng</title>
+  <meta name="description" content="Hệ thống quản lý nhà hàng chuyên nghiệp — POS, bếp, kho, kế toán, CRM." />
+  <style id="expo-reset">
+    html, body { height: 100%; }
+    body { overflow: hidden; margin: 0; }
+    #root { display: flex; height: 100%; flex: 1; }
+  </style>
+</head>
+<body>
+  <!-- Required by Expo/React for rendering -->
+  <div id="root"></div>
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+</body>
+</html>

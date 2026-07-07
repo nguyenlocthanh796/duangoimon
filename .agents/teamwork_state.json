@@ -1,0 +1,12 @@
+{
+  "session": "6d5910e3",
+  "step": "refine",
+  "plan": "",
+  "tasks": {},
+  "failed": [],
+  "fast_logs": [
+    "[16:12] Pipeline started",
+    "[16:12] Context detected: unknown",
+    "[16:12] Refine failed: Error code: 401 - {'error': {'message': 'Authentication Fails, Your api key: ****_KEY is invalid', 'type': 'authentication_error', 'param': None, 'code': 'invalid_request_error'}}"
+  ]
+}
