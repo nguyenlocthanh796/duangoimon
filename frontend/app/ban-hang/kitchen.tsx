@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { api } from '../../lib/api';
-import { colors, palette, COLORS, font, formatPrice } from '../../lib/theme';
+import { colors, palette, COLORS, font, formatPrice, shape } from '../../lib/theme';
 import { useAuth } from '../../lib/context/AuthContext';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import TicketCard from '../../lib/components/kitchen/TicketCard';
@@ -203,12 +203,12 @@ export default function KitchenScreen() {
       }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
           <TouchableOpacity onPress={openSidebar}
-            style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
-            <Icon name="menu" size={22} color={colors.icon.default} />
+            style={{ width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
+            <Icon name="menu" size={18} color={colors.icon.default} />
           </TouchableOpacity>
           <View>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <Text style={{ ...font.h1, color: colors.text.primary }}>Bếp 🍳</Text>
+              <Text style={{ ...font.h3, color: colors.text.primary }}>Bếp 🍳</Text>
               <View style={{
                 flexDirection: 'row', alignItems: 'center', gap: 4,
                 paddingHorizontal: 8, paddingVertical: 2, borderRadius: 12,
@@ -235,14 +235,14 @@ export default function KitchenScreen() {
         </View>
 
         <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
-          <View style={{ backgroundColor: colors.brand.primaryBg, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: colors.border.brand }}>
+          <View style={{ backgroundColor: colors.brand.primaryBg, paddingHorizontal: 12, paddingVertical: 6, borderRadius: shape.radius.md, borderWidth: 1, borderColor: colors.border.brand }}>
             <Text style={{ ...font.tab, color: colors.brand.primary }}>
               {allOrders.length} đơn
             </Text>
           </View>
           <TouchableOpacity onPress={fetchOrders}
-            style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
-            <Icon name="refresh" size={22} color={colors.icon.default} />
+            style={{ width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
+            <Icon name="refresh" size={18} color={colors.icon.default} />
           </TouchableOpacity>
         </View>
       </View>

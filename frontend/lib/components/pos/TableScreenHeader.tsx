@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { colors, font } from '../../theme';
+import { colors, font, shape } from '../../theme';
 import { router } from 'expo-router';
 
 interface TableScreenHeaderProps {
@@ -27,7 +27,7 @@ export default function TableScreenHeader({ tablesCount, isWide, onOpenSidebar, 
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
         <TouchableOpacity
           onPress={onOpenSidebar}
-          style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}
+          style={{ width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}
         >
           <Icon name="menu" size={18} color={colors.icon.default} />
         </TouchableOpacity>
@@ -44,7 +44,7 @@ export default function TableScreenHeader({ tablesCount, isWide, onOpenSidebar, 
       <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }}>
         <TouchableOpacity
           onPress={onRefresh}
-          style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}
+          style={{ width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}
         >
           <Icon name="refresh" size={18} color={colors.icon.default} />
         </TouchableOpacity>

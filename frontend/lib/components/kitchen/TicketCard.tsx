@@ -1,9 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { colors } from '../../../lib/theme/colors';
-import { font } from '../../../lib/theme/typography';
-import { palette } from '../../../lib/theme/colors';
+import { colors, font, shape, palette } from '../../theme';
 
 export interface TicketOrder {
   id: string;
@@ -135,7 +133,7 @@ export default function TicketCard({ order, colStatus, onMarkDone, onMoveForward
           {colStatus === 'cho_xu_ly' && (
             <TouchableOpacity
               onPress={() => onMoveForward(order.id)}
-              style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, minHeight: 44, borderRadius: 10, backgroundColor: colors.brand.primaryBg, borderWidth: 1, borderColor: colors.border.brand }}
+              style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, minHeight: 44, borderRadius: shape.radius.md, backgroundColor: colors.brand.primaryBg, borderWidth: 1, borderColor: colors.border.brand }}
             >
               <Icon name="play" size={16} color={colors.brand.primary} />
               <Text style={{ ...font.tab, color: colors.brand.primary }}>Bắt đầu làm</Text>
@@ -143,7 +141,7 @@ export default function TicketCard({ order, colStatus, onMarkDone, onMoveForward
           )}
           <TouchableOpacity
             onPress={() => onMarkDone(order.id)}
-            style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, minHeight: 44, borderRadius: 10, backgroundColor: colors.status.successBg, borderWidth: 1, borderColor: palette.green[350] }}
+            style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, minHeight: 44, borderRadius: shape.radius.md, backgroundColor: colors.status.successBg, borderWidth: 1, borderColor: palette.green[350] }}
           >
             <Icon name="check" size={16} color={colors.status.success} />
             <Text style={{ ...font.tab, color: colors.status.success }}>Xong</Text>

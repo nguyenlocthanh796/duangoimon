@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { colors, font } from '../../theme';
+import { colors, font, shape } from '../../theme';
 import { useRouter } from 'expo-router';
 
 interface OrderHeaderProps {
@@ -32,12 +32,12 @@ export default function OrderHeader({ tableName, itemsCount, productsCount, isWi
       minHeight: isWide ? 56 : 48,
     }}>
       {isWide && (
-        <TouchableOpacity onPress={onOpenSidebar} style={{ width: 36, height: 36, borderRadius: 4, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center', marginRight: 6 }}>
+        <TouchableOpacity onPress={onOpenSidebar} style={{ width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center', marginRight: 6 }}>
           <Icon name="menu" size={18} color={colors.icon.default} />
         </TouchableOpacity>
       )}
       {!onClose && (
-        <TouchableOpacity onPress={handleBack} style={{ width: 36, height: 36, borderRadius: 4, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
+        <TouchableOpacity onPress={handleBack} style={{ width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
           <Icon name="arrow-left" size={18} color={colors.icon.default} />
         </TouchableOpacity>
       )}
@@ -51,7 +51,7 @@ export default function OrderHeader({ tableName, itemsCount, productsCount, isWi
       </View>
       {onClose && (
         <TouchableOpacity onPress={handleBack}
-          style={{ width: 36, height: 36, borderRadius: 4, backgroundColor: colors.surface.danger, borderWidth: 1, borderColor: colors.border.danger, alignItems: 'center', justifyContent: 'center' }}>
+          style={{ width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.surface.danger, borderWidth: 1, borderColor: colors.border.danger, alignItems: 'center', justifyContent: 'center' }}>
           <Icon name="close" size={16} color={colors.icon.danger} />
         </TouchableOpacity>
       )}

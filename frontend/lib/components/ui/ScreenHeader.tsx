@@ -1,6 +1,6 @@
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { colors, font } from '../../theme';
+import { colors, font, shape } from '../../theme';
 
 interface ScreenHeaderProps {
   title: string;
@@ -24,7 +24,7 @@ export default function ScreenHeader({
     <View style={styles.header}>
       <View style={styles.left}>
         <TouchableOpacity onPress={onMenuPress} style={styles.menuBtn}>
-          <Icon name="menu" size={24} color="#334155" />
+          <Icon name="menu" size={24} color={colors.icon.default} />
         </TouchableOpacity>
         {showBack && (
           <TouchableOpacity onPress={onBackPress} style={styles.backBtn}>
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
   menuBtn: {
     width: 40,
     height: 40,
-    borderRadius: 4,
+    borderRadius: shape.radius.md,
     backgroundColor: colors.surface.disabled,
     alignItems: 'center',
     justifyContent: 'center',
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   backBtn: {
     width: 36,
     height: 36,
-    borderRadius: 4,
+    borderRadius: shape.radius.md,
     backgroundColor: colors.brand.primaryBg,
     alignItems: 'center',
     justifyContent: 'center',

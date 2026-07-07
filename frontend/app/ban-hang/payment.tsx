@@ -54,7 +54,7 @@ export default function PaymentScreen() {
       <View style={{ flex: 65, borderRightWidth: 1, borderColor: colors.border.default, padding: 16, gap: 16 }}>
         <View style={{ flex: 1, flexDirection: 'row', gap: 16 }}>
           <View style={{ flex: 1, gap: 16 }}>
-            <View style={{ backgroundColor: colors.surface.card, borderRadius: 4, padding: 16, borderWidth: 1, borderColor: colors.border.default }}>
+            <View style={{ backgroundColor: colors.surface.card, borderRadius: shape.radius.md, padding: 16, borderWidth: 1, borderColor: colors.border.default }}>
               <Text style={{ ...font.tab, textTransform: 'uppercase', letterSpacing: 1, color: colors.text.muted, marginBottom: 12 }}>Tóm tắt đơn hàng</Text>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
                 <Text style={{ ...font.body, color: colors.text.body }}>Tên bàn</Text>
@@ -73,8 +73,8 @@ export default function PaymentScreen() {
                   const sel = pm.method === m.id;
                   return (
                     <TouchableOpacity key={m.id} onPress={() => pm.setMethod(m.id)}
-                      style={{ width: '47%', paddingVertical: 14, borderRadius: 4, backgroundColor: sel ? m.bg : colors.surface.card, borderWidth: 2, borderColor: sel ? m.color : colors.border.default, alignItems: 'center', gap: 6 }}>
-                      <View style={{ width: 40, height: 40, borderRadius: 4, backgroundColor: sel ? m.color + '20' : colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
+                      style={{ width: '47%', paddingVertical: 14, borderRadius: shape.radius.md, backgroundColor: sel ? m.bg : colors.surface.card, borderWidth: 2, borderColor: sel ? m.color : colors.border.default, alignItems: 'center', gap: 6 }}>
+                      <View style={{ width: 40, height: 40, borderRadius: shape.radius.md, backgroundColor: sel ? m.color + '20' : colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
                         <Icon name={m.icon as any} size={22} color={sel ? m.color : colors.icon.muted} />
                       </View>
                       <Text style={{ ...font.tab, color: sel ? m.color : colors.text.muted, textAlign: 'center' }}>{m.label}</Text>
@@ -89,7 +89,7 @@ export default function PaymentScreen() {
               </View>
             </View>
           </View>
-          <View style={{ flex: 1, backgroundColor: colors.surface.card, borderRadius: 4, padding: 16, borderWidth: 1, borderColor: colors.border.default }}>
+          <View style={{ flex: 1, backgroundColor: colors.surface.card, borderRadius: shape.radius.md, padding: 16, borderWidth: 1, borderColor: colors.border.default }}>
             {pm.method === 'tien_mat' || pm.method === 'card' ? (
               <View style={{ flex: 1 }}>
                 <Text style={{ ...font.tab, color: colors.text.muted, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 1 }}>Chi tiết món ăn</Text>
@@ -111,7 +111,7 @@ export default function PaymentScreen() {
               </View>
             ) : (
               <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 16 }}>
-                <View style={{ width: 140, height: 140, borderRadius: 4, borderWidth: 1.5, borderColor: colors.border.default, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', padding: 8 }}>
+                <View style={{ width: 140, height: 140, borderRadius: shape.radius.md, borderWidth: 1.5, borderColor: colors.border.default, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', padding: 8 }}>
                   <Icon name="qrcode-scan" size={100} color={colors.text.primary} />
                 </View>
                 <Text style={{ ...font.h3, color: colors.text.primary, textAlign: 'center' }}>Quét mã QR để thanh toán</Text>
@@ -141,12 +141,12 @@ export default function PaymentScreen() {
             <View style={{ flex: 1 }}>
               <View style={{ flex: 1 }}>
                 <Text style={{ ...font.tab, textTransform: 'uppercase', letterSpacing: 1, color: colors.text.muted, marginBottom: 12 }}>Nhập tiền khách đưa</Text>
-                <View style={{ backgroundColor: colors.surface.app, borderRadius: 4, padding: 16, marginBottom: 12, alignItems: 'center', borderWidth: 1, borderColor: colors.border.default }}>
+                <View style={{ backgroundColor: colors.surface.app, borderRadius: shape.radius.md, padding: 16, marginBottom: 12, alignItems: 'center', borderWidth: 1, borderColor: colors.border.default }}>
                   <Text style={{ ...font.h1, fontSize: 36, color: pm.cashInput ? colors.text.primary : colors.text.placeholder }}>
                     {pm.cashInput ? formatPriceFull(pm.cash) : '0đ'}
                   </Text>
                 </View>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 14, borderRadius: 4, backgroundColor: changeBg, marginBottom: 14, borderWidth: 1, borderColor: changeBorder }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 14, borderRadius: shape.radius.md, backgroundColor: changeBg, marginBottom: 14, borderWidth: 1, borderColor: changeBorder }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                     <Icon name={pm.change >= 0 ? 'check-circle' : 'alert-circle'} size={16} color={pm.change >= 0 ? colors.status.success : colors.status.danger} />
                     <Text style={{ ...font.bodySmall, color: pm.change >= 0 ? palette.green[800] : colors.status.danger }}>Tiền thối lại:</Text>
@@ -156,12 +156,12 @@ export default function PaymentScreen() {
                   </Text>
                 </View>
                 <View style={{ flexDirection: 'row', gap: 6, marginBottom: 14 }}>
-                  <TouchableOpacity onPress={() => pm.setCashInput(String(total))} style={{ flex: 1.2, height: 44, justifyContent: 'center', borderRadius: 4, backgroundColor: colors.brand.primaryBg, borderWidth: 1.5, borderColor: colors.border.brand, alignItems: 'center' }}>
+                  <TouchableOpacity onPress={() => pm.setCashInput(String(total))} style={{ flex: 1.2, height: 44, justifyContent: 'center', borderRadius: shape.radius.md, backgroundColor: colors.brand.primaryBg, borderWidth: 1.5, borderColor: colors.border.brand, alignItems: 'center' }}>
                     <Text style={{ ...font.caption, color: colors.brand.primary }}>Đúng tiền</Text>
                     <Text style={{ ...font.badge, color: colors.brand.primary }}>{formatPriceFull(total)}</Text>
                   </TouchableOpacity>
                   {QUICK_AMOUNTS.map(amt => (
-                    <TouchableOpacity key={amt} onPress={() => pm.setCashInput(String(amt))} style={{ flex: 1, height: 44, justifyContent: 'center', borderRadius: 4, backgroundColor: colors.surface.app, borderWidth: 1, borderColor: colors.border.default, alignItems: 'center' }}>
+                    <TouchableOpacity key={amt} onPress={() => pm.setCashInput(String(amt))} style={{ flex: 1, height: 44, justifyContent: 'center', borderRadius: shape.radius.md, backgroundColor: colors.surface.app, borderWidth: 1, borderColor: colors.border.default, alignItems: 'center' }}>
                       <Text style={{ ...font.caption, color: colors.text.body }}>{formatPriceFull(amt)}</Text>
                     </TouchableOpacity>
                   ))}
@@ -213,7 +213,7 @@ export default function PaymentScreen() {
                 </View>
               </View>
               <Text style={{ ...font.h3, color: colors.text.primary, textAlign: 'center' }}>Nội dung chuyển khoản</Text>
-              <View style={{ backgroundColor: '#FFF7ED', borderRadius: 4, paddingVertical: 8, paddingHorizontal: 16, borderWidth: 1, borderColor: colors.border.brand }}>
+              <View style={{ backgroundColor: '#FFF7ED', borderRadius: shape.radius.md, paddingVertical: 8, paddingHorizontal: 16, borderWidth: 1, borderColor: colors.border.brand }}>
                 <Text style={{ ...font.body, fontWeight: '700', color: colors.brand.primary, textAlign: 'center' }}>TT {tableName} #{orderId?.slice(-6)}</Text>
               </View>
             </View>
@@ -221,7 +221,7 @@ export default function PaymentScreen() {
           <Numpad method={pm.method} onKey={pm.handleKey} />
         </View>
         <TouchableOpacity onPress={() => { pm.handlePay(); }} disabled={!pm.canPay || pm.paying}
-          style={{ paddingVertical: 16, borderRadius: 4, alignItems: 'center', backgroundColor: !pm.canPay || pm.paying ? disabledBg : colors.status.success, flexDirection: 'row', justifyContent: 'center', gap: 8, marginTop: 16 }}>
+          style={{ paddingVertical: 16, borderRadius: shape.radius.md, alignItems: 'center', backgroundColor: !pm.canPay || pm.paying ? disabledBg : colors.status.success, flexDirection: 'row', justifyContent: 'center', gap: 8, marginTop: 16 }}>
           {pm.paying ? <ActivityIndicator size="small" color={pm.canPay ? colors.text.inverse : disabledText} /> : <Icon name="check-circle" size={22} color={!pm.canPay || pm.paying ? disabledText : colors.text.inverse} />}
           <Text style={{ ...font.h3, color: !pm.canPay || pm.paying ? disabledText : colors.text.inverse }}>{pm.paying ? 'Đang xử lý...' : 'Hoàn tất thanh toán'}</Text>
         </TouchableOpacity>
@@ -254,12 +254,12 @@ export default function PaymentScreen() {
         </View>
         {pm.method === 'tien_mat' ? (
           <View style={{ gap: 8 }}>
-            <View style={{ backgroundColor: colors.surface.card, borderRadius: 4, padding: 10, borderWidth: 1, borderColor: colors.border.default, gap: 8 }}>
+            <View style={{ backgroundColor: colors.surface.card, borderRadius: shape.radius.md, padding: 10, borderWidth: 1, borderColor: colors.border.default, gap: 8 }}>
               <Text style={{ ...font.badge, textTransform: 'uppercase', letterSpacing: 0.5, color: colors.text.muted }}>Nhập tiền khách đưa</Text>
-              <View style={{ backgroundColor: colors.surface.app, borderRadius: 4, paddingVertical: 10, alignItems: 'center', borderWidth: 1, borderColor: colors.border.default }}>
+              <View style={{ backgroundColor: colors.surface.app, borderRadius: shape.radius.md, paddingVertical: 10, alignItems: 'center', borderWidth: 1, borderColor: colors.border.default }}>
                 <Text style={{ ...font.h2, fontSize: 26, color: pm.cashInput ? colors.text.primary : colors.text.placeholder }}>{pm.cashInput ? formatPriceFull(pm.cash) : '0đ'}</Text>
               </View>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 6, paddingHorizontal: 10, borderRadius: 4, backgroundColor: changeBg, borderWidth: 1, borderColor: changeBorder }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 6, paddingHorizontal: 10, borderRadius: shape.radius.md, backgroundColor: changeBg, borderWidth: 1, borderColor: changeBorder }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                   <Icon name={pm.change >= 0 ? 'check-circle' : 'alert-circle'} size={14} color={pm.change >= 0 ? colors.status.success : colors.status.danger} />
                   <Text style={{ fontSize: 11, fontWeight: '600', color: pm.change >= 0 ? palette.green[800] : colors.status.danger }}>Tiền thối:</Text>
@@ -272,14 +272,14 @@ export default function PaymentScreen() {
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
               {pm.smartSuggestions.slice(0, 4).map(amt => (
                 <TouchableOpacity key={amt} onPress={() => pm.setCashInput(String(amt))}
-                  style={{ flex: 1, height: 38, borderRadius: 4, backgroundColor: pm.cash === amt ? colors.brand.primaryBg : colors.surface.card, borderWidth: pm.cash === amt ? 1.5 : 1, borderColor: pm.cash === amt ? colors.brand.primary : colors.border.default, alignItems: 'center', justifyContent: 'center' }}>
+                  style={{ flex: 1, height: 38, borderRadius: shape.radius.md, backgroundColor: pm.cash === amt ? colors.brand.primaryBg : colors.surface.card, borderWidth: pm.cash === amt ? 1.5 : 1, borderColor: pm.cash === amt ? colors.brand.primary : colors.border.default, alignItems: 'center', justifyContent: 'center' }}>
                   <Text style={{ fontSize: 12, fontWeight: '700', color: pm.cash === amt ? colors.brand.primary : colors.text.primary }}>{formatPriceFull(amt)}</Text>
                 </TouchableOpacity>
               ))}
             </View>
           </View>
         ) : pm.method === 'card' ? (
-          <View style={{ backgroundColor: colors.surface.card, borderRadius: 4, padding: 10, borderWidth: 1, borderColor: colors.border.default, gap: 8, alignItems: 'center' }}>
+          <View style={{ backgroundColor: colors.surface.card, borderRadius: shape.radius.md, padding: 10, borderWidth: 1, borderColor: colors.border.default, gap: 8, alignItems: 'center' }}>
             <View style={{ width: 60, height: 40, borderRadius: 6, backgroundColor: '#1E293B', alignItems: 'center', justifyContent: 'center' }}>
               <Icon name="credit-card-chip" size={16} color="#FBBF24" />
             </View>
@@ -287,13 +287,13 @@ export default function PaymentScreen() {
             <ActivityIndicator size="small" color={colors.brand.primary} />
           </View>
         ) : pm.method === 'qr' ? (
-          <View style={{ backgroundColor: colors.surface.card, borderRadius: 4, padding: 10, borderWidth: 1, borderColor: colors.border.default, gap: 8, alignItems: 'center' }}>
+          <View style={{ backgroundColor: colors.surface.card, borderRadius: shape.radius.md, padding: 10, borderWidth: 1, borderColor: colors.border.default, gap: 8, alignItems: 'center' }}>
             <Icon name="qrcode-scan" size={48} color={colors.text.primary} />
             <Text style={{ ...font.body, fontWeight: '700', color: colors.text.primary }}>Quét mã QR để thanh toán</Text>
             <Text style={{ ...font.h2, color: colors.brand.primary }}>{formatPriceFull(total)}</Text>
           </View>
         ) : (
-          <View style={{ backgroundColor: colors.surface.card, borderRadius: 4, padding: 10, borderWidth: 1, borderColor: colors.border.default, gap: 6 }}>
+          <View style={{ backgroundColor: colors.surface.card, borderRadius: shape.radius.md, padding: 10, borderWidth: 1, borderColor: colors.border.default, gap: 6 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <Text style={{ ...font.caption, color: colors.text.muted }}>Ngân hàng</Text>
               <Text style={{ ...font.caption, fontWeight: '700', color: colors.text.primary }}>MB Bank</Text>
@@ -306,13 +306,13 @@ export default function PaymentScreen() {
               <Text style={{ ...font.caption, color: colors.text.muted }}>Số tiền</Text>
               <Text style={{ ...font.caption, fontWeight: '700', color: colors.brand.primary }}>{formatPriceFull(total)}</Text>
             </View>
-            <View style={{ backgroundColor: '#FFF7ED', borderRadius: 4, paddingVertical: 6, paddingHorizontal: 10, borderWidth: 1, borderColor: colors.border.brand, marginTop: 4 }}>
+            <View style={{ backgroundColor: '#FFF7ED', borderRadius: shape.radius.md, paddingVertical: 6, paddingHorizontal: 10, borderWidth: 1, borderColor: colors.border.brand, marginTop: 4 }}>
               <Text style={{ ...font.caption, fontWeight: '700', color: colors.brand.primary, textAlign: 'center', fontSize: 10 }}>TT {tableName} #{orderId?.slice(-6)}</Text>
             </View>
           </View>
         )}
         <TouchableOpacity onPress={() => { pm.handlePay(); }} disabled={!pm.canPay || pm.paying}
-          style={{ paddingVertical: 14, borderRadius: 4, alignItems: 'center', backgroundColor: !pm.canPay || pm.paying ? disabledBg : colors.status.success, flexDirection: 'row', justifyContent: 'center', gap: 8 }}>
+          style={{ paddingVertical: 14, borderRadius: shape.radius.md, alignItems: 'center', backgroundColor: !pm.canPay || pm.paying ? disabledBg : colors.status.success, flexDirection: 'row', justifyContent: 'center', gap: 8 }}>
           {pm.paying ? <ActivityIndicator size="small" color={!pm.canPay ? disabledText : colors.text.inverse} /> : <Icon name="check-circle" size={18} color={!pm.canPay || pm.paying ? disabledText : colors.text.inverse} />}
           <Text style={{ fontSize: 14, fontWeight: '700', color: !pm.canPay || pm.paying ? disabledText : colors.text.inverse }}>{pm.paying ? 'Đang xử lý...' : 'Hoàn tất thanh toán'}</Text>
         </TouchableOpacity>
@@ -323,14 +323,14 @@ export default function PaymentScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface.app }}>
       <View style={{ paddingHorizontal: 12, paddingVertical: 12, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.default, flexDirection: 'row', alignItems: 'center', gap: 12, zIndex: 10 }}>
-        <TouchableOpacity onPress={() => router.back()} style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
+        <TouchableOpacity onPress={() => router.back()} style={{ width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
           <Icon name="arrow-left" size={18} color={colors.icon.default} />
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
           <Text style={{ ...font.h3, color: colors.text.primary }}>Thanh toán · {tableName}</Text>
           <Text style={{ ...font.label, color: colors.text.muted }}>Order #{orderId?.slice(-6) || '—'}</Text>
         </View>
-        <View style={{ backgroundColor: colors.brand.primaryBg, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 4, borderWidth: 1, borderColor: colors.border.brand }}>
+        <View style={{ backgroundColor: colors.brand.primaryBg, paddingHorizontal: 14, paddingVertical: 8, borderRadius: shape.radius.md, borderWidth: 1, borderColor: colors.border.brand }}>
           <Text style={{ ...font.body, fontWeight: '900', color: colors.brand.primary }}>{formatPriceFull(total)}</Text>
         </View>
       </View>
