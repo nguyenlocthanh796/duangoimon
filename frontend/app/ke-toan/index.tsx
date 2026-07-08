@@ -6,35 +6,27 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api, Transaction } from '../../lib/api';
+import { colors, font } from '../../lib/theme';
+import { shape } from '../../lib/theme/shape';
 import { useSidebar } from '../../lib/context/SidebarContext';
+import { useResponsive } from '../../lib/hooks/useResponsive';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
 import FormModal from '../../lib/components/ui/FormModal';
 import FAB from '../../lib/components/ui/FAB';
 import EmptyState from '../../lib/components/ui/EmptyState';
 import TransactionFormContent from '../../lib/components/ke-toan/TransactionFormContent';
+import BillDetailModal from '../../lib/components/ke-toan/BillDetailModal';
 
 type FilterType = null | 'thu' | 'chi';
-
-type FormState = {
-  type: 'thu' | 'chi';
-  category: string;
-  amount: string;
-  note: string;
-};
+type FormState = { type: 'thu' | 'chi'; category: string; amount: string; note: string };
 
 const INITIAL_FORM: FormState = { type: 'thu', category: '', amount: '', note: '' };
-
-function formatAmount(n: number) {
-  return n.toLocaleString('vi-VN') + '₫';
-}
-
-function formatDate(iso: string | null) {
-  if (!iso) return '';
-  return iso.slice(0, 10);
-}
+const formatAmount = (n: number) => n.toLocaleString('vi-VN') + '₫';
+const formatDate = (iso: string | null) => (iso ? iso.slice(0, 10) : '');
 
 export default function KeToanScreen() {
   const { openSidebar } = useSidebar();
+  const { isWide } = useResponsive();
 
   const [txs, setTxs] = useState<Transaction[]>([]);
   const [filter, setFilter] = useState<FilterType>(null);
@@ -44,20 +36,16 @@ export default function KeToanScreen() {
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
   const loadTxs = useCallback(async (isRefresh = false) => {
-    if (isRefresh) setRefreshing(true);
-    else setLoading(true);
+    if (isRefresh) setRefreshing(true); else setLoading(true);
     try {
       const data = await api.getTransactions(filter ?? undefined);
       setTxs(data);
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'Không thể tải dữ liệu';
-      Alert.alert('Lỗi', msg);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
+      Alert.alert('Lỗi', e instanceof Error ? e.message : 'Không thể tải dữ liệu');
+    } finally { setLoading(false); setRefreshing(false); }
   }, [filter]);
 
   useEffect(() => { loadTxs(); }, [loadTxs]);
@@ -66,255 +54,227 @@ export default function KeToanScreen() {
   const totalChi = txs.filter(t => t.type === 'chi').reduce((s, t) => s + t.amount, 0);
 
   const validate = (): boolean => {
-    const newErrors: Partial<Record<keyof FormState, string>> = {};
-    if (!form.category.trim()) newErrors.category = 'Vui lòng nhập danh mục';
+    const e: Partial<Record<keyof FormState, string>> = {};
+    if (!form.category.trim()) e.category = 'Vui lòng nhập danh mục';
     const amt = parseFloat(form.amount);
-    if (!form.amount || isNaN(amt) || amt <= 0) newErrors.amount = 'Số tiền phải lớn hơn 0';
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    if (!form.amount || isNaN(amt) || amt <= 0) e.amount = 'Số tiền phải lớn hơn 0';
+    setErrors(e);
+    return Object.keys(e).length === 0;
   };
 
   const handleAdd = async () => {
     if (!validate()) return;
     setSubmitting(true);
     try {
-      await api.createTransaction({
-        type: form.type,
-        category: form.category.trim(),
-        amount: parseFloat(form.amount),
-        note: form.note.trim(),
-      });
-      setShowForm(false);
-      setForm(INITIAL_FORM);
-      setErrors({});
-      loadTxs();
+      await api.createTransaction({ type: form.type, category: form.category.trim(), amount: parseFloat(form.amount), note: form.note.trim() });
+      setShowForm(false); setForm(INITIAL_FORM); setErrors({}); loadTxs();
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'Ghi nhận thất bại';
-      Alert.alert('Lỗi', msg);
-    } finally {
-      setSubmitting(false);
+      Alert.alert('Lỗi', e instanceof Error ? e.message : 'Ghi nhận thất bại');
+    } finally { setSubmitting(false); }
+  };
+
+  const openForm = () => { setForm(INITIAL_FORM); setErrors({}); setShowForm(true); };
+
+  // ── KPI panel (iPad right) ──
+  const renderKpiPanel = () => (
+    <View style={styles.cardBox}>
+      <View style={styles.cardHeader}>
+        <Icon name="chart-box-outline" size={18} color={colors.brand.primary} />
+        <Text style={styles.cardHeaderText}>Tổng quan thu chi</Text>
+      </View>
+      <View style={styles.kpiRow}>
+        <View style={styles.kpiCol}>
+          <View style={[styles.kpiDot, { backgroundColor: colors.status.success }]} />
+          <Text style={styles.kpiLabel}>Tổng Thu</Text>
+          <Text style={[styles.kpiValue, { color: colors.status.success }]}>{formatAmount(totalThu)}</Text>
+        </View>
+        <View style={styles.kpiDividerV} />
+        <View style={styles.kpiCol}>
+          <View style={[styles.kpiDot, { backgroundColor: colors.status.danger }]} />
+          <Text style={styles.kpiLabel}>Tổng Chi</Text>
+          <Text style={[styles.kpiValue, { color: colors.status.danger }]}>{formatAmount(totalChi)}</Text>
+        </View>
+      </View>
+      <View style={styles.kpiDivider} />
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+        <View style={[styles.kpiDot, { backgroundColor: totalThu - totalChi >= 0 ? colors.status.success : colors.status.danger }]} />
+        <View style={{ flex: 1 }}>
+          <Text style={styles.kpiLabel}>Thực tế</Text>
+          <Text style={[styles.kpiValue, { color: totalThu - totalChi >= 0 ? colors.status.success : colors.status.danger }]}>
+            {formatAmount(totalThu - totalChi)}
+          </Text>
+        </View>
+        <TouchableOpacity style={styles.kpiCta} onPress={openForm}>
+          <Icon name="plus" size={16} color={colors.text.inverse} />
+          <Text style={styles.kpiCtaText}>Ghi nhận</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
+  // ── Table Header ──
+  const renderTableHeader = () => {
+    if (isWide) {
+      return (
+        <View style={styles.tableHeader}>
+          <Text style={[styles.colHead, { flex: 1.2 }]}>Ngày</Text>
+          <Text style={[styles.colHead, { flex: 1.2 }]}>Danh mục</Text>
+          <Text style={[styles.colHead, { flex: 2 }]}>Diễn giải</Text>
+          <Text style={[styles.colHead, { flex: 1.2, textAlign: 'right' }]}>Thu (+)</Text>
+          <Text style={[styles.colHead, { flex: 1.2, textAlign: 'right' }]}>Chi (-)</Text>
+          <Text style={[styles.colHead, { flex: 1, textAlign: 'center' }]}>Người tạo</Text>
+        </View>
+      );
     }
-  };
-
-  const openForm = () => {
-    setForm(INITIAL_FORM);
-    setErrors({});
-    setShowForm(true);
-  };
-
-  const renderSummaryBar = () => {
-    const showThu = filter !== 'chi';
-    const showChi = filter !== 'thu';
     return (
-      <View style={styles.summaryBar}>
-        {showThu && (
-          <View style={styles.summaryItem}>
-            <View style={[styles.summaryDot, { backgroundColor: '#10B981' }]} />
-            <View>
-              <Text style={styles.summaryLabel}>Tổng Thu</Text>
-              <Text style={[styles.summaryAmount, { color: '#10B981' }]}>+{formatAmount(totalThu)}</Text>
-            </View>
-          </View>
-        )}
-        {showThu && showChi && <View style={styles.summaryDivider} />}
-        {showChi && (
-          <View style={styles.summaryItem}>
-            <View style={[styles.summaryDot, { backgroundColor: '#EF4444' }]} />
-            <View>
-              <Text style={styles.summaryLabel}>Tổng Chi</Text>
-              <Text style={[styles.summaryAmount, { color: '#EF4444' }]}>-{formatAmount(totalChi)}</Text>
-            </View>
-          </View>
-        )}
-        {showThu && showChi && (
-          <>
-            <View style={styles.summaryDivider} />
-            <View style={styles.summaryItem}>
-              <View style={[styles.summaryDot, { backgroundColor: '#6366F1' }]} />
-              <View>
-                <Text style={styles.summaryLabel}>Còn lại</Text>
-                <Text style={[styles.summaryAmount, { color: totalThu - totalChi >= 0 ? '#10B981' : '#EF4444' }]}>
-                  {formatAmount(totalThu - totalChi)}
-                </Text>
-              </View>
-            </View>
-          </>
-        )}
+      <View style={styles.tableHeader}>
+        <Text style={[styles.colHead, { flex: 2 }]}>Diễn giải & Ngày</Text>
+        <Text style={[styles.colHead, { flex: 1.2 }]}>Danh mục</Text>
+        <Text style={[styles.colHead, { flex: 1.2, textAlign: 'right' }]}>Số tiền</Text>
       </View>
     );
   };
 
-  const renderItem = ({ item }: { item: Transaction }) => (
-    <View style={styles.item}>
-      <View style={[styles.typeIcon, { backgroundColor: item.type === 'thu' ? '#ECFDF5' : '#FEF2F2' }]}>
-        <Icon
-          name={item.type === 'thu' ? 'arrow-down' : 'arrow-up'}
-          size={18}
-          color={item.type === 'thu' ? '#10B981' : '#EF4444'}
-        />
-      </View>
-      <View style={{ flex: 1, marginLeft: 12 }}>
-        <Text style={styles.itemNote} numberOfLines={1}>
-          {item.note?.trim() ? item.note : (item.category || 'Không ghi chú')}
+  // ── Transaction Row ──
+  const renderItem = ({ item }: { item: Transaction }) => {
+    const hasOrder = !!item.ref_id;
+    const handlePress = () => { if (hasOrder) setSelectedOrderId(item.ref_id!.toString()); };
+
+    if (isWide) {
+      return (
+        <TouchableOpacity style={styles.tableRow} onPress={handlePress} disabled={!hasOrder} activeOpacity={0.7}>
+          <Text style={[styles.colText, { flex: 1.2 }]}>{formatDate(item.created_at)}</Text>
+          <Text style={[styles.colText, { flex: 1.2 }]} numberOfLines={1}>{item.category || 'Khác'}</Text>
+          <Text style={[styles.colText, { flex: 2 }]} numberOfLines={1}>{item.note?.trim() || '-'}</Text>
+          <Text style={[styles.colText, { flex: 1.2, textAlign: 'right', color: colors.status.success, fontWeight: '700' }]}>
+            {item.type === 'thu' ? formatAmount(item.amount) : ''}
+          </Text>
+          <Text style={[styles.colText, { flex: 1.2, textAlign: 'right', color: colors.status.danger, fontWeight: '700' }]}>
+            {item.type === 'chi' ? formatAmount(item.amount) : ''}
+          </Text>
+          <Text style={[styles.colText, { flex: 1, textAlign: 'center', color: colors.text.muted }]} numberOfLines={1}>admin</Text>
+        </TouchableOpacity>
+      );
+    }
+    return (
+      <TouchableOpacity style={styles.tableRow} onPress={handlePress} disabled={!hasOrder} activeOpacity={0.7}>
+        <View style={{ flex: 2, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <View style={[styles.typeIcon, { backgroundColor: item.type === 'thu' ? '#F0FDF4' : '#FEF2F2' }]}>
+            <Icon name={item.type === 'thu' ? 'arrow-bottom-left' : 'arrow-top-right'} size={14} color={item.type === 'thu' ? colors.status.success : colors.status.danger} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.colTextPrimary} numberOfLines={1}>{item.note?.trim() ? item.note : (item.category || 'Không ghi chú')}</Text>
+            <Text style={styles.colTextSub}>{formatDate(item.created_at)}</Text>
+          </View>
+        </View>
+        <Text style={[styles.colText, { flex: 1.2 }]} numberOfLines={1}>{item.category || 'Khác'}</Text>
+        <Text style={[styles.colText, { flex: 1.2, textAlign: 'right', fontWeight: '800', color: item.type === 'thu' ? colors.status.success : colors.status.danger }]}>
+          {item.type === 'thu' ? '+' : '-'}{formatAmount(item.amount)}
         </Text>
-        <Text style={styles.itemMeta}>
-          {item.category || 'Khác'}
-          {item.created_at ? ' · ' + formatDate(item.created_at) : ''}
-        </Text>
-      </View>
-      <Text style={[styles.amount, { color: item.type === 'thu' ? '#10B981' : '#EF4444' }]}>
-        {item.type === 'thu' ? '+' : '-'}{formatAmount(item.amount)}
-      </Text>
-    </View>
-  );
+      </TouchableOpacity>
+    );
+  };
 
   const renderEmpty = () => (
-    <EmptyState
-      icon="wallet-outline"
-      title="Chưa có giao dịch"
-      subtitle={filter === 'thu' ? 'Không có khoản thu nào.' : filter === 'chi' ? 'Không có khoản chi nào.' : 'Nhấn + để ghi nhận giao dịch đầu tiên.'}
-    />
+    <EmptyState icon="wallet-outline" title="Chưa có giao dịch"
+      subtitle={filter === 'thu' ? 'Không có khoản thu nào.' : filter === 'chi' ? 'Không có khoản chi nào.' : 'Nhấn + để ghi nhận giao dịch đầu tiên.'} />
   );
 
-  return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <ScreenHeader
-        title="Kế Toán"
-        subtitle="Quản lý thu chi"
-        onMenuPress={openSidebar}
-        right={
-          <TouchableOpacity onPress={openForm} style={styles.addHeaderBtn} accessibilityLabel="Ghi nhận giao dịch">
-            <Icon name="plus" size={18} color="#F97316" />
-            <Text style={styles.addHeaderText}>Ghi nhận</Text>
-          </TouchableOpacity>
-        }
-      />
+  const renderList = () => {
+    if (loading) return (
+      <View style={styles.loadingBox}>
+        <ActivityIndicator size="large" color={colors.brand.primary} />
+        <Text style={styles.loadingText}>Đang tải...</Text>
+      </View>
+    );
+    return (
+      <FlatList data={txs} keyExtractor={t => t.id} renderItem={renderItem}
+        ListEmptyComponent={renderEmpty}
+        ListHeaderComponent={txs.length > 0 ? renderTableHeader : null}
+        stickyHeaderIndices={txs.length > 0 ? [0] : undefined}
+        contentContainerStyle={[styles.listContent, { paddingHorizontal: isWide ? 12 : 4 }, txs.length === 0 && { flex: 1 }]}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadTxs(true)} tintColor={colors.brand.primary} colors={[colors.brand.primary]} />} />
+    );
+  };
 
-      {/* Filter Tabs */}
+  return (
+    <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
+      <ScreenHeader title="Kế Toán" subtitle="Quản lý thu chi" onMenuPress={openSidebar}
+        right={
+          <TouchableOpacity onPress={openForm} style={styles.addBtn}>
+            <Icon name="plus" size={18} color={colors.text.inverse} />
+            <Text style={styles.addBtnText}>Ghi nhận</Text>
+          </TouchableOpacity>
+        } />
+      {/* Filter chips */}
       <View style={styles.filterRow}>
-        {([null, 'thu', 'chi'] as FilterType[]).map((f) => (
-          <TouchableOpacity
-            key={f ?? 'all'}
-            style={[styles.filterChip, filter === f && styles.filterChipActive]}
-            onPress={() => setFilter(f)}
-            accessibilityLabel={f ? (f === 'thu' ? 'Lọc thu' : 'Lọc chi') : 'Tất cả'}
-          >
-            {f === 'thu' && <Icon name="arrow-down" size={13} color={filter === f ? '#fff' : '#10B981'} style={{ marginRight: 3 }} />}
-            {f === 'chi' && <Icon name="arrow-up" size={13} color={filter === f ? '#fff' : '#EF4444'} style={{ marginRight: 3 }} />}
-            <Text style={[styles.filterText, filter === f && styles.filterTextActive]}>
+        {([null, 'thu', 'chi'] as FilterType[]).map(f => (
+          <TouchableOpacity key={f ?? 'all'} style={[styles.chip, filter === f && styles.chipActive]} onPress={() => setFilter(f)}>
+            {f === 'thu' ? <Icon name="arrow-bottom-left" size={13} color={filter === f ? '#fff' : colors.status.success} /> : null}
+            {f === 'chi' ? <Icon name="arrow-top-right" size={13} color={filter === f ? '#fff' : colors.status.danger} /> : null}
+            <Text style={[styles.chipText, filter === f && styles.chipTextActive]}>
               {f ? (f === 'thu' ? 'Thu' : 'Chi') : 'Tất cả'}
             </Text>
           </TouchableOpacity>
         ))}
       </View>
-
-      {/* Summary Bar */}
-      {txs.length > 0 && renderSummaryBar()}
-
-      {/* Transaction List */}
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#F97316" />
-          <Text style={styles.loadingText}>Đang tải...</Text>
+      {isWide ? (
+        <View style={{ flex: 1, flexDirection: 'row' }}>
+          <View style={{ flex: 0.6 }}>{renderList()}</View>
+          <View style={styles.separator} />
+          <View style={{ flex: 0.4, backgroundColor: colors.surface.app, paddingTop: 12 }}>{renderKpiPanel()}</View>
         </View>
-      ) : (
-        <FlatList
-          data={txs}
-          keyExtractor={(t) => t.id}
-          renderItem={renderItem}
-          ListEmptyComponent={renderEmpty}
-          contentContainerStyle={[styles.listContent, txs.length === 0 && { flex: 1 }]}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={() => loadTxs(true)}
-              tintColor="#F97316"
-              colors={['#F97316']}
-            />
-          }
-        />
-      )}
-
-      <FAB onPress={openForm} />
-
-      <FormModal
-        visible={showForm}
-        title="Ghi nhận giao dịch"
+      ) : renderList()}
+      {!isWide && <FAB onPress={openForm} />}
+      <FormModal visible={showForm} title="Ghi nhận giao dịch"
         onClose={() => { setShowForm(false); setErrors({}); }}
-        onSave={handleAdd}
-        saveLabel={form.type === 'thu' ? 'Thêm thu' : 'Thêm chi'}
-        saving={submitting}
-      >
-        <TransactionFormContent
-          form={form}
-          setForm={setForm}
-          errors={errors}
-          setErrors={setErrors}
-        />
+        onSave={handleAdd} saveLabel={form.type === 'thu' ? 'Thêm thu' : 'Thêm chi'} saving={submitting}>
+        <TransactionFormContent form={form} setForm={setForm} errors={errors} setErrors={setErrors} />
       </FormModal>
+      <BillDetailModal visible={!!selectedOrderId} orderId={selectedOrderId} onClose={() => setSelectedOrderId(null)} />
     </SafeAreaView>
   );
 }
 
+// ── Styles ──
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8FAFC' },
+  container: { flex: 1, backgroundColor: colors.surface.app },
 
-  addHeaderBtn: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    paddingHorizontal: 14, paddingVertical: 8,
-    borderRadius: 10, borderWidth: 1.5, borderColor: '#F97316',
-  },
-  addHeaderText: { fontSize: 13, fontWeight: '700', color: '#F97316' },
+  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 38, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },
+  addBtnText: { ...font.buttonSmall, fontWeight: '700', color: colors.text.inverse },
 
-  // Filter
-  filterRow: {
-    flexDirection: 'row', gap: 8, paddingHorizontal: 16, paddingVertical: 12,
-    backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#F1F5F9',
-  },
-  filterChip: {
-    flexDirection: 'row', alignItems: 'center',
-    paddingHorizontal: 14, paddingVertical: 7,
-    borderRadius: 20, backgroundColor: '#F8FAFC',
-    borderWidth: 1.5, borderColor: '#E2E8F0',
-  },
-  filterChipActive: { backgroundColor: '#F97316', borderColor: '#F97316' },
-  filterText: { fontSize: 13, fontWeight: '600', color: '#64748B' },
-  filterTextActive: { color: '#fff' },
+  filterRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
+  chip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: shape.radius.full, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default },
+  chipActive: { backgroundColor: colors.brand.primary, borderColor: colors.brand.primary },
+  chipText: { ...font.badge, color: colors.text.muted },
+  chipTextActive: { color: '#fff' },
 
-  // Summary
-  summaryBar: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: '#fff',
-    paddingHorizontal: 16, paddingVertical: 12,
-    marginBottom: 8,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04, shadowRadius: 4, elevation: 1,
-  },
-  summaryItem: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8 },
-  summaryDot: { width: 10, height: 10, borderRadius: 5 },
-  summaryLabel: { fontSize: 11, color: '#94A3B8', fontWeight: '500' },
-  summaryAmount: { fontSize: 14, fontWeight: '800', marginTop: 1 },
-  summaryDivider: { width: 1, height: 36, backgroundColor: '#E2E8F0', marginHorizontal: 8 },
+  cardBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 14, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 },
+  cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.border.light },
+  cardHeaderText: { ...font.body, fontWeight: '700', color: colors.text.primary },
 
-  // List
-  listContent: { paddingHorizontal: 16, paddingTop: 4, paddingBottom: 100 },
-  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
-  loadingText: { color: '#94A3B8', fontSize: 14 },
+  kpiRow: { flexDirection: 'row', gap: 12 },
+  kpiCol: { flex: 1, alignItems: 'center', gap: 4 },
+  kpiDot: { width: 8, height: 8, borderRadius: 4 },
+  kpiLabel: { ...font.caption, color: colors.text.muted },
+  kpiValue: { ...font.h3, fontWeight: '900' },
+  kpiDivider: { height: 1, backgroundColor: colors.border.light },
+  kpiDividerV: { width: 1, backgroundColor: colors.border.light },
+  kpiCta: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, paddingHorizontal: 14, paddingVertical: 10, minHeight: 38 },
+  kpiCtaText: { ...font.buttonSmall, color: colors.text.inverse },
 
-  // Item
-  item: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: '#fff', borderRadius: 14,
-    padding: 14, marginBottom: 8,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05, shadowRadius: 4, elevation: 1,
-  },
-  typeIcon: {
-    width: 38, height: 38, borderRadius: 12,
-    alignItems: 'center', justifyContent: 'center',
-  },
-  itemNote: { fontSize: 14, fontWeight: '600', color: '#1E293B' },
-  itemMeta: { fontSize: 12, color: '#94A3B8', marginTop: 2 },
-  amount: { fontSize: 15, fontWeight: '800', marginLeft: 8 },
+  listContent: { paddingTop: 0, paddingBottom: 100 },
+  loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
+  loadingText: { ...font.bodySmall, color: colors.text.muted },
 
+  tableHeader: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1.5, borderBottomColor: colors.border.default },
+  tableRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 11, paddingHorizontal: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
+  colHead: { ...font.caption, color: colors.text.muted, fontWeight: '700' },
+  colText: { ...font.bodySmall, color: colors.text.primary },
+  colTextPrimary: { ...font.bodySmall, fontWeight: '600', color: colors.text.primary },
+  colTextSub: { ...font.caption, color: colors.text.muted, marginTop: 1 },
+
+  typeIcon: { width: 28, height: 28, borderRadius: shape.radius.md, alignItems: 'center', justifyContent: 'center' },
+
+  separator: { width: 1, backgroundColor: colors.border.light },
 });

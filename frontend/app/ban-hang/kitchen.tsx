@@ -4,11 +4,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { api } from '../../lib/api';
-import { colors, palette, COLORS, font, formatPrice, shape } from '../../lib/theme';
+import { colors, palette, COLORS, font, formatPrice } from '../../lib/theme';
+import { shape } from '../../lib/theme/shape';
 import { useAuth } from '../../lib/context/AuthContext';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import TicketCard from '../../lib/components/kitchen/TicketCard';
 import KanbanColumn from '../../lib/components/kitchen/KanbanColumn';
+import { useResponsive } from '../../lib/hooks/useResponsive';
 import type { TicketOrder, KanbanStatus } from '../../lib/components/kitchen/TicketCard';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -32,7 +34,8 @@ const COLUMNS: Array<{
 // ─── Screen ───────────────────────────────────────────────────────────────────
 export default function KitchenScreen() {
   const { openSidebar } = useSidebar();
-  const { userRole, isInitialized } = useAuth();
+  const { userRole, isInitialized, token } = useAuth();
+  const { isWide } = useResponsive();
   const router = useRouter();
 
   const [allOrders, setAllOrders]   = useState<TicketOrder[]>([]);
@@ -40,10 +43,14 @@ export default function KitchenScreen() {
   const [loading, setLoading]       = useState(true);
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [wsStatus, setWsStatus]     = useState<'connecting' | 'connected' | 'disconnected'>('connecting');
+  const [activeTab, setActiveTab]   = useState<KanbanStatus>('cho_xu_ly');
+  const [soundEnabled, setSoundEnabled] = useState(true);
 
   const wsRef = useRef<WebSocket | null>(null);
   const isMounted = useRef(true);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const soundEnabledRef = useRef(soundEnabled);
+  soundEnabledRef.current = soundEnabled;
 
   // ── Auth Guard logic ──
   useEffect(() => {
@@ -61,6 +68,7 @@ export default function KitchenScreen() {
   }, [isInitialized, userRole]);
 
   const playSound = () => {
+    if (!soundEnabledRef.current) return;
     if (typeof Audio !== 'undefined') {
       const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-200.wav');
       audio.volume = 0.8;
@@ -108,7 +116,11 @@ export default function KitchenScreen() {
       if (!isMounted.current) return;
       setWsStatus('connecting');
       try {
-        const socket = new WebSocket('ws://localhost:8000/ws/kitchen');
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const host = window.location.hostname;
+        const port = (window.location.port === '8081' || window.location.port === '19006') ? '8000' : window.location.port;
+        const url = `${protocol}//${host}:${port}/ws/kitchen${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+        const socket = new WebSocket(url);
         socket.onopen = () => {
           if (isMounted.current) setWsStatus('connected');
         };
@@ -151,10 +163,10 @@ export default function KitchenScreen() {
 
   // ── Column helpers ────────────────────────────────────────────────────────
   const getColStatus = (order: TicketOrder): KanbanStatus => {
-    const status = (colMap[order.id] || order.status) as string;
-    if (status === 'dang_lam') return 'dang_lam';
-    if (status === 'hoan_thanh' || status === 'completed') return 'hoan_thanh';
-    return 'cho_xu_ly';
+    const s = (colMap[order.id] || order.status || '').toLowerCase();
+    if (s === 'dang_lam') return 'dang_lam';
+    if (s === 'hoan_thanh' || s === 'completed' || s === 'da_thanh_toan') return 'hoan_thanh';
+    return 'cho_xu_ly'; // moi, cho_xu_ly, unknown → cho_xu_ly
   };
 
   const ordersForCol = (colId: KanbanStatus) =>
@@ -203,8 +215,8 @@ export default function KitchenScreen() {
       }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
           <TouchableOpacity onPress={openSidebar}
-            style={{ width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
-            <Icon name="menu" size={18} color={colors.icon.default} />
+            style={{ width: 42, height: 42, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
+            <Icon name="menu" size={20} color={colors.icon.default} />
           </TouchableOpacity>
           <View>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
@@ -235,28 +247,70 @@ export default function KitchenScreen() {
         </View>
 
         <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+          <TouchableOpacity onPress={() => setSoundEnabled(prev => !prev)}
+            style={{ width: 42, height: 42, borderRadius: shape.radius.md, backgroundColor: soundEnabled ? colors.brand.primaryBg : colors.surface.disabled, borderWidth: 1, borderColor: soundEnabled ? colors.border.brand : colors.border.default, alignItems: 'center', justifyContent: 'center' }}>
+            <Icon name={soundEnabled ? 'bell-ring' : 'bell-off'} size={20} color={soundEnabled ? colors.brand.primary : colors.icon.muted} />
+          </TouchableOpacity>
           <View style={{ backgroundColor: colors.brand.primaryBg, paddingHorizontal: 12, paddingVertical: 6, borderRadius: shape.radius.md, borderWidth: 1, borderColor: colors.border.brand }}>
             <Text style={{ ...font.tab, color: colors.brand.primary }}>
               {allOrders.length} đơn
             </Text>
           </View>
           <TouchableOpacity onPress={fetchOrders}
-            style={{ width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
-            <Icon name="refresh" size={18} color={colors.icon.default} />
+            style={{ width: 42, height: 42, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
+            <Icon name="refresh" size={20} color={colors.icon.default} />
           </TouchableOpacity>
         </View>
       </View>
 
-      <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: 8, paddingTop: 12, gap: 8 }}>
-        {COLUMNS.map(col => (
-          <KanbanColumn
-            key={col.id}
-            col={col}
-            orders={ordersForCol(col.id)}
-            onMarkDone={markDone}
-            onMoveForward={moveForward}
-          />
-        ))}
+      {/* Mobile tab bar for kitchen columns */}
+      {!isWide && (
+        <View style={{ flexDirection: 'row', paddingHorizontal: 8, paddingVertical: 6, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light, gap: 6 }}>
+          {COLUMNS.map(col => {
+            const sel = activeTab === col.id;
+            const count = ordersForCol(col.id).length;
+            return (
+              <TouchableOpacity key={col.id} onPress={() => setActiveTab(col.id)}
+                style={{ flex: 1, paddingVertical: 10, borderRadius: shape.radius.md, backgroundColor: sel ? col.dotColor + '20' : colors.surface.disabled, borderWidth: 1, borderColor: sel ? col.dotColor : colors.border.default, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }}>
+                <Icon name={col.icon as any} size={16} color={sel ? col.dotColor : colors.icon.muted} />
+                <Text style={{ ...font.label, color: sel ? col.dotColor : colors.text.secondary }}>{col.label}</Text>
+                <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: sel ? col.dotColor : colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
+                  <Text style={{ ...font.badge, color: sel ? colors.text.inverse : colors.text.muted }}>{count}</Text>
+                </View>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      )}
+
+      <View style={{ flex: 1 }}>
+        {isWide ? (
+          /* iPad: 3 kanban columns side by side */
+          <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: 8, paddingTop: 12, gap: 8 }}>
+            {COLUMNS.map(col => (
+              <KanbanColumn
+                key={col.id}
+                col={col}
+                orders={ordersForCol(col.id)}
+                onMarkDone={markDone}
+                onMoveForward={moveForward}
+              />
+            ))}
+          </View>
+        ) : (
+          /* Mobile: single column based on activeTab */
+          <View style={{ flex: 1, paddingHorizontal: 8, paddingTop: 8 }}>
+            {COLUMNS.filter(col => col.id === activeTab).map(col => (
+              <KanbanColumn
+                key={col.id}
+                col={col}
+                orders={ordersForCol(col.id)}
+                onMarkDone={markDone}
+                onMoveForward={moveForward}
+              />
+            ))}
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );

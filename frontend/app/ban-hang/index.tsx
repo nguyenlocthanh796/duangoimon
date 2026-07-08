@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity, ScrollView, RefreshControl, ActivityIndic
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect, useCallback } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api } from '../../lib/api';
 import { colors, font } from '../../lib/theme';
@@ -19,7 +20,8 @@ import type { Table, TableStatus } from '../../lib/components/pos/TableCard';
 
 export default function TableSelection() {
   const { openSidebar } = useSidebar();
-  const { isWide, breakpoint, containerWidth, gutter, hPad } = useResponsive();
+  const insets = useSafeAreaInsets();
+  const { isWide, width, breakpoint, containerWidth, gutter, hPad } = useResponsive();
   const [selectedTable, setSelectedTable] = useState<{ id: string; name: string } | null>(null);
   const [tables, setTables] = useState<Table[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,7 +47,7 @@ export default function TableSelection() {
     toggleServiceType,
   } = orderState;
 
-  const CARD_COLS = isWide ? 4 : 3;
+  const CARD_COLS = width > 1200 ? 4 : 3;
   const cardWidth = Math.floor((containerWidth - hPad * 2 - gutter * (CARD_COLS - 1)) / CARD_COLS);
   const totalGridWidth = cardWidth * CARD_COLS + gutter * (CARD_COLS - 1);
   const gridPadding = Math.max(hPad, Math.floor((containerWidth - totalGridWidth) / 2));
@@ -108,8 +110,10 @@ export default function TableSelection() {
   const displayTables = sortedTables.filter(t => selectedArea === 'Tất cả' || t.area === selectedArea);
 
   const handleTablePress = (table: Table) => {
-    if (isWide) setSelectedTable({ id: table.id, name: table.name });
-    else router.push(`/ban-hang/pos?tableId=${table.id}&tableName=${encodeURIComponent(table.name)}`);
+    if (isWide) {
+      // Defer to let touch event complete before state change unmounts FlatList
+      requestAnimationFrame(() => setSelectedTable({ id: table.id, name: table.name }));
+    } else router.push(`/ban-hang/pos?tableId=${table.id}&tableName=${encodeURIComponent(table.name)}`);
   };
 
   const renderTableGrid = () => {
@@ -135,17 +139,17 @@ export default function TableSelection() {
       <View style={{ flex: 1 }}>
         <AreaFilter areas={areas} selectedArea={selectedArea} onSelectArea={setSelectedArea} />
         <FlatList
-          key={isWide ? 'wide' : 'narrow'}
+          key={`cols-${CARD_COLS}`}
           data={displayTables}
           numColumns={CARD_COLS}
           keyExtractor={(item) => item.id}
           columnWrapperStyle={{ gap: gutter, justifyContent: 'center' }}
-          contentContainerStyle={{ paddingHorizontal: gridPadding, paddingTop: 12, paddingBottom: 32 }}
+          contentContainerStyle={{ paddingHorizontal: gridPadding, paddingTop: 12, paddingBottom: 32 + insets.bottom }}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadData(true)} tintColor={colors.brand.primary} colors={[colors.brand.primary]} />}
           ListHeaderComponent={null}
           renderItem={({ item }) => (
             <View style={{ width: cardWidth, marginBottom: 10 }}>
-              <TableCard table={item} selected={selectedTable?.id === item.id} onPress={() => handleTablePress(item)} isWide={isWide} />
+              <TableCard table={item} selected={selectedTable?.id === item.id} onPress={() => handleTablePress(item)} isWide={isWide} cardWidth={cardWidth} />
             </View>
           )}
           ListEmptyComponent={
@@ -169,12 +173,22 @@ export default function TableSelection() {
   // iPad: 65/35 Master-Detail Split Layout
   if (isWide) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface.app }}>
+      <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
         <View style={{ flex: 1, flexDirection: 'row' }}>
           <View style={{ flex: 65, borderRightWidth: 1, borderColor: colors.border.default }}>
             {selectedTable ? (
               <>
-                <View style={{ paddingHorizontal: 16, paddingVertical: 12, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.default, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <View style={{
+                  paddingTop: insets.top,
+                  paddingHorizontal: 16,
+                  paddingBottom: 12,
+                  backgroundColor: colors.surface.card,
+                  borderBottomWidth: 1,
+                  borderBottomColor: colors.border.default,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 8
+                }}>
                   <TouchableOpacity onPress={() => setSelectedTable(null)} style={{ width: 32, height: 32, borderRadius: 4, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
                     <Icon name="arrow-left" size={16} color={colors.icon.default} />
                   </TouchableOpacity>
@@ -226,13 +240,13 @@ export default function TableSelection() {
           modalSize={modalSize} setModalSize={setModalSize} modalToppings={modalToppings} setModalToppings={setModalToppings}
           modalNote={modalNote} setModalNote={setModalNote} modalPrice={modalPrice}
           isWide={isWide} onClose={closeModifierSheet} onSave={saveEditFromModal} onAdd={addToCartFromModal} />
-      </SafeAreaView>
+      </View>
     );
   }
 
   // Mobile
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface.app }}>
+    <SafeAreaView edges={['left', 'right', 'bottom']} style={{ flex: 1, backgroundColor: colors.surface.app }}>
       <TableScreenHeader tablesCount={tables.length} isWide={isWide} onOpenSidebar={openSidebar}
         onRefresh={() => loadData(true)} lastRefreshTime={new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} />
       {renderTableGrid()}

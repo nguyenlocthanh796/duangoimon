@@ -1,4 +1,16 @@
-const API_URL = 'http://localhost:8000/api/v1';
+let API_URL = 'http://localhost:8000/api/v1';
+if (typeof window !== 'undefined' && window.location) {
+  const host = window.location.hostname;
+  const protocol = window.location.protocol;
+  // In dev mode, Expo can run on a different port. We still target the backend port.
+  if (window.location.port === '8081' || window.location.port === '19006') {
+    API_URL = `${protocol}//${host}:8000/api/v1`;
+  } else {
+    // In production, backend is served from the same host.
+    API_URL = `${protocol}//${window.location.host}/api/v1`;
+  }
+}
+
 const TOKEN_KEY = 'pos_token';
 
 export function getToken(): string | null {
@@ -62,6 +74,7 @@ export type Transaction = {
 export type Invoice = {
   id: string;
   invoice_number: string;
+  token: string;
   order_id: string;
   buyer_name: string | null;
   buyer_tax_code?: string | null;
@@ -106,6 +119,8 @@ export interface User {
 export interface Dashboard {
   today_revenue: number;
   total_orders: number;
+  revenue_growth?: number;
+  orders_growth?: number;
   table_stats: { trong: number; co_khach: number; da_dat: number };
   top_products: { name: string; quantity: number }[];
 }

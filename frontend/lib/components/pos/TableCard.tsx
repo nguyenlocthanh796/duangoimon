@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
+import { colors, palette, shape } from '../../theme';
 import { scale } from '../../theme/typography';
 
 export type TableStatus = 'trong' | 'co_khach' | 'da_dat';
@@ -16,131 +17,125 @@ interface TableCardProps {
   onPress: () => void;
   selected?: boolean;
   isWide: boolean;
+  cardWidth: number;
 }
 
-export default function TableCard({ table, onPress, selected, isWide }: TableCardProps) {
+export default function TableCard({ table, onPress, selected, isWide, cardWidth }: TableCardProps) {
   const isOccupied = table.status === 'co_khach';
-  const p = isWide ? scale(14) : scale(10);
-  const nameSize = isWide ? scale(20) : scale(15);
-  const badgeSize = isWide ? scale(11) : scale(9);
-  const infoSize = isWide ? scale(13) : scale(10);
-  const amountSize = isWide ? scale(24) : scale(18);
-  const iconSize = isWide ? scale(13) : scale(10);
+  const f = Math.min(1.15, Math.max(0.52, cardWidth / 210));
+
+  // Sizes auto-scale with card width
+  const topPad = 8 * f;
+  const sidePad = Math.max(6, 12 * f);
+  const nameSize = 24 * f;
+  const metaSize = 16 * f;
+  const amountSize = 38 * f;
+  const iconSize = 15 * f;
+
+  const cardRadius = 16; // Standard 2xl radius (16px)
 
   return (
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.85}
       style={{
-        borderRadius: 20,
-        aspectRatio: 1,
-        padding: p,
-        justifyContent: isOccupied ? 'space-between' : 'center',
+        borderRadius: cardRadius,
+        aspectRatio: isOccupied ? 0.9 : 1,
+        paddingTop: topPad,
+        paddingBottom: topPad,
+        paddingHorizontal: sidePad,
         position: 'relative',
 
-        // Selected ring
         ...(selected
           ? {
-              // boxShadow not well supported on RN web, use border
               borderWidth: 3,
-              borderColor: '#F59E0B',
-              backgroundColor: isOccupied ? undefined : '#F8FAFC',
+              borderColor: palette.amber[600],
+              backgroundColor: isOccupied ? colors.brand.primary : colors.surface.app,
             }
           : { borderWidth: 0 }),
 
-        // Occupied
         ...(isOccupied && !selected && {
-          backgroundColor: '#EA580C',
-          // subtle inner shadow via border
+          backgroundColor: colors.brand.primary,
         }),
 
-        // Empty
         ...(!isOccupied && !selected && {
-          backgroundColor: '#F8FAFC',
+          backgroundColor: colors.surface.app,
           borderWidth: 2,
           borderStyle: 'dashed',
-          borderColor: '#CBD5E1',
+          borderColor: colors.border.default,
         }),
       }}
     >
-      {/* Gradient overlay for occupied */}
+      {/* Gradient overlay */}
       {isOccupied && (
-        <View
-          style={{
-            position: 'absolute',
-            top: 0, left: 0, right: 0, bottom: 0,
-            borderRadius: 20,
-            backgroundColor: '#F97316',
-            opacity: 0.35,
-          }}
-        />
+        <View style={{
+          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+          borderRadius: cardRadius, backgroundColor: colors.brand.primaryHover, opacity: 0.15,
+        }} />
       )}
 
       {isOccupied ? (
-        <>
-          {/* Top: Name centered */}
-          <View style={{ alignItems: 'center', zIndex: 1 }}>
-            <Text style={{ fontSize: nameSize, fontWeight: '800', color: '#FFFFFF', letterSpacing: -0.5 }} numberOfLines={1}>
-              {table.name}
+        /* ── Occupied: Top Name, Center Amount, Bottom Meta ── */
+        <View style={{ flex: 1, zIndex: 1, justifyContent: 'space-between' }}>
+          {/* Top: Name */}
+          <Text style={{
+            fontSize: nameSize, fontWeight: '800', color: colors.text.inverse,
+            letterSpacing: -0.5, textAlign: 'center',
+          }} numberOfLines={1}>
+            {table.name}
+          </Text>
+
+          {/* Center: Amount */}
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text numberOfLines={1} style={{
+              fontSize: amountSize, fontWeight: '900', color: colors.text.inverse,
+              letterSpacing: -1, textAlign: 'center',
+              textShadowColor: 'rgba(0,0,0,0.15)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4,
+            }}>
+              {table.orderTotal ? table.orderTotal.toLocaleString('vi-VN') + '₫' : '0₫'}
             </Text>
           </View>
 
-          {/* Info rows */}
-          <View style={{ gap: isWide ? 6 : 4, zIndex: 1, marginTop: isWide ? 4 : 2 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: isWide ? 8 : 5 }}>
-              <Icon name="silverware-fork-knife" size={iconSize} color="rgba(255,255,255,0.8)" />
-              <Text style={{ fontSize: infoSize, fontWeight: '500', color: 'rgba(255,255,255,0.85)' }}>
+          {/* Bottom: Meta (left = items, right = time) */}
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            {/* Left bottom: Items count */}
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+              <Icon name="silverware-fork-knife" size={iconSize} color={colors.text.brandLight} />
+              <Text style={{ fontSize: metaSize, fontWeight: '600', color: colors.text.brandLight }}>
                 {table.orderItemCount || 0} món
               </Text>
             </View>
-            {table.orderTime && (
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: isWide ? 8 : 5 }}>
-                <Icon name="clock-outline" size={iconSize} color="rgba(255,255,255,0.8)" />
-                <Text style={{ fontSize: infoSize, fontWeight: '500', color: 'rgba(255,255,255,0.85)' }}>
+
+            {/* Right bottom: Time */}
+            {table.orderTime ? (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
+                <Icon name="clock-outline" size={iconSize} color={colors.text.brandLight} />
+                <Text style={{ fontSize: metaSize, fontWeight: '600', color: colors.text.brandLight }}>
                   {table.orderTime}
                 </Text>
               </View>
+            ) : (
+              <View />
             )}
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: isWide ? 8 : 5 }}>
-              <Icon name="account-tie" size={iconSize} color="rgba(255,255,255,0.8)" />
-              <Text style={{ fontSize: infoSize, fontWeight: '500', color: 'rgba(255,255,255,0.85)' }}>
-                NV. Phục vụ
-              </Text>
-            </View>
           </View>
-
-          {/* Amount bottom-right */}
-          {table.orderTotal ? (
-            <View style={{ alignItems: 'center', zIndex: 1 }}>
-              <Text style={{
-                fontSize: amountSize, fontWeight: '800', color: '#FFFFFF',
-                letterSpacing: -1, textShadowColor: 'rgba(0,0,0,0.1)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4,
-              }}>
-                {table.orderTotal.toLocaleString('vi-VN')}đ
-              </Text>
-            </View>
-          ) : null}
-        </>
+        </View>
       ) : (
-        <>
-          {/* Top: name centered */}
-          <View style={{
-            position: 'absolute', top: p, left: p, right: p,
-            alignItems: 'center',
+        /* ── Empty ── */
+        <View style={{ flex: 1, zIndex: 1, justifyContent: 'center', alignItems: 'center', gap: isWide ? 6 : 4 }}>
+          <Icon name="coffee" size={isWide ? scale(32) : scale(24)} color={colors.icon.muted} />
+          <Text style={{
+            fontSize: isWide ? scale(16) : scale(13), fontWeight: '700', color: colors.text.secondary,
+            textAlign: 'center',
+          }} numberOfLines={1}>
+            {table.name}
+          </Text>
+          <Text style={{
+            fontSize: isWide ? scale(12) : scale(9), fontWeight: '700', color: colors.text.muted,
+            letterSpacing: 1, textTransform: 'uppercase', textAlign: 'center',
           }}>
-            <Text style={{ fontSize: isWide ? scale(16) : scale(12), fontWeight: '700', color: '#64748B' }} numberOfLines={1}>
-              {table.name}
-            </Text>
-          </View>
-
-          {/* Center empty state */}
-          <View style={{ alignItems: 'center', justifyContent: 'center', gap: isWide ? 4 : 2 }}>
-            <Icon name="coffee" size={isWide ? scale(30) : scale(22)} color="#CBD5E1" />
-            <Text style={{ fontSize: isWide ? scale(14) : scale(10), fontWeight: '700', color: '#94A3B8', letterSpacing: 1, textTransform: 'uppercase' }}>
-              Trống
-            </Text>
-          </View>
-        </>
+            Trống
+          </Text>
+        </View>
       )}
     </TouchableOpacity>
   );

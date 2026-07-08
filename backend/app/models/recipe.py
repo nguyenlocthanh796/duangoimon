@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from sqlalchemy import DateTime, ForeignKey, Integer, Numeric, String, Text, Boolean
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models import Base
@@ -58,3 +58,17 @@ class RecipeItem(Base):
     unit: Mapped[str] = mapped_column(String(20), default="kg")
     cost: Mapped[float] = mapped_column(Numeric(14, 2), default=0)
     note: Mapped[Optional[str]] = mapped_column(Text)
+
+
+class RecipeVersion(Base):
+    __tablename__ = "recipe_versions"
+    __table_args__ = {"schema": "quan_ly"}
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    recipe_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("quan_ly.recipes.id", ondelete="CASCADE"))
+    version_number: Mapped[int] = mapped_column(Integer)
+    name: Mapped[str] = mapped_column(String(200))
+    cost_price: Mapped[float] = mapped_column(Numeric(14, 2), default=0)
+    items_json: Mapped[dict] = mapped_column(JSONB, default=list)
+    changed_by: Mapped[Optional[uuid.UUID]] = mapped_column(UUID(as_uuid=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))

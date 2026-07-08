@@ -87,7 +87,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUserRole(role);
 
       if (typeof window !== 'undefined') {
-        localStorage.setItem('pos_token', res.access_token);
         localStorage.setItem('pos_user', JSON.stringify(res.user));
       }
     }
@@ -153,7 +152,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         } else if (userRole === 'kitchen') {
           // kitchen can ONLY access /ban-hang/kitchen routes
-          if (rootSegment !== 'ban-hang' || segs[1] !== 'kitchen') {
+          if (rootSegment !== 'ban-hang' || segs.length < 2 || segs[1] !== 'kitchen') {
             router.replace('/ban-hang/kitchen');
           }
         }

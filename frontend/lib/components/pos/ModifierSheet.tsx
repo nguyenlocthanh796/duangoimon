@@ -1,8 +1,8 @@
 import React, { useRef, useMemo, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, TextInput, Modal, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import BottomSheet, { BottomSheetView, BottomSheetTextInput, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { COLORS, colors, palette, font, formatPrice } from '../../theme';
 import { MenuItem, CartItem } from './types';
 
@@ -283,21 +283,13 @@ export default function ModifierSheet({
         </Modal>
       )}
 
-      {/* Modifier BottomSheet — iPhone/Mobile screen */}
+      {/* Modifier Modal — iPhone/Mobile screen (Full Screen Locked) */}
       {!isWide && !!modalItem && (
-        <BottomSheet
-          ref={bottomSheetRef}
-          index={1}
-          snapPoints={snapPoints}
-          enablePanDownToClose
-          onChange={handleSheetChange}
-          backgroundStyle={{ backgroundColor: colors.surface.card }}
-          handleIndicatorStyle={{ backgroundColor: colors.border.strong }}
-        >
-          <BottomSheetView style={{ flex: 1 }}>
-            {renderModifierContent(true)}
-          </BottomSheetView>
-        </BottomSheet>
+        <Modal visible={!!modalItem} animationType="slide" transparent={false} statusBarTranslucent>
+          <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface.card }}>
+            {renderModifierContent(false)}
+          </SafeAreaView>
+        </Modal>
       )}
     </>
   );

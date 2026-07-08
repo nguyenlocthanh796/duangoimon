@@ -13,6 +13,14 @@ from app.core.pagination import PageParams, paginate
 from app.models.ban_hang import Order, OrderItem, Table
 from app.schemas.ban_hang import OrderOut
 
+
+def _uuid(val: str) -> uuid.UUID:
+    try:
+        return uuid.UUID(val)
+    except ValueError:
+        raise HTTPException(status_code=422, detail=f"Invalid UUID: {val}")
+
+
 router = APIRouter()
 
 
@@ -66,7 +74,7 @@ async def list_orders(
 async def create_order(body: OrderCreate, request: Request, db: AsyncSession = Depends(get_db), current_user: dict = Depends(get_current_user)):
     total = sum(i.unit_price * i.quantity for i in body.items)
     total_tax = sum(round(i.unit_price * i.quantity * i.vat_rate / 100, 2) for i in body.items)
-    table_uuid = None if body.table_id == "TAKEAWAY" else uuid.UUID(body.table_id)
+    table_uuid = None if body.table_id == "TAKEAWAY" else _uuid(body.table_id)
     order = Order(
         table_id=table_uuid,
         cashier_id=uuid.UUID(current_user["sub"]),
@@ -80,10 +88,11 @@ async def create_order(body: OrderCreate, request: Request, db: AsyncSession = D
     for item in body.items:
         oi = OrderItem(
             order_id=order.id,
-            product_id=uuid.UUID(item.product_id),
+            product_id=_uuid(item.product_id),
             product_name=item.product_name,
             quantity=item.quantity,
             unit_price=item.unit_price,
+            total=item.unit_price * item.quantity,
             options=item.options or {},
             vat_rate=item.vat_rate,
             note=item.note,
@@ -122,7 +131,7 @@ async def create_order(body: OrderCreate, request: Request, db: AsyncSession = D
 @router.get("/{order_id}", response_model=OrderOut)
 async def get_order(order_id: str, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)):
     result = await db.execute(
-        select(Order).options(selectinload(Order.items)).where(Order.id == uuid.UUID(order_id))
+        select(Order).options(selectinload(Order.items)).where(Order.id == _uuid(order_id))
     )
     order = result.scalar_one_or_none()
     if not order:
@@ -139,7 +148,7 @@ async def update_order_status(
     _user: dict = Depends(get_current_user)
 ):
     result = await db.execute(
-        select(Order).options(selectinload(Order.items)).where(Order.id == uuid.UUID(order_id))
+        select(Order).options(selectinload(Order.items)).where(Order.id == _uuid(order_id))
     )
     order = result.scalar_one_or_none()
     if not order:
@@ -148,6 +157,8 @@ async def update_order_status(
     status = body.status.strip()
     if not status:
         raise HTTPException(status_code=400, detail="Status cannot be empty")
+    if order.status in ("da_thanh_toan", "da_gop"):
+        raise HTTPException(status_code=400, detail=f"Cannot update status from '{order.status}'")
 
     old_status = order.status
     order.status = status
@@ -195,10 +206,11 @@ async def update_order(
     for item in body.items:
         oi = OrderItem(
             order_id=order.id,
-            product_id=uuid.UUID(item.product_id),
+            product_id=_uuid(item.product_id),
             product_name=item.product_name,
             quantity=item.quantity,
             unit_price=item.unit_price,
+            total=item.unit_price * item.quantity,
             options=item.options or {},
             vat_rate=item.vat_rate,
             note=item.note,
@@ -246,7 +258,7 @@ async def get_active_order_for_table(
     result = await db.execute(
         select(Order)
         .options(selectinload(Order.items))
-        .where(Order.table_id == uuid.UUID(table_id))
+        .where(Order.table_id == _uuid(table_id))
         .where(Order.status != "da_thanh_toan")
         .order_by(Order.created_at.desc())
     )

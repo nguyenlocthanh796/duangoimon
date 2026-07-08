@@ -1,6 +1,8 @@
 import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { colors, font, shape } from '../../theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { colors, font, palette } from '../../theme';
+import { shape } from '../../theme/shape';
 
 interface ScreenHeaderProps {
   title: string;
@@ -20,15 +22,18 @@ export default function ScreenHeader({
   onBackPress,
   right,
 }: ScreenHeaderProps) {
+  const insets = useSafeAreaInsets();
+
   return (
-    <View style={styles.header}>
+    <View style={[styles.header, { paddingTop: insets.top + 8, paddingBottom: 12 }]}>
       <View style={styles.left}>
-        <TouchableOpacity onPress={onMenuPress} style={styles.menuBtn}>
-          <Icon name="menu" size={24} color={colors.icon.default} />
-        </TouchableOpacity>
-        {showBack && (
+        {showBack ? (
           <TouchableOpacity onPress={onBackPress} style={styles.backBtn}>
             <Icon name="arrow-left" size={20} color={colors.brand.primary} />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={onMenuPress} style={styles.menuBtn}>
+            <Icon name="menu" size={20} color={colors.icon.default} />
           </TouchableOpacity>
         )}
         <View>
@@ -50,37 +55,44 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     backgroundColor: colors.surface.card,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border.light,
+    borderBottomColor: colors.border.default,
+    shadowColor: palette.slate[900],
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 2,
   },
   left: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 10,
   },
   menuBtn: {
-    width: 40,
-    height: 40,
+    width: 42,
+    height: 42,
     borderRadius: shape.radius.md,
     backgroundColor: colors.surface.disabled,
     alignItems: 'center',
     justifyContent: 'center',
   },
   backBtn: {
-    width: 36,
-    height: 36,
+    width: 42,
+    height: 42,
     borderRadius: shape.radius.md,
     backgroundColor: colors.brand.primaryBg,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: colors.border.brand,
   },
   title: {
-    ...font.h2,
+    ...font.h3,
     color: colors.text.primary,
   },
   subtitle: {
     ...font.caption,
-    color: colors.text.secondary,
-    marginTop: 1,
+    color: colors.text.muted,
+    marginTop: 2,
   },
   right: {
     flexDirection: 'row',

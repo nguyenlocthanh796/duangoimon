@@ -1,6 +1,6 @@
 import { TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { colors } from '../../theme';
+import { colors, shape } from '../../theme';
 
 interface FABProps {
   icon?: string;
@@ -19,7 +19,7 @@ export default function FAB({ icon = 'plus', iconSize = 28, onPress }: FABProps)
         right: 20,
         width: 56,
         height: 56,
-        borderRadius: 4,
+        borderRadius: shape.radius.full,
         backgroundColor: colors.brand.primary,
         alignItems: 'center',
         justifyContent: 'center',

@@ -106,8 +106,7 @@ export function usePayment({ tableId, tableName, total, orderId }: UsePaymentOpt
         splits: paySplits,
       });
       if (tableId && tableId !== 'TAKEAWAY') {
-        try { await api.put(`/quan-ly/tables/${tableId}`, { status: 'trong' }); }
-        catch (tableErr) { console.warn('Could not reset table status:', tableErr); }
+        // Table status reset handled automatically by backend process_payment
       }
       setPaid(true);
     } catch (e: any) {

@@ -15,7 +15,11 @@ class ConnectionManager:
         if not token:
             await ws.close(code=4001, reason="Missing token")
             return
-        payload = decode_token(token)
+        try:
+            payload = decode_token(token)
+        except Exception:
+            await ws.close(code=4001, reason="Invalid token")
+            return
         if payload is None:
             await ws.close(code=4001, reason="Invalid token")
             return

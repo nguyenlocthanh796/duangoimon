@@ -32,6 +32,7 @@ def _inv_dict(inv: Invoice) -> dict:
         "id": str(inv.id),
         "order_id": str(inv.order_id) if inv.order_id else None,
         "invoice_number": inv.invoice_number,
+        "token": inv.token,
         "buyer_name": inv.buyer_name,
         "buyer_tax_code": inv.buyer_tax_code,
         "total_amount": float(inv.total_amount or 0),

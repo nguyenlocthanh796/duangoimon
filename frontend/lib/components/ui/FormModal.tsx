@@ -8,6 +8,8 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  useWindowDimensions,
+  SafeAreaView,
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 
@@ -32,112 +34,91 @@ export default function FormModal({
   saving = false,
   children,
 }: FormModalProps) {
-  return (
-    <Modal visible={visible} animationType="slide" transparent statusBarTranslucent>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={{ flex: 1 }}
-      >
-        <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.45)' }}>
-          <View
-            style={{
-              backgroundColor: '#fff',
-              borderTopLeftRadius: 24,
-              borderTopRightRadius: 24,
-              padding: 24,
-              paddingBottom: 40,
-              maxHeight: '90%',
-            }}
-          >
-            {/* Handle bar */}
-            <View
-              style={{
-                width: 36,
-                height: 4,
-                borderRadius: 2,
-                backgroundColor: '#E2E8F0',
-                alignSelf: 'center',
-                marginBottom: 20,
-              }}
-            />
+  const { width } = useWindowDimensions();
+  const isWide = width > 768;
 
-            {/* Title row */}
+  if (isWide) {
+    return (
+      <Modal visible={visible} animationType="slide" transparent statusBarTranslucent>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1 }}
+        >
+          <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.45)' }}>
             <View
               style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'flex-start',
-                marginBottom: 20,
+                backgroundColor: '#fff',
+                borderTopLeftRadius: 24,
+                borderTopRightRadius: 24,
+                padding: 24,
+                paddingBottom: 40,
+                maxHeight: '90%',
               }}
             >
-              <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 20, fontWeight: '800', color: '#1E293B' }}>
-                  {title}
-                </Text>
-                {subtitle && (
-                  <Text style={{ fontSize: 13, color: '#64748B', marginTop: 2 }}>
-                    {subtitle}
-                  </Text>
-                )}
+              <View
+                style={{
+                  width: 36, height: 4, borderRadius: 2,
+                  backgroundColor: '#E2E8F0', alignSelf: 'center', marginBottom: 20,
+                }}
+              />
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 20, fontWeight: '800', color: '#1E293B' }}>{title}</Text>
+                  {subtitle && <Text style={{ fontSize: 13, color: '#64748B', marginTop: 2 }}>{subtitle}</Text>}
+                </View>
+                <TouchableOpacity onPress={onClose} style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: '#F1F5F9', alignItems: 'center', justifyContent: 'center' }}>
+                  <Icon name="close" size={22} color="#64748B" />
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity
-                onPress={onClose}
-                style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 8,
-                  backgroundColor: '#F1F5F9',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Icon name="close" size={22} color="#64748B" />
-              </TouchableOpacity>
-            </View>
-
-            {/* Scrollable content */}
-            <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-              {children}
-            </ScrollView>
-
-            {/* Action buttons */}
-            <View style={{ flexDirection: 'row', gap: 12, marginTop: 20 }}>
-              <TouchableOpacity
-                onPress={onClose}
-                style={{
-                  flex: 1,
-                  padding: 15,
-                  borderRadius: 12,
-                  backgroundColor: '#F1F5F9',
-                  alignItems: 'center',
-                }}
-              >
-                <Text style={{ fontWeight: '700', color: '#64748B', fontSize: 15 }}>Hủy</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={onSave}
-                disabled={saving}
-                style={{
-                  flex: 2,
-                  padding: 15,
-                  borderRadius: 12,
-                  backgroundColor: '#F97316',
-                  alignItems: 'center',
-                  opacity: saving ? 0.7 : 1,
-                }}
-              >
-                {saving ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <Text style={{ fontWeight: '700', color: '#fff', fontSize: 15 }}>
-                    {saveLabel}
-                  </Text>
-                )}
-              </TouchableOpacity>
+              <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+                {children}
+              </ScrollView>
+              <View style={{ flexDirection: 'row', gap: 12, marginTop: 20 }}>
+                <TouchableOpacity onPress={onClose} style={{ flex: 1, padding: 15, borderRadius: 12, backgroundColor: '#F1F5F9', alignItems: 'center' }}>
+                  <Text style={{ fontWeight: '700', color: '#64748B', fontSize: 15 }}>Hủy</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={onSave} disabled={saving} style={{ flex: 2, padding: 15, borderRadius: 12, backgroundColor: '#F97316', alignItems: 'center', opacity: saving ? 0.7 : 1 }}>
+                  {saving ? <ActivityIndicator color="#fff" /> : <Text style={{ fontWeight: '700', color: '#fff', fontSize: 15 }}>{saveLabel}</Text>}
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      </Modal>
+    );
+  }
+
+  // Mobile: full-screen
+  return (
+    <Modal visible={visible} animationType="slide" transparent={false} statusBarTranslucent>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          style={{ flex: 1 }}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#E2E8F0' }}>
+            <TouchableOpacity onPress={onClose} style={{ width: 38, height: 38, borderRadius: 10, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name="arrow-left" size={22} color="#fff" />
+            </TouchableOpacity>
+            <View style={{ alignItems: 'center' }}>
+              <Text style={{ fontSize: 17, fontWeight: '800', color: '#1E293B', textAlign: 'center' }}>{title}</Text>
+              {subtitle && <Text style={{ fontSize: 12, color: '#64748B', marginTop: 1 }}>{subtitle}</Text>}
+            </View>
+            <View style={{ width: 38 }} />
+          </View>
+          <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
+            {children}
+          </ScrollView>
+          <View style={{ padding: 16, paddingBottom: 12, borderTopWidth: 1, borderTopColor: '#E2E8F0', flexDirection: 'row', gap: 12 }}>
+            <TouchableOpacity onPress={onClose} style={{ flex: 1, padding: 15, borderRadius: 12, backgroundColor: '#F1F5F9', alignItems: 'center' }}>
+              <Text style={{ fontWeight: '700', color: '#64748B', fontSize: 15 }}>Hủy</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={onSave} disabled={saving} style={{ flex: 2, padding: 15, borderRadius: 12, backgroundColor: '#F97316', alignItems: 'center', opacity: saving ? 0.7 : 1 }}>
+              {saving ? <ActivityIndicator color="#fff" /> : <Text style={{ fontWeight: '700', color: '#fff', fontSize: 15 }}>{saveLabel}</Text>}
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
     </Modal>
   );
 }

@@ -1,4 +1,5 @@
 import { View, Text } from 'react-native';
+import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font } from '../../theme';
 
 interface OccupancyProgressProps {
@@ -17,7 +18,10 @@ export default function OccupancyProgress({ trong, coKhach, daDat }: OccupancyPr
   return (
     <View>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-        <Text style={{ ...font.h3, color: colors.text.primary }}>📊 Mật độ bàn ăn</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <Icon name="chart-donut" size={18} color={colors.brand.primary} />
+          <Text style={{ ...font.h3, color: colors.text.primary }}>Mật độ bàn ăn</Text>
+        </View>
         <Text style={{ ...font.bodySmall, color: colors.text.secondary }}>{coKhach}/{total} bàn đang dùng</Text>
       </View>
 

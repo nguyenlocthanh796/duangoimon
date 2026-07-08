@@ -1,6 +1,7 @@
 // Design tokens – re-export from color system
 export { colors, palette, COLORS } from './theme/colors';
 export { font } from './theme/typography';
+export { shape } from './theme/shape';
 
 export const formatPrice = (v: number) =>
   v >= 1000 ? `${(v / 1000).toFixed(0)}k` : `${v}đ`;

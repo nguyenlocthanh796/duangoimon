@@ -31,15 +31,15 @@ export default function ProductGrid({
   const CARD_GAP = 8;
   const hPad = isWide ? 12 : 4;
 
-  // ── Scale card minimum by breakpoint ──
-  // Larger screens → bigger min to keep cards from looking too small
-  const minCard = breakpoint === 'desktop' ? 170
-    : breakpoint === 'tablet-landscape' ? 155
-    : breakpoint === 'tablet-portrait' ? 140
-    : 110;
-  const CARD_COLS = isWide
-    ? Math.max(2, Math.floor((panelWidth - hPad * 2) / minCard))
-    : 3;
+  // Determine number of columns directly for pixel-perfect predictability
+  const CARD_COLS = !isWide
+    ? 3 // Mobile grid
+    : breakpoint === 'desktop'
+    ? 4
+    : breakpoint === 'tablet-landscape'
+    ? 4
+    : 3; // tablet-portrait gets 3 columns to look optimized and compact
+
   const cardSize = Math.floor(
     (panelWidth - hPad * 2 - CARD_GAP * (CARD_COLS - 1)) / CARD_COLS
   );

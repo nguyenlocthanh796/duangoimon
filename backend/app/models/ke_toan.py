@@ -1,4 +1,5 @@
 import uuid
+import secrets
 from datetime import datetime, timezone
 
 from sqlalchemy import DateTime, Numeric, String, Text
@@ -31,6 +32,7 @@ class Invoice(Base):
     order_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True))
     branch_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
     invoice_number: Mapped[str] = mapped_column(String(20), unique=True)
+    token: Mapped[str] = mapped_column(String(24), unique=True, nullable=False, index=True, default=lambda: "inv_" + secrets.token_urlsafe(12))
     buyer_name: Mapped[str | None] = mapped_column(String(200))
     buyer_tax_code: Mapped[str | None] = mapped_column(String(20))
     total_amount: Mapped[float] = mapped_column(Numeric(14, 2))

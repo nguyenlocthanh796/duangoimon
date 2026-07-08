@@ -1,17 +1,19 @@
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
+import { colors, font } from '../../theme';
+import { shape } from '../../theme/shape';
 
 type FormState = { type: 'thu' | 'chi'; category: string; amount: string; note: string };
 type Errors = Partial<Record<keyof FormState, string>>;
 
-export default function TransactionFormContent({
-  form, setForm, errors, setErrors,
-}: {
+interface Props {
   form: FormState;
   setForm: React.Dispatch<React.SetStateAction<FormState>>;
   errors: Errors;
   setErrors: React.Dispatch<React.SetStateAction<Errors>>;
-}) {
+}
+
+export default function TransactionFormContent({ form, setForm, errors, setErrors }: Props) {
   const set = (field: keyof FormState) => (v: string) => {
     setForm(f => ({ ...f, [field]: v }));
     setErrors(e => ({ ...e, [field]: undefined }));
@@ -19,80 +21,64 @@ export default function TransactionFormContent({
 
   return (
     <>
-      <Text style={styles.inputLabel}>Loại giao dịch *</Text>
+      {/* Type picker */}
+      <Text style={styles.label}>Loại giao dịch *</Text>
       <View style={styles.typeRow}>
-        {(['thu', 'chi'] as const).map(t => (
-          <TouchableOpacity
-            key={t}
-            onPress={() => setForm(f => ({ ...f, type: t }))}
-            style={[styles.typeBtn, form.type === t && (t === 'thu' ? styles.typeBtnThu : styles.typeBtnChi)]}
-          >
-            <Icon
-              name={t === 'thu' ? 'arrow-down' : 'arrow-up'}
-              size={16}
-              color={form.type === t ? '#fff' : (t === 'thu' ? '#10B981' : '#EF4444')}
-              style={{ marginRight: 4 }}
-            />
-            <Text style={[styles.typeBtnText, form.type === t && styles.typeBtnTextActive]}>
-              {t === 'thu' ? 'Thu' : 'Chi'}
-            </Text>
-          </TouchableOpacity>
-        ))}
+        {(['thu', 'chi'] as const).map(t => {
+          const active = form.type === t;
+          return (
+            <TouchableOpacity key={t} onPress={() => setForm(f => ({ ...f, type: t }))}
+              style={[styles.typeBtn, active && (t === 'thu' ? styles.typeThuActive : styles.typeChiActive)]}>
+              <Icon name={t === 'thu' ? 'arrow-down' : 'arrow-up'} size={16}
+                color={active ? '#fff' : (t === 'thu' ? colors.status.success : colors.status.danger)}
+                style={{ marginRight: 4 }} />
+              <Text style={[styles.typeBtnText, active && styles.typeBtnTextActive]}>
+                {t === 'thu' ? 'Thu' : 'Chi'}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
 
-      <Text style={styles.inputLabel}>Danh mục *</Text>
-      <TextInput
-        style={[styles.input, errors.category ? styles.inputError : null]}
-        placeholder="Điện nước, lương, bán hàng..."
-        placeholderTextColor="#94A3B8"
-        value={form.category}
-        onChangeText={set('category')}
-      />
-      {errors.category ? <Text style={styles.errorText}>{errors.category}</Text> : null}
+      {/* Fields */}
+      <Text style={styles.label}>Danh mục *</Text>
+      <TextInput style={[styles.input, errors.category && styles.inputError]}
+        placeholder="Điện nước, lương, bán hàng..." placeholderTextColor={colors.text.placeholder}
+        value={form.category} onChangeText={set('category')} />
+      {!!errors.category && <Text style={styles.errorText}>{errors.category}</Text>}
 
-      <Text style={styles.inputLabel}>Số tiền (₫) *</Text>
-      <TextInput
-        style={[styles.input, errors.amount ? styles.inputError : null]}
-        placeholder="0"
-        placeholderTextColor="#94A3B8"
-        keyboardType="numeric"
-        value={form.amount}
-        onChangeText={set('amount')}
-      />
-      {errors.amount ? <Text style={styles.errorText}>{errors.amount}</Text> : null}
+      <Text style={styles.label}>Số tiền (₫) *</Text>
+      <TextInput style={[styles.input, errors.amount && styles.inputError]}
+        placeholder="0" placeholderTextColor={colors.text.placeholder}
+        keyboardType="numeric" value={form.amount} onChangeText={set('amount')} />
+      {!!errors.amount && <Text style={styles.errorText}>{errors.amount}</Text>}
 
-      <Text style={styles.inputLabel}>Ghi chú</Text>
-      <TextInput
-        style={[styles.input, styles.noteInput]}
-        placeholder="Nhập ghi chú (tùy chọn)"
-        placeholderTextColor="#94A3B8"
-        value={form.note}
-        onChangeText={set('note')}
-        multiline
-        numberOfLines={2}
-      />
+      <Text style={styles.label}>Ghi chú</Text>
+      <TextInput style={[styles.input, styles.noteInput]}
+        placeholder="Nhập ghi chú (tùy chọn)" placeholderTextColor={colors.text.placeholder}
+        value={form.note} onChangeText={set('note')} multiline numberOfLines={2} />
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  inputLabel: { fontSize: 13, fontWeight: '600', color: '#475569', marginBottom: 6 },
+  label: { ...font.label, color: colors.text.secondary, marginBottom: 6 },
   typeRow: { flexDirection: 'row', gap: 10, marginBottom: 16 },
   typeBtn: {
     flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    paddingVertical: 12, borderRadius: 12,
-    borderWidth: 1.5, borderColor: '#E2E8F0', backgroundColor: '#F8FAFC',
+    paddingVertical: 12, borderRadius: shape.radius.md, minHeight: 44,
+    borderWidth: 1, borderColor: colors.border.default, backgroundColor: colors.surface.disabled,
   },
-  typeBtnThu: { backgroundColor: '#10B981', borderColor: '#10B981' },
-  typeBtnChi: { backgroundColor: '#EF4444', borderColor: '#EF4444' },
-  typeBtnText: { fontWeight: '700', color: '#64748B', fontSize: 14 },
+  typeThuActive: { backgroundColor: colors.status.success, borderColor: colors.status.success },
+  typeChiActive: { backgroundColor: colors.status.danger, borderColor: colors.status.danger },
+  typeBtnText: { ...font.button, color: colors.text.muted },
   typeBtnTextActive: { color: '#fff' },
   input: {
-    borderWidth: 1.5, borderColor: '#E2E8F0', borderRadius: 12,
-    padding: 13, fontSize: 14, color: '#1E293B',
-    backgroundColor: '#F8FAFC', marginBottom: 4,
+    borderWidth: 1, borderColor: colors.border.default, borderRadius: shape.radius.md,
+    padding: 12, fontSize: 15, color: colors.text.primary, minHeight: 44,
+    backgroundColor: colors.surface.disabled, marginBottom: 4,
   },
-  inputError: { borderColor: '#EF4444' },
-  noteInput: { height: 72, textAlignVertical: 'top' },
-  errorText: { fontSize: 11, color: '#EF4444', marginBottom: 8, marginLeft: 2 },
+  inputError: { borderColor: colors.status.danger },
+  noteInput: { height: 80, textAlignVertical: 'top' },
+  errorText: { fontSize: 11, color: colors.status.danger, marginBottom: 8, marginLeft: 2 },
 });

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POS Pro — Web Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d2e;
+    --border: #2a2d3e;
+    --text: #e8eaf0;
+    --muted: #8b8fa3;
+    --accent: #6366f1;
+    --accent-bg: rgba(99,102,241,0.15);
+    --success: #22c55e;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); padding: 24px; }
+  .app { max-width: 1400px; margin: 0 auto; }
+  header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+  h1 { font-weight: 900; font-size: 28px; letter-spacing: -0.02em; }
+  h1 span { color: var(--accent); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 32px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+  .card .label { font-size: 13px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+  .card .value { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; }
+  .card .sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; padding: 12px 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); border-bottom: 1px solid var(--border); }
+  td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 100px; font-size: 12px; font-weight: 600; }
+  .badge.success { background: rgba(34,197,94,0.15); color: var(--success); }
+  .badge.warning { background: rgba(245,158,11,0.15); color: var(--warning); }
+  .badge.danger { background: rgba(239,68,68,0.15); color: var(--danger); }
+  .timestamp { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>POS <span>Pro</span></h1>
+    <div style="display:flex;gap:12px;align-items:center">
+      <span id="status-indicator" style="width:10px;height:10px;border-radius:50%;background:var(--success);display:inline-block"></span>
+      <span id="last-update" class="timestamp" style="margin:0">Loading...</span>
+      <button onclick="refresh()" style="background:var(--surface);border:1px solid var(--border);color:var(--text);padding:8px 20px;border-radius:8px;cursor:pointer;font-weight:500">🔄 Refresh</button>
+    </div>
+  </header>
+
+  <div class="grid" id="kpi-grid">
+    <div class="card"><div class="label">Doanh thu hôm nay</div><div class="value" id="today-revenue">—</div><div class="sub">VND</div></div>
+    <div class="card"><div class="label">Đơn hôm nay</div><div class="value" id="today-orders">—</div><div class="sub">orders</div></div>
+    <div class="card"><div class="label">Đang nấu</div><div class="value" id="active-orders">—</div><div class="sub">active</div></div>
+    <div class="card"><div class="label">Chi nhánh</div><div class="value" id="total-branches">—</div><div class="sub">branches</div></div>
+  </div>
+
+  <div class="card" style="margin-bottom:32px">
+    <h3 style="margin-bottom:16px;font-weight:600">Top sản phẩm hôm nay</h3>
+    <table>
+      <thead><tr><th>#</th><th>Sản phẩm</th><th>Số lượng</th><th>Doanh thu</th></tr></thead>
+      <tbody id="top-products"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom:16px;font-weight:600">API Endpoints</h3>
+    <table>
+      <thead><tr><th>Module</th><th>Endpoint</th><th>Trạng thái</th></tr></thead>
+      <tbody>
+        <tr><td>Auth</td><td><code>/api/v1/auth/login</code></td><td><span class="badge success">✅ Active</span></td></tr>
+        <tr><td>POS</td><td><code>/api/v1/ban-hang/orders</code></td><td><span class="badge success">✅ Active</span></td></tr>
+        <tr><td>Payment</td><td><code>/api/v1/ban-hang/payments</code></td><td><span class="badge success">✅ Active</span></td></tr>
+        <tr><td>KDS</td><td><code>/ws/kitchen</code></td><td><span class="badge success">✅ Active</span></td></tr>
+        <tr><td>Inventory</td><td><code>/api/v1/quan-ly/inventory</code></td><td><span class="badge success">✅ Active</span></td></tr>
+        <tr><td>Recipes</td><td><code>/api/v1/quan-ly/recipes</code></td><td><span class="badge success">✅ Active</span></td></tr>
+        <tr><td>Branches</td><td><code>/api/v1/quan-ly/branches</code></td><td><span class="badge success">✅ Active</span></td></tr>
+        <tr><td>CRM</td><td><code>/api/v1/quan-ly/customers</code></td><td><span class="badge success">✅ Active</span></td></tr>
+        <tr><td>Membership</td><td><code>/api/v1/quan-ly/membership</code></td><td><span class="badge success">✅ Active</span></td></tr>
+        <tr><td>Voucher</td><td><code>/api/v1/quan-ly/promo/vouchers</code></td><td><span class="badge success">✅ Active</span></td></tr>
+        <tr><td>Booking</td><td><code>/api/v1/quan-ly/bookings</code></td><td><span class="badge success">✅ Active</span></td></tr>
+        <tr><td>Menu Eng</td><td><code>/api/v1/quan-ly/menu-eng/matrix</code></td><td><span class="badge success">✅ Active</span></td></tr>
+        <tr><td>BI Reports</td><td><code>/api/v1/quan-ly/reports/bi/revenue</code></td><td><span class="badge success">✅ Active</span></td></tr>
+        <tr><td>Export</td><td><code>/api/v1/quan-ly/export/revenue-csv</code></td><td><span class="badge success">✅ Active</span></td></tr>
+        <tr><td>Exec Dashboard</td><td><code>/api/v1/quan-ly/exec-dashboard</code></td><td><span class="badge success">✅ Active</span></td></tr>
+        <tr><td>Self-order</td><td><code>/api/v1/public/menu</code></td><td><span class="badge success">✅ Active</span></td></tr>
+        <tr><td>Audit</td><td><code>/api/v1/quan-ly/audit-logs</code></td><td><span class="badge success">✅ Active</span></td></tr>
+        <tr><td>Shift</td><td><code>/api/v1/quan-ly/shifts</code></td><td><span class="badge success">✅ Active</span></td></tr>
+        <tr><td>Supplier</td><td><code>/api/v1/quan-ly/suppliers</code></td><td><span class="badge success">✅ Active</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  const API_BASE = '/api/v1';
+  const TOKEN = prompt('Nhập token:') || '';
+
+  async function fetchAPI(path) {
+    const res = await fetch(API_BASE + path, {
+      headers: { 'Authorization': `Bearer ${TOKEN}` }
+    });
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+  }
+
+  async function refresh() {
+    const updateEl = document.getElementById('last-update');
+    updateEl.textContent = 'Đang tải...';
+
+    try {
+      const data = await fetchAPI('/quan-ly/exec-dashboard');
+      
+      document.getElementById('today-revenue').textContent = 
+        new Intl.NumberFormat('vi-VN').format(data.today_revenue);
+      document.getElementById('today-orders').textContent = data.today_orders;
+      document.getElementById('active-orders').textContent = data.active_orders;
+      document.getElementById('total-branches').textContent = data.total_branches;
+
+      const tbody = document.getElementById('top-products');
+      tbody.innerHTML = data.top_products.map((p, i) => `
+        <tr><td>${i + 1}</td><td>${p.name}</td><td>${p.qty}</td><td>${new Intl.NumberFormat('vi-VN').format(p.revenue)}</td></tr>
+      `).join('');
+
+      document.getElementById('status-indicator').style.background = 'var(--success)';
+      updateEl.textContent = `Cập nhật: ${new Date(data.timestamp).toLocaleString('vi-VN')}`;
+    } catch (e) {
+      document.getElementById('status-indicator').style.background = 'var(--danger)';
+      updateEl.textContent = `Lỗi: ${e.message}`;
+    }
+  }
+
+  refresh();
+</script>
+</body>
+</html>

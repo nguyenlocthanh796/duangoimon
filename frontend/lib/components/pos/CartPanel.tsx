@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Modal, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { colors, formatPrice } from '../../theme/colors';
 import { CartItem } from './types';
@@ -48,6 +48,7 @@ export default function CartPanel({
   onOpenModifier, onSendToKitchen, onSaveTable, onPay, onPrintTemporary, submitting, isWide, cartSheet, setCartSheet,
   onToggleServiceType, onEditNote, serviceChargePercent = 0, tableId,
 }: CartPanelProps) {
+  const insets = useSafeAreaInsets();
 
   const [noteEditId, setNoteEditId] = React.useState<string | null>(null);
   const [noteText, setNoteText] = React.useState('');
@@ -160,7 +161,7 @@ export default function CartPanel({
             <>
               {(sent.length > 0 || cancelled.length > 0) && (
                 <View style={{ paddingHorizontal: 4, paddingBottom: 4 }}>
-                  <Text style={{ fontSize: 11, fontWeight: '600', color: colors.brand.primary }}>Món mới</Text>
+                  <Text style={{ fontSize: 12, fontWeight: '600', color: colors.brand.primary }}>Món mới</Text>
                 </View>
               )}
               {unsent.map(item => <CartItemRow key={item.cartItemId} {...itemRowProps(item)} />)}
@@ -171,7 +172,7 @@ export default function CartPanel({
             <>
               {(unsent.length > 0 || cancelled.length > 0) && (
                 <View style={{ paddingHorizontal: 4, paddingVertical: 4 }}>
-                  <Text style={{ fontSize: 11, fontWeight: '600', color: '#16a34a' }}>Đã gửi bếp</Text>
+                  <Text style={{ fontSize: 12, fontWeight: '600', color: '#16a34a' }}>Đã gửi bếp</Text>
                 </View>
               )}
               {sent.map(item => <CartItemRow key={item.cartItemId} {...itemRowProps(item)} />)}
@@ -181,7 +182,7 @@ export default function CartPanel({
           {cancelled.length > 0 && (
             <>
               <View style={{ paddingHorizontal: 4, paddingVertical: 4 }}>
-                <Text style={{ fontSize: 11, fontWeight: '600', color: '#dc2626' }}>Đã huỷ</Text>
+                <Text style={{ fontSize: 12, fontWeight: '600', color: '#dc2626' }}>Đã huỷ</Text>
               </View>
               {cancelled.map(item => <CartItemRow key={item.cartItemId} {...itemRowProps(item)} />)}
             </>
@@ -199,7 +200,15 @@ export default function CartPanel({
   };
 
   const renderFooter = () => (
-    <View style={{ padding: 8, gap: 8, borderTopWidth: 1, borderTopColor: colors.border.default, backgroundColor: colors.surface.card }}>
+    <View style={{
+      paddingHorizontal: 8,
+      paddingTop: 8,
+      paddingBottom: isWide ? insets.bottom + 8 : 8,
+      gap: 8,
+      borderTopWidth: 1,
+      borderTopColor: colors.border.default,
+      backgroundColor: colors.surface.card
+    }}>
       <CartSummary total={total} serviceChargePercent={serviceChargePercent} serviceCharge={serviceCharge} vatAmount={vatAmount} grandTotal={grandTotal} />
 
       {splitMode ? (
@@ -279,18 +288,18 @@ export default function CartPanel({
           <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text.primary }}>Giỏ hàng</Text>
           {itemCount > 0 && (
             <View style={{ backgroundColor: colors.brand.primary, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 4 }}>
-              <Text style={{ fontSize: 11, fontWeight: '700', color: colors.text.inverse }}>{itemCount} món</Text>
+              <Text style={{ fontSize: 13, fontWeight: '700', color: colors.text.inverse }}>{itemCount} món</Text>
             </View>
           )}
         </View>
         {hasMoreActions && (
-          <TouchableOpacity onPress={() => setShowMoreMenu(true)} hitSlop={8} style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default, alignItems: 'center', justifyContent: 'center' }}>
+          <TouchableOpacity onPress={() => setShowMoreMenu(true)} hitSlop={8} style={{ width: 42, height: 42, borderRadius: 8, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default, alignItems: 'center', justifyContent: 'center' }}>
             <MaterialIcons name="more-horiz" size={22} color={colors.text.primary} />
           </TouchableOpacity>
         )}
       </View>
 
-      <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+      <View style={{ flex: 1, backgroundColor: colors.surface.card }}>
         {cart.length === 0 ? (
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16 }}>
             <MaterialIcons name="shopping-basket" size={48} color={colors.icon.muted} />

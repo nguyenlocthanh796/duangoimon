@@ -11,10 +11,17 @@ import type { Dashboard } from '../../lib/api/client';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font } from '../../lib/theme';
+import { shape } from '../../lib/theme/shape';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
 import StatCard from '../../lib/components/management/StatCard';
 import OccupancyProgress from '../../lib/components/management/OccupancyProgress';
-import TopProductsWidget, { NavigationGrid } from '../../lib/components/management/DashboardWidgets';
+import {
+  TopProductsList,
+  NavigationGrid,
+  LowStockList,
+  RecentActivitiesList,
+  RevenueChart,
+} from '../../lib/components/management/DashboardWidgets';
 
 function formatVND(v: number): string {
   return v.toLocaleString('vi-VN') + 'đ';
@@ -64,6 +71,7 @@ export default function QuanLyDashboard() {
       icon: 'currency-usd',
       color: '#059669',
       bgColor: '#ECFDF5',
+      growth: data?.revenue_growth,
     },
     {
       label: 'Số đơn hàng',
@@ -71,6 +79,7 @@ export default function QuanLyDashboard() {
       icon: 'receipt',
       color: '#4F46E5',
       bgColor: '#EEF2FF',
+      growth: data?.orders_growth,
     },
     {
       label: 'Bàn có khách',
@@ -88,168 +97,152 @@ export default function QuanLyDashboard() {
     },
   ];
 
+  const renderHeader = () => (
+    <ScreenHeader
+      title="Quản Lý"
+      subtitle="Tổng quan"
+      onMenuPress={openSidebar}
+      right={
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          <TouchableOpacity onPress={onRefresh} style={styles.refreshBtn}>
+            <Icon name="refresh" size={20} color={colors.brand.primary} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push('/ban-hang')} activeOpacity={0.9}>
+            <LinearGradient
+              colors={[colors.brand.primary, colors.brand.primaryHover]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.pillBtn}
+            >
+              <Icon name="cash-register" size={14} color="#fff" />
+              <Text style={styles.pillText}>Bán hàng</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+      }
+    />
+  );
+
+  const renderStatRow = (isHorizontal: boolean) => {
+    if (isHorizontal) {
+      // iPad: 4 cards flat, no scroll
+      return (
+        <View style={{ flexDirection: 'row', gap: 10 }}>
+          {stats.map((s, i) => (
+            <View key={i} style={{ flex: 1 }}>
+              <StatCard {...s} loading={loading} hideTrend={!s.growth} compact={false} />
+            </View>
+          ))}
+        </View>
+      );
+    }
+    // iPhone: 2x2 grid
+    return (
+      <View style={styles.statsGrid}>
+        {stats.map((s, i) => (
+          <View key={i} style={{ width: '48%' }}>
+            <StatCard {...s} loading={loading} hideTrend={!s.growth} compact />
+          </View>
+        ))}
+      </View>
+    );
+  };
 
   if (isWide) {
     return (
       <SafeAreaView style={styles.container}>
-      <ScreenHeader
-        title="Quản Lý"
-        subtitle="Tổng quan"
-        onMenuPress={openSidebar}
-        right={
-          <View style={{ flexDirection: 'row', gap: 8 }}>
-            <TouchableOpacity onPress={onRefresh} style={{ width: 36, height: 36, borderRadius: 4, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name="refresh" size={20} color="#F97316" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push('/ban-hang')} activeOpacity={0.9}>
-              <LinearGradient
-                colors={['#F97316', '#EA580C']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.backPillBtn}
-              >
-                <Icon name="cash-register" size={14} color="#fff" />
-                <Text style={styles.backPillText}>Bán hàng</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-          </View>
-        }
-      />
-
+        {renderHeader()}
         <ScrollView
           showsVerticalScrollIndicator={false}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#F97316" />}
-          contentContainerStyle={{ flexDirection: 'row', padding: 8, gap: 12 }}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand.primary} />}
+          contentContainerStyle={{ padding: 8, gap: 12 }}
         >
-          {/* Left Column (60% width) */}
-          <View style={{ flex: 1.5, gap: 12 }}>
-            {/* Stats Cards (4 columns) */}
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={{ flexGrow: 0, flexShrink: 0 }}
-              contentContainerStyle={{ gap: 10, paddingVertical: 6 }}
-            >
-              {stats.map((s, i) => (
-                <StatCard key={i} {...s} loading={loading} cardStyle={{ width: 145 }} />
-              ))}
-            </ScrollView>
-            
-            {/* Occupancy Indicator */}
-            {!loading && data?.table_stats && (
-              <View style={styles.sectionWide}>
-                <OccupancyProgress
-                  trong={data.table_stats.trong}
-                  coKhach={data.table_stats.co_khach}
-                  daDat={data.table_stats.da_dat}
-                />
-              </View>
-            )}
+          {renderStatRow(true)}
+
+          <View style={{ flexDirection: 'row', gap: 12 }}>
+            {/* Left */}
+            <View style={{ flex: 1.5, gap: 12 }}>
+              <RevenueChart />
+              {!loading && data?.table_stats && (
+                <View style={styles.cardBox}>
+                  <OccupancyProgress
+                    trong={data.table_stats.trong}
+                    coKhach={data.table_stats.co_khach}
+                    daDat={data.table_stats.da_dat}
+                  />
+                </View>
+              )}
+            </View>
+            {/* Right */}
+            <View style={{ flex: 1, gap: 12 }}>
+              <TopProductsList data={data?.top_products} loading={loading} />
+              <LowStockList loading={loading} />
+              <RecentActivitiesList loading={loading} />
+            </View>
           </View>
 
-          {/* Right Column (40% width) */}
-          <View style={{ flex: 1, gap: 12 }}>
-            {/* Top Products */}
-            <TopProductsWidget data={data?.top_products} loading={loading} />
-
-            {/* Navigation Grid */}
-            <NavigationGrid />
-          </View>
+          <NavigationGrid compact={false} />
+          <View style={{ height: 24 }} />
         </ScrollView>
       </SafeAreaView>
     );
   }
 
+  // Mobile
   return (
     <SafeAreaView style={styles.container}>
-      <ScreenHeader
-        title="Quản Lý"
-        subtitle="Tổng quan"
-        onMenuPress={openSidebar}
-        right={
-          <View style={{ flexDirection: 'row', gap: 8 }}>
-            <TouchableOpacity onPress={onRefresh} style={{ width: 36, height: 36, borderRadius: 4, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name="refresh" size={20} color="#F97316" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push('/ban-hang')} activeOpacity={0.9}>
-              <LinearGradient
-                colors={['#F97316', '#EA580C']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={styles.backPillBtn}
-              >
-                <Icon name="cash-register" size={14} color="#fff" />
-                <Text style={styles.backPillText}>Bán hàng</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-          </View>
-        }
-      />
-
+      {renderHeader()}
       <ScrollView
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#F97316" />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand.primary} />}
+        contentContainerStyle={{ paddingHorizontal: 8, paddingBottom: 40, gap: 12 }}
       >
-        {/* Stat Cards (2x2 Grid) */}
-        <View style={styles.statsGrid}>
-          {stats.map((s, i) => (
-            <StatCard key={i} {...s} loading={loading} />
-          ))}
+        {renderStatRow(false)}
+
+        <View style={styles.cardBox}>
+          <OccupancyProgress
+            trong={data?.table_stats?.trong ?? 0}
+            coKhach={data?.table_stats?.co_khach ?? 0}
+            daDat={data?.table_stats?.da_dat ?? 0}
+          />
         </View>
 
-        {/* Occupancy Indicator */}
-        {!loading && data?.table_stats && (
-          <View style={styles.section}>
-            <OccupancyProgress
-              trong={data.table_stats.trong}
-              coKhach={data.table_stats.co_khach}
-              daDat={data.table_stats.da_dat}
-            />
-          </View>
-        )}
-
-        {/* Top Products */}
-        <TopProductsWidget data={data?.top_products} loading={loading} />
-
-        <NavigationGrid />
-        <View style={{ height: 32 }} />
+        <TopProductsList data={data?.top_products} loading={loading} />
+        <LowStockList loading={loading} />
+        <RecentActivitiesList loading={loading} />
+        <NavigationGrid compact />
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-const CARD_SHADOW = {
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.06,
-  shadowRadius: 8,
-  elevation: 3,
-};
-
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface.app },
 
-  backPillBtn: {
+  pillBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
     paddingHorizontal: 12, paddingVertical: 8,
-    borderRadius: 4,
+    borderRadius: shape.radius.md,
   },
-  backPillText: { color: colors.text.inverse, ...font.buttonSmall },
-
-  statsGrid: { flexDirection: 'row', flexWrap: 'wrap', paddingHorizontal: 12, paddingTop: 16, gap: 10 },
-
-  section: {
-    backgroundColor: colors.surface.card,
-    borderRadius: 4,
-    marginHorizontal: 12,
-    marginTop: 14,
-    padding: 16,
-    ...CARD_SHADOW,
+  pillText: { color: colors.text.inverse, ...font.buttonSmall },
+  refreshBtn: {
+    width: 36, height: 36, borderRadius: shape.radius.md,
+    backgroundColor: colors.brand.primaryBg,
+    alignItems: 'center', justifyContent: 'center',
   },
-  sectionWide: {
+
+  statsGrid: { flexDirection: 'row', flexWrap: 'wrap', paddingTop: 8, gap: 8 },
+
+  cardBox: {
     backgroundColor: colors.surface.card,
-    borderRadius: 4,
-    padding: 16,
-    ...CARD_SHADOW,
+    borderRadius: shape.radius.lg,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: colors.border.light,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
   },
 });

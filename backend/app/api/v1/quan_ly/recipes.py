@@ -10,13 +10,13 @@ from sqlalchemy.orm import selectinload
 from app.core.database import get_db
 from app.core.auth import get_current_user
 from app.core.pagination import PageParams, paginate
-from app.models.recipe import RawMaterial, Recipe, RecipeItem
+from app.models.recipe import RawMaterial, Recipe, RecipeItem, RecipeVersion
 from app.models.ban_hang import Product
 
 router = APIRouter(prefix="/quan-ly", tags=["quan-ly"])
 
 
-# â”€â”€ Schemas â”€â”€
+# ── Schemas ──
 
 class RawMaterialCreate(BaseModel):
     code: str
@@ -51,7 +51,7 @@ class RecipeCreate(BaseModel):
     product_id: str
     name: str
     yield_qty: float = 1
-    yield_unit: str = "pháº§n"
+    yield_unit: str = "phần"
     instructions: str | None = None
     wastage_percent: float = 0
     items: list[RecipeItemCreate] = []
@@ -63,9 +63,10 @@ class RecipeUpdate(BaseModel):
     yield_unit: str | None = None
     instructions: str | None = None
     wastage_percent: float | None = None
+    items: list[RecipeItemCreate] | None = None
 
 
-# â”€â”€ Helpers â”€â”€
+# ── Helpers ──
 
 def _rm_to_dict(rm: RawMaterial) -> dict:
     return {
@@ -78,11 +79,29 @@ def _rm_to_dict(rm: RawMaterial) -> dict:
         "created_at": rm.created_at.isoformat() if rm.created_at else None,
     }
 
-def _recipe_to_dict(r: Recipe) -> dict:
+
+def _calc_food_cost(cost_price: float, product_price: float) -> float:
+    if not product_price:
+        return 0
+    return round((cost_price / product_price) * 100, 2)
+
+
+async def _enrich_recipe(r: Recipe, db: AsyncSession) -> dict:
+    """Convert Recipe ORM to enriched dict with product info."""
+    prod_result = await db.execute(select(Product).where(Product.id == r.product_id))
+    product = prod_result.scalar_one_or_none()
+    product_price = float(product.price) if product else 0
+    product_name = product.name if product else ""
+
     return {
-        "id": str(r.id), "product_id": str(r.product_id), "name": r.name,
+        "id": str(r.id), "product_id": str(r.product_id),
+        "product_name": product_name, "product_price": product_price,
+        "recipe_name": r.name, "name": r.name,
         "yield_qty": float(r.yield_qty), "yield_unit": r.yield_unit,
-        "cost_price": float(r.cost_price), "instructions": r.instructions,
+        "cost_price": float(r.cost_price),
+        "food_cost_pct": _calc_food_cost(float(r.cost_price), product_price),
+        "ingredient_count": len(r.items or []),
+        "instructions": r.instructions,
         "wastage_percent": float(r.wastage_percent), "is_active": r.is_active,
         "created_at": r.created_at.isoformat() if r.created_at else None,
         "items": [
@@ -95,13 +114,8 @@ def _recipe_to_dict(r: Recipe) -> dict:
         ],
     }
 
-def _calc_food_cost(cost_price: float, product_price: float) -> float:
-    if not product_price:
-        return 0
-    return round((cost_price / product_price) * 100, 2)
 
-
-# â”€â”€ Raw Materials CRUD â”€â”€
+# ── Raw Materials CRUD ──
 
 @router.get("/raw-materials")
 async def list_raw_materials(db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)):
@@ -132,7 +146,7 @@ async def update_raw_material(rm_id: str, body: RawMaterialUpdate, db: AsyncSess
     return _rm_to_dict(rm)
 
 
-# â”€â”€ Recipes CRUD â”€â”€
+# ── Recipes CRUD ──
 
 @router.get("/recipes")
 async def list_recipes(
@@ -140,21 +154,22 @@ async def list_recipes(
         db: AsyncSession = Depends(get_db),
         _user: dict = Depends(get_current_user),
     ):
-    query = select(Recipe).order_by(Recipe.name)
+    query = select(Recipe).options(selectinload(Recipe.items)).order_by(Recipe.name)
     page_result = await paginate(db, query, page.page, page.page_size)
-    page_result["items"] = [_recipe_dict(r) for r in page_result["items"]]
+    enriched = []
+    for r in page_result["items"]:
+        enriched.append(await _enrich_recipe(r, db))
+    page_result["items"] = enriched
     return page_result
 
 
 @router.post("/recipes", status_code=201)
 async def create_recipe(body: RecipeCreate, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)):
-    # Verify product exists
     prod_result = await db.execute(select(Product).where(Product.id == uuid.UUID(body.product_id)))
     product = prod_result.scalar_one_or_none()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    items_data = body.model_dump().pop("items", [])
     recipe = Recipe(
         product_id=uuid.UUID(body.product_id),
         name=body.name,
@@ -164,7 +179,6 @@ async def create_recipe(body: RecipeCreate, db: AsyncSession = Depends(get_db), 
         wastage_percent=body.wastage_percent,
     )
 
-    # Calculate cost from items
     total_cost = 0
     for item_data in body.items:
         rm_result = await db.execute(select(RawMaterial).where(RawMaterial.id == uuid.UUID(item_data.raw_material_id)))
@@ -183,7 +197,78 @@ async def create_recipe(body: RecipeCreate, db: AsyncSession = Depends(get_db), 
     db.add(recipe)
     await db.commit()
     await db.refresh(recipe)
-    return _recipe_to_dict(recipe)
+
+    # Save version 1
+    version = RecipeVersion(
+        recipe_id=recipe.id, version_number=1, name=recipe.name,
+        cost_price=total_cost, items_json=[
+            {"raw_material_id": str(i.raw_material_id), "quantity": float(i.quantity),
+             "unit": i.unit, "cost": float(i.cost), "note": i.note}
+            for i in recipe.items
+        ],
+    )
+    db.add(version)
+    await db.commit()
+
+    return await _enrich_recipe(recipe, db)
+
+
+@router.put("/recipes/{recipe_id}")
+async def update_recipe(recipe_id: str, body: RecipeUpdate, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)):
+    result = await db.execute(
+        select(Recipe).options(selectinload(Recipe.items)).where(Recipe.id == uuid.UUID(recipe_id))
+    )
+    r = result.scalar_one_or_none()
+    if not r:
+        raise HTTPException(status_code=404, detail="Recipe not found")
+
+    update_data = body.model_dump(exclude_unset=True)
+    items_data = update_data.pop("items", None)
+
+    for k, v in update_data.items():
+        setattr(r, k, v)
+
+    if items_data is not None:
+        for old_item in r.items:
+            await db.delete(old_item)
+        r.items.clear()
+        total_cost = 0
+        for item_data in items_data:
+            rm_result = await db.execute(select(RawMaterial).where(RawMaterial.id == uuid.UUID(item_data["raw_material_id"])))
+            rm = rm_result.scalar_one_or_none()
+            item_cost = item_data.get("cost", 0) or (rm.default_cost * item_data["quantity"] if rm else 0)
+            total_cost += item_cost
+            r.items.append(RecipeItem(
+                raw_material_id=uuid.UUID(item_data["raw_material_id"]),
+                quantity=item_data["quantity"],
+                unit=item_data.get("unit", "kg"),
+                cost=item_cost,
+                note=item_data.get("note"),
+            ))
+        r.cost_price = total_cost
+
+    await db.commit()
+    await db.refresh(r)
+
+    # Save new version
+    version_count = await db.scalar(
+        select(RecipeVersion).where(RecipeVersion.recipe_id == r.id).order_by(RecipeVersion.version_number.desc())
+    )
+    prev_ver = version_count or 0
+    if isinstance(prev_ver, RecipeVersion):
+        prev_ver = prev_ver.version_number
+    version = RecipeVersion(
+        recipe_id=r.id, version_number=prev_ver + 1, name=r.name,
+        cost_price=float(r.cost_price), items_json=[
+            {"raw_material_id": str(i.raw_material_id), "quantity": float(i.quantity),
+             "unit": i.unit, "cost": float(i.cost), "note": i.note}
+            for i in r.items
+        ],
+    )
+    db.add(version)
+    await db.commit()
+
+    return await _enrich_recipe(r, db)
 
 
 @router.get("/recipes/{recipe_id}")
@@ -194,7 +279,23 @@ async def get_recipe(recipe_id: str, db: AsyncSession = Depends(get_db), _user: 
     r = result.scalar_one_or_none()
     if not r:
         raise HTTPException(status_code=404, detail="Recipe not found")
-    return _recipe_to_dict(r)
+    return await _enrich_recipe(r, db)
+
+
+@router.get("/recipes/{recipe_id}/versions")
+async def list_recipe_versions(recipe_id: str, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)):
+    result = await db.execute(
+        select(RecipeVersion).where(RecipeVersion.recipe_id == uuid.UUID(recipe_id)).order_by(RecipeVersion.version_number.desc())
+    )
+    versions = result.scalars().all()
+    return [
+        {
+            "id": str(v.id), "version_number": v.version_number,
+            "name": v.name, "cost_price": float(v.cost_price),
+            "items": v.items_json, "created_at": v.created_at.isoformat() if v.created_at else None,
+        }
+        for v in versions
+    ]
 
 
 @router.delete("/recipes/{recipe_id}")
@@ -208,11 +309,10 @@ async def delete_recipe(recipe_id: str, db: AsyncSession = Depends(get_db), _use
     return {"status": "ok"}
 
 
-# â”€â”€ Food Cost Report â”€â”€
+# ── Food Cost Report ──
 
 @router.get("/food-cost")
 async def food_cost_report(db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)):
-    """Return food cost % for all products that have recipes."""
     products_result = await db.execute(select(Product).where(Product.is_active == True))
     products = {str(p.id): p for p in products_result.scalars()}
 
@@ -234,4 +334,3 @@ async def food_cost_report(db: AsyncSession = Depends(get_db), _user: dict = Dep
             "ingredient_count": len(r.items or []),
         })
     return sorted(report, key=lambda x: x["food_cost_pct"], reverse=True)
-

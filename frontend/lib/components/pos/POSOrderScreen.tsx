@@ -42,7 +42,7 @@ export default function POSOrderScreen({ tableId, tableName, onClose }: POSOrder
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface.app }}>
+    <SafeAreaView edges={['left', 'right', 'bottom']} style={{ flex: 1, backgroundColor: colors.surface.app }}>
       <OrderHeader
         tableName={tableName}
         itemsCount={ord.itemCount}

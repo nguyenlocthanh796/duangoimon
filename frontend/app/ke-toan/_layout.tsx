@@ -1,12 +1,15 @@
 import { Stack } from 'expo-router';
+import { useWindowDimensions } from 'react-native';
 import Sidebar from '../../lib/components/Sidebar';
-import { SidebarProvider } from '../../lib/context/SidebarContext';
 
 export default function KeToanLayout() {
+  const { width } = useWindowDimensions();
+  const isWide = width > 768;
+
   return (
-    <SidebarProvider>
+    <>
       <Stack screenOptions={{ headerShown: false }} />
-      <Sidebar />
-    </SidebarProvider>
+      <Sidebar isWide={isWide} />
+    </>
   );
 }

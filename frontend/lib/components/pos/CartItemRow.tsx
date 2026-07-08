@@ -169,13 +169,11 @@ export default function CartItemRow({
             {item.name}
           </Text>
           <Text style={{ fontSize: 11, color: colors.text.muted }} numberOfLines={1}>
-            {mods || 'Mặc định'}
+            {mods ? `${mods} · ` : ''}{item.qty > 1 ? `${formatPrice(unitPrice)} x ${item.qty}` : formatPrice(unitPrice)}
           </Text>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingTop: 2 }}>
-            <Text style={{ fontSize: 11, color: colors.text.muted }}>{formatPrice(unitPrice)}</Text>
-            <Text style={{ fontSize: 9, color: colors.text.muted }}>•</Text>
-            <Text style={{ fontSize: 13, fontWeight: '900', color: isCancelled ? colors.text.muted : colors.brand.primary }}>{formatPrice(totalPrice)}</Text>
-          </View>
+          <Text style={{ fontSize: 13, fontWeight: '900', color: isCancelled ? colors.text.muted : colors.brand.primary }}>
+            {formatPrice(totalPrice)}
+          </Text>
         </View>
 
         <View style={{ alignItems: 'flex-end', justifyContent: 'space-between', gap: 4 }}>
@@ -207,15 +205,15 @@ export default function CartItemRow({
           {!isCancelled && (
             <View style={{
               flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-              width: 100, backgroundColor: colors.surface.disabled, borderWidth: 1,
-              borderColor: colors.border.default, padding: 3, borderRadius: 999,
+              width: 104, height: 34, backgroundColor: colors.surface.disabled, borderWidth: 1,
+              borderColor: colors.border.default, padding: 2, borderRadius: 8,
             }}>
               <TouchableOpacity
                 onPress={() => handleQtyChange(-1)}
                 disabled={item.qty <= 1}
-                style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: item.qty <= 1 ? 'transparent' : colors.surface.card, alignItems: 'center', justifyContent: 'center', borderWidth: item.qty <= 1 ? 0 : 1, borderColor: colors.border.default }}
+                style={{ width: 30, height: 30, borderRadius: 6, backgroundColor: item.qty <= 1 ? 'transparent' : colors.surface.card, alignItems: 'center', justifyContent: 'center', borderWidth: item.qty <= 1 ? 0 : 1, borderColor: colors.border.default }}
               >
-                <MaterialIcons name="remove" size={14} color={item.qty <= 1 ? colors.border.strong : colors.text.secondary} />
+                <MaterialIcons name="remove" size={16} color={item.qty <= 1 ? colors.border.strong : colors.text.secondary} />
               </TouchableOpacity>
 
               {isQtyEditing ? (
@@ -227,22 +225,22 @@ export default function CartItemRow({
                   onSubmitEditing={commitQty}
                   keyboardType="number-pad"
                   selectTextOnFocus
-                  style={{ fontSize: 14, fontWeight: '700', color: colors.brand.primary, textAlign: 'center', width: 28, padding: 0, margin: 0, height: 24 }}
+                  style={{ fontSize: 15, fontWeight: '700', color: colors.brand.primary, textAlign: 'center', width: 36, padding: 0, margin: 0, height: 30 }}
                 />
               ) : (
                 <TouchableOpacity
                   onPress={() => { setQtyInput(String(item.qty)); setQtyEditId(item.cartItemId); }}
                   style={{ flex: 1, alignItems: 'center' }}
                 >
-                  <Text style={{ fontSize: 15, fontWeight: '700', color: colors.text.primary, textAlign: 'center', width: 28 }}>{item.qty}</Text>
+                  <Text style={{ fontSize: 15, fontWeight: '700', color: colors.text.primary, textAlign: 'center', width: 36 }}>{item.qty}</Text>
                 </TouchableOpacity>
               )}
 
               <TouchableOpacity
                 onPress={() => handleQtyChange(1)}
-                style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: colors.brand.primaryBg, borderWidth: 1, borderColor: colors.border.brand, alignItems: 'center', justifyContent: 'center' }}
+                style={{ width: 30, height: 30, borderRadius: 6, backgroundColor: colors.brand.primaryBg, borderWidth: 1, borderColor: colors.border.brand, alignItems: 'center', justifyContent: 'center' }}
               >
-                <MaterialIcons name="add" size={14} color={colors.brand.primary} />
+                <MaterialIcons name="add" size={16} color={colors.brand.primary} />
               </TouchableOpacity>
             </View>
           )}

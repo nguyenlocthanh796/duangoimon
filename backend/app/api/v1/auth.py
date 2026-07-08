@@ -41,7 +41,7 @@ async def login(body: LoginRequest, request: Request, db: AsyncSession = Depends
     if not user or not verify_password(body.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    token = create_token(str(user.id), role=user.role)
+    token = create_token(str(user.id), role=user.role, branch_id=str(user.branch_id) if user.branch_id else "")
     return {
         "access_token": token,
         "token_type": "bearer",
@@ -49,6 +49,7 @@ async def login(body: LoginRequest, request: Request, db: AsyncSession = Depends
             "id": str(user.id),
             "username": user.username,
             "role": user.role,
+            "branch_id": str(user.branch_id) if user.branch_id else None,
             "full_name": user.full_name
         },
     }

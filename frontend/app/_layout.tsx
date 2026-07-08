@@ -4,8 +4,14 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { View, ActivityIndicator } from 'react-native';
+import { useEffect } from 'react';
 import { AuthProvider, useAuth } from '../lib/context/AuthContext';
+import { SidebarProvider } from '../lib/context/SidebarContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold, Inter_800ExtraBold, Inter_900Black } from '@expo-google-fonts/inter';
+import * as SplashScreen from 'expo-splash-screen';
+
+SplashScreen.preventAutoHideAsync();
 
 function AppStack() {
   const { isInitialized } = useAuth();
@@ -31,12 +37,25 @@ function AppStack() {
 }
 
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    Inter_400Regular, Inter_500Medium, Inter_600SemiBold,
+    Inter_700Bold, Inter_800ExtraBold, Inter_900Black,
+  });
+
+  useEffect(() => {
+    if (fontsLoaded) SplashScreen.hideAsync();
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) return null;
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <AuthProvider>
-          <StatusBar style="dark" />
-          <AppStack />
+          <SidebarProvider>
+            <StatusBar style="dark" />
+            <AppStack />
+          </SidebarProvider>
         </AuthProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { colors, font, shape, palette } from '../../theme';
+import { colors, font, palette } from '../../theme';
+import { shape } from '../../theme/shape';
 
 export interface TicketOrder {
   id: string;
@@ -47,7 +48,7 @@ export default function TicketCard({ order, colStatus, onMarkDone, onMoveForward
   return (
     <View style={{
       backgroundColor: colors.surface.card,
-      borderRadius: 16, marginBottom: 12,
+      borderRadius: shape.radius.lg, marginBottom: 12,
       borderWidth: 1.5,
       borderColor: isUrgent ? palette.red[300] : isDone ? colors.border.success : colors.border.default,
       overflow: 'hidden',
@@ -69,11 +70,11 @@ export default function TicketCard({ order, colStatus, onMarkDone, onMoveForward
       }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <View style={{
-            width: 34, height: 34, borderRadius: 10,
+            width: 36, height: 36, borderRadius: shape.radius.md,
             backgroundColor: isUrgent ? colors.status.danger : isDone ? colors.status.success : colors.brand.primary,
             alignItems: 'center', justifyContent: 'center',
           }}>
-            <Icon name="table-furniture" size={16} color={colors.text.inverse} />
+            <Icon name="table-furniture" size={18} color={colors.text.inverse} />
           </View>
           <View style={{ flexShrink: 1 }}>
             <Text style={{ ...font.h3, color: colors.text.primary }}>{order.table_name}</Text>
@@ -85,7 +86,7 @@ export default function TicketCard({ order, colStatus, onMarkDone, onMoveForward
 
         <View style={{ alignItems: 'flex-end', flexShrink: 0 }}>
           <View style={{
-            paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8,
+            paddingHorizontal: 8, paddingVertical: 3, borderRadius: shape.radius.md,
             backgroundColor: isUrgent ? palette.red[100] : isDone ? colors.border.success : colors.brand.primaryBg,
           }}>
             <Text style={{ ...font.caption, color: isUrgent ? colors.status.danger : isDone ? colors.status.success : colors.brand.primary }}>
@@ -102,7 +103,7 @@ export default function TicketCard({ order, colStatus, onMarkDone, onMoveForward
       <View style={{ paddingHorizontal: 14, paddingVertical: 10, gap: 8 }}>
         {order.items.filter(i => i.quantity > 0).map(item => (
           <View key={item.id} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
-            <View style={{ width: 26, height: 26, borderRadius: 8, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center', marginTop: 1 }}>
+            <View style={{ width: 26, height: 26, borderRadius: shape.radius.md, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center', marginTop: 1 }}>
               <Text style={{ ...font.caption, color: colors.brand.primary }}>×{item.quantity}</Text>
             </View>
             <View style={{ flex: 1 }}>

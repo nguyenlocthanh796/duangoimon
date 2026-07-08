@@ -19,10 +19,11 @@ def hash_password(plain: str) -> str:
     return pwd_context.hash(plain)
 
 
-def create_token(user_id: str, role: str = "") -> str:
+def create_token(user_id: str, role: str = "", branch_id: str = "") -> str:
     payload = {
         "sub": user_id,
         "role": role,
+        "branch_id": branch_id,
         "exp": datetime.now(timezone.utc) + timedelta(hours=8),
     }
     return jwt.encode(payload, settings.secret_key, algorithm="HS256")

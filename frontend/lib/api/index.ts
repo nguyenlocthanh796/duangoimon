@@ -39,6 +39,7 @@ export const api = {
 
   // ── Orders ──
   getOrders: ordersFns.getOrders,
+  getOrder: ordersFns.getOrder,
   getActiveOrderForTable: ordersFns.getActiveOrderForTable,
   createOrder: ordersFns.createOrder,
   updateOrder: ordersFns.updateOrder,

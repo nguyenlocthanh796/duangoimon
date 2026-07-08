@@ -47,3 +47,7 @@ export function moveTable(orderId: string, data: { table_id: string }) {
 export function cancelOrderItem(data: { item_id: string; reason: string }) {
   return request<any>('/ban-hang/orders/cancel-item', { method: 'POST', body: JSON.stringify(data) });
 }
+
+export function getOrder(orderId: string) {
+  return request<any>(`/ban-hang/orders/${orderId}`);
+}

@@ -13,8 +13,9 @@ ALLOWED_ROLES = {
 
 
 def _resolve_prefix(path: str) -> str:
+    normalized_path = path if path.startswith("/") else "/" + path
     for prefix in sorted(ALLOWED_ROLES, key=len, reverse=True):
-        if path.startswith("/" + prefix):
+        if normalized_path.startswith("/" + prefix):
             return prefix
     return ""
 
