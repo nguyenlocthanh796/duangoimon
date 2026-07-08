@@ -1,10 +1,10 @@
 <div align="center">
   <img src="frontend/assets/icon.png" width="80" alt="POSA Logo"/>
-  <h1 align="center">POSA — POS F&B</h1>
+  <h1 align="center">POSA — POS & Restaurant Management System</h1>
   <p align="center">
-    Hệ thống quản lý nhà hàng toàn diện
+    All-in-one F&B management platform
     <br/>
-    POS bán hàng · Quản lý bếp · Kho & Kế toán · CRM · Đặt bàn
+    Point of Sale · Kitchen Display · Inventory · Accounting · CRM · Booking
   </p>
   <p align="center">
     <img src="https://img.shields.io/badge/python-3.14-blue?logo=python" alt="Python"/>
@@ -20,39 +20,52 @@
 
 ---
 
-## 📋 Mục lục
+## Table of Contents
 
-- [Tổng quan](#-tổng-quan)
-- [Kiến trúc](#-kiến-trúc)
-- [Công nghệ](#-công-nghệ)
-- [Tính năng](#-tính-năng)
-- [Cấu trúc dự án](#-cấu-trúc-dự-án)
-- [Bắt đầu nhanh](#-bắt-đầu-nhanh)
-  - [Docker Compose (khuyến nghị)](#docker-compose-khuyến-nghị)
-  - [Thủ công](#thủ-công)
-- [API](#-api)
+- [Overview](#-overview)
+- [Architecture](#-architecture)
+- [Tech Stack](#-tech-stack)
+- [Features](#-features)
+  - [POS Sales](#pos-sales)
+  - [Kitchen Display](#kitchen-display)
+  - [Management](#management-modules)
+  - [Accounting](#accounting)
+  - [Integrations](#integrations)
+- [Project Structure](#-project-structure)
+- [Quick Start](#-quick-start)
+  - [Docker Compose (Production)](#docker-compose-production)
+  - [Manual Development](#manual-development)
+- [API Reference](#-api-reference)
 - [Testing](#-testing)
-- [Triển khai](#-triển-khai)
+- [Deployment](#-deployment)
 - [License](#-license)
 
 ---
 
-## 📌 Tổng quan
+## 📌 Overview
 
-**POSA** là nền tảng quản lý chuỗi nhà hàng - quán cà phê all-in-one, bao gồm:
+**POSA** is a comprehensive restaurant chain management platform built for Vietnamese F&B businesses. It replaces fragmented tools (separate POS, inventory, accounting, CRM) with a single integrated system.
 
-- **POS bán hàng** — Tạo đơn, thanh toán đa phương thức, gộp/tách bàn, in hóa đơn
-- **Quản lý bếp** — Theo dõi món real-time qua WebSocket
-- **Quản lý kho** — Nhập/xuất nguyên liệu, tồn kho, nhà cung cấp
-- **Kế toán** — Doanh thu, báo cáo, hóa đơn điện tử
-- **CRM** — Khách hàng thân thiết, tích điểm, membership
-- **Tích hợp** — GrabFood, ShopeeFood, Momo, ZaloPay, Viettel HDDT
+**Key differentiators:**
+- **F&B-first design** — table management, order rounds, kitchen split, modifier options (size/topping)
+- **Multi-branch** — centralized management across locations with per-branch inventory, pricing, and staffing
+- **Real-time kitchen** — WebSocket-powered Kanban display with round tracking
+- **Offline-capable** — frontend queuing for network interruptions (service worker + local queue)
+- **Vietnamese i18n** — full UI/api translation support (vi/en), VND currency formatting
 
-Hỗ trợ đa chi nhánh, đa ca làm việc, phân quyền RBAC (admin, thu ngân, bếp, quản lý).
+### Target Users
+
+| Role | Access |
+|------|--------|
+| **Cashier** | POS sales, payments, table management |
+| **Kitchen** | Real-time order display, status updates |
+| **Manager** | Menu, inventory, staff, reports, CRM |
+| **Accountant** | Revenue, invoices (Viettel), P&L |
+| **Admin** | Full access, branch management, system config |
 
 ---
 
-## 🏗️ Kiến trúc
+## 🏗️ Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -64,156 +77,177 @@ Hỗ trợ đa chi nhánh, đa ca làm việc, phân quyền RBAC (admin, thu ng
 ┌─────────────────────────────────────────────────────────┐
 │                   FastAPI (uvicorn)                      │
 │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌─────────────┐ │
-│  │  Auth    │ │  POS     │ │  Quản lý  │ │  Kế toán    │ │
-│  │  RBAC    │ │  Bán hàng│ │  Kho/CRM  │ │  Báo cáo    │ │
+│  │  Auth    │ │  POS     │ │  Management │ Accounting  │ │
+│  │  RBAC    │ │  Sales   │ │  Inventory  │  Reports    │ │
 │  └──────────┘ └──────────┘ └──────────┘ └─────────────┘ │
 │  ┌──────────┐ ┌──────────┐ ┌──────────────────────────┐ │
-│  │  Bếp WS  │ │ Webhook  │ │  i18n · Cache · Sentry   │ │
-│  │ real-time │ │ Grab/Momo│ │  Rate Limit · Soft Delete│ │
+│  │  Kitchen │ │ Webhook  │ │  i18n · Cache · Sentry   │ │
+│  │  WS      │ │ Grab/Momo│ │  Authz · Audit · Rate    │ │
 │  └──────────┘ └──────────┘ └──────────────────────────┘ │
 └────────────────────┬────────────────────────────────────┘
                      │
-          ┌──────────┴──────────┐
-          ▼                     ▼
-   ┌──────────────┐      ┌───────────┐
-   │  PostgreSQL  │      │   Redis   │
-   │     (16)     │      │    (7)    │
-   └──────────────┘      └───────────┘
+           ┌─────────┴──────────┐
+           ▼                    ▼
+    ┌──────────────┐     ┌───────────┐
+    │  PostgreSQL  │     │   Redis   │
+    │     (16)     │     │    (7)    │
+    └──────────────┘     └───────────┘
 ```
 
-### Backend (Clean Architecture)
+### Backend Layers (Clean Architecture)
 
-| Layer | Mô tả |
-|--------|-------|
-| **api/v1/** | Route handlers (ban_hang, quan_ly, ke_toan) |
-| **core/** | Auth, pagination, i18n, cache, logging, Sentry |
-| **models/** | SQLAlchemy ORM models |
-| **schemas/** | Pydantic request/response schemas |
-| **integrations/** | GrabFood, Momo, ZaloPay, Viettel HDDT |
+| Layer | Description |
+|--------|------------|
+| **api/v1/** | Route handlers segmented by domain: `ban_hang`, `quan_ly`, `ke_toan` |
+| **core/** | Middleware — auth, RBAC, pagination, i18n, cache, rate limiter, audit, Sentry |
+| **models/** | SQLAlchemy ORM — Table, Product, Order, User, Inventory, Recipe, Invoice, etc. |
+| **schemas/** | Pydantic v2 request/response validation |
+| **integrations/** | 3rd-party — GrabFood/ShopeeFood webhooks, Momo/ZaloPay, Viettel e-invoice |
 
-### Frontend (Expo Router)
+### Frontend Structure (Expo Router)
 
-| Layer | Mô tả |
-|--------|-------|
-| **app/** | File-based routing (Expo Router) |
-| **lib/components/** | UI components (POS, Payment, Kitchen, Management) |
-| **lib/hooks/** | Custom hooks (useCart, useOrder, usePayment, ...) |
+| Layer | Description |
+|-------|-------------|
+| **app/** | File-based routing (`ban-hang/`, `quan-ly/`, `ke-toan/`) |
+| **lib/components/** | UI components — POS (OrderScreen, CartPanel, ProductGrid), Payment, Kitchen (Kanban), Management |
+| **lib/hooks/** | Custom hooks — `useCart`, `useOrder`, `usePayment`, `useKitchenWS`, `useOfflineSync` |
 | **lib/context/** | AuthContext, SidebarContext |
-| **lib/api/** | API client & endpoint modules |
-| **lib/theme/** | Design tokens (colors, typography, shape) |
+| **lib/api/** | HTTP client with token management + typed endpoints |
+| **lib/theme/** | Design tokens — colors (orange primary), typography, shape, spacing |
+
+### Design System
+
+| Token | Value |
+|-------|-------|
+| Primary | `#F97316` (orange) |
+| Background | `#FAFAFA` |
+| Cards | White with border/shadow |
+| Radius | 16px (2xl) standard |
+| Typography | Inter-like, scale-responsive (tablet 1.25x) |
+| Formatting | VND currency via `Intl.NumberFormat` |
 
 ---
 
-## 🛠️ Công nghệ
+## 🛠️ Tech Stack
 
 ### Backend
 
-| Công nghệ | Mục đích |
-|-----------|----------|
-| **Python 3.14** | Ngôn ngữ |
-| **FastAPI** | REST API framework |
-| **SQLAlchemy 2.x** | ORM |
-| **Alembic** | Migration |
-| **Pydantic v2** | Validation |
-| **PostgreSQL 16** | Database |
-| **Redis 7** | Cache / session |
-| **WebSocket** | Bếp real-time |
-| **structlog** | Structured logging |
+| Technology | Purpose |
+|------------|---------|
+| **Python 3.14** | Runtime |
+| **FastAPI** | REST framework with async support |
+| **SQLAlchemy 2.x** | Async ORM with PostgreSQL |
+| **Alembic** | Database migrations |
+| **Pydantic v2** | Request/response validation |
+| **PostgreSQL 16** | Primary database |
+| **Redis 7** | Caching, session store (optional) |
+| **WebSocket** | Real-time kitchen display |
+| **structlog** | Structured log pipeline |
 | **Sentry** | Error tracking |
-| **pytest** | Testing |
+| **pytest** | Test runner |
 
 ### Frontend
 
-| Công nghệ | Mục đích |
-|-----------|----------|
-| **Expo SDK 57** | Framework |
-| **React Native 0.86** | Mobile UI |
+| Technology | Purpose |
+|------------|---------|
+| **Expo SDK 57** | Cross-platform framework |
+| **React Native 0.86** | Mobile UI runtime |
 | **Expo Router** | File-based routing |
-| **NativeWind** | TailwindCSS styling |
+| **NativeWind** | TailwindCSS-like styling |
 | **React Native Reanimated** | Animations |
-| **@gorhom/bottom-sheet** | Bottom sheets |
+| **@gorhom/bottom-sheet** | Modifier/payment sheets |
 | **TypeScript** | Type safety |
 
-### Infra
+### Infrastructure
 
-| Công nghệ | Mục đích |
-|-----------|----------|
-| **Docker Compose** | Orchestration |
-| **Nginx** | Reverse proxy + static |
+| Technology | Purpose |
+|------------|---------|
+| **Docker Compose** | Service orchestration |
+| **Nginx** | Reverse proxy + static file serving |
 | **PostgreSQL 16** | Database |
+| **Healthcheck** | `pg_isready` for boot ordering |
 
 ---
 
-## ✅ Tính năng
+## ✅ Features
 
-### POS Bán hàng `app/ban-hang/`
+### POS Sales (`app/ban-hang/`)
 
-| Tính năng | Mô tả |
-|-----------|-------|
-| 🛒 Tạo đơn hàng | Chọn món, tùy chọn (topping/size), ghi chú |
-| 💳 Thanh toán | Tiền mặt, chuyển khoản, thẻ, QR |
-| 🔀 Gộp/Tách bàn | Chuyển món giữa các bàn |
-| 🧾 In hóa đơn | Tạm tính & hóa đơn chính thức |
-| 📱 Mobile POS | Giao diện responsive cho tablet |
+| Feature | Description |
+|---------|-------------|
+| 🛒 Order creation | Select products, configure options (size/topping), add notes |
+| 🔄 Order rounds | Sequential ordering per table (round 1, round 2...) |
+| 💳 Multi-payment | Cash, bank transfer, card, QR code |
+| 🔀 Merge/Split tables | Transfer items between tables |
+| 🧾 Receipt printing | Temporary & final invoices |
+| 📱 Responsive UI | Tablet-optimized layout with bottom-sheet modals |
+| 🪑 Area filtering | Filter tables by zone/section |
 
-### Bếp `app/ban-hang/kitchen`
+### Kitchen Display (`kitchen.tsx`)
 
-| Tính năng | Mô tả |
-|-----------|-------|
-| 🔄 Real-time | WebSocket cập nhật món mới ngay lập tức |
-| 🎯 Kanban | Món mới → Đang nấu → Hoàn thành |
-| ⏱️ Theo dõi vòng (round) | Quản lý thứ tự món theo từng đợt |
+| Feature | Description |
+|---------|-------------|
+| 🔄 Real-time | WebSocket push for new orders |
+| 🎯 Kanban board | New → Preparing → Completed columns |
+| ⏱️ Round tracking | Visual order grouping by round |
+| 🔔 Audio alerts | New order notification |
 
-### Quản lý `app/quan-ly/`
+### Management Modules (`app/quan-ly/`)
 
-| Module | Tính năng |
-|--------|-----------|
-| 📋 Menu | CRUD món, phân loại, giá, tùy chọn |
-| 🪑 Bàn | Quản lý sơ đồ bàn, khu vực |
-| 🧑‍💼 Nhân viên | Phân quyền RBAC (admin, cashier, kitchen, manager) |
-| 📦 Kho | Nhập/xuất nguyên liệu, tồn kho, nhà cung cấp |
-| 📊 Báo cáo | Doanh thu, chi phí, lợi nhuận |
-| 👥 CRM | Khách hàng, membership, tích điểm |
-| 🎯 Marketing | Khuyến mãi, Voucher, chương trình |
-| 📅 Đặt bàn | Quản lý đặt trước, lịch hẹn |
-| 🏭 Chi nhánh | Quản lý đa chi nhánh |
-| 📈 Dự báo | Phân tích xu hướng, dự báo doanh thu |
-| 🔄 Stock | Kiểm kê, cảnh báo tồn kho |
+| Module | Features |
+|--------|----------|
+| 📋 Menu | CRUD products, categories, pricing, options |
+| 🪑 Tables | Floor plan, zones, QR code mapping |
+| 👥 Staff | RBAC roles (admin, cashier, kitchen, manager, accountant) |
+| 📦 Inventory | Raw materials, stock in/out, low-stock alerts |
+| 🏪 Suppliers | Supplier portal, price lists |
+| 📋 Purchase Orders | Create/receive PO, partial receipt tracking |
+| 📊 Reports | Revenue, food cost, P&L, top products |
+| 👥 CRM | Customer profiles, total spend, visit history |
+| 🏆 Membership | Tiered loyalty (points, discount rate, multiplier) |
+| 🎯 Marketing | Campaigns (birthday/loyalty/promo), email/SMS |
+| 🎟️ Promotions | Buy-X-get-Y, combo deals, time-based discounts |
+| 📅 Booking | Reservation management, guest count, status |
+| 🏭 Multi-branch | Centralized management across locations |
+| 📈 Forecasting | Demand prediction, trend analysis |
+| 🔄 Menu Engineering | Boston Matrix (star/plowhorse/puzzle/dog) |
+| 🧾 Recipe Mgmt | Recipe costing, wastage tracking |
+| 📋 Audit Log | Full mutation history, user/action/entity tracking |
 
-### Kế toán `app/ke-toan/`
+### Accounting (`app/ke-toan/`)
 
-| Tính năng | Mô tả |
-|-----------|-------|
-| 📄 Hóa đơn điện tử | Tích hợp Viettel HDDT |
-| 💰 Giao dịch | Theo dõi thu/chi |
-| 📑 Báo cáo tài chính | P&L, bảng cân đối |
+| Feature | Description |
+|---------|-------------|
+| 📄 E-invoice | Viettel HDDT integration for statutory invoices |
+| 💰 Transactions | Income/expense tracking |
+| 📑 Financial reports | Revenue aggregation, P&L |
 
-### Tích hợp
+### Integrations
 
-| Đối tác | Loại |
+| Partner | Type |
 |---------|------|
-| 🛵 GrabFood | Webhook nhận đơn |
-| 🛵 ShopeeFood | Webhook nhận đơn |
-| 💳 Momo | Cổng thanh toán |
-| 💳 ZaloPay | Cổng thanh toán |
-| 🧾 Viettel HDDT | Hóa đơn điện tử |
+| 🛵 GrabFood | Webhook order receiving |
+| 🛵 ShopeeFood | Webhook order receiving |
+| 💳 Momo | Payment gateway |
+| 💳 ZaloPay | Payment gateway |
+| 🧾 Viettel HDDT | E-invoice generation |
 
 ---
 
-## 📁 Cấu trúc dự án
+## 📁 Project Structure
 
 ```
 posa/
 ├── backend/                    # Python FastAPI
 │   ├── app/
 │   │   ├── api/v1/             # Route handlers
-│   │   │   ├── ban_hang/       # POS endpoints
-│   │   │   ├── quan_ly/        # Management endpoints
-│   │   │   └── ke_toan/        # Accounting endpoints
-│   │   ├── core/               # Auth, i18n, cache, logging
-│   │   ├── models/             # SQLAlchemy models
-│   │   ├── schemas/            # Pydantic schemas
-│   │   └── integrations/       # 3rd-party integrations
+│   │   │   ├── ban_hang/       # POS: orders, payments, products, tables
+│   │   │   ├── quan_ly/        # Management: menu, inventory, CRM, reports
+│   │   │   └── ke_toan/        # Accounting: invoices, transactions
+│   │   ├── core/               # Auth, RBAC, i18n, cache, rate limit, audit
+│   │   ├── models/             # SQLAlchemy ORM (Table, Order, Product, User...)
+│   │   ├── schemas/            # Pydantic validation
+│   │   └── integrations/       # GrabFood, Momo, ZaloPay, Viettel
 │   ├── alembic/                # Database migrations
 │   ├── tests/                  # Unit & integration tests
 │   ├── Dockerfile
@@ -226,58 +260,42 @@ posa/
 │   │   ├── quan-ly/            # Management screens
 │   │   └── ke-toan/            # Accounting screens
 │   ├── lib/
-│   │   ├── components/         # UI components
-│   │   ├── hooks/              # Custom hooks
-│   │   ├── context/            # React contexts
-│   │   ├── api/                # API client
-│   │   └── theme/              # Design tokens
+│   │   ├── components/         # Reusable UI (POS, Payment, Kitchen, QuanLy)
+│   │   ├── hooks/              # Custom hooks (useCart, useOrder, usePayment...)
+│   │   ├── context/            # AuthContext, SidebarContext
+│   │   ├── api/                # HTTP client + typed endpoints
+│   │   └── theme/              # Design tokens (colors, typography, shape)
 │   ├── public/                 # Static web build
 │   ├── app.json
 │   └── package.json
 │
-├── infra/                      # Docker & nginx
-│   ├── docker-compose.yml
+├── infra/                      # Production deployment
+│   ├── docker-compose.yml      # PostgreSQL + Backend + Nginx
 │   ├── nginx.conf
 │   └── backup.sh
 │
-├── .agents/                     # AI Agent skills & workspace
-│   ├── skills/
-│   │   ├── 9router/             # AI gateway (OpenAI-compatible)
-│   │   └── team-work/           # Multi-agent orchestrator
-│   │       ├── SKILL.md
-│   │       ├── run_teamwork.py
-│   │       └── scripts/
-│   │           ├── orchestrator.py  # Pipeline: detect→refine→plan→code→review
-│   │           ├── patcher.py       # SEARCH/REPLACE code patcher
-│   │           └── linter.py        # Auto linter per file type
-│   ├── teamwork_state.json       # Pipeline state (auto-generated)
-│   └── teamwork_debug.log       # Pipeline logs (auto-generated)
-│
-├── docker-compose.yml          # Dev compose (DB + Redis + Backend)
-└── start.ps1                   # Local dev script
+├── docker-compose.yml          # Development services (DB + Redis + Backend)
+├── start.ps1                   # Local dev launcher
+└── .env.example                # Environment template
 ```
 
 ---
 
-## 🚀 Bắt đầu nhanh
+## 🚀 Quick Start
 
-### Yêu cầu
+### Prerequisites
 
-- **Docker & Docker Compose** (cho production stack)
-- **Python 3.14+** (cho dev backend)
-- **Node.js 22+** (cho dev frontend)
+- **Docker & Docker Compose** (for production stack)
+- **Python 3.14+** (for backend development)
+- **Node.js 22+** (for frontend development)
 
-### Docker Compose (khuyến nghị)
-
-Triển khai full stack (PostgreSQL + Backend + Nginx static):
+### Docker Compose (Production)
 
 ```bash
 cd infra
-cp ../backend/.env.example ../backend/.env  # chỉnh sửa biến môi trường
+cp ../backend/.env.example ../backend/.env   # edit environment variables
 docker compose up -d
 ```
-
-Truy cập:
 
 | Service | URL |
 |---------|-----|
@@ -285,24 +303,32 @@ Truy cập:
 | API docs | http://localhost:8000/docs |
 | Health check | http://localhost:8000/healthz |
 
-### Thủ công
+### Manual Development
 
-**1. Backend**
+**1. Start infrastructure services**
+
+```bash
+docker compose up -d postgres redis
+```
+
+**2. Backend**
 
 ```bash
 cd backend
 python -m venv .venv
-.venv\Scripts\activate        # Windows
-source .venv/bin/activate     # Linux/macOS
+.venv\Scripts\activate          # Windows
+source .venv/bin/activate       # Linux/macOS
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
 cp .env.example .env
-# Chỉnh sửa DATABASE_URL trong .env
+# Edit DATABASE_URL in .env if needed
 alembic upgrade head
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-**2. Frontend**
+> **Windows note**: Python 3.14+ uses `ProactorEventLoop` by default. The app auto-selects `SelectorEventLoopPolicy` on Windows for psycopg async compatibility (see `app/main.py`).
+
+**3. Frontend**
 
 ```bash
 cd frontend
@@ -310,27 +336,53 @@ npm install
 npx expo start --web
 ```
 
-**3. Cơ sở dữ liệu** (nếu chạy backend thủ công)
+**4. One-command launcher** (Windows)
 
-```bash
-docker compose up -d postgres redis
+```powershell
+.\start.ps1
 ```
 
-### Tài khoản mặc định
+Kills existing processes on ports 8000/8081, starts backend with auto-reload, waits for health check, then launches Expo dev server.
 
-| Vai trò | Username | Password |
-|---------|----------|----------|
+### Default Accounts
+
+| Role | Username | Password |
+|------|----------|----------|
 | Admin | `admin` | `admin123` |
-| Thu ngân | `cashier1` | `cs123` |
-| Bếp | `kitchen1` | `ktch123` |
+| Cashier | `cashier1` | `cs123` |
+| Kitchen | `kitchen1` | `ktch123` |
+
+### Environment Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `DATABASE_URL` | PostgreSQL connection string | ✅ |
+| `SECRET_KEY` | JWT signing key (change immediately!) | ✅ |
+| `CORS_ORIGINS` | Allowed origins | ✅ |
+| `SENTRY_DSN` | Sentry error tracking | Optional |
+| `REDIS_URL` | Redis connection string | Optional |
 
 ---
 
-## 📐 API
+## 📐 API Reference
 
-Tài liệu OpenAPI tự động tại `/docs` (Swagger) hoặc `/redoc` (ReDoc).
+Interactive OpenAPI documentation at `/docs` (Swagger) or `/redoc` (ReDoc) when the server is running.
 
-### Ví dụ
+### Core Endpoints
+
+| Module | Endpoints | Description |
+|--------|-----------|-------------|
+| Auth | `POST /api/v1/auth/login` | Login, returns JWT |
+| Health | `GET /healthz`, `GET /readyz` | Service health checks |
+| POS | `GET/POST /api/v1/orders` | Order CRUD |
+| POS | `GET /api/v1/tables` | Table listing with status |
+| POS | `GET /api/v1/products` | Active products with options |
+| Management | `GET/POST /api/v1/quan_ly/*` | Menu, inventory, CRM, reports |
+| Accounting | `GET /api/v1/ke_toan/*` | Transactions, invoices |
+| WebSocket | `ws://host/ws/kitchen` | Kitchen real-time stream |
+| WebSocket | `ws://host/ws/inventory` | Inventory alert stream |
+
+### Example
 
 ```bash
 # Login
@@ -338,20 +390,17 @@ curl -X POST http://localhost:8000/api/v1/auth/login \
   -H 'Content-Type: application/json' \
   -d '{"username":"admin","password":"admin123"}'
 
-# Danh sách món (phân trang)
-curl http://localhost:8000/api/v1/quan_ly/menu?page=1&size=20 \
+# Get tables (authorized)
+curl http://localhost:8000/api/v1/tables \
   -H 'Authorization: Bearer <token>'
 ```
 
-### Các endpoint chính
+### Request Flow
 
-| Module | Endpoints | Mô tả |
-|--------|-----------|-------|
-| Auth | `POST /api/v1/auth/login` | Đăng nhập |
-| POS | `GET/POST /api/v1/ban_hang/orders` | Quản lý đơn hàng |
-| Kho | `GET/POST /api/v1/quan_ly/stock` | Quản lý tồn kho |
-| Kế toán | `GET /api/v1/ke_toan/revenue` | Báo cáo doanh thu |
-| WebSocket | `ws://host/ws/kitchen/{branch_id}` | Bếp real-time |
+```
+Client → FastAPI → CORS → Rate Limit → Auth (JWT) → RBAC → Route Handler → 
+  Validation (Pydantic) → Audit Log → DB (SQLAlchemy) → Response
+```
 
 ---
 
@@ -359,74 +408,54 @@ curl http://localhost:8000/api/v1/quan_ly/menu?page=1&size=20 \
 
 ```bash
 cd backend
-pytest                           # Tất cả tests
-pytest tests/test_core.py -v     # Core tests
+pytest                           # All tests
+pytest tests/test_core.py -v    # Core module tests
 pytest --cov=app --cov-report=term --cov-report=html
 ```
 
+Test coverage: 16/16 passing (core auth, helpers).
+
 ---
 
-## 📦 Triển khai
+## 📦 Deployment
 
-### Docker (production)
+### Docker (Production Stack)
 
 ```bash
 cd infra
-vim docker-compose.yml   # chỉnh sửa biến môi trường cho production
+# Edit docker-compose.yml with production values
 docker compose up -d
 ```
 
-### Biến môi trường quan trọng
+The production stack includes:
+- **PostgreSQL 16** with health check and restart policy
+- **FastAPI backend** via uvicorn (Gunicorn for production)
+- **Nginx** serving static frontend build + reverse proxy to API
 
-| Biến | Mô tả | Bắt buộc |
-|------|-------|----------|
-| `DATABASE_URL` | PostgreSQL connection string | ✅ |
-| `SECRET_KEY` | JWT signing key (thay đổi ngay!) | ✅ |
-| `CORS_ORIGINS` | Allowed origins | ✅ |
-| `SENTRY_DSN` | Sentry error tracking | ❌ (tùy chọn) |
-| `REDIS_URL` | Redis connection string | ❌ (mặc định local) |
+### Security Checklist
 
 > [!WARNING]
-> **Bảo mật:** Thay đổi `SECRET_KEY` và mật khẩu database ngay khi triển khai production. Không sử dụng tài khoản mặc định.
+> **Required before production:**
+> - Change `SECRET_KEY` to a random 64+ character string
+> - Change all default passwords (admin, cashier1, kitchen1, database)
+> - Set restrictive `CORS_ORIGINS`
+> - Configure `DATABASE_URL` with strong credentials
+> - Enable HTTPS via Nginx (Let's Encrypt or similar)
+> - Review firewall rules (only expose ports 80/443)
 
 ---
 
-## 📊 Hiện trạng
+## 📊 Project Status
 
-| Metric | Giá trị |
-|--------|---------|
+| Metric | Value |
+|--------|-------|
 | Python files | ~95 |
-| Frontend components | ~50+ |
+| Frontend components | 50+ |
 | Unit tests | 16/16 passing |
-| List endpoints | 21 (all paginated) |
-| i18n keys | 35 (tiếng Việt / English) |
-| Database migrations | 10+ |
+| Paginated endpoints | 21 |
+| i18n keys | 35 (vi/en) |
+| DB migrations | 10+ |
 | Docker services | 4 (nginx, backend, postgres, redis) |
-
----
-
-## 🤖 AI Agents (.agents/)
-
-Dự án sử dụng **9Router** — AI gateway local để routing LLM calls qua free providers (opencode). Kết hợp với **team-work** skill — multi-agent pipeline tự động hóa coding tasks.
-
-### Pipeline
-
-```
-Context-Detector ➜ Refiner ➜ Planner ➜ Coder (Parallel) ➜ Linter ➜ Reviewer ➜ Done
-```
-
-### 100% Free Models
-
-| Tier | Model | Dùng cho |
-|---|---|---|
-| fast | `oc/hy3-free` | Detect context, refine prompt (3.2s) |
-| medium | `oc/north-mini-code-free` | Plan task, breakdown (output dài) |
-| strong | `oc/big-pickle` | Code generation (1006 tok, chất nhất) |
-| review | `oc/deepseek-v4-flash-free` | Code review (consistency) |
-| fix | `oc/north-mini-code-free` | Auto-fix linter errors |
-| fallback | `oc/deepseek-v4-flash-free` | Retry fallback |
-
-> Yêu cầu: 9Router chạy local port 20128 + opencode provider connected.
 
 ---
 
