@@ -240,6 +240,19 @@ posa/
 │   ├── nginx.conf
 │   └── backup.sh
 │
+├── .agents/                     # AI Agent skills & workspace
+│   ├── skills/
+│   │   ├── 9router/             # AI gateway (OpenAI-compatible)
+│   │   └── team-work/           # Multi-agent orchestrator
+│   │       ├── SKILL.md
+│   │       ├── run_teamwork.py
+│   │       └── scripts/
+│   │           ├── orchestrator.py  # Pipeline: detect→refine→plan→code→review
+│   │           ├── patcher.py       # SEARCH/REPLACE code patcher
+│   │           └── linter.py        # Auto linter per file type
+│   ├── teamwork_state.json       # Pipeline state (auto-generated)
+│   └── teamwork_debug.log       # Pipeline logs (auto-generated)
+│
 ├── docker-compose.yml          # Dev compose (DB + Redis + Backend)
 └── start.ps1                   # Local dev script
 ```
@@ -389,6 +402,31 @@ docker compose up -d
 | i18n keys | 35 (tiếng Việt / English) |
 | Database migrations | 10+ |
 | Docker services | 4 (nginx, backend, postgres, redis) |
+
+---
+
+## 🤖 AI Agents (.agents/)
+
+Dự án sử dụng **9Router** — AI gateway local để routing LLM calls qua free providers (opencode). Kết hợp với **team-work** skill — multi-agent pipeline tự động hóa coding tasks.
+
+### Pipeline
+
+```
+Context-Detector ➜ Refiner ➜ Planner ➜ Coder (Parallel) ➜ Linter ➜ Reviewer ➜ Done
+```
+
+### 100% Free Models
+
+| Tier | Model | Dùng cho |
+|---|---|---|
+| fast | `oc/hy3-free` | Detect context, refine prompt (3.2s) |
+| medium | `oc/north-mini-code-free` | Plan task, breakdown (output dài) |
+| strong | `oc/big-pickle` | Code generation (1006 tok, chất nhất) |
+| review | `oc/deepseek-v4-flash-free` | Code review (consistency) |
+| fix | `oc/north-mini-code-free` | Auto-fix linter errors |
+| fallback | `oc/deepseek-v4-flash-free` | Retry fallback |
+
+> Yêu cầu: 9Router chạy local port 20128 + opencode provider connected.
 
 ---
 

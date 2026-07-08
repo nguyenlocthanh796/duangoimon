@@ -3,13 +3,49 @@ name: team-work
 description: Multi-agent team orchestration — spawn subagents for parallel research, coding, review, and synthesis. Use when the task has disjoint subtasks, needs parallel exploration, or benefits from reviewer/generator split.
 ---
 
-# Team Work — Flash-Optimized Multi-Agent Orchestrator
+# Team Work — Multi-Agent Orchestrator (100% Free via 9Router)
 
-This skill implements a high-performance, low-cost multi-agent pipeline optimized for DeepSeek Flash models. It utilizes structured JSON formatting for orchestration (Planning/Task breakdown) and plain-text XML templates for code modification (SEARCH/REPLACE & CREATE).
+This skill implements a multi-agent pipeline using **100% free models** routed through **9Router (opencode provider)**. All LLM calls go through `localhost:20128/v1`, no paid API keys needed. Uses structured JSON for orchestration and SEARCH/REPLACE blocks for code changes.
 
 ## 🌐 Language Rule
 - **User-facing** (replies, summaries, errors, logs shown to user): **Tiếng Việt**
 - **Internal** (subagent prompts, code, JSON, thinking, comments): **English**
+
+---
+
+## Setup
+
+### Requirements
+1. **9Router** running locally (port 20128) — [9Router skill](../9router/SKILL.md)
+2. **opencode provider** connected to 9Router (cung cấp OC free models)
+3. Python 3.10+ with `openai` package
+
+### Environment variables
+```bash
+set NINEROUTER_URL=http://localhost:20128
+set NINEROUTER_KEY=sk-...   # optional, only if 9Router requires auth
+
+# Optional: override model per tier (default = OC free models, benchmark-optimized)
+set TEAMWORK_MODEL_FAST=oc/hy3-free
+set TEAMWORK_MODEL_MEDIUM=oc/north-mini-code-free
+set TEAMWORK_MODEL_STRONG=oc/big-pickle
+set TEAMWORK_MODEL_REVIEW=oc/deepseek-v4-flash-free
+set TEAMWORK_MODEL_FIX=oc/north-mini-code-free
+set TEAMWORK_MODEL_FALLBACK=oc/deepseek-v4-flash-free
+```
+
+### Model tiers (100% FREE, benchmark-optimized per step)
+| Tier | Default model | Used for | Rationale |
+|---|---|---|---|
+| fast | `oc/hy3-free` | Context detection, prompt refinement | JSON nhanh (2.6s) |
+| medium | `oc/north-mini-code-free` | Planning, task breakdown | Output dài, tránh sót task |
+| strong | `oc/big-pickle` | Code generation | Code dài nhất (1006 tok), chất nhất |
+| review | `oc/deepseek-v4-flash-free` | Code review | Consistency, bạn quen behavior |
+| fix | `oc/north-mini-code-free` | Auto-fix linter errors | Cân bằng tốc độ/chất lượng |
+| fallback | `oc/deepseek-v4-flash-free` | Retry khi model chính lỗi | |
+
+> [!NOTE]
+> Excluded: `oc/mimo-v2.5-free` (broken, code output rỗng), `oc/nemotron-3-ultra-free` (chậm 11s avg)
 
 ---
 
@@ -24,7 +60,7 @@ This skill implements a high-performance, low-cost multi-agent pipeline optimize
 The orchestration logic and helper utilities are modularized into Python script files:
 - [patcher.py](file:///e:/posa/.agents/skills/team-work/scripts/patcher.py): Implements patch application (`CodePatcher`) for parsing `<<<< SEARCH` and `<<<< CREATE` blocks.
 - [linter.py](file:///e:/posa/.agents/skills/team-work/scripts/linter.py): Automatic local linter.
-- [orchestrator.py](file:///e:/posa/.agents/skills/team-work/scripts/orchestrator.py): Main async pipeline runner. Performs context detection first to guide refiner, and serializes overlapping tasks.
+- [orchestrator.py](file:///e:/posa/.agents/skills/team-work/scripts/orchestrator.py): Main async pipeline runner with 9Router client and model tier routing.
 
 ---
 

@@ -44,3 +44,7 @@ posa-backup.zip
 # Project
 backend/alembic/versions/*.pyc
 frontend/.expo/
+
+# Agent workspace
+.agents/teamwork_debug.log
+.agents/teamwork_state.json
