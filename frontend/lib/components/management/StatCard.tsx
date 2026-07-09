@@ -63,7 +63,7 @@ const stylesNormal = {
   trendBadge: {
     position: 'absolute' as const,
     top: 12, right: 12,
-    flexDirection: 'row' as const, alignItems: 'center' as const, gap: 3, paddingHorizontal: 8, paddingVertical: 4, borderRadius: shape.radius.sm, backgroundColor: colors.surface.input
+    flexDirection: 'row' as const, alignItems: 'center' as const, gap: 3, paddingHorizontal: 8, paddingVertical: 4, borderRadius: shape.radius.sm, backgroundColor: colors.surface.disabled
   },
   trendBadgeText: { ...font.micro, fontWeight: '600' as const, color: colors.text.secondary },
   row1: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: 12 },
@@ -84,7 +84,7 @@ const stylesCompact = {
   trendBadge: {
     position: 'absolute' as const,
     top: 8, right: 8,
-    flexDirection: 'row' as const, alignItems: 'center' as const, gap: 2, paddingHorizontal: 6, paddingVertical: 3, borderRadius: shape.radius.sm, backgroundColor: colors.surface.input
+    flexDirection: 'row' as const, alignItems: 'center' as const, gap: 2, paddingHorizontal: 6, paddingVertical: 3, borderRadius: shape.radius.sm, backgroundColor: colors.surface.disabled
   },
   trendBadgeText: { ...font.micro, fontWeight: '600' as const, color: colors.text.secondary },
   row1: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: 8 },

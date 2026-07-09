@@ -355,8 +355,8 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.border.default,
   },
   mobileBackBtn: {
-    width: 38,
-    height: 38,
+    width: 44,
+    height: 44,
     borderRadius: shape.radius.md,
     backgroundColor: colors.brand.primaryBg,
     alignItems: 'center',

@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
   },
   pillText: { color: colors.text.inverse, ...font.buttonSmall },
   refreshBtn: {
-    width: 36, height: 36, borderRadius: shape.radius.md,
+    width: 44, height: 44, borderRadius: shape.radius.md,
     backgroundColor: colors.brand.primaryBg,
     alignItems: 'center', justifyContent: 'center',
   },

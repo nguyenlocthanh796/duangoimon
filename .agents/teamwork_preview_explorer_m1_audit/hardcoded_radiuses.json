@@ -1,0 +1,187 @@
+﻿[
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  92,
+        "Line":  "              \u003cView style={{ width: 60, height: 8, backgroundColor: colors.surface.disabled, borderRadius: 4, overflow: \u0027hidden\u0027 }}\u003e"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  93,
+        "Line":  "                \u003cView style={{ width: `${pct}%`, height: 8, backgroundColor: color, borderRadius: 4 }} /\u003e"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  209,
+        "Line":  "  panelRowDot: { width: 8, height: 8, borderRadius: 4 },"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  82,
+        "Line":  "              \u003cView style={{ flex: 1, height: 12, backgroundColor: colors.surface.disabled, borderRadius: 3 }}\u003e"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  83,
+        "Line":  "                \u003cView style={{ width: `${Math.max(5, ((item.pct || 0) / maxPct) * 100)}%`, height: 12, backgroundColor: (item.pct || 0) \u003e 40 ? \u0027#DC2626\u0027 : \u0027#D97706\u0027, borderRadius: 3 }} /\u003e"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  101,
+        "Line":  "              \u003cView style={{ flex: 1, height: 12, backgroundColor: colors.surface.disabled, borderRadius: 3 }}\u003e"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  102,
+        "Line":  "                \u003cView style={{ width: `${Math.max(5, ((item.revenue || 0) / maxRev) * 100)}%`, height: 12, backgroundColor: colors.brand.primary, borderRadius: 3 }} /\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  110,
+        "Line":  "              \u003cView style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: v.color }} /\u003e"
+    },
+    {
+        "File":  "customers.tsx",
+        "LineNumber":  99,
+        "Line":  "            \u003cView style={{ flex: 1, height: 10, backgroundColor: colors.surface.disabled, borderRadius: 3 }}\u003e"
+    },
+    {
+        "File":  "customers.tsx",
+        "LineNumber":  100,
+        "Line":  "              \u003cView style={{ width: `${Math.max(5, ((c.total_spent || 0) / maxSpent) * 100)}%`, height: 10, backgroundColor: colors.brand.primary, borderRadius: 3 }} /\u003e"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  85,
+        "Line":  "            \u003cView style={{ flex: 1, height: 8, backgroundColor: colors.surface.disabled, borderRadius: 4 }}\u003e"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  86,
+        "Line":  "              \u003cView style={{ width: `${c}%`, height: 8, borderRadius: 4, backgroundColor: c \u003e 70 ? \u0027#16A34A\u0027 : c \u003e 50 ? \u0027#D97706\u0027 : \u0027#DC2626\u0027 }} /\u003e"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  102,
+        "Line":  "          \u003cView style={{ width: 35, height: 6, backgroundColor: colors.surface.disabled, borderRadius: 3 }}\u003e"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  103,
+        "Line":  "            \u003cView style={{ width: `${c}%`, height: 6, borderRadius: 3, backgroundColor: c \u003e 70 ? \u0027#16A34A\u0027 : c \u003e 50 ? \u0027#D97706\u0027 : \u0027#DC2626\u0027 }} /\u003e"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  97,
+        "Line":  "            {selected.color ? \u003cView style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: selected.color }} /\u003e : null}"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  118,
+        "Line":  "        {item.color ? \u003cView style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: item.color }} /\u003e : null}"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  111,
+        "Line":  "                  \u003cView style={{ flex: 1, height: 14, backgroundColor: colors.surface.disabled, borderRadius: 3 }}\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  112,
+        "Line":  "                    \u003cView style={{ width: `${Math.max(5, (i.revenue / maxRev) * 100)}%`, height: 14, backgroundColor: meta.color, borderRadius: 3 }} /\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  279,
+        "Line":  "  quadrantDot: { width: 10, height: 10, borderRadius: 5 },"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  273,
+        "Line":  "  catDot: { width: 8, height: 8, borderRadius: 4 },"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  307,
+        "Line":  "  activeDot: { width: 8, height: 8, borderRadius: 4 },"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  209,
+        "Line":  "  activeDot: { width: 6, height: 6, borderRadius: 3 },"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  387,
+        "Line":  "  fab: { position: \u0027absolute\u0027, bottom: 24, right: 20, width: 56, height: 56, borderRadius: 28, backgroundColor: colors.brand.primary, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027, elevation: 4, shadowColor: colors.brand.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8 },"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  442,
+        "Line":  "  actionDot: { width: 3, height: 3, borderRadius: 1.5, backgroundColor: colors.border.default },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  476,
+        "Line":  "  stockBar: { height: 5, backgroundColor: \u0027#F1F5F9\u0027, borderRadius: 2.5, overflow: \u0027hidden\u0027 },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  477,
+        "Line":  "  stockBarFill: { height: \u0027100%\u0027, borderRadius: 2.5, minWidth: 3 },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  488,
+        "Line":  "  actionDot: { width: 3, height: 3, borderRadius: 1.5, backgroundColor: colors.border.default },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  511,
+        "Line":  "  fab: { position: \u0027absolute\u0027, bottom: 24, right: 20, width: 56, height: 56, borderRadius: 28, backgroundColor: colors.brand.primary, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027, elevation: 4, shadowColor: colors.brand.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8 },"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  360,
+        "Line":  "  actionDot: { width: 3, height: 3, borderRadius: 1.5, backgroundColor: colors.border.default },"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  378,
+        "Line":  "  fab: { position: \u0027absolute\u0027, bottom: 24, right: 20, width: 56, height: 56, borderRadius: 28, backgroundColor: colors.brand.primary, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027, elevation: 4, shadowColor: colors.brand.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8 },"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  150,
+        "Line":  "                    paddingHorizontal: 12, paddingVertical: 7, borderRadius: 4,"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  177,
+        "Line":  "                    width: 44, height: 40, borderRadius: 4, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027,"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  384,
+        "Line":  "                    paddingHorizontal: 12, paddingVertical: 7, borderRadius: 4,"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  411,
+        "Line":  "                    width: 44, height: 40, borderRadius: 4, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027,"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  308,
+        "Line":  "  panelDot: { width: 8, height: 8, borderRadius: 4 },"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  317,
+        "Line":  "  statusDotSmall: { width: 6, height: 6, borderRadius: 3 },"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  347,
+        "Line":  "  activeDot: { width: 5, height: 5, borderRadius: 3 },"
+    }
+]

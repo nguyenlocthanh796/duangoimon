@@ -1,0 +1,3452 @@
+﻿[
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  3,
+        "Line":  "import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, TextInput } from \u0027react-native\u0027;"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  63,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e toggleSort(sort)} style={{ flex: 1, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2 }}\u003e"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  66,
+        "Line":  "    \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  92,
+        "Line":  "              \u003cView style={{ width: 60, height: 8, backgroundColor: colors.surface.disabled, borderRadius: 4, overflow: \u0027hidden\u0027 }}\u003e"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  93,
+        "Line":  "                \u003cView style={{ width: `${pct}%`, height: 8, backgroundColor: color, borderRadius: 4 }} /\u003e"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  95,
+        "Line":  "              \u003cText style={{ width: 30, textAlign: \u0027right\u0027, ...font.micro, fontWeight: \u0027700\u0027, color }}\u003e{v}\u003c/Text\u003e"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  109,
+        "Line":  "      \u003cTouchableOpacity style={s.tr} activeOpacity={0.7}\u003e"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  116,
+        "Line":  "              \u003cText style={[s.td, { fontWeight: \u0027600\u0027, textTransform: \u0027capitalize\u0027 }]}\u003e{item.action}\u003c/Text\u003e"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  123,
+        "Line":  "      \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  149,
+        "Line":  "        right={\u003cTouchableOpacity onPress={load} style={s.refreshBtn}\u003e\u003cIcon name=\"refresh\" size={18} color={colors.icon.default} /\u003e\u003c/TouchableOpacity\u003e}"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  161,
+        "Line":  "        \u003cTouchableOpacity onPress={() =\u003e setFilterAction(\u0027\u0027)} style={[s.chip, !filterAction \u0026\u0026 { backgroundColor: colors.brand.primary }]}\u003e"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  163,
+        "Line":  "        \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  165,
+        "Line":  "          \u003cTouchableOpacity key={a} onPress={() =\u003e setFilterAction(filterAction === a ? \u0027\u0027 : a)}"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  168,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  186,
+        "Line":  "  refreshBtn: { width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027 },"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  189,
+        "Line":  "  statValue: { ...font.h4, fontWeight: \u0027900\u0027, color: colors.text.primary, lineHeight: 18 },"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  190,
+        "Line":  "  statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  193,
+        "Line":  "  chip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: shape.radius.full, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default },"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  195,
+        "Line":  "  searchInput: { borderWidth: 1, borderColor: colors.border.default, borderRadius: shape.radius.full, paddingHorizontal: 12, paddingVertical: 6, ...font.micro, color: colors.text.primary, backgroundColor: colors.surface.app, minWidth: 120 },"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  198,
+        "Line":  "  thText: { ...font.caption, fontWeight: \u0027700\u0027, color: colors.text.muted },"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  201,
+        "Line":  "  actionIcon: { width: 24, height: 24, borderRadius: shape.radius.sm, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027 },"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  203,
+        "Line":  "  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 10 },"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  205,
+        "Line":  "  panelHeaderText: { ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  206,
+        "Line":  "  panelStatValue: { ...font.h1, fontWeight: \u0027900\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  208,
+        "Line":  "  panelDivider: { height: 1, backgroundColor: colors.border.light },"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  209,
+        "Line":  "  panelRowDot: { width: 8, height: 8, borderRadius: 4 },"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  3,
+        "Line":  "import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from \u0027react-native\u0027;"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  63,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e toggleSort(sort)} style={{ width: w as any, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2, justifyContent: \u0027flex-end\u0027 }}\u003e"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  66,
+        "Line":  "    \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  82,
+        "Line":  "              \u003cView style={{ flex: 1, height: 12, backgroundColor: colors.surface.disabled, borderRadius: 3 }}\u003e"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  83,
+        "Line":  "                \u003cView style={{ width: `${Math.max(5, ((item.pct || 0) / maxPct) * 100)}%`, height: 12, backgroundColor: (item.pct || 0) \u003e 40 ? \u0027#DC2626\u0027 : \u0027#D97706\u0027, borderRadius: 3 }} /\u003e"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  85,
+        "Line":  "              \u003cText style={{ width: 40, textAlign: \u0027right\u0027, ...font.micro, fontWeight: \u0027700\u0027, color: (item.pct || 0) \u003e 40 ? \u0027#DC2626\u0027 : colors.text.primary }}\u003e{item.pct}%\u003c/Text\u003e"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  101,
+        "Line":  "              \u003cView style={{ flex: 1, height: 12, backgroundColor: colors.surface.disabled, borderRadius: 3 }}\u003e"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  102,
+        "Line":  "                \u003cView style={{ width: `${Math.max(5, ((item.revenue || 0) / maxRev) * 100)}%`, height: 12, backgroundColor: colors.brand.primary, borderRadius: 3 }} /\u003e"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  104,
+        "Line":  "              \u003cText style={{ width: 65, textAlign: \u0027right\u0027, ...font.micro, fontWeight: \u0027700\u0027, color: colors.text.primary }}\u003e{formatVND(item.revenue)}\u003c/Text\u003e"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  117,
+        "Line":  "          \u003cText style={[s.td, { flex: 1, fontWeight: \u0027600\u0027 }]}\u003e{item.date || \u0027-\u0027}\u003c/Text\u003e"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  119,
+        "Line":  "          \u003cText style={[s.td, { width: 95, textAlign: \u0027right\u0027, fontWeight: \u0027700\u0027, color: colors.brand.primary }]}\u003e{formatVND(item.revenue)}\u003c/Text\u003e"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  126,
+        "Line":  "        \u003cText style={[s.td, { flex: 1, fontWeight: \u0027600\u0027 }]} numberOfLines={1}\u003e{item.name || item.date || \u0027-\u0027}\u003c/Text\u003e"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  128,
+        "Line":  "        \u003cText style={[s.td, { width: 55, textAlign: \u0027right\u0027, fontWeight: \u0027700\u0027, color: pct \u003e 40 ? \u0027#DC2626\u0027 : \u0027#16A34A\u0027 }]}\u003e{pct}%\u003c/Text\u003e"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  175,
+        "Line":  "          \u003cTouchableOpacity key={t} onPress={() =\u003e setTab(t)}"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  177,
+        "Line":  "            \u003cText style={[s.chipText, tab === t \u0026\u0026 { color: \u0027#fff\u0027, fontWeight: \u0027700\u0027 }]}\u003e{t === \u0027revenue\u0027 ? \u0027Doanh thu\u0027 : \u0027Food Cost\u0027}\u003c/Text\u003e"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  178,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  182,
+        "Line":  "          \u003cTouchableOpacity key={d} onPress={() =\u003e setDays(d)}"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  184,
+        "Line":  "            \u003cText style={[s.chipText, days === d \u0026\u0026 { color: colors.brand.primary, fontWeight: \u0027700\u0027 }]}\u003e{d}d\u003c/Text\u003e"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  185,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  203,
+        "Line":  "  statValue: { ...font.h4, fontWeight: \u0027900\u0027, color: colors.text.primary, lineHeight: 18 },"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  204,
+        "Line":  "  statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  207,
+        "Line":  "  chip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: shape.radius.full, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default },"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  211,
+        "Line":  "  thText: { ...font.caption, fontWeight: \u0027700\u0027, color: colors.text.muted },"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  215,
+        "Line":  "  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 10 },"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  217,
+        "Line":  "  panelHeaderText: { ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  3,
+        "Line":  "import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator, Alert } from \u0027react-native\u0027;"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  86,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e toggleSort(sort)} style={{ width: w as any, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2 }}\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  89,
+        "Line":  "    \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  109,
+        "Line":  "            \u003cTouchableOpacity key={k} style={[s.panelRow, statusFilter === k \u0026\u0026 { backgroundColor: v.bg, borderRadius: shape.radius.md, marginHorizontal: -4, paddingHorizontal: 4 }]} onPress={() =\u003e setStatusFilter(statusFilter === k ? \u0027\u0027 : k)}\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  110,
+        "Line":  "              \u003cView style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: v.color }} /\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  112,
+        "Line":  "              \u003cText style={{ ...font.bodySmall, fontWeight: \u0027700\u0027, color: v.color }}\u003e{c}\u003c/Text\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  113,
+        "Line":  "            \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  116,
+        "Line":  "        {statusFilter ? \u003cTouchableOpacity onPress={() =\u003e setStatusFilter(\u0027\u0027)} style={{ paddingVertical: 4 }}\u003e\u003cText style={{ ...font.micro, color: colors.brand.primary }}\u003eXoá bộ lọc\u003c/Text\u003e\u003c/TouchableOpacity\u003e : null}"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  120,
+        "Line":  "            \u003cText style={{ ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary }}\u003e{selected.customer_name}\u003c/Text\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  126,
+        "Line":  "                \u003cTouchableOpacity onPress={() =\u003e handleStatusChange(selected.id, \u0027confirmed\u0027)} style={[s.panelBtn, { backgroundColor: \u0027#16A34A\u0027 }]}\u003e\u003cIcon name=\"check\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelBtnText}\u003eXác nhận\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  127,
+        "Line":  "                \u003cTouchableOpacity onPress={() =\u003e handleStatusChange(selected.id, \u0027arrived\u0027)} style={[s.panelBtn, { backgroundColor: \u0027#2563EB\u0027 }]}\u003e\u003cIcon name=\"door-open\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelBtnText}\u003eCheck-in\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  128,
+        "Line":  "                \u003cTouchableOpacity onPress={() =\u003e handleStatusChange(selected.id, \u0027cancelled\u0027)} style={[s.panelBtn, { backgroundColor: \u0027#DC2626\u0027 }]}\u003e\u003cIcon name=\"cancel\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelBtnText}\u003eHuỷ\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  133,
+        "Line":  "                \u003cTouchableOpacity onPress={() =\u003e handleStatusChange(selected.id, \u0027arrived\u0027)} style={[s.panelBtn, { backgroundColor: \u0027#2563EB\u0027 }]}\u003e\u003cIcon name=\"door-open\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelBtnText}\u003eCheck-in\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  134,
+        "Line":  "                \u003cTouchableOpacity onPress={() =\u003e handleStatusChange(selected.id, \u0027cancelled\u0027)} style={[s.panelBtn, { backgroundColor: \u0027#DC2626\u0027 }]}\u003e\u003cIcon name=\"cancel\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelBtnText}\u003eHuỷ\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  139,
+        "Line":  "          \u003cTouchableOpacity style={s.panelCta} onPress={openNew}\u003e\u003cIcon name=\"plus\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelCtaText}\u003eĐặt bàn mới\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  148,
+        "Line":  "      \u003cTouchableOpacity onPress={() =\u003e setSelected(item)} style={s.tr} activeOpacity={0.7}\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  149,
+        "Line":  "        \u003cTouchableOpacity onPress={(e) =\u003e { e.stopPropagation(); setSelected(item); }} style={{ flex: 1, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 8 }}\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  154,
+        "Line":  "            \u003cText style={[s.td, { fontWeight: \u0027600\u0027 }]} numberOfLines={1}\u003e{item.customer_name}\u003c/Text\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  157,
+        "Line":  "        \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  164,
+        "Line":  "      \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  191,
+        "Line":  "        right={isWide ? undefined : \u003cTouchableOpacity onPress={openNew} style={s.addBtn}\u003e\u003cIcon name=\"plus\" size={18} color=\"#fff\" /\u003e\u003cText style={s.addBtnText}\u003eThêm\u003c/Text\u003e\u003c/TouchableOpacity\u003e}"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  206,
+        "Line":  "          \u003cTouchableOpacity key={st} onPress={() =\u003e setStatusFilter(st)}"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  209,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  233,
+        "Line":  "          \u003cTextInput value={form.note} onChangeText={v =\u003e setForm(p =\u003e ({ ...p, note: v }))} style={[s.fieldInput, { minHeight: 80 }]} multiline placeholder=\"Ghi chú...\" /\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  242,
+        "Line":  "  addBtn: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 6, paddingHorizontal: 14, height: 38, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  243,
+        "Line":  "  addBtnText: { ...font.buttonSmall, fontWeight: \u0027700\u0027, color: \u0027#fff\u0027 },"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  246,
+        "Line":  "  statValue: { ...font.h4, fontWeight: \u0027900\u0027, color: colors.text.primary, lineHeight: 18 },"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  247,
+        "Line":  "  statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  250,
+        "Line":  "  chip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: shape.radius.full, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default },"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  254,
+        "Line":  "  thText: { ...font.caption, fontWeight: \u0027700\u0027, color: colors.text.muted },"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  257,
+        "Line":  "  avatar: { width: 30, height: 30, borderRadius: shape.radius.sm, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027 },"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  258,
+        "Line":  "  statusBadge: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027, gap: 3, paddingVertical: 3, paddingHorizontal: 6, borderRadius: shape.radius.full },"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  259,
+        "Line":  "  statusText: { ...font.micro, fontWeight: \u0027700\u0027 },"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  261,
+        "Line":  "  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 10 },"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  263,
+        "Line":  "  panelHeaderText: { ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  264,
+        "Line":  "  panelStatValue: { ...font.h1, fontWeight: \u0027900\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  266,
+        "Line":  "  panelDivider: { height: 1, backgroundColor: colors.border.light },"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  268,
+        "Line":  "  panelBtn: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 4, paddingVertical: 8, paddingHorizontal: 12, borderRadius: shape.radius.md },"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  269,
+        "Line":  "  panelBtnText: { ...font.buttonSmall, fontWeight: \u0027700\u0027, color: \u0027#fff\u0027 },"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  270,
+        "Line":  "  panelCta: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027, gap: 8, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, paddingVertical: 12, minHeight: 44 },"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  274,
+        "Line":  "  fieldInput: { borderWidth: 1.5, borderColor: colors.border.default, borderRadius: shape.radius.md, padding: 12, ...font.body, color: colors.text.primary, backgroundColor: colors.surface.app },"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  3,
+        "Line":  "import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator, Alert } from \u0027react-native\u0027;"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  77,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e toggleSort(sort)} style={{ width: w as any, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2 }}\u003e"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  80,
+        "Line":  "    \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  94,
+        "Line":  "          \u003cText style={{ ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary }}\u003e{selected.name}\u003c/Text\u003e"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  99,
+        "Line":  "            \u003cText style={{ ...font.micro, fontWeight: \u0027700\u0027, color: selected.is_active ? \u0027#16A34A\u0027 : \u0027#DC2626\u0027 }}\u003e{selected.is_active ? \u0027Hoạt động\u0027 : \u0027Tạm ngừng\u0027}\u003c/Text\u003e"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  102,
+        "Line":  "            \u003cTouchableOpacity onPress={() =\u003e openEdit(selected)} style={[s.panelBtn, { backgroundColor: colors.brand.primary }]}\u003e\u003cIcon name=\"pencil\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelBtnText}\u003eSửa\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  103,
+        "Line":  "            \u003cTouchableOpacity onPress={() =\u003e del(selected.id)} style={[s.panelBtn, { backgroundColor: colors.status.danger }]}\u003e\u003cIcon name=\"delete\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelBtnText}\u003eXoá\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  107,
+        "Line":  "        \u003cTouchableOpacity style={s.panelCta} onPress={openNew}\u003e\u003cIcon name=\"plus\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelCtaText}\u003eThêm chi nhánh\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  113,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e setSelected(item)} style={s.tr} activeOpacity={0.7}\u003e"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  114,
+        "Line":  "      \u003cText style={[s.td, { flex: 1, fontWeight: \u0027600\u0027 }]} numberOfLines={1}\u003e{item.name}\u003c/Text\u003e"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  118,
+        "Line":  "          \u003cText style={{ ...font.micro, fontWeight: \u0027700\u0027, color: item.is_active ? \u0027#16A34A\u0027 : \u0027#DC2626\u0027 }}\u003e{item.is_active ? \u0027Bật\u0027 : \u0027Tắt\u0027}\u003c/Text\u003e"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  121,
+        "Line":  "    \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  146,
+        "Line":  "        right={isWide ? undefined : \u003cTouchableOpacity onPress={openNew} style={s.addBtn}\u003e\u003cIcon name=\"plus\" size={18} color=\"#fff\" /\u003e\u003c/TouchableOpacity\u003e}"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  173,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e setForm(p =\u003e ({ ...p, is_active: !p.is_active }))} style={[s.activeChip, { alignSelf: \u0027flex-start\u0027 }]}\u003e"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  176,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  185,
+        "Line":  "  addBtn: { width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027 },"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  188,
+        "Line":  "  statValue: { ...font.h4, fontWeight: \u0027900\u0027, color: colors.text.primary, lineHeight: 18 },"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  189,
+        "Line":  "  statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  192,
+        "Line":  "  thText: { ...font.caption, fontWeight: \u0027700\u0027, color: colors.text.muted },"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  195,
+        "Line":  "  activeChipSmall: { paddingVertical: 3, paddingHorizontal: 8, borderRadius: shape.radius.full },"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  197,
+        "Line":  "  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 12 },"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  199,
+        "Line":  "  panelHeaderText: { ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  200,
+        "Line":  "  panelDivider: { height: 1, backgroundColor: colors.border.light },"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  202,
+        "Line":  "  panelBtn: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 4, paddingVertical: 8, paddingHorizontal: 12, borderRadius: shape.radius.md },"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  203,
+        "Line":  "  panelBtnText: { ...font.buttonSmall, fontWeight: \u0027700\u0027, color: \u0027#fff\u0027 },"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  204,
+        "Line":  "  panelCta: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027, gap: 8, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, paddingVertical: 12, minHeight: 44 },"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  206,
+        "Line":  "  activeChip: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 6, paddingVertical: 6, paddingHorizontal: 12, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled },"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  209,
+        "Line":  "  fieldInput: { borderWidth: 1.5, borderColor: colors.border.default, borderRadius: shape.radius.md, padding: 12, ...font.body, color: colors.text.primary, backgroundColor: colors.surface.app },"
+    },
+    {
+        "File":  "customers.tsx",
+        "LineNumber":  3,
+        "Line":  "import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator, Alert } from \u0027react-native\u0027;"
+    },
+    {
+        "File":  "customers.tsx",
+        "LineNumber":  75,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e toggleSort(sort)} style={{ width: w as any, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2, justifyContent: \u0027flex-end\u0027 }}\u003e"
+    },
+    {
+        "File":  "customers.tsx",
+        "LineNumber":  78,
+        "Line":  "    \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "customers.tsx",
+        "LineNumber":  95,
+        "Line":  "        \u003cText style={{ ...font.caption, fontWeight: \u0027700\u0027, color: colors.text.primary, marginBottom: 4 }}\u003eTop chi tiêu\u003c/Text\u003e"
+    },
+    {
+        "File":  "customers.tsx",
+        "LineNumber":  99,
+        "Line":  "            \u003cView style={{ flex: 1, height: 10, backgroundColor: colors.surface.disabled, borderRadius: 3 }}\u003e"
+    },
+    {
+        "File":  "customers.tsx",
+        "LineNumber":  100,
+        "Line":  "              \u003cView style={{ width: `${Math.max(5, ((c.total_spent || 0) / maxSpent) * 100)}%`, height: 10, backgroundColor: colors.brand.primary, borderRadius: 3 }} /\u003e"
+    },
+    {
+        "File":  "customers.tsx",
+        "LineNumber":  102,
+        "Line":  "            \u003cText style={{ width: 70, textAlign: \u0027right\u0027, ...font.micro, fontWeight: \u0027700\u0027, color: colors.text.primary }}\u003e{formatVND(c.total_spent || 0)}\u003c/Text\u003e"
+    },
+    {
+        "File":  "customers.tsx",
+        "LineNumber":  110,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e setSelected(item)} style={s.tr} activeOpacity={0.7}\u003e"
+    },
+    {
+        "File":  "customers.tsx",
+        "LineNumber":  112,
+        "Line":  "        \u003cText style={[s.td, { fontWeight: \u0027600\u0027 }]} numberOfLines={1}\u003e{item.name}\u003c/Text\u003e"
+    },
+    {
+        "File":  "customers.tsx",
+        "LineNumber":  115,
+        "Line":  "      \u003cText style={[s.td, { width: 75, textAlign: \u0027right\u0027, fontWeight: \u0027700\u0027, color: colors.brand.primary }]}\u003e{formatVND(item.total_spent || 0)}\u003c/Text\u003e"
+    },
+    {
+        "File":  "customers.tsx",
+        "LineNumber":  117,
+        "Line":  "    \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "customers.tsx",
+        "LineNumber":  178,
+        "Line":  "  statValue: { ...font.h4, fontWeight: \u0027900\u0027, color: colors.text.primary, lineHeight: 18 },"
+    },
+    {
+        "File":  "customers.tsx",
+        "LineNumber":  179,
+        "Line":  "  statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },"
+    },
+    {
+        "File":  "customers.tsx",
+        "LineNumber":  185,
+        "Line":  "  thText: { ...font.caption, fontWeight: \u0027700\u0027, color: colors.text.muted },"
+    },
+    {
+        "File":  "customers.tsx",
+        "LineNumber":  189,
+        "Line":  "  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 10 },"
+    },
+    {
+        "File":  "customers.tsx",
+        "LineNumber":  191,
+        "Line":  "  panelHeaderText: { ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "customers.tsx",
+        "LineNumber":  192,
+        "Line":  "  panelDivider: { height: 1, backgroundColor: colors.border.light },"
+    },
+    {
+        "File":  "customers.tsx",
+        "LineNumber":  196,
+        "Line":  "  fieldInput: { borderWidth: 1.5, borderColor: colors.border.default, borderRadius: shape.radius.md, padding: 12, ...font.body, color: colors.text.primary, backgroundColor: colors.surface.app },"
+    },
+    {
+        "File":  "exec-dashboard.tsx",
+        "LineNumber":  3,
+        "Line":  "import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from \u0027react-native\u0027;"
+    },
+    {
+        "File":  "exec-dashboard.tsx",
+        "LineNumber":  45,
+        "Line":  "        \u003cView style={{ backgroundColor: iconBg, borderRadius: shape.radius.md, width: 28, height: 28, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027 }}\u003e"
+    },
+    {
+        "File":  "exec-dashboard.tsx",
+        "LineNumber":  94,
+        "Line":  "      \u003cText style={[s.td, { flex: 1, fontWeight: \u0027600\u0027 }]} numberOfLines={1}\u003e{item.branch || item.date?.slice(5) || item.date}\u003c/Text\u003e"
+    },
+    {
+        "File":  "exec-dashboard.tsx",
+        "LineNumber":  95,
+        "Line":  "      \u003cText style={[s.td, { width: 110, textAlign: \u0027right\u0027, fontWeight: \u0027700\u0027, color: colors.brand.primary }]}\u003e{formatVND(item.revenue)}\u003c/Text\u003e"
+    },
+    {
+        "File":  "exec-dashboard.tsx",
+        "LineNumber":  129,
+        "Line":  "        right={\u003cTouchableOpacity onPress={load} style={s.refreshBtn}\u003e\u003cIcon name=\"refresh\" size={18} color={colors.icon.default} /\u003e\u003c/TouchableOpacity\u003e}"
+    },
+    {
+        "File":  "exec-dashboard.tsx",
+        "LineNumber":  144,
+        "Line":  "          \u003cTouchableOpacity key={t} onPress={() =\u003e setTab(t)}"
+    },
+    {
+        "File":  "exec-dashboard.tsx",
+        "LineNumber":  146,
+        "Line":  "            \u003cText style={[s.chipText, tab === t \u0026\u0026 { color: \u0027#fff\u0027, fontWeight: \u0027700\u0027 }]}\u003e{t === \u0027branch\u0027 ? \u0027Chi nhánh\u0027 : \u00277 ngày\u0027}\u003c/Text\u003e"
+    },
+    {
+        "File":  "exec-dashboard.tsx",
+        "LineNumber":  147,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "exec-dashboard.tsx",
+        "LineNumber":  163,
+        "Line":  "  refreshBtn: { width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027 },"
+    },
+    {
+        "File":  "exec-dashboard.tsx",
+        "LineNumber":  167,
+        "Line":  "  statValue: { ...font.h4, fontWeight: \u0027900\u0027, color: colors.text.primary, lineHeight: 18 },"
+    },
+    {
+        "File":  "exec-dashboard.tsx",
+        "LineNumber":  168,
+        "Line":  "  statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },"
+    },
+    {
+        "File":  "exec-dashboard.tsx",
+        "LineNumber":  171,
+        "Line":  "  chip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: shape.radius.full, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default },"
+    },
+    {
+        "File":  "exec-dashboard.tsx",
+        "LineNumber":  175,
+        "Line":  "  thText: { ...font.caption, fontWeight: \u0027700\u0027, color: colors.text.muted },"
+    },
+    {
+        "File":  "exec-dashboard.tsx",
+        "LineNumber":  179,
+        "Line":  "  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 10 },"
+    },
+    {
+        "File":  "exec-dashboard.tsx",
+        "LineNumber":  181,
+        "Line":  "  panelHeaderText: { ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "exec-dashboard.tsx",
+        "LineNumber":  183,
+        "Line":  "  panelValue: { ...font.bodySmall, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "exec-dashboard.tsx",
+        "LineNumber":  185,
+        "Line":  "  kpi: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, borderWidth: 1, borderColor: colors.border.light },"
+    },
+    {
+        "File":  "exec-dashboard.tsx",
+        "LineNumber":  187,
+        "Line":  "  kpiValue: { ...font.h1, fontWeight: \u0027900\u0027, color: colors.text.primary, marginBottom: 2 },"
+    },
+    {
+        "File":  "exec-dashboard.tsx",
+        "LineNumber":  188,
+        "Line":  "  kpiChange: { ...font.badge, fontWeight: \u0027700\u0027 },"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  3,
+        "Line":  "import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from \u0027react-native\u0027;"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  56,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e toggleSort(sort)} style={{ width: w as any, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2 }}\u003e"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  59,
+        "Line":  "    \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  85,
+        "Line":  "            \u003cView style={{ flex: 1, height: 8, backgroundColor: colors.surface.disabled, borderRadius: 4 }}\u003e"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  86,
+        "Line":  "              \u003cView style={{ width: `${c}%`, height: 8, borderRadius: 4, backgroundColor: c \u003e 70 ? \u0027#16A34A\u0027 : c \u003e 50 ? \u0027#D97706\u0027 : \u0027#DC2626\u0027 }} /\u003e"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  99,
+        "Line":  "        \u003cText style={[s.td, { flex: 1, fontWeight: \u0027600\u0027 }]}\u003e{item.date}\u003c/Text\u003e"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  100,
+        "Line":  "        \u003cText style={[s.td, { width: 65, textAlign: \u0027right\u0027, fontWeight: \u0027700\u0027, color: colors.brand.primary }]}\u003e{Math.round(item.forecast) || 0}\u003c/Text\u003e"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  102,
+        "Line":  "          \u003cView style={{ width: 35, height: 6, backgroundColor: colors.surface.disabled, borderRadius: 3 }}\u003e"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  103,
+        "Line":  "            \u003cView style={{ width: `${c}%`, height: 6, borderRadius: 3, backgroundColor: c \u003e 70 ? \u0027#16A34A\u0027 : c \u003e 50 ? \u0027#D97706\u0027 : \u0027#DC2626\u0027 }} /\u003e"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  105,
+        "Line":  "          \u003cText style={{ ...font.micro, fontWeight: \u0027700\u0027, color: c \u003e 70 ? \u0027#16A34A\u0027 : c \u003e 50 ? \u0027#D97706\u0027 : \u0027#DC2626\u0027, width: 25, textAlign: \u0027right\u0027 }}\u003e{Math.round(c)}%\u003c/Text\u003e"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  142,
+        "Line":  "          \u003cTouchableOpacity key={d} onPress={() =\u003e setDays(d)}"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  144,
+        "Line":  "            \u003cText style={[s.chipText, days === d \u0026\u0026 { color: \u0027#fff\u0027, fontWeight: \u0027700\u0027 }]}\u003e{d} ngày\u003c/Text\u003e"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  145,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  163,
+        "Line":  "  statValue: { ...font.h4, fontWeight: \u0027900\u0027, color: colors.text.primary, lineHeight: 18 },"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  164,
+        "Line":  "  statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  167,
+        "Line":  "  chip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: shape.radius.full, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default },"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  171,
+        "Line":  "  thText: { ...font.caption, fontWeight: \u0027700\u0027, color: colors.text.muted },"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  175,
+        "Line":  "  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 12 },"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  177,
+        "Line":  "  panelHeaderText: { ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  179,
+        "Line":  "  panelStatValue: { ...font.h1, fontWeight: \u0027900\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  180,
+        "Line":  "  panelDivider: { height: 1, backgroundColor: colors.border.light },"
+    },
+    {
+        "File":  "index.tsx",
+        "LineNumber":  3,
+        "Line":  "  View, Text, ScrollView, StyleSheet, TouchableOpacity,"
+    },
+    {
+        "File":  "index.tsx",
+        "LineNumber":  107,
+        "Line":  "          \u003cTouchableOpacity onPress={onRefresh} style={styles.refreshBtn}\u003e"
+    },
+    {
+        "File":  "index.tsx",
+        "LineNumber":  109,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "index.tsx",
+        "LineNumber":  110,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e router.push(\u0027/ban-hang\u0027)} activeOpacity={0.9}\u003e"
+    },
+    {
+        "File":  "index.tsx",
+        "LineNumber":  120,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "index.tsx",
+        "LineNumber":  185,
+        "Line":  "          \u003cView style={{ height: 24 }} /\u003e"
+    },
+    {
+        "File":  "index.tsx",
+        "LineNumber":  225,
+        "Line":  "    borderRadius: shape.radius.md,"
+    },
+    {
+        "File":  "index.tsx",
+        "LineNumber":  229,
+        "Line":  "    width: 36, height: 36, borderRadius: shape.radius.md,"
+    },
+    {
+        "File":  "index.tsx",
+        "LineNumber":  238,
+        "Line":  "    borderRadius: shape.radius.lg,"
+    },
+    {
+        "File":  "index.tsx",
+        "LineNumber":  243,
+        "Line":  "    shadowOffset: { width: 0, height: 2 },"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  3,
+        "Line":  "import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator, Alert } from \u0027react-native\u0027;"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  72,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e toggleSort(sort)} style={{ width: w as any, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2, justifyContent: \u0027flex-end\u0027 }}\u003e"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  75,
+        "Line":  "    \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  91,
+        "Line":  "          \u003cText style={{ ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary }}\u003e{selected.name}\u003c/Text\u003e"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  96,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e toggleActive(selected)} style={[s.activeChip, { alignSelf: \u0027flex-start\u0027, backgroundColor: selected.is_active ? \u0027#DCFCE7\u0027 : \u0027#FEE2E2\u0027 }]}\u003e"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  98,
+        "Line":  "            \u003cText style={{ ...font.micro, fontWeight: \u0027700\u0027, color: selected.is_active ? \u0027#16A34A\u0027 : \u0027#DC2626\u0027 }}\u003e{selected.is_active ? \u0027Đang chạy\u0027 : \u0027Tạm dừng\u0027}\u003c/Text\u003e"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  99,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  102,
+        "Line":  "        \u003cTouchableOpacity style={s.panelCta} onPress={() =\u003e setShowForm(true)}\u003e\u003cIcon name=\"plus\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelCtaText}\u003eTạo chiến dịch\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  108,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e setSelected(item)} style={s.tr} activeOpacity={0.7}\u003e"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  109,
+        "Line":  "      \u003cText style={[s.td, { flex: 1, fontWeight: \u0027600\u0027 }]} numberOfLines={1}\u003e{item.name}\u003c/Text\u003e"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  111,
+        "Line":  "      \u003cTouchableOpacity onPress={() =\u003e toggleActive(item)} style={{ width: 55, alignItems: \u0027flex-end\u0027 }}\u003e"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  113,
+        "Line":  "          \u003cText style={{ ...font.micro, fontWeight: \u0027700\u0027, color: item.is_active ? \u0027#16A34A\u0027 : \u0027#DC2626\u0027 }}\u003e{item.is_active ? \u0027Bật\u0027 : \u0027Tắt\u0027}\u003c/Text\u003e"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  115,
+        "Line":  "      \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  117,
+        "Line":  "    \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  143,
+        "Line":  "        right={\u003cTouchableOpacity onPress={() =\u003e setShowForm(true)} style={s.addBtn}\u003e\u003cIcon name=\"plus\" size={18} color=\"#fff\" /\u003e\u003c/TouchableOpacity\u003e}"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  166,
+        "Line":  "              \u003cTouchableOpacity key={t} onPress={() =\u003e setForm(p =\u003e ({ ...p, type: t }))}"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  168,
+        "Line":  "                \u003cText style={[s.chipText, form.type === t \u0026\u0026 { color: \u0027#fff\u0027, fontWeight: \u0027700\u0027 }]}\u003e{t}\u003c/Text\u003e"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  169,
+        "Line":  "              \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  175,
+        "Line":  "          \u003cText style={s.fieldLabel}\u003eNội dung\u003c/Text\u003e\u003cTextInput value={form.template_body} onChangeText={v =\u003e setForm(p =\u003e ({ ...p, template_body: v }))} style={[s.fieldInput, { minHeight: 80 }]} multiline placeholder=\"Nội dung...\" /\u003e"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  184,
+        "Line":  "  addBtn: { width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027 },"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  187,
+        "Line":  "  statValue: { ...font.h4, fontWeight: \u0027900\u0027, color: colors.text.primary, lineHeight: 18 },"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  188,
+        "Line":  "  statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  191,
+        "Line":  "  thText: { ...font.caption, fontWeight: \u0027700\u0027, color: colors.text.muted },"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  194,
+        "Line":  "  activeChipSmall: { paddingVertical: 3, paddingHorizontal: 8, borderRadius: shape.radius.full },"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  195,
+        "Line":  "  chip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: shape.radius.full, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default },"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  198,
+        "Line":  "  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 10 },"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  200,
+        "Line":  "  panelHeaderText: { ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  201,
+        "Line":  "  panelDivider: { height: 1, backgroundColor: colors.border.light },"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  203,
+        "Line":  "  panelCta: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027, gap: 8, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, paddingVertical: 12, minHeight: 44 },"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  205,
+        "Line":  "  activeChip: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 4, paddingVertical: 6, paddingHorizontal: 10, borderRadius: shape.radius.md },"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  208,
+        "Line":  "  fieldInput: { borderWidth: 1.5, borderColor: colors.border.default, borderRadius: shape.radius.md, padding: 12, ...font.body, color: colors.text.primary, backgroundColor: colors.surface.app },"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  3,
+        "Line":  "import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator, Alert } from \u0027react-native\u0027;"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  79,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e toggleSort(sort)} style={{ width: w as any, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2, justifyContent: \u0027flex-end\u0027 }}\u003e"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  82,
+        "Line":  "    \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  97,
+        "Line":  "            {selected.color ? \u003cView style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: selected.color }} /\u003e : null}"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  98,
+        "Line":  "            \u003cText style={{ ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary }}\u003e{selected.name}\u003c/Text\u003e"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  105,
+        "Line":  "            \u003cTouchableOpacity onPress={() =\u003e openEdit(selected)} style={[s.panelBtn, { backgroundColor: colors.brand.primary }]}\u003e\u003cIcon name=\"pencil\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelBtnText}\u003eSửa\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  106,
+        "Line":  "            \u003cTouchableOpacity onPress={() =\u003e del(selected.id)} style={[s.panelBtn, { backgroundColor: colors.status.danger }]}\u003e\u003cIcon name=\"delete\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelBtnText}\u003eXoá\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  110,
+        "Line":  "        \u003cTouchableOpacity style={s.panelCta} onPress={openNew}\u003e\u003cIcon name=\"plus\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelCtaText}\u003eThêm hạng\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  116,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e setSelected(item)} style={s.tr} activeOpacity={0.7}\u003e"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  118,
+        "Line":  "        {item.color ? \u003cView style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: item.color }} /\u003e : null}"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  119,
+        "Line":  "        \u003cText style={[s.td, { fontWeight: \u0027600\u0027 }]} numberOfLines={1}\u003e{item.name}\u003c/Text\u003e"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  122,
+        "Line":  "      \u003cText style={[s.td, { width: 45, textAlign: \u0027right\u0027, fontWeight: \u0027700\u0027, color: colors.brand.primary }]}\u003e{item.discount_rate}%\u003c/Text\u003e"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  124,
+        "Line":  "    \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  150,
+        "Line":  "        right={isWide ? undefined : \u003cTouchableOpacity onPress={openNew} style={s.addBtn}\u003e\u003cIcon name=\"plus\" size={18} color=\"#fff\" /\u003e\u003c/TouchableOpacity\u003e}"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  179,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e setForm(p =\u003e ({ ...p, is_active: !p.is_active }))} style={{ flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 6 }}\u003e"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  182,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  191,
+        "Line":  "  addBtn: { width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027 },"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  194,
+        "Line":  "  statValue: { ...font.h4, fontWeight: \u0027900\u0027, color: colors.text.primary, lineHeight: 18 },"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  195,
+        "Line":  "  statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  198,
+        "Line":  "  thText: { ...font.caption, fontWeight: \u0027700\u0027, color: colors.text.muted },"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  202,
+        "Line":  "  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 10 },"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  204,
+        "Line":  "  panelHeaderText: { ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  205,
+        "Line":  "  panelDivider: { height: 1, backgroundColor: colors.border.light },"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  207,
+        "Line":  "  panelBtn: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 4, paddingVertical: 8, paddingHorizontal: 12, borderRadius: shape.radius.md },"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  208,
+        "Line":  "  panelBtnText: { ...font.buttonSmall, fontWeight: \u0027700\u0027, color: \u0027#fff\u0027 },"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  209,
+        "Line":  "  panelCta: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027, gap: 8, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, paddingVertical: 12, minHeight: 44 },"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  212,
+        "Line":  "  panelValue: { ...font.bodySmall, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  215,
+        "Line":  "  fieldInput: { borderWidth: 1.5, borderColor: colors.border.default, borderRadius: shape.radius.md, padding: 12, ...font.body, color: colors.text.primary, backgroundColor: colors.surface.app },"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  3,
+        "Line":  "import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, ScrollView } from \u0027react-native\u0027;"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  77,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e toggleSort(k)} style={{ width: w, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2 }}\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  80,
+        "Line":  "    \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  100,
+        "Line":  "                  \u003cTouchableOpacity key={q} onPress={() =\u003e setChartQ(q)}"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  103,
+        "Line":  "                  \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  111,
+        "Line":  "                  \u003cView style={{ flex: 1, height: 14, backgroundColor: colors.surface.disabled, borderRadius: 3 }}\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  112,
+        "Line":  "                    \u003cView style={{ width: `${Math.max(5, (i.revenue / maxRev) * 100)}%`, height: 14, backgroundColor: meta.color, borderRadius: 3 }} /\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  118,
+        "Line":  "            \u003cView style={{ backgroundColor: meta.bg, padding: 10, borderRadius: shape.radius.md, borderWidth: 1, borderColor: meta.color + \u002730\u0027 }}\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  119,
+        "Line":  "              \u003cText style={{ ...font.caption, color: meta.color, fontWeight: \u0027600\u0027 }}\u003e💡 {meta.suggestion}\u003c/Text\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  137,
+        "Line":  "      \u003cTouchableOpacity onPress={() =\u003e setSelected(row)} style={s.tr} activeOpacity={0.7}\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  139,
+        "Line":  "        \u003cText style={[s.td, { flex: 1, fontWeight: \u0027600\u0027 }]} numberOfLines={1}\u003e{item.name}\u003c/Text\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  142,
+        "Line":  "        \u003cText style={[s.td, { width: 55, textAlign: \u0027right\u0027, color: item.margin_pct \u003e= 0 ? \u0027#16A34A\u0027 : \u0027#DC2626\u0027, fontWeight: \u0027700\u0027 }]}\u003e{item.margin_pct}%\u003c/Text\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  143,
+        "Line":  "      \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  155,
+        "Line":  "            \u003cView style={[s.rankDot, { backgroundColor: \u0027#DCFCE7\u0027 }]}\u003e\u003cText style={{ ...font.micro, fontWeight: \u0027900\u0027, color: \u0027#16A34A\u0027 }}\u003e{i + 1}\u003c/Text\u003e\u003c/View\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  156,
+        "Line":  "            \u003cText style={{ flex: 1, ...font.bodySmall, fontWeight: \u0027600\u0027, color: colors.text.primary }}\u003e{item.name}\u003c/Text\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  158,
+        "Line":  "            \u003cText style={{ width: 85, textAlign: \u0027right\u0027, ...font.bodySmall, fontWeight: \u0027700\u0027, color: colors.text.primary }}\u003e{formatVND(item.revenue)}\u003c/Text\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  164,
+        "Line":  "            \u003cView style={[s.rankDot, { backgroundColor: \u0027#FEE2E2\u0027 }]}\u003e\u003cText style={{ ...font.micro, fontWeight: \u0027900\u0027, color: \u0027#DC2626\u0027 }}\u003e{i + 1}\u003c/Text\u003e\u003c/View\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  165,
+        "Line":  "            \u003cText style={{ flex: 1, ...font.bodySmall, fontWeight: \u0027600\u0027, color: colors.text.primary }}\u003e{item.name}\u003c/Text\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  167,
+        "Line":  "            \u003cText style={{ width: 85, textAlign: \u0027right\u0027, ...font.bodySmall, fontWeight: \u0027700\u0027, color: colors.text.primary }}\u003e{formatVND(item.revenue)}\u003c/Text\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  209,
+        "Line":  "          \u003cTouchableOpacity key={t} onPress={() =\u003e setTab(t as any)}"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  211,
+        "Line":  "            \u003cText style={[s.chipText, tab === t \u0026\u0026 { color: \u0027#fff\u0027, fontWeight: \u0027700\u0027 }]}\u003e{t === \u0027matrix\u0027 ? \u0027BCG Matrix\u0027 : \u0027Top/Bottom\u0027}\u003c/Text\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  212,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  216,
+        "Line":  "          \u003cTouchableOpacity key={d} onPress={() =\u003e setDays(d)}"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  218,
+        "Line":  "            \u003cText style={[s.chipText, days === d \u0026\u0026 { color: colors.brand.primary, fontWeight: \u0027700\u0027 }]}\u003e{d}d\u003c/Text\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  219,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  247,
+        "Line":  "              \u003cView style={{ backgroundColor: QUADRANT_META[selected.quadrant].bg, padding: 12, borderRadius: shape.radius.md, borderWidth: 1, borderColor: QUADRANT_META[selected.quadrant].color + \u002730\u0027 }}\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  262,
+        "Line":  "  statValue: { ...font.h4, fontWeight: \u0027900\u0027, color: colors.text.primary, lineHeight: 18 },"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  263,
+        "Line":  "  statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  266,
+        "Line":  "  chip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: shape.radius.full, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default },"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  269,
+        "Line":  "  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 12 },"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  271,
+        "Line":  "  panelHeaderText: { ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  272,
+        "Line":  "  panelStatValue: { ...font.h1, fontWeight: \u0027900\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  276,
+        "Line":  "  thText: { ...font.caption, fontWeight: \u0027700\u0027, color: colors.text.muted },"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  279,
+        "Line":  "  quadrantDot: { width: 10, height: 10, borderRadius: 5 },"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  281,
+        "Line":  "  rankDot: { width: 22, height: 22, borderRadius: shape.radius.sm, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027 },"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  282,
+        "Line":  "  sectionTitle: { ...font.bodySmall, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  283,
+        "Line":  "  tbRow: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 8, paddingVertical: 8, paddingHorizontal: 6, backgroundColor: colors.surface.card, borderRadius: shape.radius.md, borderWidth: 1, borderColor: colors.border.light },"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  286,
+        "Line":  "  detailCell: { flex: 1, backgroundColor: colors.surface.app, borderRadius: shape.radius.md, padding: 10, alignItems: \u0027center\u0027, borderWidth: 1, borderColor: colors.border.light },"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  288,
+        "Line":  "  detailValue: { ...font.h4, fontWeight: \u0027900\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  289,
+        "Line":  "  detailChip: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderRadius: shape.radius.full, backgroundColor: colors.surface.disabled },"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  3,
+        "Line":  "  View, Text, FlatList, TouchableOpacity, StyleSheet,"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  113,
+        "Line":  "          \u003cTouchableOpacity key={c.key} style={[styles.catRow, catFilter === c.key \u0026\u0026 { opacity: 1 }]} onPress={() =\u003e setCatFilter(catFilter === c.key ? null : c.key)}\u003e"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  118,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  121,
+        "Line":  "        \u003cTouchableOpacity style={styles.panelCta} onPress={openAdd}\u003e"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  124,
+        "Line":  "        \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  140,
+        "Line":  "          \u003cTouchableOpacity"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  141,
+        "Line":  "            style={{ flex: 1, minHeight: 44, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027 }}"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  145,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  146,
+        "Line":  "          \u003cTouchableOpacity"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  147,
+        "Line":  "            style={{ flex: 1.5, minHeight: 44, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027, flexDirection: \u0027row\u0027, gap: 6 }}"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  153,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  163,
+        "Line":  "      \u003cTouchableOpacity style={styles.item} onPress={() =\u003e openEdit(item)} activeOpacity={0.7}\u003e"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  182,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e handleDelete(item.id, item.name)} style={styles.deleteBtn} hitSlop={8}\u003e"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  184,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  186,
+        "Line":  "      \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  194,
+        "Line":  "      {search.length \u003e 0 \u0026\u0026 \u003cTouchableOpacity onPress={() =\u003e setSearch(\u0027\u0027)}\u003e\u003cIcon name=\"close\" size={16} color=\"#94A3B8\" /\u003e\u003c/TouchableOpacity\u003e}"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  225,
+        "Line":  "          \u003cTouchableOpacity onPress={openAdd} style={styles.addBtn}\u003e"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  228,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  230,
+        "Line":  "          \u003cTouchableOpacity onPress={openAdd} style={styles.addBtn}\u003e"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  233,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  261,
+        "Line":  "  addBtn: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 6, paddingHorizontal: 14, height: 38, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  262,
+        "Line":  "  addBtnText: { ...font.buttonSmall, fontWeight: \u0027700\u0027, color: colors.text.inverse },"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  265,
+        "Line":  "  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 10, shadowColor: \u0027#000\u0027, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 },"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  267,
+        "Line":  "  panelHeaderText: { ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  270,
+        "Line":  "  panelStatValue: { ...font.h2, fontWeight: \u0027900\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  271,
+        "Line":  "  panelDivider: { height: 1, backgroundColor: colors.border.light, marginVertical: 4 },"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  272,
+        "Line":  "  catRow: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 10, paddingVertical: 6, paddingHorizontal: 4, borderRadius: shape.radius.md },"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  273,
+        "Line":  "  catDot: { width: 8, height: 8, borderRadius: 4 },"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  275,
+        "Line":  "  catCount: { ...font.bodySmall, fontWeight: \u0027700\u0027 },"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  276,
+        "Line":  "  panelCta: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027, gap: 8, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, paddingVertical: 12, minHeight: 44, marginTop: 4 },"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  283,
+        "Line":  "    borderRadius: shape.radius.lg, paddingHorizontal: 14, paddingVertical: 10,"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  285,
+        "Line":  "    shadowColor: \u0027#000\u0027, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3,"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  296,
+        "Line":  "    borderRadius: shape.radius.lg, padding: 14,"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  298,
+        "Line":  "    shadowColor: \u0027#000\u0027, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3,"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  300,
+        "Line":  "  codeTag: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: shape.radius.sm },"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  301,
+        "Line":  "  codeText: { ...font.caption, fontWeight: \u0027700\u0027 },"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  302,
+        "Line":  "  itemName: { ...font.bodySmall, fontWeight: \u0027600\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  303,
+        "Line":  "  catBadge: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 4, paddingHorizontal: 7, paddingVertical: 3, borderRadius: shape.radius.full },"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  304,
+        "Line":  "  catText: { ...font.micro, fontWeight: \u0027700\u0027 },"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  307,
+        "Line":  "  activeDot: { width: 8, height: 8, borderRadius: 4 },"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  3,
+        "Line":  "import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator } from \u0027react-native\u0027;"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  66,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e toggleSort(sort)} style={{ width: w as any, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2 }}\u003e"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  69,
+        "Line":  "    \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  103,
+        "Line":  "        \u003cTouchableOpacity onPress={() =\u003e { setEditing(item); setForm({ code: item.code || \u0027\u0027, name: item.name || \u0027\u0027, type: item.type || \u0027percent\u0027, value: String(item.value || \u00270\u0027), min_order: String(item.min_order || \u00270\u0027), valid_from: item.valid_from || \u0027\u0027, valid_until: item.valid_until || \u0027\u0027 }); setShowForm(true); }} style={{ flex: 1, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 8 }}\u003e"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  104,
+        "Line":  "          \u003cText style={[s.td, { flex: 1, fontWeight: \u0027600\u0027 }]} numberOfLines={1}\u003e{item.name || item.code}\u003c/Text\u003e"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  106,
+        "Line":  "        \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  108,
+        "Line":  "        \u003cTouchableOpacity onPress={async () =\u003e { try { await request(`/api/v1/quan-ly/promo/${isV ? \u0027vouchers\u0027 : \u0027rules\u0027}/${item.id}`, { method: \u0027PUT\u0027, body: JSON.stringify({ is_active: !active }) }); load(); } catch {} }} style={[s.activeChip, { backgroundColor: active ? \u0027#DCFCE7\u0027 : \u0027#F1F5F9\u0027 }]}\u003e"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  110,
+        "Line":  "          \u003cText style={{ ...font.micro, fontWeight: \u0027700\u0027, color: active ? \u0027#16A34A\u0027 : \u0027#94A3B8\u0027 }}\u003e{active ? \u0027Bật\u0027 : \u0027Tắt\u0027}\u003c/Text\u003e"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  111,
+        "Line":  "        \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  128,
+        "Line":  "            \u003cTouchableOpacity onPress={() =\u003e toggleSort(\u0027active\u0027)} style={{ width: 65, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2 }}\u003e"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  131,
+        "Line":  "            \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  142,
+        "Line":  "        right={isWide ? undefined : \u003cTouchableOpacity onPress={openNew} style={s.addBtn}\u003e\u003cIcon name=\"plus\" size={18} color=\"#fff\" /\u003e\u003cText style={s.addBtnText}\u003eThêm\u003c/Text\u003e\u003c/TouchableOpacity\u003e}"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  153,
+        "Line":  "          \u003cTouchableOpacity key={t} onPress={() =\u003e setTab(t)} style={[s.tab, tab === t \u0026\u0026 { backgroundColor: colors.brand.primary, borderColor: colors.brand.primary }]}\u003e"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  156,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  158,
+        "Line":  "        {isWide \u0026\u0026 \u003cTouchableOpacity onPress={openNew} style={s.addBtnSm}\u003e\u003cIcon name=\"plus\" size={14} color=\"#fff\" /\u003e\u003cText style={s.addBtnSmText}\u003eThêm\u003c/Text\u003e\u003c/TouchableOpacity\u003e}"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  174,
+        "Line":  "            \u003cTouchableOpacity onPress={() =\u003e setForm(p =\u003e ({ ...p, type: \u0027percent\u0027 }))} style={[s.typeBtn, form.type === \u0027percent\u0027 \u0026\u0026 { backgroundColor: colors.brand.primary, borderColor: colors.brand.primary }]}\u003e"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  176,
+        "Line":  "            \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  177,
+        "Line":  "            \u003cTouchableOpacity onPress={() =\u003e setForm(p =\u003e ({ ...p, type: \u0027fixed\u0027 }))} style={[s.typeBtn, form.type === \u0027fixed\u0027 \u0026\u0026 { backgroundColor: colors.brand.primary, borderColor: colors.brand.primary }]}\u003e"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  179,
+        "Line":  "            \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  191,
+        "Line":  "  addBtn: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 6, paddingHorizontal: 14, height: 38, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  192,
+        "Line":  "  addBtnText: { ...font.buttonSmall, fontWeight: \u0027700\u0027, color: \u0027#fff\u0027 },"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  193,
+        "Line":  "  addBtnSm: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: shape.radius.full, backgroundColor: colors.brand.primary, marginLeft: \u0027auto\u0027 },"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  194,
+        "Line":  "  addBtnSmText: { ...font.micro, fontWeight: \u0027700\u0027, color: \u0027#fff\u0027 },"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  197,
+        "Line":  "  statValue: { ...font.h4, fontWeight: \u0027900\u0027, color: colors.text.primary, lineHeight: 18 },"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  198,
+        "Line":  "  statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  201,
+        "Line":  "  tab: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 4, paddingHorizontal: 12, paddingVertical: 7, borderRadius: shape.radius.full, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default },"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  202,
+        "Line":  "  tabText: { ...font.micro, fontWeight: \u0027600\u0027, color: colors.text.muted },"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  205,
+        "Line":  "  thText: { ...font.caption, fontWeight: \u0027700\u0027, color: colors.text.muted },"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  208,
+        "Line":  "  activeChip: { width: 65, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027, gap: 4, paddingVertical: 4, paddingHorizontal: 6, borderRadius: shape.radius.full },"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  209,
+        "Line":  "  activeDot: { width: 6, height: 6, borderRadius: 3 },"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  211,
+        "Line":  "  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 12 },"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  213,
+        "Line":  "  panelHeaderText: { ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  215,
+        "Line":  "  panelStatValue: { ...font.h3, fontWeight: \u0027900\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  216,
+        "Line":  "  panelDivider: { height: 1, backgroundColor: colors.border.light },"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  221,
+        "Line":  "  fieldInput: { borderWidth: 1.5, borderColor: colors.border.default, borderRadius: shape.radius.md, padding: 12, ...font.body, color: colors.text.primary, backgroundColor: colors.surface.app },"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  222,
+        "Line":  "  typeBtn: { flex: 1, paddingVertical: 12, borderRadius: shape.radius.md, borderWidth: 1.5, borderColor: colors.border.default, alignItems: \u0027center\u0027, backgroundColor: colors.surface.disabled },"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  4,
+        "Line":  "  View, Text, FlatList, TouchableOpacity, StyleSheet,"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  124,
+        "Line":  "            \u003cText style={{ ...font.micro, fontWeight: \u0027700\u0027, color: sc }}\u003e{sl}\u003c/Text\u003e"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  164,
+        "Line":  "          \u003cTouchableOpacity"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  170,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  184,
+        "Line":  "      \u003cTouchableOpacity"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  194,
+        "Line":  "                \u003cText style={{ ...font.micro, fontWeight: \u0027700\u0027, color: sc }}\u003e{sl}\u003c/Text\u003e"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  218,
+        "Line":  "            \u003cTouchableOpacity style={s.actionBtn}\u003e"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  221,
+        "Line":  "            \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  224,
+        "Line":  "      \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  251,
+        "Line":  "            \u003cTouchableOpacity onPress={load} style={s.headerBtn}\u003e"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  253,
+        "Line":  "            \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  254,
+        "Line":  "            \u003cTouchableOpacity onPress={() =\u003e setShowForm(true)} style={s.addBtn}\u003e"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  257,
+        "Line":  "            \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  276,
+        "Line":  "          \u003cTouchableOpacity key={statusKey} onPress={() =\u003e setStatusFilter(statusKey)}"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  281,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  304,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e setShowForm(true)} style={s.fab}\u003e"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  306,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  343,
+        "Line":  "  addBtn: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 6, paddingHorizontal: 14, height: 38, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  344,
+        "Line":  "  addBtnText: { ...font.buttonSmall, fontWeight: \u0027700\u0027, color: \u0027#fff\u0027 },"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  345,
+        "Line":  "  headerBtn: { width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027 },"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  349,
+        "Line":  "  statValue: { ...font.h4, fontWeight: \u0027900\u0027, color: colors.text.primary, lineHeight: 18 },"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  350,
+        "Line":  "  statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  353,
+        "Line":  "  chip: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: shape.radius.full, backgroundColor: colors.surface.disabled },"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  355,
+        "Line":  "  chipText: { ...font.micro, fontWeight: \u0027600\u0027, color: colors.text.muted },"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  358,
+        "Line":  "  card: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 12, borderWidth: 1, borderColor: colors.border.light },"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  360,
+        "Line":  "  cardPoNum: { ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  362,
+        "Line":  "  badge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: shape.radius.full },"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  366,
+        "Line":  "  cardStatValue: { ...font.caption, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  370,
+        "Line":  "  actionBtn: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 4, paddingVertical: 4, paddingHorizontal: 8, borderRadius: shape.radius.sm },"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  372,
+        "Line":  "  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: colors.border.light, gap: 8 },"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  374,
+        "Line":  "  panelIconBox: { width: 40, height: 40, borderRadius: shape.radius.md, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027 },"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  375,
+        "Line":  "  panelTitle: { ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  377,
+        "Line":  "  panelBtn: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 4, paddingVertical: 8, paddingHorizontal: 12, borderRadius: shape.radius.md },"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  378,
+        "Line":  "  panelBtnText: { ...font.caption, color: \u0027#fff\u0027, fontWeight: \u0027700\u0027 },"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  382,
+        "Line":  "  detailValue: { ...font.bodySmall, fontWeight: \u0027900\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  387,
+        "Line":  "  fab: { position: \u0027absolute\u0027, bottom: 24, right: 20, width: 56, height: 56, borderRadius: 28, backgroundColor: colors.brand.primary, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027, elevation: 4, shadowColor: colors.brand.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8 },"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  4,
+        "Line":  "  View, Text, FlatList, TouchableOpacity, StyleSheet,"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  148,
+        "Line":  "      \u003cTouchableOpacity"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  173,
+        "Line":  "            \u003cText style={{ ...font.micro, fontWeight: \u0027600\u0027, color: profit \u003e= 0 ? \u0027#16A34A\u0027 : colors.status.danger }}\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  181,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e handleEdit(item)} style={s.actionIcon} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  183,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  185,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e handleClone(item)} style={s.actionIcon} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  187,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  189,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e deleteRecipe(item.id || item.product_id)} style={s.actionIcon} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  191,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  193,
+        "Line":  "      \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  215,
+        "Line":  "          \u003cDetailRow label=\"Food cost\" value={\u003cText style={{ ...font.caption, fontWeight: \u0027700\u0027, color: cc.text }}\u003e{pct}%\u003c/Text\u003e} /\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  216,
+        "Line":  "          {profit !== null \u0026\u0026 \u003cDetailRow label=\"Lợi nhuận\" value={\u003cText style={{ ...font.caption, fontWeight: \u0027700\u0027, color: profit \u003e= 0 ? \u0027#16A34A\u0027 : colors.status.danger }}\u003e{formatVND(profit)}\u003c/Text\u003e} /\u003e}"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  235,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e handleEdit(selectedRecipe)} style={[s.panelBtn, { backgroundColor: colors.brand.primary }]}\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  237,
+        "Line":  "            \u003cText style={{ ...font.caption, color: \u0027#fff\u0027, fontWeight: \u0027700\u0027 }}\u003eSửa\u003c/Text\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  238,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  239,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e handleClone(selectedRecipe)} style={[s.panelBtn, { backgroundColor: colors.surface.disabled }]}\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  241,
+        "Line":  "            \u003cText style={{ ...font.caption, color: colors.text.primary, fontWeight: \u0027600\u0027 }}\u003eNhân bản\u003c/Text\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  242,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  243,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e deleteRecipe(selectedRecipe.id || selectedRecipe.product_id)} style={[s.panelBtn, { backgroundColor: \u0027#FEE2E2\u0027 }]}\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  245,
+        "Line":  "            \u003cText style={{ ...font.caption, color: colors.status.danger, fontWeight: \u0027600\u0027 }}\u003eXoá\u003c/Text\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  246,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  250,
+        "Line":  "        \u003cTouchableOpacity style={{ flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 4, marginTop: 8 }}"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  255,
+        "Line":  "        \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  259,
+        "Line":  "              \u003cText style={{ ...font.caption, fontWeight: \u0027600\u0027, color: colors.text.primary }}\u003ev{v.version_number}\u003c/Text\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  283,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e setSearch(\u0027\u0027)}\u003e\u003cIcon name=\"close-circle\" size={16} color={colors.text.muted} /\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  289,
+        "Line":  "        \u003cTouchableOpacity onPress={() =\u003e setShowFilters(!showFilters)} style={{ flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 4, paddingVertical: 4 }}\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  294,
+        "Line":  "        \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  300,
+        "Line":  "              \u003cTouchableOpacity key={f.key} onPress={() =\u003e setFilterKey(f.key)}"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  303,
+        "Line":  "              \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  309,
+        "Line":  "              \u003cTouchableOpacity key={s.key} onPress={() =\u003e setSortKey(s.key)}"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  312,
+        "Line":  "              \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  346,
+        "Line":  "            \u003cTouchableOpacity onPress={load} style={s.headerBtn}\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  348,
+        "Line":  "            \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  349,
+        "Line":  "            \u003cTouchableOpacity onPress={handleAdd} style={s.addBtn}\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  352,
+        "Line":  "            \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  409,
+        "Line":  "        \u003cText style={{ ...font.h4, fontWeight: \u0027900\u0027, color: colors.text.primary, lineHeight: 18 }}\u003e{value}\u003c/Text\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  410,
+        "Line":  "        \u003cText style={{ ...font.micro, color: colors.text.muted, lineHeight: 12 }}\u003e{label}\u003c/Text\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  421,
+        "Line":  "        ? \u003cText style={{ ...font.caption, fontWeight: \u0027600\u0027, color: colors.text.primary }}\u003e{value}\u003c/Text\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  429,
+        "Line":  "  card: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 12, borderWidth: 1, borderColor: colors.border.light },"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  431,
+        "Line":  "  cardName: { ...font.bodySmall, fontWeight: \u0027700\u0027, color: colors.text.primary, flex: 1 },"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  433,
+        "Line":  "  badge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: shape.radius.full },"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  434,
+        "Line":  "  badgeText: { ...font.micro, fontWeight: \u0027700\u0027 },"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  436,
+        "Line":  "  cardStat: { ...font.micro, color: colors.text.muted, fontWeight: \u0027500\u0027 },"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  442,
+        "Line":  "  actionDot: { width: 3, height: 3, borderRadius: 1.5, backgroundColor: colors.border.default },"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  444,
+        "Line":  "  addBtn: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 6, paddingHorizontal: 14, height: 38, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  445,
+        "Line":  "  addBtnText: { ...font.buttonSmall, fontWeight: \u0027700\u0027, color: \u0027#fff\u0027 },"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  446,
+        "Line":  "  headerBtn: { width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027 },"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  454,
+        "Line":  "  searchBox: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 6, backgroundColor: colors.surface.card, borderRadius: shape.radius.md, paddingHorizontal: 10, height: 36, borderWidth: 1, borderColor: colors.border.light },"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  455,
+        "Line":  "  chip: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: shape.radius.full, backgroundColor: colors.surface.disabled },"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  457,
+        "Line":  "  chipText: { ...font.micro, fontWeight: \u0027600\u0027, color: colors.text.muted },"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  461,
+        "Line":  "  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: colors.border.light, gap: 8 },"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  463,
+        "Line":  "  panelHeaderText: { ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary, flex: 1 },"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  464,
+        "Line":  "  panelBtn: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 4, paddingVertical: 6, paddingHorizontal: 12, borderRadius: shape.radius.md },"
+    },
+    {
+        "File":  "reports.tsx",
+        "LineNumber":  7,
+        "Line":  "  TouchableOpacity,"
+    },
+    {
+        "File":  "reports.tsx",
+        "LineNumber":  147,
+        "Line":  "          \u003cTouchableOpacity onPress={onRefresh} style={[styles.iconBtn, { backgroundColor: colors.brand.primaryBg }]}\u003e"
+    },
+    {
+        "File":  "reports.tsx",
+        "LineNumber":  149,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "reports.tsx",
+        "LineNumber":  163,
+        "Line":  "            \u003cTouchableOpacity"
+    },
+    {
+        "File":  "reports.tsx",
+        "LineNumber":  171,
+        "Line":  "            \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "reports.tsx",
+        "LineNumber":  229,
+        "Line":  "              \u003cView style={{ height: 32 }} /\u003e"
+    },
+    {
+        "File":  "reports.tsx",
+        "LineNumber":  287,
+        "Line":  "          \u003cView style={{ height: 32 }} /\u003e"
+    },
+    {
+        "File":  "reports.tsx",
+        "LineNumber":  296,
+        "Line":  "  shadowOffset: { width: 0, height: 2 },"
+    },
+    {
+        "File":  "reports.tsx",
+        "LineNumber":  305,
+        "Line":  "  iconBtn: { width: 36, height: 36, borderRadius: shape.radius.md, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027 },"
+    },
+    {
+        "File":  "reports.tsx",
+        "LineNumber":  308,
+        "Line":  "  chip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: shape.radius.full, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default },"
+    },
+    {
+        "File":  "reports.tsx",
+        "LineNumber":  311,
+        "Line":  "  chipTextActive: { color: \u0027#fff\u0027, fontWeight: \u0027700\u0027 },"
+    },
+    {
+        "File":  "reports.tsx",
+        "LineNumber":  314,
+        "Line":  "  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 12, shadowColor: \u0027#000\u0027, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 },"
+    },
+    {
+        "File":  "reports.tsx",
+        "LineNumber":  316,
+        "Line":  "  panelHeaderText: { ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "reports.tsx",
+        "LineNumber":  318,
+        "Line":  "  panelStatValue: { ...font.h2, fontWeight: \u0027900\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "reports.tsx",
+        "LineNumber":  319,
+        "Line":  "  panelDivider: { height: 1, backgroundColor: colors.border.light },"
+    },
+    {
+        "File":  "reports.tsx",
+        "LineNumber":  328,
+        "Line":  "    flex: 1, backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 12,"
+    },
+    {
+        "File":  "reports.tsx",
+        "LineNumber":  332,
+        "Line":  "    width: 32, height: 32, borderRadius: shape.radius.md,"
+    },
+    {
+        "File":  "reports.tsx",
+        "LineNumber":  335,
+        "Line":  "  summaryLabel: { ...font.caption, color: colors.text.secondary, fontWeight: \u0027500\u0027 },"
+    },
+    {
+        "File":  "reports.tsx",
+        "LineNumber":  339,
+        "Line":  "    backgroundColor: colors.surface.card, borderRadius: shape.radius.lg,"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  3,
+        "Line":  "import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator, Alert } from \u0027react-native\u0027;"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  82,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e toggleSort(sort)} style={{ width: w as any, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2 }}\u003e"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  85,
+        "Line":  "    \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  121,
+        "Line":  "          \u003cTouchableOpacity style={[s.panelCta, { backgroundColor: colors.status.danger }]} onPress={() =\u003e { setCashEnd(\u00270\u0027); setExpenseTotal(\u00270\u0027); setEndNote(\u0027\u0027); setShowEnd(true); }}\u003e"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  123,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  131,
+        "Line":  "          \u003cTouchableOpacity style={s.panelCta} onPress={() =\u003e { setOpeningBalance(\u00270\u0027); setShowStart(true); }}\u003e"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  133,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  146,
+        "Line":  "          \u003cText style={[s.td, { fontWeight: \u0027600\u0027 }]} numberOfLines={1}\u003e{fmtDate(item.started_at)}\u003c/Text\u003e"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  149,
+        "Line":  "        \u003cText style={[s.td, { width: 65, textAlign: \u0027right\u0027, color: diff \u003e= 0 ? \u0027#16A34A\u0027 : \u0027#DC2626\u0027, fontWeight: \u0027700\u0027 }]}\u003e{diff \u003e= 0 ? `+${formatVND(diff)}` : formatVND(diff)}\u003c/Text\u003e"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  195,
+        "Line":  "              \u003cTouchableOpacity onPress={() =\u003e { setCashEnd(\u00270\u0027); setExpenseTotal(\u00270\u0027); setEndNote(\u0027\u0027); setShowEnd(true); }} style={s.mobileCloseBtn}\u003e"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  197,
+        "Line":  "              \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  201,
+        "Line":  "            \u003cTouchableOpacity style={s.mobileStartBtn} onPress={() =\u003e { setOpeningBalance(\u00270\u0027); setShowStart(true); }}\u003e"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  203,
+        "Line":  "            \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  222,
+        "Line":  "          \u003cTextInput value={endNote} onChangeText={setEndNote} style={[s.fieldInput, { minHeight: 60 }]} multiline placeholder=\"Ghi chú đóng ca\" /\u003e"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  233,
+        "Line":  "  statValue: { ...font.h4, fontWeight: \u0027900\u0027, color: colors.text.primary, lineHeight: 18 },"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  234,
+        "Line":  "  statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  237,
+        "Line":  "  thText: { ...font.caption, fontWeight: \u0027700\u0027, color: colors.text.muted },"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  241,
+        "Line":  "  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 12 },"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  243,
+        "Line":  "  panelHeaderText: { ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  245,
+        "Line":  "  panelValue: { ...font.bodySmall, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  246,
+        "Line":  "  panelDivider: { height: 1, backgroundColor: colors.border.light },"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  248,
+        "Line":  "  panelCta: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027, gap: 8, borderRadius: shape.radius.md, paddingVertical: 12, minHeight: 44, backgroundColor: colors.brand.primary },"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  250,
+        "Line":  "  activeBanner: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 6, paddingHorizontal: 10, paddingVertical: 8, borderRadius: shape.radius.md, borderWidth: 1 },"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  251,
+        "Line":  "  activeBannerText: { ...font.caption, fontWeight: \u0027600\u0027 },"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  253,
+        "Line":  "  mobileActiveBanner: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 8, paddingHorizontal: 14, paddingVertical: 10, backgroundColor: \u0027#DCFCE7\u0027, marginHorizontal: 12, marginTop: 8, borderRadius: shape.radius.md },"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  254,
+        "Line":  "  mobileActiveText: { flex: 1, ...font.caption, color: \u0027#16A34A\u0027, fontWeight: \u0027600\u0027 },"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  255,
+        "Line":  "  mobileCloseBtn: { backgroundColor: colors.status.danger, paddingHorizontal: 12, paddingVertical: 6, borderRadius: shape.radius.full },"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  256,
+        "Line":  "  mobileCloseBtnText: { ...font.micro, fontWeight: \u0027700\u0027, color: \u0027#fff\u0027 },"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  257,
+        "Line":  "  mobileStartBtn: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027, gap: 6, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, paddingVertical: 12, marginHorizontal: 12, marginTop: 8 },"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  258,
+        "Line":  "  mobileStartBtnText: { ...font.button, fontWeight: \u0027700\u0027, color: \u0027#fff\u0027 },"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  261,
+        "Line":  "  fieldInput: { borderWidth: 1.5, borderColor: colors.border.default, borderRadius: shape.radius.md, padding: 12, ...font.body, color: colors.text.primary, backgroundColor: colors.surface.app },"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  3,
+        "Line":  "import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator, Alert } from \u0027react-native\u0027;"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  77,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e toggleSort(sort)} style={{ width: w as any, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2 }}\u003e"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  80,
+        "Line":  "    \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  94,
+        "Line":  "          \u003cText style={{ ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary }}\u003e{selected.name}\u003c/Text\u003e"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  99,
+        "Line":  "            \u003cTouchableOpacity onPress={() =\u003e openEdit(selected)} style={[s.panelBtn, { backgroundColor: colors.brand.primary }]}\u003e\u003cIcon name=\"pencil\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelBtnText}\u003eSửa\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  100,
+        "Line":  "            \u003cTouchableOpacity onPress={() =\u003e del(selected.id)} style={[s.panelBtn, { backgroundColor: colors.status.danger }]}\u003e\u003cIcon name=\"delete\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelBtnText}\u003eXoá\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  104,
+        "Line":  "        \u003cTouchableOpacity style={s.panelCta} onPress={openNew}\u003e\u003cIcon name=\"plus\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelCtaText}\u003eThêm trạm\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  110,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e setSelected(item)} style={s.tr} activeOpacity={0.7}\u003e"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  111,
+        "Line":  "      \u003cText style={[s.td, { flex: 1, fontWeight: \u0027600\u0027 }]} numberOfLines={1}\u003e{item.name}\u003c/Text\u003e"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  116,
+        "Line":  "            \u003cIcon name=\"printer\" size={10} color=\"#16A34A\" /\u003e\u003cText style={{ ...font.micro, fontWeight: \u0027700\u0027, color: \u0027#16A34A\u0027 }}\u003eCó\u003c/Text\u003e"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  122,
+        "Line":  "    \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  147,
+        "Line":  "        right={isWide ? undefined : \u003cTouchableOpacity onPress={openNew} style={s.addBtn}\u003e\u003cIcon name=\"plus\" size={18} color=\"#fff\" /\u003e\u003c/TouchableOpacity\u003e}"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  182,
+        "Line":  "  addBtn: { width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027 },"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  185,
+        "Line":  "  statValue: { ...font.h4, fontWeight: \u0027900\u0027, color: colors.text.primary, lineHeight: 18 },"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  186,
+        "Line":  "  statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  189,
+        "Line":  "  thText: { ...font.caption, fontWeight: \u0027700\u0027, color: colors.text.muted },"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  192,
+        "Line":  "  activeChip: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 3, paddingVertical: 3, paddingHorizontal: 6, borderRadius: shape.radius.full },"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  194,
+        "Line":  "  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 12 },"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  196,
+        "Line":  "  panelHeaderText: { ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  197,
+        "Line":  "  panelDivider: { height: 1, backgroundColor: colors.border.light },"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  199,
+        "Line":  "  panelBtn: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 4, paddingVertical: 8, paddingHorizontal: 12, borderRadius: shape.radius.md },"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  200,
+        "Line":  "  panelBtnText: { ...font.buttonSmall, fontWeight: \u0027700\u0027, color: \u0027#fff\u0027 },"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  201,
+        "Line":  "  panelCta: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027, gap: 8, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, paddingVertical: 12, minHeight: 44 },"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  205,
+        "Line":  "  fieldInput: { borderWidth: 1.5, borderColor: colors.border.default, borderRadius: shape.radius.md, padding: 12, ...font.body, color: colors.text.primary, backgroundColor: colors.surface.app },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  5,
+        "Line":  "  View, Text, FlatList, TouchableOpacity, StyleSheet,"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  174,
+        "Line":  "            \u003cText style={{ ...font.micro, fontWeight: \u0027700\u0027, color: lv.text }}\u003e{lv.label}\u003c/Text\u003e"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  213,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e openEdit(selectedItem)} style={[s.panelBtn, { backgroundColor: colors.brand.primary }]}\u003e"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  216,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  217,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e deleteMaterial(selectedItem.id)} style={[s.panelBtn, { backgroundColor: \u0027#FEE2E2\u0027 }]}\u003e"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  220,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  239,
+        "Line":  "      \u003cTouchableOpacity"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  284,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e openEdit(item)} style={s.actionBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}\u003e"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  286,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  288,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e deleteMaterial(item.id)} style={s.actionBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}\u003e"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  290,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  292,
+        "Line":  "      \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  305,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e setSearch(\u0027\u0027)}\u003e\u003cIcon name=\"close-circle\" size={16} color={colors.text.muted} /\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  311,
+        "Line":  "            \u003cTouchableOpacity key={cat} onPress={() =\u003e setCatFilter(cat)}"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  316,
+        "Line":  "            \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  347,
+        "Line":  "            \u003cTouchableOpacity onPress={load} style={s.headerBtn}\u003e"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  349,
+        "Line":  "            \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  350,
+        "Line":  "            \u003cTouchableOpacity onPress={openAdd} style={s.addBtn}\u003e"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  353,
+        "Line":  "            \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  440,
+        "Line":  "  \u003cTouchableOpacity onPress={onPress} style={s.fab}\u003e"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  442,
+        "Line":  "  \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  448,
+        "Line":  "  addBtn: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 6, paddingHorizontal: 14, height: 38, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  449,
+        "Line":  "  addBtnText: { ...font.buttonSmall, fontWeight: \u0027700\u0027, color: \u0027#fff\u0027 },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  450,
+        "Line":  "  headerBtn: { width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027 },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  455,
+        "Line":  "  statValue: { ...font.h4, fontWeight: \u0027900\u0027, color: colors.text.primary, lineHeight: 18 },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  456,
+        "Line":  "  statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  460,
+        "Line":  "  searchBox: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 6, backgroundColor: colors.surface.card, borderRadius: shape.radius.md, paddingHorizontal: 10, height: 36, borderWidth: 1, borderColor: colors.border.light },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  461,
+        "Line":  "  chip: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: shape.radius.full, backgroundColor: colors.surface.disabled },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  463,
+        "Line":  "  chipText: { ...font.micro, fontWeight: \u0027600\u0027, color: colors.text.muted },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  467,
+        "Line":  "  card: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 12, borderWidth: 1, borderColor: colors.border.light },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  469,
+        "Line":  "  cardIcon: { width: 36, height: 36, borderRadius: shape.radius.md, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027 },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  470,
+        "Line":  "  cardName: { ...font.bodySmall, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  472,
+        "Line":  "  badge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: shape.radius.full },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  473,
+        "Line":  "  badgeText: { ...font.micro, fontWeight: \u0027700\u0027 },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  476,
+        "Line":  "  stockBar: { height: 5, backgroundColor: \u0027#F1F5F9\u0027, borderRadius: 2.5, overflow: \u0027hidden\u0027 },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  477,
+        "Line":  "  stockBarFill: { height: \u0027100%\u0027, borderRadius: 2.5, minWidth: 3 },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  482,
+        "Line":  "  cardStatValue: { ...font.caption, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  488,
+        "Line":  "  actionDot: { width: 3, height: 3, borderRadius: 1.5, backgroundColor: colors.border.default },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  491,
+        "Line":  "  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: colors.border.light, gap: 10 },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  493,
+        "Line":  "  panelIconBox: { width: 40, height: 40, borderRadius: shape.radius.md, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027 },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  494,
+        "Line":  "  panelTitle: { ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  496,
+        "Line":  "  panelBtn: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 4, paddingVertical: 6, paddingHorizontal: 12, borderRadius: shape.radius.md },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  497,
+        "Line":  "  panelBtnText: { ...font.caption, color: \u0027#fff\u0027, fontWeight: \u0027700\u0027 },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  500,
+        "Line":  "  detailValue: { ...font.bodySmall, fontWeight: \u0027900\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  506,
+        "Line":  "  fieldInput: { borderWidth: 1.5, borderColor: colors.border.default, borderRadius: shape.radius.md, padding: 12, ...font.body, color: colors.text.primary, backgroundColor: colors.surface.app },"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  511,
+        "Line":  "  fab: { position: \u0027absolute\u0027, bottom: 24, right: 20, width: 56, height: 56, borderRadius: 28, backgroundColor: colors.brand.primary, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027, elevation: 4, shadowColor: colors.brand.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8 },"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  4,
+        "Line":  "  View, Text, FlatList, TouchableOpacity, StyleSheet,"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  128,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e openEdit(selected)} style={[s.panelBtn, { backgroundColor: colors.brand.primary }]}\u003e"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  131,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  132,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e deleteSupplier(selected.id)} style={[s.panelBtn, { backgroundColor: \u0027#FEE2E2\u0027 }]}\u003e"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  135,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  151,
+        "Line":  "      \u003cTouchableOpacity"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  182,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e openEdit(item)} style={s.actionBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}\u003e"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  184,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  186,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e deleteSupplier(item.id)} style={s.actionBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}\u003e"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  188,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  190,
+        "Line":  "      \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  202,
+        "Line":  "        \u003cTouchableOpacity onPress={() =\u003e setSearch(\u0027\u0027)}\u003e\u003cIcon name=\"close-circle\" size={16} color={colors.text.muted} /\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  231,
+        "Line":  "            \u003cTouchableOpacity onPress={load} style={s.headerBtn}\u003e"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  233,
+        "Line":  "            \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  234,
+        "Line":  "            \u003cTouchableOpacity onPress={openNew} style={s.addBtn}\u003e"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  237,
+        "Line":  "            \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  288,
+        "Line":  "          \u003cTextInput value={form.address} onChangeText={v =\u003e setForm(p =\u003e ({ ...p, address: v }))} style={[s.fieldInput, { minHeight: 60 }]} multiline placeholder=\"Địa chỉ\" /\u003e"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  327,
+        "Line":  "    \u003cTouchableOpacity onPress={onPress} style={s.fab}\u003e"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  329,
+        "Line":  "    \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  336,
+        "Line":  "  addBtn: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 6, paddingHorizontal: 14, height: 38, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  337,
+        "Line":  "  addBtnText: { ...font.buttonSmall, fontWeight: \u0027700\u0027, color: \u0027#fff\u0027 },"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  338,
+        "Line":  "  headerBtn: { width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027 },"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  343,
+        "Line":  "  statValue: { ...font.h4, fontWeight: \u0027900\u0027, color: colors.text.primary, lineHeight: 18 },"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  344,
+        "Line":  "  statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  347,
+        "Line":  "  searchBox: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 6, backgroundColor: colors.surface.card, borderRadius: shape.radius.md, paddingHorizontal: 10, height: 36, borderWidth: 1, borderColor: colors.border.light, marginBottom: 6 },"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  350,
+        "Line":  "  card: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 12, borderWidth: 1, borderColor: colors.border.light },"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  352,
+        "Line":  "  cardIcon: { width: 40, height: 40, borderRadius: shape.radius.md, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027 },"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  353,
+        "Line":  "  cardName: { ...font.bodySmall, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  360,
+        "Line":  "  actionDot: { width: 3, height: 3, borderRadius: 1.5, backgroundColor: colors.border.default },"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  363,
+        "Line":  "  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: colors.border.light, gap: 8 },"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  365,
+        "Line":  "  panelIconBox: { width: 40, height: 40, borderRadius: shape.radius.md, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027 },"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  366,
+        "Line":  "  panelTitle: { ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  368,
+        "Line":  "  panelBtn: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 4, paddingVertical: 6, paddingHorizontal: 12, borderRadius: shape.radius.md },"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  369,
+        "Line":  "  panelBtnText: { ...font.caption, color: \u0027#fff\u0027, fontWeight: \u0027700\u0027 },"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  373,
+        "Line":  "  fieldInput: { borderWidth: 1.5, borderColor: colors.border.default, borderRadius: shape.radius.md, padding: 12, ...font.body, color: colors.text.primary, backgroundColor: colors.surface.app },"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  378,
+        "Line":  "  fab: { position: \u0027absolute\u0027, bottom: 24, right: 20, width: 56, height: 56, borderRadius: 28, backgroundColor: colors.brand.primary, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027, elevation: 4, shadowColor: colors.brand.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8 },"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  3,
+        "Line":  "  View, Text, TouchableOpacity, ScrollView, TextInput,"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  27,
+        "Line":  "    \u003cTouchableOpacity"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  34,
+        "Line":  "        borderRadius: shape.radius.md,"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  45,
+        "Line":  "          \u003cView style={{ width: 8, height: 8, borderRadius: shape.radius.full, backgroundColor: colors.brand.primary, marginTop: 4 }} /\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  53,
+        "Line":  "        \u003cText style={{ ...font.bodySmall, color: colors.text.primary, fontWeight: \u0027700\u0027 }}\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  57,
+        "Line":  "    \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  147,
+        "Line":  "                \u003cTouchableOpacity"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  150,
+        "Line":  "                    paddingHorizontal: 12, paddingVertical: 7, borderRadius: 4,"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  157,
+        "Line":  "                  \u003cText style={{ ...font.bodySmall, fontWeight: \u0027600\u0027, color: form.area === a ? colors.text.inverse : colors.text.secondary }}\u003e{a}\u003c/Text\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  158,
+        "Line":  "                \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  174,
+        "Line":  "                \u003cTouchableOpacity"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  177,
+        "Line":  "                    width: 44, height: 40, borderRadius: 4, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027,"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  184,
+        "Line":  "                  \u003cText style={{ ...font.body, fontWeight: \u0027700\u0027, color: form.capacity === String(n) ? colors.text.inverse : colors.text.secondary }}\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  187,
+        "Line":  "                \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  193,
+        "Line":  "          \u003cTouchableOpacity"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  194,
+        "Line":  "            style={{ flex: 1, minHeight: 44, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027 }}"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  198,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  199,
+        "Line":  "          \u003cTouchableOpacity"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  200,
+        "Line":  "            style={{ flex: 1.5, minHeight: 44, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027, flexDirection: \u0027row\u0027, gap: 6 }}"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  206,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  221,
+        "Line":  "          \u003cTouchableOpacity onPress={openAdd} style={styles.addBtn}\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  224,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  226,
+        "Line":  "          \u003cTouchableOpacity onPress={openAdd} style={styles.addBtn}\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  229,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  243,
+        "Line":  "                  \u003cTouchableOpacity key={area} style={{ flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: shape.spacing.sm, paddingHorizontal: shape.spacing.md, height: 34, borderRadius: shape.radius.full, backgroundColor: active ? colors.brand.primary : colors.surface.card, borderWidth: 1, borderColor: active ? colors.brand.primary : colors.border.default }}\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  245,
+        "Line":  "                  \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  315,
+        "Line":  "                \u003cTouchableOpacity key={area} style={{ flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: shape.spacing.sm, paddingHorizontal: shape.spacing.md, height: 34, borderRadius: shape.radius.full, backgroundColor: active ? colors.brand.primary : colors.surface.card, borderWidth: 1, borderColor: active ? colors.brand.primary : colors.border.default }}\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  317,
+        "Line":  "                \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  324,
+        "Line":  "            \u003cView style={{ flex: 1, alignItems: \u0027center\u0027, backgroundColor: colors.surface.card, borderRadius: shape.radius.md, padding: 8, borderWidth: 1, borderColor: colors.border.light }}\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  328,
+        "Line":  "            \u003cView style={{ flex: 1, alignItems: \u0027center\u0027, backgroundColor: colors.surface.card, borderRadius: shape.radius.md, padding: 8, borderWidth: 1, borderColor: colors.border.light }}\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  332,
+        "Line":  "            \u003cView style={{ flex: 1, alignItems: \u0027center\u0027, backgroundColor: colors.surface.card, borderRadius: shape.radius.md, padding: 8, borderWidth: 1, borderColor: colors.border.light }}\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  381,
+        "Line":  "                \u003cTouchableOpacity"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  384,
+        "Line":  "                    paddingHorizontal: 12, paddingVertical: 7, borderRadius: 4,"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  391,
+        "Line":  "                  \u003cText style={{ ...font.bodySmall, fontWeight: \u0027600\u0027, color: form.area === a ? colors.text.inverse : colors.text.secondary }}\u003e{a}\u003c/Text\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  392,
+        "Line":  "                \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  408,
+        "Line":  "                \u003cTouchableOpacity"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  411,
+        "Line":  "                    width: 44, height: 40, borderRadius: 4, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027,"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  418,
+        "Line":  "                  \u003cText style={{ ...font.body, fontWeight: \u0027700\u0027, color: form.capacity === String(n) ? colors.text.inverse : colors.text.secondary }}\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  421,
+        "Line":  "                \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  434,
+        "Line":  "  addBtn: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 6, paddingHorizontal: 14, height: 38, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  435,
+        "Line":  "  addBtnText: { ...font.buttonSmall, fontWeight: \u0027700\u0027, color: \u0027#fff\u0027 },"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  437,
+        "Line":  "  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 12, shadowColor: \u0027#000\u0027, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 },"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  439,
+        "Line":  "  panelHeaderText: { ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  441,
+        "Line":  "  panelStatValue: { ...font.h3, fontWeight: \u0027900\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  442,
+        "Line":  "  panelDivider: { height: 1, backgroundColor: colors.border.light },"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  450,
+        "Line":  "    borderRadius: shape.radius.md,"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  3,
+        "Line":  "  View, Text, SectionList, TouchableOpacity, StyleSheet,"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  139,
+        "Line":  "        \u003cTouchableOpacity style={styles.panelCta} onPress={openAdd}\u003e"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  142,
+        "Line":  "        \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  162,
+        "Line":  "          \u003cTouchableOpacity"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  163,
+        "Line":  "            style={{ flex: 1, minHeight: 44, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027 }}"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  167,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  168,
+        "Line":  "          \u003cTouchableOpacity"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  169,
+        "Line":  "            style={{ flex: 1.5, minHeight: 44, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027, flexDirection: \u0027row\u0027, gap: 6 }}"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  175,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  185,
+        "Line":  "      \u003cTouchableOpacity style={styles.userItem} onPress={() =\u003e openEdit(item)} activeOpacity={0.7}\u003e"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  205,
+        "Line":  "      \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  249,
+        "Line":  "          \u003cTouchableOpacity onPress={openAdd} style={styles.addBtn}\u003e"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  252,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  254,
+        "Line":  "          \u003cTouchableOpacity onPress={openAdd} style={styles.addBtn}\u003e"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  257,
+        "Line":  "          \u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  296,
+        "Line":  "  addBtn: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 6, paddingHorizontal: 14, height: 38, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  297,
+        "Line":  "  addBtnText: { ...font.buttonSmall, fontWeight: \u0027700\u0027, color: colors.text.inverse },"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  300,
+        "Line":  "  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 12, shadowColor: \u0027#000\u0027, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 },"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  302,
+        "Line":  "  panelHeaderText: { ...font.body, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  305,
+        "Line":  "  panelStatValue: { ...font.h2, fontWeight: \u0027900\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  306,
+        "Line":  "  panelDivider: { height: 1, backgroundColor: colors.border.light },"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  308,
+        "Line":  "  panelDot: { width: 8, height: 8, borderRadius: 4 },"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  310,
+        "Line":  "  panelCount: { ...font.bodySmall, fontWeight: \u0027700\u0027, marginTop: 1 },"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  314,
+        "Line":  "  panelCta: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 4, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, paddingHorizontal: 12, paddingVertical: 7, minHeight: 32 },"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  317,
+        "Line":  "  statusDotSmall: { width: 6, height: 6, borderRadius: 3 },"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  329,
+        "Line":  "  sectionCount: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: shape.radius.sm },"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  330,
+        "Line":  "  sectionCountText: { ...font.badge, fontWeight: \u0027700\u0027 },"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  335,
+        "Line":  "    borderRadius: shape.radius.lg, padding: 14,"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  337,
+        "Line":  "    shadowColor: \u0027#000\u0027, shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3,"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  339,
+        "Line":  "  avatar: { width: 44, height: 44, borderRadius: shape.radius.md, alignItems: \u0027center\u0027, justifyContent: \u0027center\u0027 },"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  341,
+        "Line":  "  userName: { ...font.bodySmall, fontWeight: \u0027700\u0027, color: colors.text.primary },"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  344,
+        "Line":  "  roleBadge: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderRadius: shape.radius.full },"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  345,
+        "Line":  "  roleText: { ...font.badge, fontWeight: \u0027700\u0027 },"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  346,
+        "Line":  "  activePill: { flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: shape.radius.full },"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  347,
+        "Line":  "  activeDot: { width: 5, height: 5, borderRadius: 3 },"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  348,
+        "Line":  "  activeText: { ...font.badge, fontWeight: \u0027600\u0027 },"
+    }
+]

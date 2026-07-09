@@ -1,0 +1,717 @@
+﻿[
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  63,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e toggleSort(sort)} style={{ flex: 1, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2 }}\u003e"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  109,
+        "Line":  "      \u003cTouchableOpacity style={s.tr} activeOpacity={0.7}\u003e"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  149,
+        "Line":  "        right={\u003cTouchableOpacity onPress={load} style={s.refreshBtn}\u003e\u003cIcon name=\"refresh\" size={18} color={colors.icon.default} /\u003e\u003c/TouchableOpacity\u003e}"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  161,
+        "Line":  "        \u003cTouchableOpacity onPress={() =\u003e setFilterAction(\u0027\u0027)} style={[s.chip, !filterAction \u0026\u0026 { backgroundColor: colors.brand.primary }]}\u003e"
+    },
+    {
+        "File":  "audit.tsx",
+        "LineNumber":  165,
+        "Line":  "          \u003cTouchableOpacity key={a} onPress={() =\u003e setFilterAction(filterAction === a ? \u0027\u0027 : a)}"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  63,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e toggleSort(sort)} style={{ width: w as any, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2, justifyContent: \u0027flex-end\u0027 }}\u003e"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  175,
+        "Line":  "          \u003cTouchableOpacity key={t} onPress={() =\u003e setTab(t)}"
+    },
+    {
+        "File":  "bi-reports.tsx",
+        "LineNumber":  182,
+        "Line":  "          \u003cTouchableOpacity key={d} onPress={() =\u003e setDays(d)}"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  86,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e toggleSort(sort)} style={{ width: w as any, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2 }}\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  109,
+        "Line":  "            \u003cTouchableOpacity key={k} style={[s.panelRow, statusFilter === k \u0026\u0026 { backgroundColor: v.bg, borderRadius: shape.radius.md, marginHorizontal: -4, paddingHorizontal: 4 }]} onPress={() =\u003e setStatusFilter(statusFilter === k ? \u0027\u0027 : k)}\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  116,
+        "Line":  "        {statusFilter ? \u003cTouchableOpacity onPress={() =\u003e setStatusFilter(\u0027\u0027)} style={{ paddingVertical: 4 }}\u003e\u003cText style={{ ...font.micro, color: colors.brand.primary }}\u003eXoá bộ lọc\u003c/Text\u003e\u003c/TouchableOpacity\u003e : null}"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  126,
+        "Line":  "                \u003cTouchableOpacity onPress={() =\u003e handleStatusChange(selected.id, \u0027confirmed\u0027)} style={[s.panelBtn, { backgroundColor: \u0027#16A34A\u0027 }]}\u003e\u003cIcon name=\"check\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelBtnText}\u003eXác nhận\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  127,
+        "Line":  "                \u003cTouchableOpacity onPress={() =\u003e handleStatusChange(selected.id, \u0027arrived\u0027)} style={[s.panelBtn, { backgroundColor: \u0027#2563EB\u0027 }]}\u003e\u003cIcon name=\"door-open\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelBtnText}\u003eCheck-in\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  128,
+        "Line":  "                \u003cTouchableOpacity onPress={() =\u003e handleStatusChange(selected.id, \u0027cancelled\u0027)} style={[s.panelBtn, { backgroundColor: \u0027#DC2626\u0027 }]}\u003e\u003cIcon name=\"cancel\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelBtnText}\u003eHuỷ\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  133,
+        "Line":  "                \u003cTouchableOpacity onPress={() =\u003e handleStatusChange(selected.id, \u0027arrived\u0027)} style={[s.panelBtn, { backgroundColor: \u0027#2563EB\u0027 }]}\u003e\u003cIcon name=\"door-open\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelBtnText}\u003eCheck-in\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  134,
+        "Line":  "                \u003cTouchableOpacity onPress={() =\u003e handleStatusChange(selected.id, \u0027cancelled\u0027)} style={[s.panelBtn, { backgroundColor: \u0027#DC2626\u0027 }]}\u003e\u003cIcon name=\"cancel\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelBtnText}\u003eHuỷ\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  139,
+        "Line":  "          \u003cTouchableOpacity style={s.panelCta} onPress={openNew}\u003e\u003cIcon name=\"plus\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelCtaText}\u003eĐặt bàn mới\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  148,
+        "Line":  "      \u003cTouchableOpacity onPress={() =\u003e setSelected(item)} style={s.tr} activeOpacity={0.7}\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  149,
+        "Line":  "        \u003cTouchableOpacity onPress={(e) =\u003e { e.stopPropagation(); setSelected(item); }} style={{ flex: 1, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 8 }}\u003e"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  191,
+        "Line":  "        right={isWide ? undefined : \u003cTouchableOpacity onPress={openNew} style={s.addBtn}\u003e\u003cIcon name=\"plus\" size={18} color=\"#fff\" /\u003e\u003cText style={s.addBtnText}\u003eThêm\u003c/Text\u003e\u003c/TouchableOpacity\u003e}"
+    },
+    {
+        "File":  "booking.tsx",
+        "LineNumber":  206,
+        "Line":  "          \u003cTouchableOpacity key={st} onPress={() =\u003e setStatusFilter(st)}"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  77,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e toggleSort(sort)} style={{ width: w as any, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2 }}\u003e"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  102,
+        "Line":  "            \u003cTouchableOpacity onPress={() =\u003e openEdit(selected)} style={[s.panelBtn, { backgroundColor: colors.brand.primary }]}\u003e\u003cIcon name=\"pencil\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelBtnText}\u003eSửa\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  103,
+        "Line":  "            \u003cTouchableOpacity onPress={() =\u003e del(selected.id)} style={[s.panelBtn, { backgroundColor: colors.status.danger }]}\u003e\u003cIcon name=\"delete\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelBtnText}\u003eXoá\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  107,
+        "Line":  "        \u003cTouchableOpacity style={s.panelCta} onPress={openNew}\u003e\u003cIcon name=\"plus\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelCtaText}\u003eThêm chi nhánh\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  113,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e setSelected(item)} style={s.tr} activeOpacity={0.7}\u003e"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  146,
+        "Line":  "        right={isWide ? undefined : \u003cTouchableOpacity onPress={openNew} style={s.addBtn}\u003e\u003cIcon name=\"plus\" size={18} color=\"#fff\" /\u003e\u003c/TouchableOpacity\u003e}"
+    },
+    {
+        "File":  "branches.tsx",
+        "LineNumber":  173,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e setForm(p =\u003e ({ ...p, is_active: !p.is_active }))} style={[s.activeChip, { alignSelf: \u0027flex-start\u0027 }]}\u003e"
+    },
+    {
+        "File":  "customers.tsx",
+        "LineNumber":  75,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e toggleSort(sort)} style={{ width: w as any, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2, justifyContent: \u0027flex-end\u0027 }}\u003e"
+    },
+    {
+        "File":  "customers.tsx",
+        "LineNumber":  110,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e setSelected(item)} style={s.tr} activeOpacity={0.7}\u003e"
+    },
+    {
+        "File":  "exec-dashboard.tsx",
+        "LineNumber":  129,
+        "Line":  "        right={\u003cTouchableOpacity onPress={load} style={s.refreshBtn}\u003e\u003cIcon name=\"refresh\" size={18} color={colors.icon.default} /\u003e\u003c/TouchableOpacity\u003e}"
+    },
+    {
+        "File":  "exec-dashboard.tsx",
+        "LineNumber":  144,
+        "Line":  "          \u003cTouchableOpacity key={t} onPress={() =\u003e setTab(t)}"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  56,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e toggleSort(sort)} style={{ width: w as any, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2 }}\u003e"
+    },
+    {
+        "File":  "forecast.tsx",
+        "LineNumber":  142,
+        "Line":  "          \u003cTouchableOpacity key={d} onPress={() =\u003e setDays(d)}"
+    },
+    {
+        "File":  "index.tsx",
+        "LineNumber":  107,
+        "Line":  "          \u003cTouchableOpacity onPress={onRefresh} style={styles.refreshBtn}\u003e"
+    },
+    {
+        "File":  "index.tsx",
+        "LineNumber":  110,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e router.push(\u0027/ban-hang\u0027)} activeOpacity={0.9}\u003e"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  72,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e toggleSort(sort)} style={{ width: w as any, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2, justifyContent: \u0027flex-end\u0027 }}\u003e"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  96,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e toggleActive(selected)} style={[s.activeChip, { alignSelf: \u0027flex-start\u0027, backgroundColor: selected.is_active ? \u0027#DCFCE7\u0027 : \u0027#FEE2E2\u0027 }]}\u003e"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  102,
+        "Line":  "        \u003cTouchableOpacity style={s.panelCta} onPress={() =\u003e setShowForm(true)}\u003e\u003cIcon name=\"plus\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelCtaText}\u003eTạo chiến dịch\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  108,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e setSelected(item)} style={s.tr} activeOpacity={0.7}\u003e"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  111,
+        "Line":  "      \u003cTouchableOpacity onPress={() =\u003e toggleActive(item)} style={{ width: 55, alignItems: \u0027flex-end\u0027 }}\u003e"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  143,
+        "Line":  "        right={\u003cTouchableOpacity onPress={() =\u003e setShowForm(true)} style={s.addBtn}\u003e\u003cIcon name=\"plus\" size={18} color=\"#fff\" /\u003e\u003c/TouchableOpacity\u003e}"
+    },
+    {
+        "File":  "marketing.tsx",
+        "LineNumber":  166,
+        "Line":  "              \u003cTouchableOpacity key={t} onPress={() =\u003e setForm(p =\u003e ({ ...p, type: t }))}"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  79,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e toggleSort(sort)} style={{ width: w as any, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2, justifyContent: \u0027flex-end\u0027 }}\u003e"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  105,
+        "Line":  "            \u003cTouchableOpacity onPress={() =\u003e openEdit(selected)} style={[s.panelBtn, { backgroundColor: colors.brand.primary }]}\u003e\u003cIcon name=\"pencil\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelBtnText}\u003eSửa\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  106,
+        "Line":  "            \u003cTouchableOpacity onPress={() =\u003e del(selected.id)} style={[s.panelBtn, { backgroundColor: colors.status.danger }]}\u003e\u003cIcon name=\"delete\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelBtnText}\u003eXoá\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  110,
+        "Line":  "        \u003cTouchableOpacity style={s.panelCta} onPress={openNew}\u003e\u003cIcon name=\"plus\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelCtaText}\u003eThêm hạng\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  116,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e setSelected(item)} style={s.tr} activeOpacity={0.7}\u003e"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  150,
+        "Line":  "        right={isWide ? undefined : \u003cTouchableOpacity onPress={openNew} style={s.addBtn}\u003e\u003cIcon name=\"plus\" size={18} color=\"#fff\" /\u003e\u003c/TouchableOpacity\u003e}"
+    },
+    {
+        "File":  "membership.tsx",
+        "LineNumber":  179,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e setForm(p =\u003e ({ ...p, is_active: !p.is_active }))} style={{ flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 6 }}\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  77,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e toggleSort(k)} style={{ width: w, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2 }}\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  100,
+        "Line":  "                  \u003cTouchableOpacity key={q} onPress={() =\u003e setChartQ(q)}"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  137,
+        "Line":  "      \u003cTouchableOpacity onPress={() =\u003e setSelected(row)} style={s.tr} activeOpacity={0.7}\u003e"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  209,
+        "Line":  "          \u003cTouchableOpacity key={t} onPress={() =\u003e setTab(t as any)}"
+    },
+    {
+        "File":  "menu-eng.tsx",
+        "LineNumber":  216,
+        "Line":  "          \u003cTouchableOpacity key={d} onPress={() =\u003e setDays(d)}"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  113,
+        "Line":  "          \u003cTouchableOpacity key={c.key} style={[styles.catRow, catFilter === c.key \u0026\u0026 { opacity: 1 }]} onPress={() =\u003e setCatFilter(catFilter === c.key ? null : c.key)}\u003e"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  121,
+        "Line":  "        \u003cTouchableOpacity style={styles.panelCta} onPress={openAdd}\u003e"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  140,
+        "Line":  "          \u003cTouchableOpacity"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  146,
+        "Line":  "          \u003cTouchableOpacity"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  163,
+        "Line":  "      \u003cTouchableOpacity style={styles.item} onPress={() =\u003e openEdit(item)} activeOpacity={0.7}\u003e"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  182,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e handleDelete(item.id, item.name)} style={styles.deleteBtn} hitSlop={8}\u003e"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  194,
+        "Line":  "      {search.length \u003e 0 \u0026\u0026 \u003cTouchableOpacity onPress={() =\u003e setSearch(\u0027\u0027)}\u003e\u003cIcon name=\"close\" size={16} color=\"#94A3B8\" /\u003e\u003c/TouchableOpacity\u003e}"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  225,
+        "Line":  "          \u003cTouchableOpacity onPress={openAdd} style={styles.addBtn}\u003e"
+    },
+    {
+        "File":  "menu.tsx",
+        "LineNumber":  230,
+        "Line":  "          \u003cTouchableOpacity onPress={openAdd} style={styles.addBtn}\u003e"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  66,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e toggleSort(sort)} style={{ width: w as any, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2 }}\u003e"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  103,
+        "Line":  "        \u003cTouchableOpacity onPress={() =\u003e { setEditing(item); setForm({ code: item.code || \u0027\u0027, name: item.name || \u0027\u0027, type: item.type || \u0027percent\u0027, value: String(item.value || \u00270\u0027), min_order: String(item.min_order || \u00270\u0027), valid_from: item.valid_from || \u0027\u0027, valid_until: item.valid_until || \u0027\u0027 }); setShowForm(true); }} style={{ flex: 1, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 8 }}\u003e"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  108,
+        "Line":  "        \u003cTouchableOpacity onPress={async () =\u003e { try { await request(`/api/v1/quan-ly/promo/${isV ? \u0027vouchers\u0027 : \u0027rules\u0027}/${item.id}`, { method: \u0027PUT\u0027, body: JSON.stringify({ is_active: !active }) }); load(); } catch {} }} style={[s.activeChip, { backgroundColor: active ? \u0027#DCFCE7\u0027 : \u0027#F1F5F9\u0027 }]}\u003e"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  128,
+        "Line":  "            \u003cTouchableOpacity onPress={() =\u003e toggleSort(\u0027active\u0027)} style={{ width: 65, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2 }}\u003e"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  142,
+        "Line":  "        right={isWide ? undefined : \u003cTouchableOpacity onPress={openNew} style={s.addBtn}\u003e\u003cIcon name=\"plus\" size={18} color=\"#fff\" /\u003e\u003cText style={s.addBtnText}\u003eThêm\u003c/Text\u003e\u003c/TouchableOpacity\u003e}"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  153,
+        "Line":  "          \u003cTouchableOpacity key={t} onPress={() =\u003e setTab(t)} style={[s.tab, tab === t \u0026\u0026 { backgroundColor: colors.brand.primary, borderColor: colors.brand.primary }]}\u003e"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  158,
+        "Line":  "        {isWide \u0026\u0026 \u003cTouchableOpacity onPress={openNew} style={s.addBtnSm}\u003e\u003cIcon name=\"plus\" size={14} color=\"#fff\" /\u003e\u003cText style={s.addBtnSmText}\u003eThêm\u003c/Text\u003e\u003c/TouchableOpacity\u003e}"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  174,
+        "Line":  "            \u003cTouchableOpacity onPress={() =\u003e setForm(p =\u003e ({ ...p, type: \u0027percent\u0027 }))} style={[s.typeBtn, form.type === \u0027percent\u0027 \u0026\u0026 { backgroundColor: colors.brand.primary, borderColor: colors.brand.primary }]}\u003e"
+    },
+    {
+        "File":  "promo.tsx",
+        "LineNumber":  177,
+        "Line":  "            \u003cTouchableOpacity onPress={() =\u003e setForm(p =\u003e ({ ...p, type: \u0027fixed\u0027 }))} style={[s.typeBtn, form.type === \u0027fixed\u0027 \u0026\u0026 { backgroundColor: colors.brand.primary, borderColor: colors.brand.primary }]}\u003e"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  164,
+        "Line":  "          \u003cTouchableOpacity"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  184,
+        "Line":  "      \u003cTouchableOpacity"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  218,
+        "Line":  "            \u003cTouchableOpacity style={s.actionBtn}\u003e"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  251,
+        "Line":  "            \u003cTouchableOpacity onPress={load} style={s.headerBtn}\u003e"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  254,
+        "Line":  "            \u003cTouchableOpacity onPress={() =\u003e setShowForm(true)} style={s.addBtn}\u003e"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  276,
+        "Line":  "          \u003cTouchableOpacity key={statusKey} onPress={() =\u003e setStatusFilter(statusKey)}"
+    },
+    {
+        "File":  "purchase-orders.tsx",
+        "LineNumber":  304,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e setShowForm(true)} style={s.fab}\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  148,
+        "Line":  "      \u003cTouchableOpacity"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  181,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e handleEdit(item)} style={s.actionIcon} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  185,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e handleClone(item)} style={s.actionIcon} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  189,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e deleteRecipe(item.id || item.product_id)} style={s.actionIcon} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  235,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e handleEdit(selectedRecipe)} style={[s.panelBtn, { backgroundColor: colors.brand.primary }]}\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  239,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e handleClone(selectedRecipe)} style={[s.panelBtn, { backgroundColor: colors.surface.disabled }]}\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  243,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e deleteRecipe(selectedRecipe.id || selectedRecipe.product_id)} style={[s.panelBtn, { backgroundColor: \u0027#FEE2E2\u0027 }]}\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  250,
+        "Line":  "        \u003cTouchableOpacity style={{ flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 4, marginTop: 8 }}"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  283,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e setSearch(\u0027\u0027)}\u003e\u003cIcon name=\"close-circle\" size={16} color={colors.text.muted} /\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  289,
+        "Line":  "        \u003cTouchableOpacity onPress={() =\u003e setShowFilters(!showFilters)} style={{ flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 4, paddingVertical: 4 }}\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  300,
+        "Line":  "              \u003cTouchableOpacity key={f.key} onPress={() =\u003e setFilterKey(f.key)}"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  309,
+        "Line":  "              \u003cTouchableOpacity key={s.key} onPress={() =\u003e setSortKey(s.key)}"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  346,
+        "Line":  "            \u003cTouchableOpacity onPress={load} style={s.headerBtn}\u003e"
+    },
+    {
+        "File":  "recipes.tsx",
+        "LineNumber":  349,
+        "Line":  "            \u003cTouchableOpacity onPress={handleAdd} style={s.addBtn}\u003e"
+    },
+    {
+        "File":  "reports.tsx",
+        "LineNumber":  147,
+        "Line":  "          \u003cTouchableOpacity onPress={onRefresh} style={[styles.iconBtn, { backgroundColor: colors.brand.primaryBg }]}\u003e"
+    },
+    {
+        "File":  "reports.tsx",
+        "LineNumber":  163,
+        "Line":  "            \u003cTouchableOpacity"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  82,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e toggleSort(sort)} style={{ width: w as any, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2 }}\u003e"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  121,
+        "Line":  "          \u003cTouchableOpacity style={[s.panelCta, { backgroundColor: colors.status.danger }]} onPress={() =\u003e { setCashEnd(\u00270\u0027); setExpenseTotal(\u00270\u0027); setEndNote(\u0027\u0027); setShowEnd(true); }}\u003e"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  131,
+        "Line":  "          \u003cTouchableOpacity style={s.panelCta} onPress={() =\u003e { setOpeningBalance(\u00270\u0027); setShowStart(true); }}\u003e"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  195,
+        "Line":  "              \u003cTouchableOpacity onPress={() =\u003e { setCashEnd(\u00270\u0027); setExpenseTotal(\u00270\u0027); setEndNote(\u0027\u0027); setShowEnd(true); }} style={s.mobileCloseBtn}\u003e"
+    },
+    {
+        "File":  "shifts.tsx",
+        "LineNumber":  201,
+        "Line":  "            \u003cTouchableOpacity style={s.mobileStartBtn} onPress={() =\u003e { setOpeningBalance(\u00270\u0027); setShowStart(true); }}\u003e"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  77,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e toggleSort(sort)} style={{ width: w as any, flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: 2 }}\u003e"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  99,
+        "Line":  "            \u003cTouchableOpacity onPress={() =\u003e openEdit(selected)} style={[s.panelBtn, { backgroundColor: colors.brand.primary }]}\u003e\u003cIcon name=\"pencil\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelBtnText}\u003eSửa\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  100,
+        "Line":  "            \u003cTouchableOpacity onPress={() =\u003e del(selected.id)} style={[s.panelBtn, { backgroundColor: colors.status.danger }]}\u003e\u003cIcon name=\"delete\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelBtnText}\u003eXoá\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  104,
+        "Line":  "        \u003cTouchableOpacity style={s.panelCta} onPress={openNew}\u003e\u003cIcon name=\"plus\" size={14} color=\"#fff\" /\u003e\u003cText style={s.panelCtaText}\u003eThêm trạm\u003c/Text\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  110,
+        "Line":  "    \u003cTouchableOpacity onPress={() =\u003e setSelected(item)} style={s.tr} activeOpacity={0.7}\u003e"
+    },
+    {
+        "File":  "stations.tsx",
+        "LineNumber":  147,
+        "Line":  "        right={isWide ? undefined : \u003cTouchableOpacity onPress={openNew} style={s.addBtn}\u003e\u003cIcon name=\"plus\" size={18} color=\"#fff\" /\u003e\u003c/TouchableOpacity\u003e}"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  213,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e openEdit(selectedItem)} style={[s.panelBtn, { backgroundColor: colors.brand.primary }]}\u003e"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  217,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e deleteMaterial(selectedItem.id)} style={[s.panelBtn, { backgroundColor: \u0027#FEE2E2\u0027 }]}\u003e"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  239,
+        "Line":  "      \u003cTouchableOpacity"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  284,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e openEdit(item)} style={s.actionBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}\u003e"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  288,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e deleteMaterial(item.id)} style={s.actionBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}\u003e"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  305,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e setSearch(\u0027\u0027)}\u003e\u003cIcon name=\"close-circle\" size={16} color={colors.text.muted} /\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  311,
+        "Line":  "            \u003cTouchableOpacity key={cat} onPress={() =\u003e setCatFilter(cat)}"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  347,
+        "Line":  "            \u003cTouchableOpacity onPress={load} style={s.headerBtn}\u003e"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  350,
+        "Line":  "            \u003cTouchableOpacity onPress={openAdd} style={s.addBtn}\u003e"
+    },
+    {
+        "File":  "stock.tsx",
+        "LineNumber":  440,
+        "Line":  "  \u003cTouchableOpacity onPress={onPress} style={s.fab}\u003e"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  128,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e openEdit(selected)} style={[s.panelBtn, { backgroundColor: colors.brand.primary }]}\u003e"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  132,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e deleteSupplier(selected.id)} style={[s.panelBtn, { backgroundColor: \u0027#FEE2E2\u0027 }]}\u003e"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  151,
+        "Line":  "      \u003cTouchableOpacity"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  182,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e openEdit(item)} style={s.actionBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}\u003e"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  186,
+        "Line":  "          \u003cTouchableOpacity onPress={() =\u003e deleteSupplier(item.id)} style={s.actionBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}\u003e"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  202,
+        "Line":  "        \u003cTouchableOpacity onPress={() =\u003e setSearch(\u0027\u0027)}\u003e\u003cIcon name=\"close-circle\" size={16} color={colors.text.muted} /\u003e\u003c/TouchableOpacity\u003e"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  231,
+        "Line":  "            \u003cTouchableOpacity onPress={load} style={s.headerBtn}\u003e"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  234,
+        "Line":  "            \u003cTouchableOpacity onPress={openNew} style={s.addBtn}\u003e"
+    },
+    {
+        "File":  "suppliers.tsx",
+        "LineNumber":  327,
+        "Line":  "    \u003cTouchableOpacity onPress={onPress} style={s.fab}\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  27,
+        "Line":  "    \u003cTouchableOpacity"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  147,
+        "Line":  "                \u003cTouchableOpacity"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  174,
+        "Line":  "                \u003cTouchableOpacity"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  193,
+        "Line":  "          \u003cTouchableOpacity"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  199,
+        "Line":  "          \u003cTouchableOpacity"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  221,
+        "Line":  "          \u003cTouchableOpacity onPress={openAdd} style={styles.addBtn}\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  226,
+        "Line":  "          \u003cTouchableOpacity onPress={openAdd} style={styles.addBtn}\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  243,
+        "Line":  "                  \u003cTouchableOpacity key={area} style={{ flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: shape.spacing.sm, paddingHorizontal: shape.spacing.md, height: 34, borderRadius: shape.radius.full, backgroundColor: active ? colors.brand.primary : colors.surface.card, borderWidth: 1, borderColor: active ? colors.brand.primary : colors.border.default }}\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  315,
+        "Line":  "                \u003cTouchableOpacity key={area} style={{ flexDirection: \u0027row\u0027, alignItems: \u0027center\u0027, gap: shape.spacing.sm, paddingHorizontal: shape.spacing.md, height: 34, borderRadius: shape.radius.full, backgroundColor: active ? colors.brand.primary : colors.surface.card, borderWidth: 1, borderColor: active ? colors.brand.primary : colors.border.default }}\u003e"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  381,
+        "Line":  "                \u003cTouchableOpacity"
+    },
+    {
+        "File":  "tables.tsx",
+        "LineNumber":  408,
+        "Line":  "                \u003cTouchableOpacity"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  139,
+        "Line":  "        \u003cTouchableOpacity style={styles.panelCta} onPress={openAdd}\u003e"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  162,
+        "Line":  "          \u003cTouchableOpacity"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  168,
+        "Line":  "          \u003cTouchableOpacity"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  185,
+        "Line":  "      \u003cTouchableOpacity style={styles.userItem} onPress={() =\u003e openEdit(item)} activeOpacity={0.7}\u003e"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  249,
+        "Line":  "          \u003cTouchableOpacity onPress={openAdd} style={styles.addBtn}\u003e"
+    },
+    {
+        "File":  "users.tsx",
+        "LineNumber":  254,
+        "Line":  "          \u003cTouchableOpacity onPress={openAdd} style={styles.addBtn}\u003e"
+    }
+]

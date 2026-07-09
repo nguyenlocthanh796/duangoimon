@@ -18,7 +18,7 @@ interface FormModalProps {
   title: string;
   subtitle?: string;
   onClose: () => void;
-  onSave: () => void;
+  onSave?: () => void;
   saveLabel?: string;
   saving?: boolean;
   children: ReactNode;
@@ -77,7 +77,7 @@ export default function FormModal({
                 <TouchableOpacity onPress={onClose} style={{ flex: 1, padding: 15, borderRadius: 12, backgroundColor: '#F1F5F9', alignItems: 'center' }}>
                   <Text style={{ fontWeight: '700', color: '#64748B', fontSize: 15 }}>Hủy</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={onSave} disabled={saving} style={{ flex: 2, padding: 15, borderRadius: 12, backgroundColor: '#F97316', alignItems: 'center', opacity: saving ? 0.7 : 1 }}>
+                <TouchableOpacity onPress={onSave} disabled={saving || !onSave} style={{ flex: 2, padding: 15, borderRadius: 12, backgroundColor: '#F97316', alignItems: 'center', opacity: (saving || !onSave) ? 0.7 : 1 }}>
                   {saving ? <ActivityIndicator color="#fff" /> : <Text style={{ fontWeight: '700', color: '#fff', fontSize: 15 }}>{saveLabel}</Text>}
                 </TouchableOpacity>
               </View>
@@ -113,7 +113,7 @@ export default function FormModal({
             <TouchableOpacity onPress={onClose} style={{ flex: 1, padding: 15, borderRadius: 12, backgroundColor: '#F1F5F9', alignItems: 'center' }}>
               <Text style={{ fontWeight: '700', color: '#64748B', fontSize: 15 }}>Hủy</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={onSave} disabled={saving} style={{ flex: 2, padding: 15, borderRadius: 12, backgroundColor: '#F97316', alignItems: 'center', opacity: saving ? 0.7 : 1 }}>
+            <TouchableOpacity onPress={onSave} disabled={saving || !onSave} style={{ flex: 2, padding: 15, borderRadius: 12, backgroundColor: '#F97316', alignItems: 'center', opacity: (saving || !onSave) ? 0.7 : 1 }}>
               {saving ? <ActivityIndicator color="#fff" /> : <Text style={{ fontWeight: '700', color: '#fff', fontSize: 15 }}>{saveLabel}</Text>}
             </TouchableOpacity>
           </View>

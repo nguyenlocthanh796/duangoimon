@@ -50,7 +50,7 @@ export default function CustomersScreen() {
     return arr.sort((a, b) => {
       if (sortKey === 'phone') return sortAsc ? (a.phone || '').localeCompare(b.phone || '') : (b.phone || '').localeCompare(a.phone || '');
       if (sortKey === 'total_spent') return sortAsc ? (a.total_spent || 0) - (b.total_spent || 0) : (b.total_spent || 0) - (a.total_spent || 0);
-      if (sortKey === 'total_visits') return sortAsc ? (a.total_visits || 0) - (b.total_visits || 0) : (b.total_visits || 0) - (a.total_visits || 0);
+      if (sortKey === 'total_visits') return sortAsc ? (a.visit_count || 0) - (b.visit_count || 0) : (b.visit_count || 0) - (a.visit_count || 0);
       return sortAsc ? (a.name || '').localeCompare(b.name || '') : (b.name || '').localeCompare(a.name || '');
     });
   }, [customers, search, sortKey, sortAsc]);
@@ -58,7 +58,7 @@ export default function CustomersScreen() {
   const stats = {
     total: customers.length,
     totalSpent: customers.reduce((s, c) => s + (c.total_spent || 0), 0),
-    totalVisits: customers.reduce((s, c) => s + (c.total_visits || 0), 0),
+    totalVisits: customers.reduce((s, c) => s + (c.visit_count || 0), 0),
   };
 
   const StatItem = ({ icon, value, label }: { icon: string; value: string | number; label: string }) => (
@@ -113,7 +113,7 @@ export default function CustomersScreen() {
         <Text style={{ ...font.micro, color: colors.text.muted }}>{item.phone}</Text>
       </View>
       <Text style={[s.td, { width: 75, textAlign: 'right', fontWeight: '700', color: colors.brand.primary }]}>{formatVND(item.total_spent || 0)}</Text>
-      <Text style={[s.td, { width: 40, textAlign: 'right' }]}>{item.total_visits || 0}</Text>
+      <Text style={[s.td, { width: 40, textAlign: 'right' }]}>{item.visit_count || 0}</Text>
     </TouchableOpacity>
   );
 

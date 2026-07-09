@@ -58,7 +58,7 @@ export function useTableOrder(tableId: string, tableName: string, onClose?: () =
             vatRate: p.vat_rate ?? 8,
           }));
           cachedProducts = currentProducts;
-          if (!cancelled) setProducts(currentProducts);
+          if (!cancelled) setProducts(cachedProducts ?? []);
         }
 
         if (tableId !== 'TAKEAWAY') {
@@ -66,7 +66,7 @@ export function useTableOrder(tableId: string, tableName: string, onClose?: () =
             const activeOrder = await api.getActiveOrderForTable(tableId);
             if (!cancelled && activeOrder) {
               cart.setActiveOrderId(activeOrder.id);
-              cart.loadOrderItems(activeOrder.items, currentProducts);
+              cart.loadOrderItems(activeOrder.items, cachedProducts ?? []);
             }
           } catch { /* no active order */ }
         }

@@ -452,6 +452,6 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     ...font.body,
     color: colors.text.primary,
-    backgroundColor: colors.surface.input,
+    backgroundColor: colors.surface.disabled,
   },
 })

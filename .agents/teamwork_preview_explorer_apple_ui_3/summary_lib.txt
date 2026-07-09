@@ -1,0 +1,273 @@
+
+File: lib\components\auth\LoginForm.tsx (5 occurrences)
+  Line 121: borderRadius -> "borderRadius={20}"
+  Line 274: borderRadius -> "borderRadius: 12,"
+  Line 306: borderRadius -> "width: 18, height: 18, borderRadius: 4,"
+  Line 315: borderRadius -> "borderRadius: 12,"
+  Line 340: borderRadius -> "borderRadius: 20,"
+
+File: lib\components\ke-toan\BillDetailModal.tsx (5 occurrences)
+  Line 191: borderRadius -> "borderRadius: shape.radius.lg,"
+  Line 218: borderRadius -> "borderRadius: shape.radius.md,"
+  Line 242: borderRadius -> "borderRadius: 4,"
+  Line 249: borderRadius -> "borderRadius: shape.radius.md,"
+  Line 360: borderRadius -> "borderRadius: shape.radius.md,"
+
+File: lib\components\ke-toan\InvoiceCard.tsx (2 occurrences)
+  Line 137: borderRadius -> "borderRadius: shape.radius.sm,"
+  Line 159: borderRadius -> "borderRadius: shape.radius.md,"
+
+File: lib\components\ke-toan\InvoiceFormContent.tsx (4 occurrences)
+  Line 98: borderRadius -> "borderWidth: 1, borderColor: colors.border.default, borderRadius: shape.radius.md,"
+  Line 107: borderTopLeftRadius, borderTopRightRadius -> "backgroundColor: colors.surface.card, borderTopLeftRadius: 20, borderTopRightRadius: 20,"
+  Line 110: borderRadius -> "handle: { width: 36, height: 4, borderRadius: 2, backgroundColor: colors.border.default, alignSelf: 'center', marginBottom: 20 },"
+  Line 113: borderRadius -> "orderDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: colors.brand.primary, marginRight: 12 },"
+
+File: lib\components\ke-toan\TransactionFormContent.tsx (2 occurrences)
+  Line 69: borderRadius -> "paddingVertical: 12, borderRadius: shape.radius.md, minHeight: 44,"
+  Line 77: borderRadius -> "borderWidth: 1, borderColor: colors.border.default, borderRadius: shape.radius.md,"
+
+File: lib\components\kitchen\KanbanColumn.tsx (4 occurrences)
+  Line 33: borderRadius -> "backgroundColor: col.headerBg, borderRadius: shape.radius.md,"
+  Line 43: borderRadius -> "<View style={{ width: 22, height: 22, borderRadius: 11, backgroundColor: col.dotColor, alignItems: 'center', justifyContent: 'center' }}>"
+  Line 63: borderRadius -> "borderRadius: shape.radius.md, padding: 24, alignItems: 'center', gap: 8, marginTop: 8,"
+  Line 74: borderRadius -> "borderRadius: shape.radius.md, padding: 24, alignItems: 'center', gap: 8, marginTop: 8,"
+
+File: lib\components\kitchen\TicketCard.tsx (6 occurrences)
+  Line 51: borderRadius -> "borderRadius: shape.radius.lg, marginBottom: 12,"
+  Line 73: borderRadius -> "width: 36, height: 36, borderRadius: shape.radius.md,"
+  Line 89: borderRadius -> "paddingHorizontal: 8, paddingVertical: 3, borderRadius: shape.radius.md,"
+  Line 106: borderRadius -> "<View style={{ width: 26, height: 26, borderRadius: shape.radius.md, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center', marginTop: 1 }}>"
+  Line 137: borderRadius -> "style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, minHeight: 44, borderRadius: shape.radius.md, backgroundColor: colors.brand.primaryBg, borderWidth: 1, borderColor: colors.border.brand }}"
+  Line 145: borderRadius -> "style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, minHeight: 44, borderRadius: shape.radius.md, backgroundColor: colors.status.successBg, borderWidth: 1, borderColor: palette.green[350] }}"
+
+File: lib\components\management\BarChart.tsx (3 occurrences)
+  Line 100: borderRadius -> "borderRadius: 2,"
+  Line 106: borderRadius -> "borderRadius: 2,"
+  Line 122: borderRadius -> "legendDot: { width: 8, height: 8, borderRadius: 4 },"
+
+File: lib\components\management\DashboardWidgets.tsx (9 occurrences)
+  Line 23: borderRadius -> "<SkeletonBox w={24} h={24} borderRadius={4} />"
+  Line 247: borderRadius -> "borderRadius: shape.radius.lg,"
+  Line 271: borderRadius -> "statusDot: { width: 8, height: 8, borderRadius: 4 },"
+  Line 275: borderRadius -> "actDot: { width: 30, height: 30, borderRadius: shape.radius.md, alignItems: 'center', justifyContent: 'center' },"
+  Line 284: borderRadius -> "chartBar: { width: '100%', borderRadius: 4, minHeight: 2 },"
+  Line 294: borderRadius -> "borderRadius: shape.radius.lg,"
+  Line 299: borderRadius -> "navIconWrap: { width: 56, height: 56, borderRadius: shape.radius.md, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F3F4F6' },"
+  Line 309: borderRadius -> "borderRadius: shape.radius.lg,"
+  Line 314: borderRadius -> "navIconWrap: { width: 40, height: 40, borderRadius: shape.radius.md, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F3F4F6' },"
+
+File: lib\components\management\OccupancyProgress.tsx (4 occurrences)
+  Line 28: borderRadius -> "<View style={{ flexDirection: 'row', height: 12, borderRadius: 6, backgroundColor: colors.surface.disabled, overflow: 'hidden', marginBottom: 14 }}>"
+  Line 36: borderRadius -> "<View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#10B981' }} />"
+  Line 40: borderRadius -> "<View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#F97316' }} />"
+  Line 44: borderRadius -> "<View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#64748B' }} />"
+
+File: lib\components\management\ReportTables.tsx (4 occurrences)
+  Line 81: borderRadius -> "section: { backgroundColor: colors.surface.card, borderRadius: 4, marginHorizontal: 12, marginTop: 14, padding: 16, ...CARD_SHADOW },"
+  Line 87: borderRadius -> "tableRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 4, borderRadius: 4 },"
+  Line 91: borderRadius -> "ordersBadge: { backgroundColor: colors.surface.glowBlue, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 },"
+  Line 93: borderRadius -> "qtyBadge: { backgroundColor: colors.brand.primaryBg, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 },"
+
+File: lib\components\management\StatCard.tsx (6 occurrences)
+  Line 57: borderRadius -> "borderRadius: shape.radius.lg,"
+  Line 66: borderRadius -> "flexDirection: 'row' as const, alignItems: 'center' as const, gap: 3, paddingHorizontal: 8, paddingVertical: 4, borderRadius: shape.radius.sm, backgroundColor: colors.surface.input"
+  Line 70: borderRadius -> "iconBg: { width: 40, height: 40, borderRadius: shape.radius.md, alignItems: 'center' as const, justifyContent: 'center' as const },"
+  Line 78: borderRadius -> "borderRadius: shape.radius.md,"
+  Line 87: borderRadius -> "flexDirection: 'row' as const, alignItems: 'center' as const, gap: 2, paddingHorizontal: 6, paddingVertical: 3, borderRadius: shape.radius.sm, backgroundColor: colors.surface.input"
+  Line 91: borderRadius -> "iconBg: { width: 34, height: 34, borderRadius: shape.radius.sm, alignItems: 'center' as const, justifyContent: 'center' as const },"
+
+File: lib\components\payment\CashInputPanel.tsx (3 occurrences)
+  Line 25: borderRadius -> "<View style={{ backgroundColor: colors.surface.app, borderRadius: 4, paddingVertical: 10, alignItems: 'center', borderWidth: 1, borderColor: colors.border.default }}>"
+  Line 30: borderRadius -> "<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 6, paddingHorizontal: 10, borderRadius: 4, backgroundColor: changeBg, borderWidth: 1, borderColor: changeBorder }}>"
+  Line 42: borderRadius -> "style={{ flex: 1, height: 38, borderRadius: 4, backgroundColor: cash === amt ? colors.brand.primaryBg : colors.surface.card, borderWidth: cash === amt ? 1.5 : 1, borderColor: cash === amt ? colors.brand.primary : colors.border.default, alignItems: 'center', justifyContent: 'center' }}>"
+
+File: lib\components\payment\CashSuggestions.tsx (1 occurrences)
+  Line 40: borderRadius -> "paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8,"
+
+File: lib\components\payment\Numpad.tsx (1 occurrences)
+  Line 24: borderRadius -> "width: '30%', height: 48, borderRadius: 4,"
+
+File: lib\components\payment\OrderItemsList.tsx (1 occurrences)
+  Line 11: borderRadius -> "<View style={{ backgroundColor: colors.surface.card, borderRadius: shape.radius.md, padding: 12, borderWidth: 1, borderColor: colors.border.default }}>"
+
+File: lib\components\payment\PaymentSuccessScreen.tsx (3 occurrences)
+  Line 40: borderRadius -> "<View style={{ backgroundColor: colors.surface.card, borderRadius: 4, padding: 20, width: '100%', borderWidth: 1, borderColor: colors.border.default, gap: 10 }}>"
+  Line 64: borderRadius -> "borderRadius: 4, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8,"
+  Line 72: borderRadius -> "borderRadius: 4, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 8,"
+
+File: lib\components\payment\PickerItem.tsx (1 occurrences)
+  Line 12: borderRadius -> "style={{ paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, backgroundColor: value === m ? colors.brand.primaryBg : colors.surface.app, borderWidth: 1, borderColor: value === m ? colors.brand.primary : colors.border.default }}>"
+
+File: lib\components\payment\SplitBillPanel.tsx (2 occurrences)
+  Line 45: borderRadius -> "style={{ borderWidth: 1, borderColor: colors.border.default, borderRadius: 8, padding: 6, ...font.caption, color: colors.text.primary, width: 90, textAlign: 'center' }}"
+  Line 60: borderRadius -> "style={{ paddingVertical: 12, borderRadius: 10, alignItems: 'center', backgroundColor: ok && !paying ? colors.status.success : colors.surface.disabled }}>"
+
+File: lib\components\pos\AreaFilter.tsx (1 occurrences)
+  Line 43: borderRadius -> "borderRadius: 4,"
+
+File: lib\components\pos\CartItemRow.tsx (16 occurrences)
+  Line 95: borderRadius -> "style={{ width: 72, marginBottom: 4, borderRadius: 8, backgroundColor: '#16a34a', alignItems: 'center', justifyContent: 'center', marginLeft: 8 }}"
+  Line 107: borderRadius -> "style={{ width: 64, marginBottom: 4, borderRadius: 8, backgroundColor: '#2563eb', alignItems: 'center', justifyContent: 'center', marginLeft: 8 }}"
+  Line 115: borderRadius -> "style={{ width: 64, marginBottom: 4, borderRadius: 8, backgroundColor: '#dc2626', alignItems: 'center', justifyContent: 'center', marginLeft: 8 }}"
+  Line 126: borderRadius -> "style={{ width: 72, marginBottom: 4, borderRadius: 8, backgroundColor: '#dc2626', alignItems: 'center', justifyContent: 'center', marginLeft: 8 }}"
+  Line 145: borderRadius -> "borderRadius: 8,"
+  Line 151: borderRadius -> "<View style={{ width: 64, height: 64, borderRadius: 6, backgroundColor: colors.surface.disabled, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>"
+  Line 156: borderBottomRightRadius -> "<View style={{ position: 'absolute', top: 0, left: 0, backgroundColor: 'rgba(249,115,22,0.9)', paddingHorizontal: 4, paddingVertical: 1, borderBottomRightRadius: 6 }}>"
+  Line 161: borderRadius -> "<View style={{ position: 'absolute', bottom: 2, right: 2, backgroundColor: '#16a34a', width: 14, height: 14, borderRadius: 7, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: '#fff' }}>"
+  Line 182: borderRadius -> "<View style={{ backgroundColor: '#fef2f2', paddingHorizontal: 4, paddingVertical: 2, borderRadius: 3, borderWidth: 1, borderColor: '#fecaca' }}>"
+  Line 186: borderRadius -> "<View style={{ backgroundColor: '#f0fdf4', paddingHorizontal: 4, paddingVertical: 2, borderRadius: 3, borderWidth: 1, borderColor: '#bbf7d0' }}>"
+  Line 193: borderRadius -> "style={{ backgroundColor: isTakeaway ? colors.brand.primaryBg : '#f0f9ff', paddingHorizontal: 4, paddingVertical: 2, borderRadius: 3, borderWidth: 1, borderColor: isTakeaway ? colors.border.brand : '#bae6fd' }}"
+  Line 209: borderRadius -> "borderColor: colors.border.default, padding: 2, borderRadius: 8,"
+  Line 214: borderRadius -> "style={{ width: 30, height: 30, borderRadius: 6, backgroundColor: item.qty <= 1 ? 'transparent' : colors.surface.card, alignItems: 'center', justifyContent: 'center', borderWidth: item.qty <= 1 ? 0 : 1, borderColor: colors.border.default }}"
+  Line 241: borderRadius -> "style={{ width: 30, height: 30, borderRadius: 6, backgroundColor: colors.brand.primaryBg, borderWidth: 1, borderColor: colors.border.brand, alignItems: 'center', justifyContent: 'center' }}"
+  Line 251: borderRadius -> "<View style={{ marginTop: 6, padding: 6, backgroundColor: '#fef2f2', borderRadius: 6, flexDirection: 'row', alignItems: 'center', gap: 4 }}>"
+  Line 261: borderRadius -> "style={{ marginTop: 8, padding: 8, backgroundColor: '#fffbeb', borderWidth: 1, borderColor: '#fde68a', borderRadius: 6, flexDirection: 'row', alignItems: 'flex-start', gap: 4 }}"
+
+File: lib\components\pos\CartMainActions.tsx (4 occurrences)
+  Line 30: borderRadius -> "borderRadius: 8,"
+  Line 49: borderRadius -> "style={{ flex: 1, height: 50, borderRadius: 8, backgroundColor: hasUnsentItems ? colors.brand.primaryBg : colors.surface.disabled, borderWidth: 1.5, borderColor: hasUnsentItems ? colors.border.brand : colors.border.default, alignItems: 'center', justifyContent: 'center' }}"
+  Line 56: borderRadius -> "style={{ flex: 1, height: 50, borderRadius: 8, backgroundColor: colors.brand.primaryBg, borderWidth: 1.5, borderColor: colors.border.brand, alignItems: 'center', justifyContent: 'center' }}"
+  Line 63: borderRadius -> "style={{ flex: 1.5, height: 50, borderRadius: 8, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }}"
+
+File: lib\components\pos\CartPanel.tsx (4 occurrences)
+  Line 146: borderRadius -> "style={{ paddingHorizontal: 20, paddingVertical: 10, borderRadius: 8, backgroundColor: colors.brand.primaryBg, borderWidth: 1, borderColor: colors.border.brand }}"
+  Line 290: borderRadius -> "<View style={{ backgroundColor: colors.brand.primary, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 4 }}>"
+  Line 296: borderRadius -> "<TouchableOpacity onPress={() => setShowMoreMenu(true)} hitSlop={8} style={{ width: 42, height: 42, borderRadius: 8, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default, alignItems: 'center', justifyContent: 'center' }}>"
+  Line 310: borderRadius -> "style={{ paddingHorizontal: 20, paddingVertical: 10, borderRadius: 8, backgroundColor: colors.brand.primaryBg, borderWidth: 1, borderColor: colors.border.brand }}"
+
+File: lib\components\pos\CartSplitActions.tsx (4 occurrences)
+  Line 22: borderRadius -> "style={{ flex: 1, height: 48, borderRadius: 8, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}"
+  Line 28: borderRadius -> "style={{ flex: 1, height: 48, borderRadius: 8, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}"
+  Line 36: borderRadius -> "style={{ flex: 1, height: 48, borderRadius: 8, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}"
+  Line 43: borderRadius -> "style={{ flex: 1.5, height: 48, borderRadius: 8, backgroundColor: hasSelection ? colors.brand.primary : colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}"
+
+File: lib\components\pos\CategoryTabs.tsx (1 occurrences)
+  Line 57: borderRadius -> "borderRadius: 4,"
+
+File: lib\components\pos\MobileCartBar.tsx (3 occurrences)
+  Line 53: borderRadius -> "borderRadius: 5,"
+  Line 77: borderRadius -> "borderRadius: 8,"
+  Line 95: borderRadius -> "borderRadius: 8,"
+
+File: lib\components\pos\ModifierSheet.tsx (14 occurrences)
+  Line 76: borderRadius -> "style={{ width: 40, height: 40, borderRadius: 4, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}"
+  Line 84: borderRadius -> "<View style={{ backgroundColor: colors.surface.app, padding: 16, borderRadius: 4, borderWidth: 1, borderColor: colors.border.default, marginBottom: 16 }}>"
+  Line 88: borderRadius -> "style={{ width: 52, height: 52, borderRadius: 4, backgroundColor: colors.brand.primaryBg, borderWidth: 1.5, borderColor: colors.border.brand, alignItems: 'center', justifyContent: 'center' }}>"
+  Line 93: borderRadius -> "style={{ width: 52, height: 52, borderRadius: 4, backgroundColor: colors.brand.primaryBg, borderWidth: 1.5, borderColor: colors.border.brand, alignItems: 'center', justifyContent: 'center' }}>"
+  Line 116: borderRadius -> "flex: 1, paddingVertical: 14, borderRadius: 4, borderWidth: 2, alignItems: 'center',"
+  Line 125: borderBottomLeftRadius, borderTopRightRadius -> "<View style={{ position: 'absolute', top: 0, right: 0, width: 24, height: 24, backgroundColor: COLORS.primary, borderBottomLeftRadius: 2, borderTopRightRadius: 4, alignItems: 'center', justifyContent: 'center' }}>"
+  Line 148: borderRadius -> "padding: 12, borderRadius: 4, borderWidth: 1.5,"
+  Line 155: borderRadius -> "width: 22, height: 22, borderRadius: 2,"
+  Line 181: borderRadius -> "style={{ paddingHorizontal: 14, paddingVertical: 10, minHeight: 44, justifyContent: 'center', borderRadius: 4, backgroundColor: active ? colors.brand.primaryBg : colors.surface.disabled, borderWidth: 1, borderColor: active ? colors.border.brand : 'transparent' }}"
+  Line 194: borderRadius -> "borderWidth: 1.5, borderColor: colors.border.default, borderRadius: 4,"
+  Line 212: borderRadius -> "style={{ flex: 1, paddingVertical: 14, borderRadius: 4, backgroundColor: colors.surface.disabled, alignItems: 'center' }}>"
+  Line 219: borderRadius -> "borderRadius: 4,"
+  Line 240: borderRadius -> "borderRadius: 4,"
+  Line 272: borderRadius -> "borderRadius: 4,"
+
+File: lib\components\pos\MoreMenu.tsx (11 occurrences)
+  Line 26: borderRadius -> "<View style={{ position: 'absolute', top: 60, right: 8, backgroundColor: colors.surface.card, borderRadius: 12, padding: 8, gap: 2, minWidth: 180, borderWidth: 1, borderColor: colors.border.default, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 12, elevation: 8 }}>"
+  Line 29: borderRadius -> "<TouchableOpacity onPress={() => { onClose(); onSplitBill(); }} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10, paddingHorizontal: 8, borderRadius: 8 }}>"
+  Line 30: borderRadius -> "<View style={{ width: 32, height: 32, borderRadius: 6, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' }}>"
+  Line 37: borderRadius -> "<TouchableOpacity onPress={() => { onClose(); onMergeBill(); }} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10, paddingHorizontal: 8, borderRadius: 8 }}>"
+  Line 38: borderRadius -> "<View style={{ width: 32, height: 32, borderRadius: 6, backgroundColor: '#f0f9ff', alignItems: 'center', justifyContent: 'center' }}>"
+  Line 45: borderRadius -> "<TouchableOpacity onPress={() => { onClose(); onMoveTable(); }} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10, paddingHorizontal: 8, borderRadius: 8 }}>"
+  Line 46: borderRadius -> "<View style={{ width: 32, height: 32, borderRadius: 6, backgroundColor: '#fef3c7', alignItems: 'center', justifyContent: 'center' }}>"
+  Line 53: borderRadius -> "<TouchableOpacity onPress={() => { onClose(); onSplitTable(); }} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10, paddingHorizontal: 8, borderRadius: 8 }}>"
+  Line 54: borderRadius -> "<View style={{ width: 32, height: 32, borderRadius: 6, backgroundColor: '#fce4ec', alignItems: 'center', justifyContent: 'center' }}>"
+  Line 61: borderRadius -> "<TouchableOpacity onPress={() => { onClose(); onMergeTable(); }} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 10, paddingHorizontal: 8, borderRadius: 8 }}>"
+  Line 62: borderRadius -> "<View style={{ width: 32, height: 32, borderRadius: 6, backgroundColor: '#e8f5e9', alignItems: 'center', justifyContent: 'center' }}>"
+
+File: lib\components\pos\MoveTableModal.tsx (5 occurrences)
+  Line 46: borderTopLeftRadius, borderTopRightRadius -> "<View style={{ backgroundColor: colors.surface.card, borderTopLeftRadius: 16, borderTopRightRadius: 16, maxHeight: '70%', padding: 16, gap: 8 }}>"
+  Line 49: borderRadius -> "<TouchableOpacity onPress={onClose} style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>"
+  Line 53: borderRadius -> "<View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, height: 40, borderRadius: 8, backgroundColor: colors.surface.app, borderWidth: 1, borderColor: colors.border.default, marginBottom: 8 }}>"
+  Line 71: borderRadius -> "style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12, paddingHorizontal: 8, borderRadius: 8 }}"
+  Line 73: borderRadius -> "<View style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: t.status === 'co_khach' ? '#f0f9ff' : '#f0fdf4', alignItems: 'center', justifyContent: 'center' }}>"
+
+File: lib\components\pos\NoteEditor.tsx (4 occurrences)
+  Line 17: borderTopLeftRadius, borderTopRightRadius -> "<View style={{ backgroundColor: colors.surface.card, borderTopLeftRadius: 16, borderTopRightRadius: 16, padding: 20, gap: 12 }}>"
+  Line 25: borderRadius -> "style={{ padding: 12, borderRadius: 8, backgroundColor: colors.surface.disabled, fontSize: 14, color: colors.text.primary, minHeight: 80, textAlignVertical: 'top' }}"
+  Line 28: borderRadius -> "<TouchableOpacity onPress={onCancel} style={{ flex: 1, height: 44, borderRadius: 6, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>"
+  Line 31: borderRadius -> "<TouchableOpacity onPress={onSave} style={{ flex: 1, height: 44, borderRadius: 6, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center' }}>"
+
+File: lib\components\pos\OrderHeader.tsx (3 occurrences)
+  Line 41: borderRadius -> "<TouchableOpacity onPress={onOpenSidebar} style={{ width: 42, height: 42, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center', marginRight: 6 }}>"
+  Line 46: borderRadius -> "<TouchableOpacity onPress={handleBack} style={{ width: 42, height: 42, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>"
+  Line 60: borderRadius -> "style={{ width: 42, height: 42, borderRadius: shape.radius.md, backgroundColor: colors.surface.danger, borderWidth: 1, borderColor: colors.border.danger, alignItems: 'center', justifyContent: 'center' }}>"
+
+File: lib\components\pos\ProductCard.tsx (5 occurrences)
+  Line 48: borderRadius -> "borderRadius: shape.radius.md,"
+  Line 84: borderBottomLeftRadius -> "borderBottomLeftRadius: shape.radius.md,"
+  Line 85: borderBottomRightRadius -> "borderBottomRightRadius: shape.radius.md,"
+  Line 106: borderRadius -> "borderRadius: 6,"
+  Line 129: borderRadius -> "borderRadius: 15,"
+
+File: lib\components\pos\TableCard.tsx (2 occurrences)
+  Line 42: borderRadius -> "borderRadius: cardRadius,"
+  Line 73: borderRadius -> "borderRadius: cardRadius, backgroundColor: colors.brand.primaryHover, opacity: 0.15,"
+
+File: lib\components\pos\TableScreenHeader.tsx (4 occurrences)
+  Line 43: borderRadius -> "style={{ width: 42, height: 42, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}"
+  Line 60: borderRadius -> "style={{ width: 42, height: 42, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}"
+  Line 70: borderRadius -> "paddingHorizontal: 14, height: 42, borderRadius: shape.radius.md,"
+  Line 82: borderRadius -> "paddingHorizontal: 14, height: 42, borderRadius: shape.radius.md,"
+
+File: lib\components\purchaseOrders\POForm.tsx (3 occurrences)
+  Line 93: borderRadius -> "input: { borderWidth: 1.5, borderColor: colors.border.default, borderRadius: 10, padding: 12, ...font.body, color: colors.text.primary, backgroundColor: colors.surface.app },"
+  Line 94: borderRadius -> "inputSmall: { borderWidth: 1.5, borderColor: colors.border.default, borderRadius: 8, padding: 8, ...font.caption, color: colors.text.primary, backgroundColor: colors.surface.app, width: 80, textAlign: 'center' },"
+  Line 95: borderRadius -> "supChip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: colors.border.default, backgroundColor: colors.surface.app },"
+
+File: lib\components\purchaseOrders\ReceiveModal.tsx (1 occurrences)
+  Line 68: borderRadius -> "inputSmall: { borderWidth: 1.5, borderColor: colors.border.default, borderRadius: 8, padding: 8, ...font.caption, color: colors.text.primary, backgroundColor: colors.surface.app, width: 80, textAlign: 'center' },"
+
+File: lib\components\quan-ly\menu\MenuFormContent.tsx (2 occurrences)
+  Line 114: borderRadius -> "borderWidth: 1.5, borderColor: colors.border.default, borderRadius: 4,"
+  Line 120: borderRadius -> "borderRadius: 4, borderWidth: 1.5, borderColor: colors.border.default,"
+
+File: lib\components\quan-ly\users\UserFormContent.tsx (4 occurrences)
+  Line 116: borderRadius -> "borderWidth: 1.5, borderColor: colors.border.default, borderRadius: 4,"
+  Line 122: borderRadius -> "borderWidth: 1.5, borderColor: colors.border.default, borderRadius: 4,"
+  Line 127: borderRadius -> "paddingHorizontal: 12, paddingVertical: 10, borderRadius: 4,"
+  Line 136: borderRadius -> "width: 16, height: 16, borderRadius: 4,"
+
+File: lib\components\recipes\RecipeForm.tsx (4 occurrences)
+  Line 50: borderRadius -> "<View style={{ position: 'absolute', zIndex: 999, top: 40, left: 0, right: 0, backgroundColor: colors.surface.card, borderWidth: 1, borderColor: colors.border.default, borderRadius: 10, maxHeight: 180, elevation: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 12 }}>"
+  Line 238: borderRadius -> "input: { borderWidth: 1.5, borderColor: colors.border.default, borderRadius: 10, padding: 12, ...font.body, color: colors.text.primary, backgroundColor: colors.surface.app },"
+  Line 239: borderRadius -> "inputSmall: { borderWidth: 1.5, borderColor: colors.border.default, borderRadius: 8, padding: 8, ...font.caption, color: colors.text.primary, backgroundColor: colors.surface.app },"
+  Line 241: borderRadius -> "miniBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderRadius: shape.radius.sm, backgroundColor: colors.surface.disabled },"
+
+File: lib\components\Sidebar.tsx (9 occurrences)
+  Line 145: borderRadius -> "<Image source={ASSETS.brand.logoMark} style={{ width: 40, height: 40, borderRadius: 8 }} resizeMode="contain" />"
+  Line 151: borderRadius -> "<TouchableOpacity onPress={closeSidebar} style={{ width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }} accessibilityLabel="Đóng menu">"
+  Line 157: borderRadius -> "<View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 16, padding: 12, borderRadius: shape.radius.md, backgroundColor: colors.surface.card, borderWidth: 1, borderColor: colors.border.default }}>"
+  Line 158: borderRadius -> "<View style={{ width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: roleInfo.bg, alignItems: 'center', justifyContent: 'center' }}>"
+  Line 163: borderRadius -> "<View style={{ alignSelf: 'flex-start', marginTop: 2, paddingHorizontal: 8, paddingVertical: 2, borderRadius: shape.radius.full, backgroundColor: roleInfo.bg }}>"
+  Line 184: borderRadius -> "style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, paddingVertical: 12, borderRadius: shape.radius.md, marginBottom: 2, backgroundColor: active ? colors.brand.primaryBg : 'transparent', borderWidth: 1, borderColor: active ? colors.border.brand : 'transparent', minHeight: 52 }}"
+  Line 186: borderRadius -> "<View style={{ width: 36, height: 36, borderRadius: shape.radius.md, alignItems: 'center', justifyContent: 'center', backgroundColor: active ? colors.brand.primary : colors.surface.disabled }}>"
+  Line 204: borderRadius -> "style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, paddingVertical: 13, borderRadius: shape.radius.md, backgroundColor: colors.surface.danger, borderWidth: 1, borderColor: colors.border.danger, minHeight: 52 }}"
+  Line 206: borderRadius -> "<View style={{ width: 36, height: 36, borderRadius: shape.radius.md, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FEE2E2' }}>"
+
+File: lib\components\ui\FAB.tsx (1 occurrences)
+  Line 22: borderRadius -> "borderRadius: shape.radius.full,"
+
+File: lib\components\ui\FormModal.tsx (9 occurrences)
+  Line 51: borderTopLeftRadius -> "borderTopLeftRadius: 24,"
+  Line 52: borderTopRightRadius -> "borderTopRightRadius: 24,"
+  Line 60: borderRadius -> "width: 36, height: 4, borderRadius: 2,"
+  Line 69: borderRadius -> "<TouchableOpacity onPress={onClose} style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: '#F1F5F9', alignItems: 'center', justifyContent: 'center' }}>"
+  Line 77: borderRadius -> "<TouchableOpacity onPress={onClose} style={{ flex: 1, padding: 15, borderRadius: 12, backgroundColor: '#F1F5F9', alignItems: 'center' }}>"
+  Line 80: borderRadius -> "<TouchableOpacity onPress={onSave} disabled={saving} style={{ flex: 2, padding: 15, borderRadius: 12, backgroundColor: '#F97316', alignItems: 'center', opacity: saving ? 0.7 : 1 }}>"
+  Line 100: borderRadius -> "<TouchableOpacity onPress={onClose} style={{ width: 38, height: 38, borderRadius: 10, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center' }}>"
+  Line 113: borderRadius -> "<TouchableOpacity onPress={onClose} style={{ flex: 1, padding: 15, borderRadius: 12, backgroundColor: '#F1F5F9', alignItems: 'center' }}>"
+  Line 116: borderRadius -> "<TouchableOpacity onPress={onSave} disabled={saving} style={{ flex: 2, padding: 15, borderRadius: 12, backgroundColor: '#F97316', alignItems: 'center', opacity: saving ? 0.7 : 1 }}>"
+
+File: lib\components\ui\ScreenHeader.tsx (2 occurrences)
+  Line 73: borderRadius -> "borderRadius: shape.radius.md,"
+  Line 81: borderRadius -> "borderRadius: shape.radius.md,"
+
+File: lib\components\ui\SkeletonBox.tsx (3 occurrences)
+  Line 7: borderRadius -> "borderRadius?: number;"
+  Line 10: borderRadius -> "export default function SkeletonBox({ w, h, borderRadius = 8 }: SkeletonBoxProps) {"
+  Line 26: borderRadius -> "borderRadius,"

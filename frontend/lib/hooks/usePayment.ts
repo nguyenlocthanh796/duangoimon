@@ -1,5 +1,5 @@
 import { colors } from '../theme/colors';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Alert } from 'react-native';
 import { router } from 'expo-router';
 import { api } from '../api';
@@ -83,6 +83,12 @@ export function usePayment({ tableId, tableName, total, orderId }: UsePaymentOpt
   const change = cash - total;
   const smartSuggestions = getSmartCashSuggestions(total);
 
+  const vatAmount = useMemo(() => {
+    return orderItems.reduce((sum: number, item: any) => {
+      return sum + (item.vatRate ? item.price * (item.quantity || 1) * (item.vatRate / 100) : 0);
+    }, 0);
+  }, [orderItems]);
+
   const handleKey = (key: typeof NUMPAD_KEYS[number]) => {
     if (method !== 'tien_mat') return;
     if (key.type === 'clear') { setCashInput(''); return; }
@@ -135,6 +141,7 @@ export function usePayment({ tableId, tableName, total, orderId }: UsePaymentOpt
   return {
     method, setMethod, cashInput, setCashInput, paid, paying,
     orderItems, countdown, cash, change, smartSuggestions, canPay,
+    vatAmount,
     handleKey, handlePay, handlePrint,
   };
 }

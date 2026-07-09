@@ -160,7 +160,7 @@ export default function ExecDashboardScreen() {
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface.app },
-  refreshBtn: { width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' },
+  refreshBtn: { width: 44, height: 44, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' },
 
   statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },

@@ -240,8 +240,8 @@ export default function KeToanScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface.app },
 
-  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 38, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },
-  addBtnText: { ...font.buttonSmall, fontWeight: '700', color: colors.text.inverse },
+  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 44, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },
+  addBtnText: { ...font.buttonSmall, fontWeight: '600', color: colors.text.inverse },
 
   filterRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   chip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 12, paddingVertical: 6, borderRadius: shape.radius.full, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default },
@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
   kpiCol: { flex: 1, alignItems: 'center', gap: 4 },
   kpiDot: { width: 8, height: 8, borderRadius: 4 },
   kpiLabel: { ...font.caption, color: colors.text.muted },
-  kpiValue: { ...font.h3, fontWeight: '900' },
+  kpiValue: { ...font.h3 },
   kpiDivider: { height: 1, backgroundColor: colors.border.light },
   kpiDividerV: { width: 1, backgroundColor: colors.border.light },
   kpiCta: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, paddingHorizontal: 14, paddingVertical: 10, minHeight: 38 },
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
   loadingText: { ...font.bodySmall, color: colors.text.muted },
 
   tableHeader: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1.5, borderBottomColor: colors.border.default },
-  tableRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 11, paddingHorizontal: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
+  tableRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 13, paddingHorizontal: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   colHead: { ...font.caption, color: colors.text.muted, fontWeight: '700' },
   colText: { ...font.bodySmall, color: colors.text.primary },
   colTextPrimary: { ...font.bodySmall, fontWeight: '600', color: colors.text.primary },

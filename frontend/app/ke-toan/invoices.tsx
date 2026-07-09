@@ -276,8 +276,8 @@ export default function InvoicesScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface.app },
 
-  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 38, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },
-  addBtnText: { ...font.buttonSmall, fontWeight: '700', color: colors.text.inverse },
+  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 44, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },
+  addBtnText: { ...font.buttonSmall, fontWeight: '600', color: colors.text.inverse },
 
   cardBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 },
   cardHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.border.light },
@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
 
   invoiceIcon: { width: 28, height: 28, borderRadius: shape.radius.md, alignItems: 'center', justifyContent: 'center' },
 
-  exportBtn: { backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, paddingHorizontal: 14, paddingVertical: 6, minHeight: 30, alignItems: 'center', justifyContent: 'center' },
+  exportBtn: { backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, paddingHorizontal: 14, paddingVertical: 12, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
   exportText: { ...font.badge, fontWeight: '700', color: colors.text.inverse },
 
   separator: { width: 1, backgroundColor: colors.border.light },

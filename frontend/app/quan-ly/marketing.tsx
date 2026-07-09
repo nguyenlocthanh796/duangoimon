@@ -181,7 +181,7 @@ export default function MarketingScreen() {
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface.app },
-  addBtn: { width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center' },
+  addBtn: { width: 44, height: 44, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center' },
   statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
   statValue: { ...font.h4, fontWeight: '900', color: colors.text.primary, lineHeight: 18 },

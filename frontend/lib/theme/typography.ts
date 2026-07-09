@@ -7,30 +7,32 @@ const maxDim = Math.max(width, height);
 // Consistent scaling - increased for larger touch targets
 const scaleFactor = maxDim >= 1024 ? 1.35 : 1.08;
 export const scale = (size: number) => Math.round(size * scaleFactor);
-const getLineHeight = (size: number) => Math.round(size * 1.3);
+const getLineHeight = (size: number) => Math.round(size * 1.35);
 
-const FONT_FAMILY = 'Inter';
+const FONT = 'BeVietnamPro';
 
 export const font = {
-  h1: { fontFamily: FONT_FAMILY, fontSize: scale(24), fontWeight: '800' as const, lineHeight: getLineHeight(scale(24)) },
-  h2: { fontFamily: FONT_FAMILY, fontSize: scale(20), fontWeight: '800' as const, lineHeight: getLineHeight(scale(20)) },
-  h3: { fontFamily: FONT_FAMILY, fontSize: scale(17), fontWeight: '700' as const, lineHeight: getLineHeight(scale(17)) },
+  h1: { fontFamily: `${FONT}_700Bold`, fontSize: scale(24), fontWeight: '700' as const, lineHeight: getLineHeight(scale(24)) },
+  h2: { fontFamily: `${FONT}_700Bold`, fontSize: scale(20), fontWeight: '700' as const, lineHeight: getLineHeight(scale(20)) },
+  h3: { fontFamily: `${FONT}_600SemiBold`, fontSize: scale(18), fontWeight: '600' as const, lineHeight: getLineHeight(scale(18)) },
+  h4: { fontFamily: `${FONT}_600SemiBold`, fontSize: scale(15), fontWeight: '600' as const, lineHeight: getLineHeight(scale(15)) },
 
-  body:      { fontFamily: FONT_FAMILY, fontSize: scale(15), fontWeight: '500' as const, lineHeight: getLineHeight(scale(15)) },
-  bodyBold:  { fontFamily: FONT_FAMILY, fontSize: scale(15), fontWeight: '700' as const, lineHeight: getLineHeight(scale(15)) },
-  bodySmall: { fontFamily: FONT_FAMILY, fontSize: scale(13), fontWeight: '500' as const, lineHeight: getLineHeight(scale(13)) },
+  body:      { fontFamily: `${FONT}_400Regular`, fontSize: scale(16), fontWeight: '400' as const, lineHeight: getLineHeight(scale(16)) },
+  bodyBold:  { fontFamily: `${FONT}_600SemiBold`, fontSize: scale(16), fontWeight: '600' as const, lineHeight: getLineHeight(scale(16)) },
+  bodySmall: { fontFamily: `${FONT}_400Regular`, fontSize: scale(14), fontWeight: '400' as const, lineHeight: getLineHeight(scale(14)) },
 
-  price:       { fontFamily: FONT_FAMILY, fontSize: scale(17), fontWeight: '800' as const, lineHeight: getLineHeight(scale(17)) },
-  priceLarge:  { fontFamily: FONT_FAMILY, fontSize: scale(24), fontWeight: '900' as const, lineHeight: getLineHeight(scale(24)) },
+  price:       { fontFamily: `${FONT}_700Bold`, fontSize: scale(18), fontWeight: '700' as const, lineHeight: getLineHeight(scale(18)) },
+  priceLarge:  { fontFamily: `${FONT}_800ExtraBold`, fontSize: scale(24), fontWeight: '800' as const, lineHeight: getLineHeight(scale(24)) },
 
-  button:     { fontFamily: FONT_FAMILY, fontSize: scale(15), fontWeight: '700' as const, lineHeight: getLineHeight(scale(15)) },
-  buttonSmall:{ fontFamily: FONT_FAMILY, fontSize: scale(13), fontWeight: '700' as const, lineHeight: getLineHeight(scale(13)) },
+  button:     { fontFamily: `${FONT}_600SemiBold`, fontSize: scale(16), fontWeight: '600' as const, lineHeight: getLineHeight(scale(16)) },
+  buttonSmall:{ fontFamily: `${FONT}_600SemiBold`, fontSize: scale(14), fontWeight: '600' as const, lineHeight: getLineHeight(scale(14)) },
 
-  label:  { fontFamily: FONT_FAMILY, fontSize: scale(13), fontWeight: '600' as const, lineHeight: getLineHeight(scale(13)) },
-  caption:{ fontFamily: FONT_FAMILY, fontSize: scale(12), fontWeight: '500' as const, lineHeight: getLineHeight(scale(12)) },
+  label:  { fontFamily: `${FONT}_500Medium`, fontSize: scale(14), fontWeight: '500' as const, lineHeight: getLineHeight(scale(14)) },
+  caption:{ fontFamily: `${FONT}_400Regular`, fontSize: scale(13), fontWeight: '400' as const, lineHeight: getLineHeight(scale(13)) },
 
   // Additional tokens used by components
-  micro: { fontFamily: FONT_FAMILY, fontSize: scale(11), fontWeight: '500' as const, lineHeight: getLineHeight(scale(11)) },
-  tab:   { fontFamily: FONT_FAMILY, fontSize: scale(12), fontWeight: '700' as const, lineHeight: getLineHeight(scale(12)) },
-  badge: { fontFamily: FONT_FAMILY, fontSize: scale(10), fontWeight: '600' as const, lineHeight: getLineHeight(scale(10)) },
+  micro: { fontFamily: `${FONT}_400Regular`, fontSize: scale(11), fontWeight: '400' as const, lineHeight: getLineHeight(scale(11)) },
+  tab:   { fontFamily: `${FONT}_600SemiBold`, fontSize: scale(13), fontWeight: '600' as const, lineHeight: getLineHeight(scale(13)) },
+  badge: { fontFamily: `${FONT}_500Medium`, fontSize: scale(11), fontWeight: '500' as const, lineHeight: getLineHeight(scale(11)) },
 };
+

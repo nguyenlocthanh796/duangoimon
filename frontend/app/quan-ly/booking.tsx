@@ -239,8 +239,8 @@ export default function BookingScreen() {
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface.app },
-  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 38, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },
-  addBtnText: { ...font.buttonSmall, fontWeight: '700', color: '#fff' },
+  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 44, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },
+  addBtnText: { ...font.buttonSmall, fontWeight: '600', color: '#fff' },
   statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
   statValue: { ...font.h4, fontWeight: '900', color: colors.text.primary, lineHeight: 18 },

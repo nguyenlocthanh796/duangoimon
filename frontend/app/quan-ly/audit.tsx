@@ -183,7 +183,7 @@ export default function AuditScreen() {
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface.app },
-  refreshBtn: { width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' },
+  refreshBtn: { width: 44, height: 44, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' },
   statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
   statValue: { ...font.h4, fontWeight: '900', color: colors.text.primary, lineHeight: 18 },
@@ -198,7 +198,7 @@ const s = StyleSheet.create({
   thText: { ...font.caption, fontWeight: '700', color: colors.text.muted },
   tr: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 6, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   td: { ...font.bodySmall, color: colors.text.primary },
-  actionIcon: { width: 24, height: 24, borderRadius: shape.radius.sm, alignItems: 'center', justifyContent: 'center' },
+  actionIcon: { width: 44, height: 44, borderRadius: shape.radius.sm, alignItems: 'center', justifyContent: 'center' },
 
   panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 10 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.border.light },

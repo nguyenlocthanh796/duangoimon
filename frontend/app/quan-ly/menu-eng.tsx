@@ -135,7 +135,7 @@ export default function MenuEngScreen() {
     const meta = QUADRANT_META[quadrant];
     return (
       <TouchableOpacity onPress={() => setSelected(row)} style={s.tr} activeOpacity={0.7}>
-        <View style={[s.td, { width: 30 }]}><View style={[s.quadrantDot, { backgroundColor: meta.color }]} /></View>
+        <View style={[{ width: 30, alignItems: 'center', justifyContent: 'center' }]}><View style={[s.quadrantDot, { backgroundColor: meta.color }]} /></View>
         <Text style={[s.td, { flex: 1, fontWeight: '600' }]} numberOfLines={1}>{item.name}</Text>
         <Text style={[s.td, { width: 60, textAlign: 'right' }]}>{item.qty_sold}</Text>
         <Text style={[s.td, { width: 85, textAlign: 'right' }]}>{formatVND(item.revenue)}</Text>

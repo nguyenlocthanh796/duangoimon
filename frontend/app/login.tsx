@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
 
   cardTablet: {
     flexDirection: 'row', width: '100%', maxWidth: 840,
-    borderRadius: 24,
+    borderRadius: 8,
     backgroundColor: 'rgba(15, 23, 42, 0.75)',
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)',
     overflow: 'hidden',
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
 
   cardPhone: {
     width: '100%', maxWidth: 420,
-    borderRadius: 24,
+    borderRadius: 8,
     backgroundColor: 'rgba(15, 23, 42, 0.75)',
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)',
     padding: 28,

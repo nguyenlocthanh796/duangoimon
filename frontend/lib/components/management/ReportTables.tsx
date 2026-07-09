@@ -88,7 +88,7 @@ const s = StyleSheet.create({
   tdCell: { ...font.bodySmall, color: colors.text.primary },
   revCell: { ...font.bodySmall, fontWeight: '700', color: colors.text.primary, textAlign: 'right' },
   rankCell: { ...font.body, fontWeight: '700', color: colors.brand.primary },
-  ordersBadge: { backgroundColor: colors.surface.glowBlue, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 },
+  ordersBadge: { backgroundColor: colors.brand.primaryBg, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 },
   ordersCount: { ...font.bodySmall, fontWeight: '700', color: colors.status.info },
   qtyBadge: { backgroundColor: colors.brand.primaryBg, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 },
   qtyText: { ...font.bodySmall, fontWeight: '700', color: colors.brand.primary },

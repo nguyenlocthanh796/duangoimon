@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1.5, borderColor: colors.border.default, borderRadius: 4,
     paddingHorizontal: 12, paddingVertical: 10, ...font.body, color: colors.text.primary,
-    backgroundColor: colors.surface.input,
+    backgroundColor: colors.surface.disabled,
   },
   catChip: {
     paddingHorizontal: 14, paddingVertical: 7,

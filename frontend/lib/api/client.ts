@@ -81,6 +81,7 @@ export type Invoice = {
   total_amount: number;
   vat_amount: number | null;
   vat_rate?: number;
+  invoice_symbol?: string;
   status: string;
   exported_at: string | null;
   created_at: string | null;
@@ -199,6 +200,8 @@ export interface MembershipTier {
   min_spent: number;
   discount_rate: number;
   multiplier: number;
+  is_active: boolean;
+  member_count: number;
   color: string | null;
   created_at: string;
 }

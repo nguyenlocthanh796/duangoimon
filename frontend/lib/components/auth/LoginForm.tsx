@@ -117,8 +117,7 @@ function PresetPill({
         <LinearGradient
           colors={['#F97316', '#EA580C']}
           start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-          style={StyleSheet.absoluteFill}
-          borderRadius={20}
+          style={[StyleSheet.absoluteFill, { borderRadius: 20 }]}
         />
       ) : null}
       <Text style={[styles.presetPillText, selected && styles.presetPillTextActive]}>
@@ -271,7 +270,7 @@ const styles = StyleSheet.create({
   inputWrapper: {
     flexDirection: 'row', alignItems: 'center',
     paddingHorizontal: 14,
-    borderRadius: 12,
+    borderRadius: 8,
     borderWidth: 1.5,
     backgroundColor: 'rgba(255,255,255,0.04)',
     height: 56,
@@ -312,7 +311,7 @@ const styles = StyleSheet.create({
 
   // Button
   loginBtn: {
-    borderRadius: 12,
+    borderRadius: 8,
     height: 52,
     alignItems: 'center', justifyContent: 'center',
     shadowColor: '#F97316',
@@ -336,11 +335,12 @@ const styles = StyleSheet.create({
     gap: 8, justifyContent: 'center',
   },
   presetPill: {
-    paddingHorizontal: 14, paddingVertical: 8,
+    paddingHorizontal: 14, paddingVertical: 12,
     borderRadius: 20,
     backgroundColor: 'rgba(255,255,255,0.04)',
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)',
     overflow: 'hidden',
+    minHeight: 44,
   },
   presetPillActive: {
     borderColor: '#F97316',

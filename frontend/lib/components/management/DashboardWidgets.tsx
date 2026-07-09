@@ -287,8 +287,8 @@ const styles = StyleSheet.create({
 
 const navNormal = {
   navCard: {
-    width: '23%', minWidth: 100,
-    alignItems: 'center', gap: 10,
+    width: '23%' as const, minWidth: 100,
+    alignItems: 'center' as const, gap: 10,
     paddingVertical: 20, paddingHorizontal: 8,
     backgroundColor: colors.surface.card,
     borderRadius: shape.radius.lg,
@@ -296,14 +296,14 @@ const navNormal = {
     shadowColor: '#000', shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04, shadowRadius: 4, elevation: 2,
   },
-  navIconWrap: { width: 56, height: 56, borderRadius: shape.radius.md, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F3F4F6' },
-  navLabel: { ...font.body, fontWeight: '500' as const, color: colors.text.primary, textAlign: 'center' },
-};
+  navIconWrap: { width: 56, height: 56, borderRadius: shape.radius.md, alignItems: 'center' as const, justifyContent: 'center' as const, backgroundColor: '#F3F4F6' },
+  navLabel: { ...font.body, fontWeight: '500' as const, color: colors.text.primary, textAlign: 'center' as const },
+} as const;
 
 const navCompact = {
   navCard: {
-    width: '23%', minWidth: 76,
-    alignItems: 'center', gap: 6,
+    width: '23%' as const, minWidth: 76,
+    alignItems: 'center' as const, gap: 6,
     paddingVertical: 12, paddingHorizontal: 4,
     backgroundColor: colors.surface.card,
     borderRadius: shape.radius.lg,
@@ -311,6 +311,6 @@ const navCompact = {
     shadowColor: '#000', shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04, shadowRadius: 4, elevation: 2,
   },
-  navIconWrap: { width: 40, height: 40, borderRadius: shape.radius.md, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F3F4F6' },
-  navLabel: { ...font.label, fontWeight: '500' as const, color: colors.text.primary, textAlign: 'center' },
-};
+  navIconWrap: { width: 40, height: 40, borderRadius: shape.radius.md, alignItems: 'center' as const, justifyContent: 'center' as const, backgroundColor: '#F3F4F6' },
+  navLabel: { ...font.label, fontWeight: '500' as const, color: colors.text.primary, textAlign: 'center' as const },
+} as const;

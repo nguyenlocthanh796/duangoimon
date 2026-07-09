@@ -115,18 +115,18 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1.5, borderColor: colors.border.default, borderRadius: 4,
     paddingHorizontal: 12, paddingVertical: 10, ...font.body, color: colors.text.primary,
-    backgroundColor: colors.surface.input,
+    backgroundColor: colors.surface.disabled,
   },
   passwordWrap: {
     flexDirection: 'row', alignItems: 'center',
     borderWidth: 1.5, borderColor: colors.border.default, borderRadius: 4,
-    paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.input,
+    paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.disabled,
   },
   roleGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   roleCard: {
     paddingHorizontal: 12, paddingVertical: 10, borderRadius: 4,
     borderWidth: 1.5, borderColor: colors.border.default,
-    backgroundColor: colors.surface.input,
+    backgroundColor: colors.surface.disabled,
     flexDirection: 'row', alignItems: 'center', gap: 6,
     position: 'relative',
   },

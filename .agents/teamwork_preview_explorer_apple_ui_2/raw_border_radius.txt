@@ -1,0 +1,451 @@
+﻿
+
+Path       : E:\posa\frontend\app\login.tsx
+LineNumber : 178
+Line       :     borderRadius: 24,
+
+Path       : E:\posa\frontend\app\login.tsx
+LineNumber : 207
+Line       :     borderRadius: 24,
+
+Path       : E:\posa\frontend\app\ban-hang\index.tsx
+LineNumber : 128
+Line       :         <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: colors.surface.danger, 
+             alignItems: 'center', justifyContent: 'center' }}>
+
+Path       : E:\posa\frontend\app\ban-hang\index.tsx
+LineNumber : 133
+Line       :         <TouchableOpacity onPress={() => loadData()} style={{ paddingHorizontal: 20, minHeight: 40, 
+             justifyContent: 'center', alignItems: 'center', backgroundColor: colors.brand.primary, borderRadius: 10 
+             }}>
+
+Path       : E:\posa\frontend\app\ban-hang\index.tsx
+LineNumber : 157
+Line       :               <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: 
+             colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
+
+Path       : E:\posa\frontend\app\ban-hang\index.tsx
+LineNumber : 229
+Line       :                 <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: 
+             colors.surface.disabled, alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+
+Path       : E:\posa\frontend\app\ban-hang\kitchen.tsx
+LineNumber : 226
+Line       :                 paddingHorizontal: 8, paddingVertical: 2, borderRadius: 12,
+
+Path       : E:\posa\frontend\app\ban-hang\kitchen.tsx
+LineNumber : 277
+Line       :                 <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: sel ? 
+             col.dotColor : colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
+
+Path       : E:\posa\frontend\app\ban-hang\payment.tsx
+LineNumber : 175
+Line       :               <View style={{ width: 100, height: 64, borderRadius: 8, backgroundColor: '#1E293B', 
+             alignItems: 'center', justifyContent: 'center' }}>
+
+Path       : E:\posa\frontend\app\ban-hang\payment.tsx
+LineNumber : 186
+Line       :               <View style={{ width: 120, height: 120, borderRadius: 8, backgroundColor: '#FFFFFF', 
+             alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: colors.border.default }}>
+
+Path       : E:\posa\frontend\app\ban-hang\payment.tsx
+LineNumber : 195
+Line       :               <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: '#FEF2F2', 
+             alignItems: 'center', justifyContent: 'center' }}>
+
+Path       : E:\posa\frontend\app\ban-hang\payment.tsx
+LineNumber : 199
+Line       :               <View style={{ backgroundColor: colors.surface.card, borderRadius: 8, padding: 12, width: 
+             '100%', borderWidth: 1, borderColor: colors.border.default, gap: 6 }}>
+
+Path       : E:\posa\frontend\app\ban-hang\payment.tsx
+LineNumber : 332
+Line       :               <View style={{ width: 80, height: 52, borderRadius: 8, backgroundColor: '#1E293B', 
+             alignItems: 'center', justifyContent: 'center' }}>
+
+Path       : E:\posa\frontend\app\ke-toan\invoices.tsx
+LineNumber : 290
+Line       :   statDot: { width: 10, height: 10, borderRadius: 5 },
+
+Path       : E:\posa\frontend\app\quan-ly\membership.tsx
+LineNumber : 97
+Line       :             {selected.color ? <View style={{ width: 12, height: 12, borderRadius: 6, backgroundColor: 
+             selected.color }} /> : null}
+
+Path       : E:\posa\frontend\app\quan-ly\membership.tsx
+LineNumber : 118
+Line       :         {item.color ? <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: item.color 
+             }} /> : null}
+
+Path       : E:\posa\frontend\app\quan-ly\menu-eng.tsx
+LineNumber : 279
+Line       :   quadrantDot: { width: 10, height: 10, borderRadius: 5 },
+
+Path       : E:\posa\frontend\app\quan-ly\purchase-orders.tsx
+LineNumber : 387
+Line       :   fab: { position: 'absolute', bottom: 24, right: 20, width: 56, height: 56, borderRadius: 28, 
+             backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center', elevation: 4, 
+             shadowColor: colors.brand.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, 
+             shadowRadius: 8 },
+
+Path       : E:\posa\frontend\app\quan-ly\stock.tsx
+LineNumber : 511
+Line       :   fab: { position: 'absolute', bottom: 24, right: 20, width: 56, height: 56, borderRadius: 28, 
+             backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center', elevation: 4, 
+             shadowColor: colors.brand.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, 
+             shadowRadius: 8 },
+
+Path       : E:\posa\frontend\app\quan-ly\suppliers.tsx
+LineNumber : 378
+Line       :   fab: { position: 'absolute', bottom: 24, right: 20, width: 56, height: 56, borderRadius: 28, 
+             backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center', elevation: 4, 
+             shadowColor: colors.brand.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, 
+             shadowRadius: 8 },
+
+Path       : E:\posa\frontend\lib\components\Sidebar.tsx
+LineNumber : 145
+Line       :             <Image source={ASSETS.brand.logoMark} style={{ width: 40, height: 40, borderRadius: 8 }} 
+             resizeMode="contain" />
+
+Path       : E:\posa\frontend\lib\components\auth\LoginForm.tsx
+LineNumber : 274
+Line       :     borderRadius: 12,
+
+Path       : E:\posa\frontend\lib\components\auth\LoginForm.tsx
+LineNumber : 315
+Line       :     borderRadius: 12,
+
+Path       : E:\posa\frontend\lib\components\auth\LoginForm.tsx
+LineNumber : 340
+Line       :     borderRadius: 20,
+
+Path       : E:\posa\frontend\lib\components\kitchen\KanbanColumn.tsx
+LineNumber : 43
+Line       :         <View style={{ width: 22, height: 22, borderRadius: 11, backgroundColor: col.dotColor, 
+             alignItems: 'center', justifyContent: 'center' }}>
+
+Path       : E:\posa\frontend\lib\components\management\OccupancyProgress.tsx
+LineNumber : 28
+Line       :       <View style={{ flexDirection: 'row', height: 12, borderRadius: 6, backgroundColor: 
+             colors.surface.disabled, overflow: 'hidden', marginBottom: 14 }}>
+
+Path       : E:\posa\frontend\lib\components\payment\CashSuggestions.tsx
+LineNumber : 40
+Line       :             paddingHorizontal: 14, paddingVertical: 8, borderRadius: 8,
+
+Path       : E:\posa\frontend\lib\components\payment\PickerItem.tsx
+LineNumber : 12
+Line       :           style={{ paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, backgroundColor: value === 
+             m ? colors.brand.primaryBg : colors.surface.app, borderWidth: 1, borderColor: value === m ? 
+             colors.brand.primary : colors.border.default }}>
+
+Path       : E:\posa\frontend\lib\components\payment\SplitBillPanel.tsx
+LineNumber : 45
+Line       :             style={{ borderWidth: 1, borderColor: colors.border.default, borderRadius: 8, padding: 6, 
+             ...font.caption, color: colors.text.primary, width: 90, textAlign: 'center' }}
+
+Path       : E:\posa\frontend\lib\components\payment\SplitBillPanel.tsx
+LineNumber : 60
+Line       :         style={{ paddingVertical: 12, borderRadius: 10, alignItems: 'center', backgroundColor: ok && 
+             !paying ? colors.status.success : colors.surface.disabled }}>
+
+Path       : E:\posa\frontend\lib\components\pos\CartItemRow.tsx
+LineNumber : 95
+Line       :           style={{ width: 72, marginBottom: 4, borderRadius: 8, backgroundColor: '#16a34a', alignItems: 
+             'center', justifyContent: 'center', marginLeft: 8 }}
+
+Path       : E:\posa\frontend\lib\components\pos\CartItemRow.tsx
+LineNumber : 107
+Line       :               style={{ width: 64, marginBottom: 4, borderRadius: 8, backgroundColor: '#2563eb', 
+             alignItems: 'center', justifyContent: 'center', marginLeft: 8 }}
+
+Path       : E:\posa\frontend\lib\components\pos\CartItemRow.tsx
+LineNumber : 115
+Line       :             style={{ width: 64, marginBottom: 4, borderRadius: 8, backgroundColor: '#dc2626', alignItems: 
+             'center', justifyContent: 'center', marginLeft: 8 }}
+
+Path       : E:\posa\frontend\lib\components\pos\CartItemRow.tsx
+LineNumber : 126
+Line       :           style={{ width: 72, marginBottom: 4, borderRadius: 8, backgroundColor: '#dc2626', alignItems: 
+             'center', justifyContent: 'center', marginLeft: 8 }}
+
+Path       : E:\posa\frontend\lib\components\pos\CartItemRow.tsx
+LineNumber : 145
+Line       :         borderRadius: 8,
+
+Path       : E:\posa\frontend\lib\components\pos\CartItemRow.tsx
+LineNumber : 151
+Line       :         <View style={{ width: 64, height: 64, borderRadius: 6, backgroundColor: colors.surface.disabled, 
+             overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>
+
+Path       : E:\posa\frontend\lib\components\pos\CartItemRow.tsx
+LineNumber : 161
+Line       :             <View style={{ position: 'absolute', bottom: 2, right: 2, backgroundColor: '#16a34a', width: 
+             14, height: 14, borderRadius: 7, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, 
+             borderColor: '#fff' }}>
+
+Path       : E:\posa\frontend\lib\components\pos\CartItemRow.tsx
+LineNumber : 209
+Line       :               borderColor: colors.border.default, padding: 2, borderRadius: 8,
+
+Path       : E:\posa\frontend\lib\components\pos\CartItemRow.tsx
+LineNumber : 214
+Line       :                 style={{ width: 30, height: 30, borderRadius: 6, backgroundColor: item.qty <= 1 ? 
+             'transparent' : colors.surface.card, alignItems: 'center', justifyContent: 'center', borderWidth: 
+             item.qty <= 1 ? 0 : 1, borderColor: colors.border.default }}
+
+Path       : E:\posa\frontend\lib\components\pos\CartItemRow.tsx
+LineNumber : 241
+Line       :                 style={{ width: 30, height: 30, borderRadius: 6, backgroundColor: colors.brand.primaryBg, 
+             borderWidth: 1, borderColor: colors.border.brand, alignItems: 'center', justifyContent: 'center' }}
+
+Path       : E:\posa\frontend\lib\components\pos\CartItemRow.tsx
+LineNumber : 251
+Line       :         <View style={{ marginTop: 6, padding: 6, backgroundColor: '#fef2f2', borderRadius: 6, 
+             flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+
+Path       : E:\posa\frontend\lib\components\pos\CartItemRow.tsx
+LineNumber : 261
+Line       :           style={{ marginTop: 8, padding: 8, backgroundColor: '#fffbeb', borderWidth: 1, borderColor: 
+             '#fde68a', borderRadius: 6, flexDirection: 'row', alignItems: 'flex-start', gap: 4 }}
+
+Path       : E:\posa\frontend\lib\components\pos\CartMainActions.tsx
+LineNumber : 30
+Line       :             borderRadius: 8,
+
+Path       : E:\posa\frontend\lib\components\pos\CartMainActions.tsx
+LineNumber : 49
+Line       :           style={{ flex: 1, height: 50, borderRadius: 8, backgroundColor: hasUnsentItems ? 
+             colors.brand.primaryBg : colors.surface.disabled, borderWidth: 1.5, borderColor: hasUnsentItems ? 
+             colors.border.brand : colors.border.default, alignItems: 'center', justifyContent: 'center' }}
+
+Path       : E:\posa\frontend\lib\components\pos\CartMainActions.tsx
+LineNumber : 56
+Line       :           style={{ flex: 1, height: 50, borderRadius: 8, backgroundColor: colors.brand.primaryBg, 
+             borderWidth: 1.5, borderColor: colors.border.brand, alignItems: 'center', justifyContent: 'center' }}
+
+Path       : E:\posa\frontend\lib\components\pos\CartMainActions.tsx
+LineNumber : 63
+Line       :           style={{ flex: 1.5, height: 50, borderRadius: 8, backgroundColor: colors.brand.primary, 
+             alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }}
+
+Path       : E:\posa\frontend\lib\components\pos\CartPanel.tsx
+LineNumber : 146
+Line       :             style={{ paddingHorizontal: 20, paddingVertical: 10, borderRadius: 8, backgroundColor: 
+             colors.brand.primaryBg, borderWidth: 1, borderColor: colors.border.brand }}
+
+Path       : E:\posa\frontend\lib\components\pos\CartPanel.tsx
+LineNumber : 296
+Line       :           <TouchableOpacity onPress={() => setShowMoreMenu(true)} hitSlop={8} style={{ width: 42, height: 
+             42, borderRadius: 8, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: 
+             colors.border.default, alignItems: 'center', justifyContent: 'center' }}>
+
+Path       : E:\posa\frontend\lib\components\pos\CartPanel.tsx
+LineNumber : 310
+Line       :                 style={{ paddingHorizontal: 20, paddingVertical: 10, borderRadius: 8, backgroundColor: 
+             colors.brand.primaryBg, borderWidth: 1, borderColor: colors.border.brand }}
+
+Path       : E:\posa\frontend\lib\components\pos\CartSplitActions.tsx
+LineNumber : 22
+Line       :           style={{ flex: 1, height: 48, borderRadius: 8, backgroundColor: colors.surface.disabled, 
+             alignItems: 'center', justifyContent: 'center' }}
+
+Path       : E:\posa\frontend\lib\components\pos\CartSplitActions.tsx
+LineNumber : 28
+Line       :           style={{ flex: 1, height: 48, borderRadius: 8, backgroundColor: colors.surface.disabled, 
+             alignItems: 'center', justifyContent: 'center' }}
+
+Path       : E:\posa\frontend\lib\components\pos\CartSplitActions.tsx
+LineNumber : 36
+Line       :           style={{ flex: 1, height: 48, borderRadius: 8, backgroundColor: colors.surface.disabled, 
+             alignItems: 'center', justifyContent: 'center' }}
+
+Path       : E:\posa\frontend\lib\components\pos\CartSplitActions.tsx
+LineNumber : 43
+Line       :           style={{ flex: 1.5, height: 48, borderRadius: 8, backgroundColor: hasSelection ? 
+             colors.brand.primary : colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}
+
+Path       : E:\posa\frontend\lib\components\pos\MobileCartBar.tsx
+LineNumber : 53
+Line       :               borderRadius: 5,
+
+Path       : E:\posa\frontend\lib\components\pos\MobileCartBar.tsx
+LineNumber : 77
+Line       :             borderRadius: 8,
+
+Path       : E:\posa\frontend\lib\components\pos\MobileCartBar.tsx
+LineNumber : 95
+Line       :             borderRadius: 8,
+
+Path       : E:\posa\frontend\lib\components\pos\MoreMenu.tsx
+LineNumber : 26
+Line       :         <View style={{ position: 'absolute', top: 60, right: 8, backgroundColor: colors.surface.card, 
+             borderRadius: 12, padding: 8, gap: 2, minWidth: 180, borderWidth: 1, borderColor: colors.border.default, 
+             shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 12, 
+             elevation: 8 }}>
+
+Path       : E:\posa\frontend\lib\components\pos\MoreMenu.tsx
+LineNumber : 29
+Line       :             <TouchableOpacity onPress={() => { onClose(); onSplitBill(); }} style={{ flexDirection: 
+             'row', alignItems: 'center', gap: 10, paddingVertical: 10, paddingHorizontal: 8, borderRadius: 8 }}>
+
+Path       : E:\posa\frontend\lib\components\pos\MoreMenu.tsx
+LineNumber : 30
+Line       :               <View style={{ width: 32, height: 32, borderRadius: 6, backgroundColor: 
+             colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' }}>
+
+Path       : E:\posa\frontend\lib\components\pos\MoreMenu.tsx
+LineNumber : 37
+Line       :             <TouchableOpacity onPress={() => { onClose(); onMergeBill(); }} style={{ flexDirection: 
+             'row', alignItems: 'center', gap: 10, paddingVertical: 10, paddingHorizontal: 8, borderRadius: 8 }}>
+
+Path       : E:\posa\frontend\lib\components\pos\MoreMenu.tsx
+LineNumber : 38
+Line       :               <View style={{ width: 32, height: 32, borderRadius: 6, backgroundColor: '#f0f9ff', 
+             alignItems: 'center', justifyContent: 'center' }}>
+
+Path       : E:\posa\frontend\lib\components\pos\MoreMenu.tsx
+LineNumber : 45
+Line       :             <TouchableOpacity onPress={() => { onClose(); onMoveTable(); }} style={{ flexDirection: 
+             'row', alignItems: 'center', gap: 10, paddingVertical: 10, paddingHorizontal: 8, borderRadius: 8 }}>
+
+Path       : E:\posa\frontend\lib\components\pos\MoreMenu.tsx
+LineNumber : 46
+Line       :               <View style={{ width: 32, height: 32, borderRadius: 6, backgroundColor: '#fef3c7', 
+             alignItems: 'center', justifyContent: 'center' }}>
+
+Path       : E:\posa\frontend\lib\components\pos\MoreMenu.tsx
+LineNumber : 53
+Line       :             <TouchableOpacity onPress={() => { onClose(); onSplitTable(); }} style={{ flexDirection: 
+             'row', alignItems: 'center', gap: 10, paddingVertical: 10, paddingHorizontal: 8, borderRadius: 8 }}>
+
+Path       : E:\posa\frontend\lib\components\pos\MoreMenu.tsx
+LineNumber : 54
+Line       :               <View style={{ width: 32, height: 32, borderRadius: 6, backgroundColor: '#fce4ec', 
+             alignItems: 'center', justifyContent: 'center' }}>
+
+Path       : E:\posa\frontend\lib\components\pos\MoreMenu.tsx
+LineNumber : 61
+Line       :             <TouchableOpacity onPress={() => { onClose(); onMergeTable(); }} style={{ flexDirection: 
+             'row', alignItems: 'center', gap: 10, paddingVertical: 10, paddingHorizontal: 8, borderRadius: 8 }}>
+
+Path       : E:\posa\frontend\lib\components\pos\MoreMenu.tsx
+LineNumber : 62
+Line       :               <View style={{ width: 32, height: 32, borderRadius: 6, backgroundColor: '#e8f5e9', 
+             alignItems: 'center', justifyContent: 'center' }}>
+
+Path       : E:\posa\frontend\lib\components\pos\MoveTableModal.tsx
+LineNumber : 49
+Line       :             <TouchableOpacity onPress={onClose} style={{ width: 32, height: 32, borderRadius: 16, 
+             backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
+
+Path       : E:\posa\frontend\lib\components\pos\MoveTableModal.tsx
+LineNumber : 53
+Line       :           <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, height: 40, 
+             borderRadius: 8, backgroundColor: colors.surface.app, borderWidth: 1, borderColor: colors.border.default, 
+             marginBottom: 8 }}>
+
+Path       : E:\posa\frontend\lib\components\pos\MoveTableModal.tsx
+LineNumber : 71
+Line       :                   style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12, 
+             paddingHorizontal: 8, borderRadius: 8 }}
+
+Path       : E:\posa\frontend\lib\components\pos\MoveTableModal.tsx
+LineNumber : 73
+Line       :                   <View style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: t.status === 
+             'co_khach' ? '#f0f9ff' : '#f0fdf4', alignItems: 'center', justifyContent: 'center' }}>
+
+Path       : E:\posa\frontend\lib\components\pos\NoteEditor.tsx
+LineNumber : 25
+Line       :             style={{ padding: 12, borderRadius: 8, backgroundColor: colors.surface.disabled, fontSize: 
+             14, color: colors.text.primary, minHeight: 80, textAlignVertical: 'top' }}
+
+Path       : E:\posa\frontend\lib\components\pos\NoteEditor.tsx
+LineNumber : 28
+Line       :             <TouchableOpacity onPress={onCancel} style={{ flex: 1, height: 44, borderRadius: 6, 
+             backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
+
+Path       : E:\posa\frontend\lib\components\pos\NoteEditor.tsx
+LineNumber : 31
+Line       :             <TouchableOpacity onPress={onSave} style={{ flex: 1, height: 44, borderRadius: 6, 
+             backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center' }}>
+
+Path       : E:\posa\frontend\lib\components\pos\ProductCard.tsx
+LineNumber : 106
+Line       :             borderRadius: 6,
+
+Path       : E:\posa\frontend\lib\components\pos\ProductCard.tsx
+LineNumber : 129
+Line       :             borderRadius: 15,
+
+Path       : E:\posa\frontend\lib\components\purchaseOrders\POForm.tsx
+LineNumber : 93
+Line       :   input: { borderWidth: 1.5, borderColor: colors.border.default, borderRadius: 10, padding: 12, 
+             ...font.body, color: colors.text.primary, backgroundColor: colors.surface.app },
+
+Path       : E:\posa\frontend\lib\components\purchaseOrders\POForm.tsx
+LineNumber : 94
+Line       :   inputSmall: { borderWidth: 1.5, borderColor: colors.border.default, borderRadius: 8, padding: 8, 
+             ...font.caption, color: colors.text.primary, backgroundColor: colors.surface.app, width: 80, textAlign: 
+             'center' },
+
+Path       : E:\posa\frontend\lib\components\purchaseOrders\POForm.tsx
+LineNumber : 95
+Line       :   supChip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, borderWidth: 1, borderColor: 
+             colors.border.default, backgroundColor: colors.surface.app },
+
+Path       : E:\posa\frontend\lib\components\purchaseOrders\ReceiveModal.tsx
+LineNumber : 68
+Line       :   inputSmall: { borderWidth: 1.5, borderColor: colors.border.default, borderRadius: 8, padding: 8, 
+             ...font.caption, color: colors.text.primary, backgroundColor: colors.surface.app, width: 80, textAlign: 
+             'center' },
+
+Path       : E:\posa\frontend\lib\components\recipes\RecipeForm.tsx
+LineNumber : 50
+Line       :         <View style={{ position: 'absolute', zIndex: 999, top: 40, left: 0, right: 0, backgroundColor: 
+             colors.surface.card, borderWidth: 1, borderColor: colors.border.default, borderRadius: 10, maxHeight: 
+             180, elevation: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, 
+             shadowRadius: 12 }}>
+
+Path       : E:\posa\frontend\lib\components\recipes\RecipeForm.tsx
+LineNumber : 238
+Line       :   input: { borderWidth: 1.5, borderColor: colors.border.default, borderRadius: 10, padding: 12, 
+             ...font.body, color: colors.text.primary, backgroundColor: colors.surface.app },
+
+Path       : E:\posa\frontend\lib\components\recipes\RecipeForm.tsx
+LineNumber : 239
+Line       :   inputSmall: { borderWidth: 1.5, borderColor: colors.border.default, borderRadius: 8, padding: 8, 
+             ...font.caption, color: colors.text.primary, backgroundColor: colors.surface.app },
+
+Path       : E:\posa\frontend\lib\components\ui\FormModal.tsx
+LineNumber : 69
+Line       :                 <TouchableOpacity onPress={onClose} style={{ width: 32, height: 32, borderRadius: 8, 
+             backgroundColor: '#F1F5F9', alignItems: 'center', justifyContent: 'center' }}>
+
+Path       : E:\posa\frontend\lib\components\ui\FormModal.tsx
+LineNumber : 77
+Line       :                 <TouchableOpacity onPress={onClose} style={{ flex: 1, padding: 15, borderRadius: 12, 
+             backgroundColor: '#F1F5F9', alignItems: 'center' }}>
+
+Path       : E:\posa\frontend\lib\components\ui\FormModal.tsx
+LineNumber : 80
+Line       :                 <TouchableOpacity onPress={onSave} disabled={saving} style={{ flex: 2, padding: 15, 
+             borderRadius: 12, backgroundColor: '#F97316', alignItems: 'center', opacity: saving ? 0.7 : 1 }}>
+
+Path       : E:\posa\frontend\lib\components\ui\FormModal.tsx
+LineNumber : 100
+Line       :             <TouchableOpacity onPress={onClose} style={{ width: 38, height: 38, borderRadius: 10, 
+             backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center' }}>
+
+Path       : E:\posa\frontend\lib\components\ui\FormModal.tsx
+LineNumber : 113
+Line       :             <TouchableOpacity onPress={onClose} style={{ flex: 1, padding: 15, borderRadius: 12, 
+             backgroundColor: '#F1F5F9', alignItems: 'center' }}>
+
+Path       : E:\posa\frontend\lib\components\ui\FormModal.tsx
+LineNumber : 116
+Line       :             <TouchableOpacity onPress={onSave} disabled={saving} style={{ flex: 2, padding: 15, 
+             borderRadius: 12, backgroundColor: '#F97316', alignItems: 'center', opacity: saving ? 0.7 : 1 }}>
+
+
+

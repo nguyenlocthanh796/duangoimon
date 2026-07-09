@@ -49,7 +49,7 @@ export default function RecipesScreen() {
     try {
       setLoading(true);
       const [r, m] = await Promise.all([
-        request<any[]>(API + '/recipes'),
+        request<{ items: any[] }>(API + '/recipes'),
         request<any[]>(API + '/raw-materials'),
       ]);
       setRecipes(Array.isArray(r) ? r : r?.items || []);
@@ -64,7 +64,7 @@ export default function RecipesScreen() {
     setRefreshing(true);
     try {
       const [r, m] = await Promise.all([
-        request<any[]>(API + '/recipes'),
+        request<{ items: any[] }>(API + '/recipes'),
         request<any[]>(API + '/raw-materials'),
       ]);
       setRecipes(Array.isArray(r) ? r : r?.items || []);
@@ -305,10 +305,10 @@ export default function RecipesScreen() {
           </View>
           <View style={{ width: 1, backgroundColor: colors.border.light, marginHorizontal: 2 }} />
           <View style={{ flexDirection: 'row', gap: 4, flexWrap: 'wrap' }}>
-            {SORTS.map(s => (
-              <TouchableOpacity key={s.key} onPress={() => setSortKey(s.key)}
-                style={[s.chip, sortKey === s.key && s.chipActive]}>
-                <Text style={[s.chipText, sortKey === s.key && s.chipTextActive]}>{s.label}</Text>
+            {SORTS.map(sort => (
+              <TouchableOpacity key={sort.key} onPress={() => setSortKey(sort.key)}
+                style={[s.chip, sortKey === sort.key && s.chipActive]}>
+                <Text style={[s.chipText, sortKey === sort.key && s.chipTextActive]}>{sort.label}</Text>
               </TouchableOpacity>
             ))}
           </View>

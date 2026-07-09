@@ -6,7 +6,7 @@ interface EmptyStateProps {
   icon?: string;
   image?: ImageSourcePropType;
   title: string;
-  subtitle: string;
+  subtitle?: string;
   iconSize?: number;
 }
 
@@ -19,9 +19,11 @@ export default function EmptyState({ icon, image, title, subtitle, iconSize = 56
         <Icon name={icon as any} size={iconSize} color="#CBD5E1" />
       ) : null}
       <Text style={{ ...font.h3, color: colors.text.body, marginTop: 4 }}>{title}</Text>
-      <Text style={{ ...font.bodySmall, color: colors.text.secondary, textAlign: 'center', paddingHorizontal: 40 }}>
-        {subtitle}
-      </Text>
+      {subtitle && (
+        <Text style={{ ...font.bodySmall, color: colors.text.secondary, textAlign: 'center', paddingHorizontal: 40 }}>
+          {subtitle}
+        </Text>
+      )}
     </View>
   );
 }
