@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font } from '../../theme/index';
-import { formatPrice } from '../../theme/colors';
+import { formatPrice } from '../../utils/format';
 import { shape } from '../../theme/shape';
 import { MenuItem } from './types';
 import { ASSETS } from '../../assets';
@@ -85,10 +85,10 @@ export default function ProductCard({
           borderBottomRightRadius: shape.radius.md,
         }}
       >
-        <Text style={{ fontSize: 13, fontWeight: '700', color: '#FFFFFF', textAlign: 'center', marginBottom: 3 }} numberOfLines={1}>
+        <Text style={{ ...font.bodySmall, color: '#FFFFFF', textAlign: 'center', marginBottom: 3 }} numberOfLines={1}>
           {item.name}
         </Text>
-        <Text style={{ fontSize: 13, fontWeight: '800', color: '#FDBA74', textAlign: 'center' }}>
+        <Text style={{ ...font.label, color: '#FDBA74', textAlign: 'center' }}>
           {formatPrice(item.price)}
         </Text>
       </View>
@@ -124,9 +124,9 @@ export default function ProductCard({
             top: 8,
             right: 8,
             backgroundColor: 'rgba(0, 0, 0, 0.65)',
-            width: 30,
-            height: 30,
-            borderRadius: 15,
+            width: 36,
+            height: 36,
+            borderRadius: 18,
             alignItems: 'center',
             justifyContent: 'center',
             borderWidth: 1,

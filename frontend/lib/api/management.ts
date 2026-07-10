@@ -29,3 +29,19 @@ export function getSalesReport(dateFrom?: string, dateTo?: string) {
   const qs = params.toString();
   return request<SalesReport>(`/quan-ly/reports/sales${qs ? `?${qs}` : ''}`);
 }
+
+export interface Branch {
+  id: string;
+  name: string;
+  address?: string;
+  tax_code?: string;
+}
+
+export async function getBranches(): Promise<Branch[]> {
+  const res = await request<any>('/quan-ly/branches/flat');
+  if (Array.isArray(res)) return res;
+  if (res && Array.isArray(res.items)) return res.items;
+  return [];
+}
+
+

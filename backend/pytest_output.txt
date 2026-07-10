@@ -1,0 +1,22 @@
+﻿........................................................................ [ 86%]
+...........                                                              [100%]
+============================== warnings summary ===============================
+app\main.py:10
+  E:\posa\backend\app\main.py:10: DeprecationWarning: 'asyncio.WindowsSelectorEventLoopPolicy' is deprecated and slated for removal in Python 3.16
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+app\main.py:10
+  E:\posa\backend\app\main.py:10: DeprecationWarning: 'asyncio.set_event_loop_policy' is deprecated and slated for removal in Python 3.16
+    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+C:\Users\locthanhit\AppData\Roaming\Python\Python314\site-packages\fastapi\routing.py:233: 337 warnings
+  C:\Users\locthanhit\AppData\Roaming\Python\Python314\site-packages\fastapi\routing.py:233: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead
+    is_coroutine = asyncio.iscoroutinefunction(dependant.call)
+
+C:\Users\locthanhit\AppData\Roaming\Python\Python314\site-packages\starlette\_utils.py:40: 341 warnings
+tests/test_api.py: 13 warnings
+  C:\Users\locthanhit\AppData\Roaming\Python\Python314\site-packages\starlette\_utils.py:40: DeprecationWarning: 'asyncio.iscoroutinefunction' is deprecated and slated for removal in Python 3.16; use inspect.iscoroutinefunction() instead
+    return asyncio.iscoroutinefunction(obj) or (callable(obj) and asyncio.iscoroutinefunction(obj.__call__))
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+83 passed, 693 warnings in 12.60s

@@ -81,6 +81,33 @@ async def create_invoice(body: InvoiceCreate, db: AsyncSession = Depends(get_db)
     return _inv_dict(inv)
 
 
+class InvoiceBulkExport(BaseModel):
+    ids: list[str]
+
+
+@router.post("/bulk-export")
+async def bulk_export_invoices(
+    body: InvoiceBulkExport,
+    db: AsyncSession = Depends(get_db),
+    _user: dict = Depends(get_current_user),
+):
+    from sqlalchemy import select as sa_select
+
+    try:
+        uuids = [uuid.UUID(i) for i in body.ids]
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid invoice id")
+    rows = (
+        await db.execute(sa_select(Invoice).where(Invoice.id.in_(uuids), Invoice.status != "da_xuat"))
+    ).scalars().all()
+    now = datetime.now(timezone.utc)
+    for inv in rows:
+        inv.status = "da_xuat"
+        inv.exported_at = now
+    await db.commit()
+    return {"exported": len(rows), "status": "ok"}
+
+
 @router.post("/{invoice_id}/export")
 async def export_invoice(invoice_id: str, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)):
     result = await db.execute(select(Invoice).where(Invoice.id == uuid.UUID(invoice_id)))

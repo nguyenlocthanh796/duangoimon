@@ -233,7 +233,7 @@ export default function KitchenScreen() {
                   backgroundColor: wsStatus === 'connected' ? colors.status.success : wsStatus === 'connecting' ? colors.brand.primary : colors.status.danger,
                 }} />
                 <Text style={{
-                  ...font.micro, fontWeight: '700',
+                  ...font.micro, fontWeight: '600',
                   color: wsStatus === 'connected' ? palette.green[800] : wsStatus === 'connecting' ? colors.text.brandDark : palette.red[800],
                 }}>
                   {wsStatus === 'connected' ? 'WS ONLINE' : wsStatus === 'connecting' ? 'WS CONNECTING...' : 'WS OFFLINE'}

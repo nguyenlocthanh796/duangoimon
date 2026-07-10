@@ -1,0 +1,60 @@
+name: 🤖 Build Android APK
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  # Cho phép chạy thủ công từ GitHub UI
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build APK
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    env:
+      ANDROID_HOME: /usr/local/lib/android/sdk
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: ☕ Setup Java 17 (Zulu)
+        uses: actions/setup-java@v4
+        with:
+          distribution: "zulu"
+          java-version: "17"
+
+      - name: ⚙️ Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🏗️ Prebuild native project (Android)
+        run: npx expo prebuild --platform android --clean
+
+      - name: 🔨 Build debug APK
+        run: |
+          cd android
+          ./gradlew assembleDebug
+
+      - name: 📤 Upload APK lên artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: POS-Pro-Debug-APK
+          path: frontend/android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 30

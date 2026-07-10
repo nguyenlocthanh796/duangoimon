@@ -23,8 +23,8 @@ function Orb({
     Animated.loop(
       Animated.sequence([
         Animated.delay(delay),
-        Animated.timing(progress, { toValue: 1, duration, useNativeDriver: true }),
-        Animated.timing(progress, { toValue: 0, duration, useNativeDriver: true }),
+        Animated.timing(progress, { toValue: 1, duration, useNativeDriver: Platform.OS !== 'web' }),
+        Animated.timing(progress, { toValue: 0, duration, useNativeDriver: Platform.OS !== 'web' }),
       ]),
     ).start();
   }, []);
@@ -97,7 +97,7 @@ export default function LoginScreen() {
   const entryAnim = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     Animated.spring(entryAnim, {
-      toValue: 1, tension: 50, friction: 8, useNativeDriver: true,
+      toValue: 1, tension: 50, friction: 8, useNativeDriver: Platform.OS !== 'web',
     }).start();
   }, []);
 

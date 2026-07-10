@@ -1,5 +1,6 @@
-"""Role-based access control dependency injection."""
-from fastapi import Depends, HTTPException, status
+"""Role-based access control + branch scoping dependency injection."""
+import re
+from fastapi import Depends, HTTPException, Request, status
 
 from app.core.auth import get_current_user
 
@@ -9,7 +10,12 @@ ALLOWED_ROLES = {
     "quan-ly": {"admin", "manager"},
     "quan-ly/users": {"admin"},
     "ke-toan": {"admin", "accountant"},
+    "thue": {"admin", "accountant"},
 }
+
+_UUID_RE = re.compile(
+    r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+)
 
 
 def _resolve_prefix(path: str) -> str:
@@ -44,3 +50,38 @@ class RoleChecker:
 # ---- Convenience factory ----
 def require_role(*, endpoint_path: str = ""):
     return Depends(RoleChecker(endpoint_path=endpoint_path))
+
+
+def require_branch_access():
+    """Dependency: scope a thue route to the caller's branch.
+
+    Admins and managers see all branches. Accountants are limited to the
+    branch encoded in their JWT (``branch_id``). The branch is inferred from
+    the request path (the ``/thue/.../{branch_id}/...`` segment). If no
+    branch segment is present, the dependency is a no-op (route is not
+    branch-scoped). If a scoped accountant requests a different branch, 403.
+    """
+
+    async def _dep(
+        request: Request,
+        current_user: dict = Depends(get_current_user),
+    ):
+        role = (current_user.get("role") or "").lower()
+        if role in ("admin", "manager"):
+            return current_user
+        scoped = current_user.get("branch_id")
+        if not scoped:
+            return current_user
+        # Find a UUID path segment; the first one is treated as branch.
+        segments = [s for s in request.url.path.split("/") if _UUID_RE.fullmatch(s)]
+        if not segments:
+            return current_user
+        branch_id = segments[0]
+        if str(scoped) != str(branch_id):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Bạn chỉ được truy cập chi nhánh được gán.",
+            )
+        return current_user
+
+    return Depends(_dep)

@@ -1,0 +1,11 @@
+[flake8]
+max-line-length = 100
+extend-ignore = E501,E203,W503,E704,E302,E402,W293
+exclude =
+    .git,
+    __pycache__,
+    .venv,
+    alembic/versions,
+    migrations
+per-file-ignores =
+    __init__.py: F401

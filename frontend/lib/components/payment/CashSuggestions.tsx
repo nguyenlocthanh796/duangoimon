@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
+import { colors, font } from '../../theme';
 
 function getSmartCashSuggestions(total: number): number[] {
   const s = new Set<number>();
@@ -44,7 +45,7 @@ export default function CashSuggestions({ total, onSelect, selectedAmount }: Cas
           }}
         >
           <Text style={{
-            fontSize: 13, fontWeight: '700',
+            ...font.buttonSmall,
             color: selectedAmount === amt ? '#fff' : '#374151',
           }}>
             {amt.toLocaleString('vi-VN')}đ

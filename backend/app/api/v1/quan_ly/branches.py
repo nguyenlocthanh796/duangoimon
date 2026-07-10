@@ -12,6 +12,14 @@ from app.models.branch import Branch
 router = APIRouter(prefix="/quan-ly/branches", tags=["quan-ly"])
 
 
+@router.get("/flat", include_in_schema=False)
+async def list_branches_flat(db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)):
+    """Flat array of branches (used by ke-toan BranchPeriodFilter)."""
+    result = await db.execute(select(Branch).order_by(Branch.name))
+    return [_branch_dict(b) for b in result.scalars()]
+
+
+
 class BranchCreate(BaseModel):
     name: str
     code: str

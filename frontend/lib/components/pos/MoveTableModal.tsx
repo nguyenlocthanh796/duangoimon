@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Modal, ActivityIndicator, TextInput } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { api } from '../../api';
-import { colors } from '../../theme/colors';
+import { colors, font } from '../../theme';
 
 interface MoveTableModalProps {
   visible: boolean;
@@ -45,7 +45,7 @@ export default function MoveTableModal({
       <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' }}>
         <View style={{ backgroundColor: colors.surface.card, borderTopLeftRadius: 16, borderTopRightRadius: 16, maxHeight: '70%', padding: 16, gap: 8 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <Text style={{ fontSize: 18, fontWeight: '700', color: colors.text.primary }}>{title}</Text>
+            <Text style={{ ...font.h3, color: colors.text.primary }}>{title}</Text>
             <TouchableOpacity onPress={onClose} style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
               <MaterialIcons name="close" size={20} color={colors.icon.default} />
             </TouchableOpacity>
@@ -57,7 +57,7 @@ export default function MoveTableModal({
               onChangeText={setSearch}
               placeholder="Tìm bàn..."
               placeholderTextColor={colors.text.muted}
-              style={{ flex: 1, fontSize: 14, color: colors.text.primary, marginLeft: 6 }}
+              style={{ flex: 1, ...font.body, color: colors.text.primary, marginLeft: 6 }}
             />
           </View>
           {loading ? (
@@ -74,8 +74,8 @@ export default function MoveTableModal({
                     <MaterialIcons name="table-restaurant" size={18} color={t.status === 'co_khach' ? '#0284c7' : '#16a34a'} />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 15, fontWeight: '600', color: colors.text.primary }}>{t.name}</Text>
-                    <Text style={{ fontSize: 11, color: colors.text.secondary }}>
+                    <Text style={{ ...font.body, color: colors.text.primary }}>{t.name}</Text>
+                    <Text style={{ ...font.caption, color: colors.text.secondary }}>
                       {t.status === 'co_khach' ? 'Có khách' : 'Trống'} · {t.area || 'Không khu vực'}
                     </Text>
                   </View>
@@ -83,7 +83,7 @@ export default function MoveTableModal({
                 </TouchableOpacity>
               ))}
               {filtered.length === 0 && (
-                <Text style={{ textAlign: 'center', color: colors.text.muted, paddingVertical: 30, fontSize: 14 }}>
+                <Text style={{ ...font.bodySmall, color: colors.text.muted, paddingVertical: 30, textAlign: 'center' }}>
                   {filterOccupied ? 'Không có bàn có khách phù hợp' : 'Không tìm thấy bàn'}
                 </Text>
               )}

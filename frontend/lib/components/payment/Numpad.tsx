@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { colors } from '../../theme/colors';
+import { colors, font } from '../../theme';
 import { NUMPAD_KEYS } from '../../hooks/usePayment';
 
 interface NumpadProps {
@@ -30,7 +30,7 @@ export default function Numpad({ method, onKey }: NumpadProps) {
           >
             {isBack
               ? <Icon name="backspace-outline" size={20} color={colors.text.secondary} />
-              : <Text style={{ fontSize: isClear ? 15 : 22, fontWeight: '700', color: isClear ? colors.status.danger : colors.text.primary }}>
+              : <Text style={{ ...font.button, color: isClear ? colors.status.danger : colors.text.primary }}>
                   {key.label}
                 </Text>
             }

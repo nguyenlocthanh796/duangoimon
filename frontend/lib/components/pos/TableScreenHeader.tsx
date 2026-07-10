@@ -16,50 +16,47 @@ interface TableScreenHeaderProps {
 
 export default function TableScreenHeader({ tablesCount, isWide, onOpenSidebar, onRefresh, lastRefreshTime, onTakeaway }: TableScreenHeaderProps) {
   const insets = useSafeAreaInsets();
+  const btnSize = isWide ? 40 : 36;
+  const iconSize = isWide ? 20 : 18;
+  const paddingV = isWide ? 10 : 8;
 
   return (
     <View style={{
-      paddingTop: insets.top,
+      paddingTop: insets.top + paddingV,
+      paddingBottom: paddingV,
+      paddingHorizontal: isWide ? 16 : 12,
       backgroundColor: colors.surface.card,
       borderBottomWidth: 1,
       borderBottomColor: colors.border.default,
-      shadowColor: palette.slate[900],
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.06,
-      shadowRadius: 4,
-      elevation: 2,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      boxShadow: '0 1px 4px rgba(15,23,42,0.06)',
       zIndex: 10,
     }}>
-      <View style={{
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-      }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: isWide ? 10 : 8 }}>
         <TouchableOpacity
           onPress={onOpenSidebar}
-          style={{ width: 42, height: 42, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}
+          style={{ width: btnSize, height: btnSize, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}
         >
-          <Icon name="menu" size={20} color={colors.icon.default} />
+          <Icon name="menu" size={iconSize} color={colors.icon.default} />
         </TouchableOpacity>
         <View>
-          <Text style={{ ...font.h3, color: colors.text.primary, letterSpacing: -0.5 }}>Sơ đồ bàn</Text>
+          <Text style={{ ...(isWide ? font.h3 : font.h4), color: colors.text.primary }}>Sơ đồ bàn</Text>
           {!isWide && (
-            <Text style={{ ...font.caption, color: colors.text.muted, marginTop: 2 }}>
+            <Text style={{ ...font.badge, color: colors.text.muted, marginTop: 1 }}>
               {tablesCount} bàn · {lastRefreshTime || ''}
             </Text>
           )}
         </View>
       </View>
 
-      <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+      <View style={{ flexDirection: 'row', gap: isWide ? 12 : 8, alignItems: 'center' }}>
         <TouchableOpacity
           onPress={onRefresh}
-          style={{ width: 42, height: 42, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}
+          style={{ width: btnSize, height: btnSize, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}
         >
-          <Icon name="refresh" size={20} color={colors.icon.default} />
+          <Icon name="refresh" size={iconSize} color={colors.icon.default} />
         </TouchableOpacity>
 
         {onTakeaway ? (
@@ -67,27 +64,26 @@ export default function TableScreenHeader({ tablesCount, isWide, onOpenSidebar, 
             onPress={onTakeaway}
             style={{
               flexDirection: 'row', alignItems: 'center', gap: 6,
-              paddingHorizontal: 14, height: 42, borderRadius: shape.radius.md,
+              paddingHorizontal: isWide ? 14 : 10, height: btnSize, borderRadius: shape.radius.md,
               backgroundColor: colors.brand.primaryBg, borderWidth: 1.5, borderColor: colors.border.brand,
             }}
           >
-            <Icon name="bag-personal" size={18} color={colors.icon.brand} />
-            <Text style={{ ...font.tab, color: colors.text.brand }}>Mang Về</Text>
+            <Icon name="bag-personal" size={iconSize} color={colors.icon.brand} />
+            <Text style={{ ...(isWide ? font.tab : font.buttonSmall), color: colors.text.brand }}>Mang Về</Text>
           </TouchableOpacity>
         ) : !isWide ? (
           <TouchableOpacity
             onPress={() => router.push(`/ban-hang/pos?tableId=TAKEAWAY&tableName=Mang%20V%E1%BB%81`)}
             style={{
               flexDirection: 'row', alignItems: 'center', gap: 6,
-              paddingHorizontal: 14, height: 42, borderRadius: shape.radius.md,
+              paddingHorizontal: 10, height: btnSize, borderRadius: shape.radius.md,
               backgroundColor: colors.brand.primaryBg, borderWidth: 1.5, borderColor: colors.border.brand,
             }}
           >
-            <Icon name="bag-personal" size={18} color={colors.icon.brand} />
-            <Text style={{ ...font.tab, color: colors.text.brand }}>Mang Về</Text>
+            <Icon name="bag-personal" size={iconSize} color={colors.icon.brand} />
+            <Text style={{ ...font.buttonSmall, color: colors.text.brand }}>Mang Về</Text>
           </TouchableOpacity>
         ) : null}
-      </View>
       </View>
     </View>
   );

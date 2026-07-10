@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { colors } from '../../theme/colors';
+import { colors, font } from '../../theme';
+import { shape } from '../../theme/shape';
 import { MaterialIcons } from '@expo/vector-icons';
 
 interface CartMainActionsProps {
@@ -27,7 +28,7 @@ export default function CartMainActions({
           onPress={onPrintTemporary}
           style={{
             height: 46,
-            borderRadius: 8,
+            borderRadius: shape.radius.md,
             backgroundColor: colors.surface.disabled,
             borderWidth: 1,
             borderColor: colors.border.default,
@@ -38,7 +39,7 @@ export default function CartMainActions({
           }}
         >
           <MaterialIcons name="print" size={18} color={colors.text.secondary} />
-          <Text style={{ fontSize: 14, fontWeight: '700', color: colors.text.secondary }}>IN TẠM TÍNH</Text>
+          <Text style={{ ...font.buttonSmall, color: colors.text.secondary }}>IN TẠM TÍNH</Text>
         </TouchableOpacity>
       )}
 
@@ -46,23 +47,23 @@ export default function CartMainActions({
         <TouchableOpacity
           onPress={onSendToKitchen}
           disabled={!hasUnsentItems || submitting}
-          style={{ flex: 1, height: 50, borderRadius: 8, backgroundColor: hasUnsentItems ? colors.brand.primaryBg : colors.surface.disabled, borderWidth: 1.5, borderColor: hasUnsentItems ? colors.border.brand : colors.border.default, alignItems: 'center', justifyContent: 'center' }}
+          style={{ flex: 1, height: 50, borderRadius: shape.radius.md, backgroundColor: hasUnsentItems ? colors.brand.primaryBg : colors.surface.disabled, borderWidth: 1.5, borderColor: hasUnsentItems ? colors.border.brand : colors.border.default, alignItems: 'center', justifyContent: 'center' }}
         >
-          <Text style={{ fontSize: 14, fontWeight: '700', color: hasUnsentItems ? colors.text.brand : colors.text.muted }}>GỬI BẾP</Text>
+          <Text style={{ ...font.buttonSmall, color: hasUnsentItems ? colors.text.brand : colors.text.muted }}>GỬI BẾP</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={onSaveTable}
           disabled={submitting}
-          style={{ flex: 1, height: 50, borderRadius: 8, backgroundColor: colors.brand.primaryBg, borderWidth: 1.5, borderColor: colors.border.brand, alignItems: 'center', justifyContent: 'center' }}
+          style={{ flex: 1, height: 50, borderRadius: shape.radius.md, backgroundColor: colors.brand.primaryBg, borderWidth: 1.5, borderColor: colors.border.brand, alignItems: 'center', justifyContent: 'center' }}
         >
-          <Text style={{ fontSize: 14, fontWeight: '700', color: colors.text.brand }}>LƯU HĐ</Text>
+          <Text style={{ ...font.buttonSmall, color: colors.text.brand }}>LƯU HĐ</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={onPay}
           disabled={submitting}
-          style={{ flex: 1.5, height: 50, borderRadius: 8, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }}
+          style={{ flex: 1.5, height: 50, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }}
         >
-          {submitting ? <ActivityIndicator size="small" color={colors.text.inverse} /> : <Text style={{ fontSize: 14, fontWeight: '700', color: colors.text.inverse }}>THANH TOÁN</Text>}
+          {submitting ? <ActivityIndicator size="small" color={colors.text.inverse} /> : <Text style={{ ...font.button, color: colors.text.inverse }}>THANH TOÁN</Text>}
         </TouchableOpacity>
       </View>
     </View>

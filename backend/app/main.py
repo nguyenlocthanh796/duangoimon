@@ -1,4 +1,6 @@
 import os
+import re
+import socket
 import sys
 
 # Windows + Python 3.14+: psycopg async needs SelectorEventLoop, not ProactorEventLoop
@@ -19,10 +21,12 @@ from app.models.user import User  # noqa
 from app.models.recipe import RawMaterial, Recipe, RecipeItem  # noqa
 from app.models.audit import AuditLog  # noqa
 
+from app.core.rbac import require_role, require_branch_access
 from app.api.v1 import auth, ban_hang, quan_ly, ke_toan
+from app.api.v1 import thue
 from app.core.database import engine
 from app.core.ws_manager import ws_manager
-from app.core.rbac import require_role
+
 
 
 @asynccontextmanager
@@ -30,20 +34,84 @@ async def lifespan(app: FastAPI):
     # Init extensions
     from app.core.sentry_config import init_sentry
     init_sentry()
+    # Tax scheduler (threshold scans, later EOM + escalation)
+    from app.core.thue.scheduler import start_scheduler
+    await start_scheduler()
     yield
     await engine.dispose()
 
 
 app = FastAPI(title="POS F&B API", version="1.0.0", lifespan=lifespan)
 
-# CORS — restrict origins via env
-origins = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:8081").split(",")
+# Thue (tax) routes — admin + accountant only
+app.include_router(
+    thue.profile.router, prefix="/api/v1",
+    dependencies=[require_role(endpoint_path="thue")],
+)
+app.include_router(
+    thue.cash_register_invoice.router, prefix="/api/v1",
+    dependencies=[require_role(endpoint_path="thue"), require_branch_access()],
+)
+app.include_router(
+    thue.declaration.router, prefix="/api/v1",
+    dependencies=[require_role(endpoint_path="thue"), require_branch_access()],
+)
+app.include_router(
+    thue.bank.router, prefix="/api/v1",
+    dependencies=[require_role(endpoint_path="thue"), require_branch_access()],
+)
+app.include_router(
+    thue.report.router, prefix="/api/v1",
+    dependencies=[require_role(endpoint_path="thue"), require_branch_access()],
+)
+app.include_router(
+    thue.legacy.router, prefix="/api/v1",
+    dependencies=[require_role(endpoint_path="thue")],
+)
+app.include_router(
+    thue._alias.router, prefix="/api/v1",
+    dependencies=[require_role(endpoint_path="thue")],
+)
+
+# CORS — restrict origins via env, but always allow localhost / 127.0.0.1 / the
+# machine's LAN IPs on any dev port (covers Expo web on :8081/:19006, the
+# production build on :3000, and access from the LAN URL or a phone).
+# Note: backend/.env is not auto-loaded (no python-dotenv), so CORS_ORIGINS must
+# be set in the real process env if you need non-localhost origins.
+_env_origins = os.getenv("CORS_ORIGINS", "")
+origins = [o.strip() for o in _env_origins.split(",") if o.strip()] or [
+    "http://localhost:3000",
+    "http://localhost:8081",
+]
+
+# Resolve the machine's LAN IPv4 addresses so Expo's "LAN" URL and phones work.
+_lan_ips: set[str] = set()
+try:
+    _hostname = socket.gethostname()
+    for _info in socket.getaddrinfo(_hostname, None):
+        _ip = _info[4][0]
+        if re.match(r"^\d+\.\d+\.\d+\.\d+$", _ip) and not _ip.startswith("127."):
+            _lan_ips.add(_ip)
+    # Fallback: ask the default gateway (works if hostname doesn't resolve to LAN IP)
+    _s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    _s.connect(("8.8.8.8", 80))
+    _lan_ips.add(_s.getsockname()[0])
+    _s.close()
+except Exception:
+    pass
+
+_lan_pattern = "|".join(re.escape(ip) for ip in _lan_ips)
+# Match http(s)://(localhost|127.0.0.1|<lan-ips>)(:port)?
+_cors_regex = r"^https?://(localhost|127\.0\.0\.1" + (f"|{_lan_pattern}" if _lan_pattern else "") + r")(:\d+)?$"
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[o.strip() for o in origins],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    # Allow localhost + LAN IPs on any port during local/dev use.
+    allow_origin_regex=_cors_regex,
 )
 
 # Health check
@@ -98,7 +166,6 @@ async def global_exception_handler(request: Request, exc: Exception):
         headers=_get_cors_headers(request),
     )
 
-
 @app.exception_handler(404)
 async def not_found_handler(request: Request, exc):
     return JSONResponse(
@@ -107,8 +174,7 @@ async def not_found_handler(request: Request, exc):
         headers=_get_cors_headers(request),
     )
 
-
-# Auto-audit all POST/PUT/DELETE on /api/v1/...
+# Auto-audit all POST/PUT/DELETE on /api/v1...
 from app.core.audit_middleware import audit_mutation_middleware
 app.middleware("http")(audit_mutation_middleware)
 
@@ -135,7 +201,6 @@ async def inventory_ws(websocket: WebSocket):
             await websocket.receive_text()
     except WebSocketDisconnect:
         ws_manager.disconnect(websocket, "inventory")
-
 
 # Auth routes (public)
 app.include_router(auth.router, prefix="/api/v1/auth")

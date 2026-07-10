@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
-  ActivityIndicator, Animated,
+  ActivityIndicator, Animated, Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
@@ -82,7 +82,7 @@ function FloatingInput({
           />
         </View>
         {secureTextEntry && (
-          <TouchableOpacity onPress={() => setShowPw(!showPw)} style={{ padding: 4 }}>
+          <TouchableOpacity onPress={() => setShowPw(!showPw)} style={{ padding: 4 }} accessibilityRole="button" accessibilityLabel={showPw ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}>
             <Icon
               name={showPw ? 'eye-off-outline' : 'eye-outline'}
               size={20}
@@ -112,6 +112,8 @@ function PresetPill({
       onPress={onPress}
       activeOpacity={0.7}
       style={[styles.presetPill, selected && styles.presetPillActive]}
+      accessibilityRole="button"
+      accessibilityLabel={`Đăng nhập với ${label}`}
     >
       {selected ? (
         <LinearGradient
@@ -141,10 +143,10 @@ export default function LoginForm({
   // Button scale animation
   const btnScale = useRef(new Animated.Value(1)).current;
   const pressIn = () => {
-    Animated.spring(btnScale, { toValue: 0.97, useNativeDriver: true }).start();
+    Animated.spring(btnScale, { toValue: 0.97, useNativeDriver: Platform.OS !== 'web' }).start();
   };
   const pressOut = () => {
-    Animated.spring(btnScale, { toValue: 1, friction: 5, useNativeDriver: true }).start();
+    Animated.spring(btnScale, { toValue: 1, friction: 5, useNativeDriver: Platform.OS !== 'web' }).start();
   };
 
   const handleLogin = async () => {
@@ -201,13 +203,13 @@ export default function LoginForm({
 
       {/* Remember + Forgot */}
       <View style={styles.row}>
-        <TouchableOpacity style={styles.rememberRow}>
+        <TouchableOpacity style={styles.rememberRow} accessibilityRole="button" accessibilityLabel="Duy trì đăng nhập">
           <View style={styles.checkbox}>
             <Icon name="check" size={12} color="#0F172A" />
           </View>
           <Text style={styles.rememberText}>Duy trì đăng nhập</Text>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Quên mật khẩu">
           <Text style={styles.forgotText}>Quên mật khẩu?</Text>
         </TouchableOpacity>
       </View>
@@ -219,6 +221,8 @@ export default function LoginForm({
         onPressOut={pressOut}
         onPress={handleLogin}
         disabled={loading}
+        accessibilityRole="button"
+        accessibilityLabel={loading ? 'Đang đăng nhập' : 'Đăng nhập'}
       >
         <Animated.View style={{ transform: [{ scale: btnScale }] }}>
           <LinearGradient
@@ -314,11 +318,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     height: 52,
     alignItems: 'center', justifyContent: 'center',
-    shadowColor: '#F97316',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 12,
-    elevation: 6,
+    boxShadow: '0 4px 12px rgba(249,115,22,0.35)',
   },
   loginText: {
     fontSize: 16, fontWeight: '700', color: '#FFFFFF',

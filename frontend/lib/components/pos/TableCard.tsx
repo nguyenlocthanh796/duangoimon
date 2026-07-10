@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { colors, palette, shape } from '../../theme';
+import { colors, font, palette, shape } from '../../theme';
 import { scale } from '../../theme/typography';
 
 export type TableStatus = 'trong' | 'co_khach' | 'da_dat';
@@ -41,8 +41,7 @@ export default function TableCard({ table, onPress, selected, isWide, cardWidth 
       style={{
         borderRadius: cardRadius,
         aspectRatio: isOccupied ? 0.9 : 1,
-        paddingTop: topPad,
-        paddingBottom: topPad,
+        paddingVertical: Math.max(10, topPad + 2),
         paddingHorizontal: sidePad,
         position: 'relative',
 
@@ -79,7 +78,7 @@ export default function TableCard({ table, onPress, selected, isWide, cardWidth 
         <View style={{ flex: 1, zIndex: 1, justifyContent: 'space-between' }}>
           {/* Top: Name */}
           <Text style={{
-            fontSize: nameSize, fontWeight: '800', color: colors.text.inverse,
+            fontSize: nameSize, fontWeight: '600' as const, color: colors.text.inverse,
             letterSpacing: -0.5, textAlign: 'center',
           }} numberOfLines={1}>
             {table.name}
@@ -88,20 +87,20 @@ export default function TableCard({ table, onPress, selected, isWide, cardWidth 
           {/* Center: Amount */}
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Text numberOfLines={1} style={{
-              fontSize: amountSize, fontWeight: '900', color: colors.text.inverse,
+              fontSize: amountSize, fontWeight: '700' as const, color: colors.text.inverse,
               letterSpacing: -1, textAlign: 'center',
               textShadowColor: 'rgba(0,0,0,0.15)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4,
             }}>
-              {table.orderTotal ? table.orderTotal.toLocaleString('vi-VN') + '₫' : '0₫'}
+              {table.orderTotal ? table.orderTotal.toLocaleString('vi-VN') + ' đ' : '0 đ'}
             </Text>
           </View>
 
           {/* Bottom: Meta (left = items, right = time) */}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 4 }}>
             {/* Left bottom: Items count */}
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
               <Icon name="silverware-fork-knife" size={iconSize} color={colors.text.brandLight} />
-              <Text style={{ fontSize: metaSize, fontWeight: '600', color: colors.text.brandLight }}>
+              <Text style={{ fontSize: metaSize, fontWeight: '500' as const, color: colors.text.brandLight }}>
                 {table.orderItemCount || 0} món
               </Text>
             </View>
@@ -110,7 +109,7 @@ export default function TableCard({ table, onPress, selected, isWide, cardWidth 
             {table.orderTime ? (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3 }}>
                 <Icon name="clock-outline" size={iconSize} color={colors.text.brandLight} />
-                <Text style={{ fontSize: metaSize, fontWeight: '600', color: colors.text.brandLight }}>
+                <Text style={{ fontSize: metaSize, fontWeight: '500' as const, color: colors.text.brandLight }}>
                   {table.orderTime}
                 </Text>
               </View>
@@ -124,13 +123,13 @@ export default function TableCard({ table, onPress, selected, isWide, cardWidth 
         <View style={{ flex: 1, zIndex: 1, justifyContent: 'center', alignItems: 'center', gap: isWide ? 6 : 4 }}>
           <Icon name="coffee" size={isWide ? scale(32) : scale(24)} color={colors.icon.muted} />
           <Text style={{
-            fontSize: isWide ? scale(16) : scale(13), fontWeight: '700', color: colors.text.secondary,
+            fontSize: isWide ? scale(17) : scale(14), fontWeight: '400' as const, color: colors.text.secondary,
             textAlign: 'center',
           }} numberOfLines={1}>
             {table.name}
           </Text>
           <Text style={{
-            fontSize: isWide ? scale(12) : scale(9), fontWeight: '700', color: colors.text.muted,
+            fontSize: isWide ? scale(12) : scale(9), fontWeight: '500' as const, color: colors.text.muted,
             letterSpacing: 1, textTransform: 'uppercase', textAlign: 'center',
           }}>
             Trống

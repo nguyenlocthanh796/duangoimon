@@ -7,16 +7,16 @@ import { useCart } from './useCart';
 import { useModifier } from './useModifier';
 import { useOrder } from './useOrder';
 
-let cachedProducts: MenuItem[] | null = null;
-
 export function useTableOrder(tableId: string, tableName: string, onClose?: () => void) {
   const router = useRouter();
   const cart = useCart();
   const mod = useModifier();
   const order = useOrder();
 
-  const [products, setProducts] = useState<MenuItem[]>(cachedProducts || []);
-  const [loading, setLoading] = useState(!cachedProducts);
+  const cachedRef = useRef<MenuItem[] | null>(null);
+
+  const [products, setProducts] = useState<MenuItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('all');
   const [cartSheet, setCartSheet] = useState(false);
 
@@ -28,15 +28,11 @@ export function useTableOrder(tableId: string, tableName: string, onClose?: () =
     }
     let cancelled = false;
     (async () => {
-      // Only show full screen loading if we don't have products cached yet
-      if (!cachedProducts) {
-        setLoading(true);
-      }
       cart.reset();
       setActiveCategory('all');
 
       try {
-        let currentProducts = cachedProducts;
+        let currentProducts = cachedRef.current;
         if (!currentProducts) {
           const data = await api.getProducts();
           if (cancelled) return;
@@ -57,8 +53,8 @@ export function useTableOrder(tableId: string, tableName: string, onClose?: () =
             toppings: p.options?.filter((o: any) => o.type === 'topping') || undefined,
             vatRate: p.vat_rate ?? 8,
           }));
-          cachedProducts = currentProducts;
-          if (!cancelled) setProducts(cachedProducts ?? []);
+          cachedRef.current = currentProducts;
+          if (!cancelled) setProducts(currentProducts ?? []);
         }
 
         if (tableId !== 'TAKEAWAY') {
@@ -66,7 +62,7 @@ export function useTableOrder(tableId: string, tableName: string, onClose?: () =
             const activeOrder = await api.getActiveOrderForTable(tableId);
             if (!cancelled && activeOrder) {
               cart.setActiveOrderId(activeOrder.id);
-              cart.loadOrderItems(activeOrder.items, cachedProducts ?? []);
+              cart.loadOrderItems(activeOrder.items, cachedRef.current ?? []);
             }
           } catch { /* no active order */ }
         }

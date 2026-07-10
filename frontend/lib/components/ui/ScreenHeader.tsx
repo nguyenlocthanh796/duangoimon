@@ -56,11 +56,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface.card,
     borderBottomWidth: 1,
     borderBottomColor: colors.border.default,
-    shadowColor: palette.slate[900],
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
+    boxShadow: '0 1px 4px rgba(15,23,42,0.06)',
   },
   left: {
     flexDirection: 'row',

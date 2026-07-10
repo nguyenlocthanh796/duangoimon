@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, COLORS, font, formatPrice } from '../../theme';
+import { shape } from '../../theme/shape';
 
 interface MobileCartBarProps {
   itemCount: number;
@@ -26,11 +27,7 @@ export default function MobileCartBar({ itemCount, total, onPress, onSave, onPay
         borderTopColor: colors.border.default,
         paddingHorizontal: 12,
         paddingVertical: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: -2 },
-        shadowOpacity: 0.15,
-        shadowRadius: 3,
-        elevation: 8,
+        boxShadow: '0 -2px 3px rgba(0,0,0,0.15)',
         flexDirection: 'row',
         alignItems: 'center',
       }}
@@ -57,12 +54,12 @@ export default function MobileCartBar({ itemCount, total, onPress, onSave, onPay
               borderColor: colors.surface.card,
             }}
           >
-            <Text style={{ color: colors.text.inverse, fontSize: 11, fontWeight: '700' }}>{itemCount}</Text>
+            <Text style={{ ...font.badge, color: colors.text.inverse }}>{itemCount}</Text>
           </View>
         </View>
         <View>
-          <Text style={{ fontSize: 12, fontWeight: '500', color: colors.text.muted }}>Tổng tiền</Text>
-          <Text style={{ fontSize: 18, fontWeight: '700', color: COLORS.primary }}>{formatPrice(total)}</Text>
+          <Text style={{ ...font.buttonSmall, color: colors.text.muted }}>Tổng tiền</Text>
+          <Text style={{ ...font.h4, color: COLORS.primary }}>{formatPrice(total)}</Text>
         </View>
       </TouchableOpacity>
 
@@ -74,7 +71,7 @@ export default function MobileCartBar({ itemCount, total, onPress, onSave, onPay
             paddingHorizontal: 18,
             paddingVertical: 0,
             height: 48,
-            borderRadius: 8,
+            borderRadius: shape.radius.md,
             backgroundColor: colors.brand.primaryBg,
             borderWidth: 1.5,
             borderColor: colors.border.brand,
@@ -82,7 +79,7 @@ export default function MobileCartBar({ itemCount, total, onPress, onSave, onPay
             justifyContent: 'center',
           }}
         >
-          <Text style={{ fontSize: 14, fontWeight: '700', color: colors.text.brand }}>Lưu HĐ</Text>
+          <Text style={{ ...font.button, color: colors.text.brand }}>Lưu HĐ</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -92,7 +89,7 @@ export default function MobileCartBar({ itemCount, total, onPress, onSave, onPay
             paddingHorizontal: 22,
             paddingVertical: 0,
             height: 48,
-            borderRadius: 8,
+            borderRadius: shape.radius.md,
             backgroundColor: colors.brand.primary,
             alignItems: 'center',
             justifyContent: 'center',
@@ -100,7 +97,7 @@ export default function MobileCartBar({ itemCount, total, onPress, onSave, onPay
             gap: 6,
           }}
         >
-          <Text style={{ fontSize: 14, fontWeight: '700', color: colors.text.inverse }}>Thanh toán</Text>
+          <Text style={{ ...font.button, color: colors.text.inverse }}>Thanh toán</Text>
           <MaterialIcons name="keyboard-arrow-up" size={20} color={colors.text.inverse} />
         </TouchableOpacity>
       </View>

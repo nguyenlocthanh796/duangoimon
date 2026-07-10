@@ -1,11 +1,11 @@
 import { View, Text, TouchableOpacity, ScrollView, RefreshControl, ActivityIndicator, FlatList } from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect, useCallback } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api } from '../../lib/api';
-import { colors, font } from '../../lib/theme';
+import { colors, font, shape } from '../../lib/theme';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import { useTableOrder } from '../../lib/hooks/useTableOrder';
@@ -29,7 +29,7 @@ export default function TableSelection() {
   const [error, setError] = useState<string | null>(null);
   const [selectedArea, setSelectedArea] = useState('Tất cả');
 
-  const orderState = useTableOrder(selectedTable?.id || '', selectedTable?.name || '', () => setSelectedTable(null));
+  const orderState = useTableOrder(selectedTable?.id || '', selectedTable?.name || '', () => { setSelectedTable(null); loadData(); });
   const {
     products: menuProducts, loading: menuLoading,
     filteredItems, cart, total, itemCount, submitting, cartSheet, setCartSheet,
@@ -47,7 +47,7 @@ export default function TableSelection() {
     toggleServiceType,
   } = orderState;
 
-  const CARD_COLS = width > 1200 ? 4 : 3;
+  const CARD_COLS = width > 768 ? 4 : 3;
   const cardWidth = Math.floor((containerWidth - hPad * 2 - gutter * (CARD_COLS - 1)) / CARD_COLS);
   const totalGridWidth = cardWidth * CARD_COLS + gutter * (CARD_COLS - 1);
   const gridPadding = Math.max(hPad, Math.floor((containerWidth - totalGridWidth) / 2));
@@ -98,7 +98,7 @@ export default function TableSelection() {
     }
   }, []);
 
-  useEffect(() => { loadData(); }, [loadData]);
+  useFocusEffect(useCallback(() => { loadData(); }, []));
 
   const areas = ['Tất cả', ...Array.from(new Set(tables.map(t => t.area).filter(Boolean) as string[]))];
 
@@ -125,12 +125,12 @@ export default function TableSelection() {
     );
     if (error) return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16, paddingHorizontal: 16 }}>
-        <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: colors.surface.danger, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ width: 56, height: 56, borderRadius: shape.radius.md, backgroundColor: colors.surface.danger, alignItems: 'center', justifyContent: 'center' }}>
           <Icon name="cloud-off-outline" size={28} color={colors.text.danger} />
         </View>
         <Text style={{ ...font.h3, color: colors.text.primary, textAlign: 'center' }}>Không thể kết nối</Text>
         <Text style={{ ...font.caption, color: colors.text.muted, textAlign: 'center' }}>{error}</Text>
-        <TouchableOpacity onPress={() => loadData()} style={{ paddingHorizontal: 20, minHeight: 40, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.brand.primary, borderRadius: 10 }}>
+        <TouchableOpacity onPress={() => loadData()} style={{ paddingHorizontal: 20, minHeight: 40, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.brand.primary, borderRadius: shape.radius.md }}>
           <Text style={{ ...font.buttonSmall, color: colors.text.inverse }}>Thử lại</Text>
         </TouchableOpacity>
       </View>
@@ -154,7 +154,7 @@ export default function TableSelection() {
           )}
           ListEmptyComponent={
             <View style={{ paddingTop: 60, alignItems: 'center', gap: 12 }}>
-              <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
+              <View style={{ width: 64, height: 64, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
                 <Icon name="table-furniture" size={32} color={colors.border.strong} />
               </View>
               <Text style={{ ...font.h3, color: colors.text.primary }}>
@@ -179,22 +179,22 @@ export default function TableSelection() {
             {selectedTable ? (
               <>
                 <View style={{
-                  paddingTop: insets.top,
+                  paddingTop: insets.top + 10,
+                  paddingBottom: 14,
                   paddingHorizontal: 16,
-                  paddingBottom: 12,
                   backgroundColor: colors.surface.card,
                   borderBottomWidth: 1,
                   borderBottomColor: colors.border.default,
                   flexDirection: 'row',
                   alignItems: 'center',
-                  gap: 8
+                  gap: 12
                 }}>
-                  <TouchableOpacity onPress={() => setSelectedTable(null)} style={{ width: 32, height: 32, borderRadius: 4, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
-                    <Icon name="arrow-left" size={16} color={colors.icon.default} />
+                  <TouchableOpacity onPress={() => setSelectedTable(null)} style={{ width: 40, height: 40, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
+                    <Icon name="arrow-left" size={20} color={colors.icon.default} />
                   </TouchableOpacity>
-                  <View>
+                  <View style={{ flex: 1, justifyContent: 'center' }}>
                     <Text style={{ ...font.h3, color: colors.text.primary }}>{selectedTable.name}</Text>
-                    <Text style={{ ...font.badge, color: colors.text.muted }}>{menuProducts.length} món · {itemCount} đã chọn</Text>
+                    <Text style={{ ...font.badge, color: colors.text.muted, marginTop: 1 }}>{menuProducts.length} món · {itemCount} đã chọn</Text>
                   </View>
                 </View>
                 <CategoryTabs activeCategory={activeCategory} onSelectCategory={setActiveCategory} isWide={isWide} />
@@ -226,7 +226,7 @@ export default function TableSelection() {
                 onToggleServiceType={toggleServiceType} onEditNote={handleEditNote} serviceChargePercent={0} tableId={selectedTable?.id} />
             ) : (
               <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surface.card }}>
-                <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+                <View style={{ width: 80, height: 80, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
                   <Icon name="cart-outline" size={40} color={colors.text.muted} />
                 </View>
                 <Text style={{ ...font.h2, color: colors.text.primary, marginBottom: 4 }}>Giỏ hàng</Text>

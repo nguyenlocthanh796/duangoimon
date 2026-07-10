@@ -10,7 +10,7 @@ export default function PickerItem({ value, onChange }: { value: string; onChang
       {METHODS.map(m => (
         <TouchableOpacity key={m} onPress={() => onChange(m)}
           style={{ paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, backgroundColor: value === m ? colors.brand.primaryBg : colors.surface.app, borderWidth: 1, borderColor: value === m ? colors.brand.primary : colors.border.default }}>
-          <Text style={{ ...font.micro, fontWeight: '700', color: value === m ? colors.brand.primary : colors.text.muted }}>{m}</Text>
+          <Text style={{ ...font.micro, color: value === m ? colors.brand.primary : colors.text.muted }}>{m}</Text>
         </TouchableOpacity>
       ))}
     </View>

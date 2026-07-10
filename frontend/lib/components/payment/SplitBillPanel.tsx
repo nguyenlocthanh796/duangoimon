@@ -14,7 +14,7 @@ interface Props {
   canPay: boolean;
 }
 
-function formatPriceFull(v: number) { return v.toLocaleString('vi-VN') + 'đ'; }
+function formatPriceFull(v: number) { return Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ' đ'; }
 
 export default function SplitBillPanel({ total, splits, onChange, onPay, onCancel, paying, canPay }: Props) {
   const addSplit = () => {

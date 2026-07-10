@@ -4,8 +4,8 @@ import { Platform } from 'react-native';
 const { width, height } = Dimensions.get('window');
 const maxDim = Math.max(width, height);
 
-// Consistent scaling - increased for larger touch targets
-const scaleFactor = maxDim >= 1024 ? 1.35 : 1.08;
+// Consistent scaling - adjusted to be more suitable (smaller) for iPhone and iPad
+const scaleFactor = maxDim >= 1024 ? 1.15 : 1.0;
 export const scale = (size: number) => Math.round(size * scaleFactor);
 const getLineHeight = (size: number) => Math.round(size * 1.35);
 

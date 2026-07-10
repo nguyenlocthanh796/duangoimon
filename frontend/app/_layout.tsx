@@ -64,7 +64,7 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <AuthProvider>
           <SidebarProvider>
-            <StatusBar style="dark" />
+            <StatusBar style="light" />
             <AppStack />
           </SidebarProvider>
         </AuthProvider>

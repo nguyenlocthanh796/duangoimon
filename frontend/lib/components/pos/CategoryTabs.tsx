@@ -33,12 +33,11 @@ export default function CategoryTabs({ activeCategory, onSelectCategory, isWide 
         borderBottomColor: colors.border.default, 
         flexGrow: 0, 
         flexShrink: 0, 
-        height: 44,
       }}
       contentContainerStyle={{ 
-        paddingHorizontal: 8, 
-        paddingRight: 24,
-        paddingVertical: 6, 
+        paddingHorizontal: 12, 
+        paddingRight: 28,
+        paddingVertical: 8, 
         gap: 8,
         alignItems: 'center',
       }}
@@ -50,16 +49,16 @@ export default function CategoryTabs({ activeCategory, onSelectCategory, isWide 
             key={cat.id}
             onPress={() => onSelectCategory(cat.id)}
             style={{
-              paddingHorizontal: 12,
-              height: 32,
+              paddingHorizontal: 16,
+              height: 36,
               justifyContent: 'center',
               alignItems: 'center',
-              borderRadius: 4,
+              borderRadius: 8,
               backgroundColor: active ? colors.brand.primary : colors.surface.disabled,
             }}
           >
             <Text style={{ 
-              fontSize: 12, fontWeight: '600',
+              ...font.tab,
               color: active ? colors.text.inverse : colors.text.body,
             }}>
               {cat.name}

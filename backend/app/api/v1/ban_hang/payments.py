@@ -19,6 +19,7 @@ def _uuid(val: str) -> uuid.UUID:
     except ValueError:
         raise HTTPException(status_code=422, detail=f"Invalid UUID: {val}")
 
+
 router = APIRouter(prefix="/ban-hang/payments", tags=["ban-hang"])
 
 
@@ -101,6 +102,10 @@ async def process_payment(body: PaymentCreate, request: Request, db: AsyncSessio
         created_by=uuid.UUID(_user["sub"]),
     )
     db.add(transaction)
+
+    # H3: auto-issue Cash-Register ('M') e-invoice for the paid order (NĐ70/2025).
+    from app.core.thue.cash_invoice_service import issue_for_order
+    await issue_for_order(db, order)
 
     # H2: Deduct inventory BEFORE commit (atomic)
     from app.core.inventory import deduct_inventory

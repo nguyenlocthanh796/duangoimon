@@ -236,35 +236,6 @@ function EmptyBox({ icon: iconName, text, iconColor }: { icon: string; text: str
       <Icon name={iconName as any} size={28} color={iconColor ?? '#CBD5E1'} />
       <Text style={[styles.emptyText, iconColor ? { color: iconColor } : undefined]}>{text}</Text>
     </View>
-  );
-}
-
-// ── Styles ──
-
-const styles = StyleSheet.create({
-  section: {
-    backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.lg,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: colors.border.light,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  sectionHeader: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10,
-  },
-  sectionHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  sectionTitle: { ...font.body, fontWeight: '700', color: colors.text.primary },
-  sectionSub: { ...font.caption, color: colors.text.secondary },
-  emptyBox: { alignItems: 'center', paddingVertical: 24, gap: 8 },
-  emptyText: { ...font.bodySmall, color: colors.text.secondary },
-
-  // List/table shared
-  listRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 2 },
   colHead: { ...font.caption, color: colors.text.muted, fontWeight: '700' },
   colText: { ...font.bodySmall, color: colors.text.primary },
 

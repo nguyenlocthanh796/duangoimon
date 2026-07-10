@@ -49,6 +49,27 @@ async def list_transactions(
     ]
 
 
+class TransactionBulkDelete(BaseModel):
+    ids: list[str]
+
+
+@router.post("/bulk-delete")
+async def bulk_delete_transactions(
+    body: TransactionBulkDelete,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(get_current_user),
+):
+    from sqlalchemy import delete as sa_delete
+
+    try:
+        uuids = [uuid.UUID(i) for i in body.ids]
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid transaction id")
+    await db.execute(sa_delete(Transaction).where(Transaction.id.in_(uuids)))
+    await db.commit()
+    return {"deleted": len(uuids), "status": "ok"}
+
+
 @router.post("", status_code=201)
 async def create_transaction(body: TransactionCreate, db: AsyncSession = Depends(get_db), current_user: dict = Depends(get_current_user)):
     if body.type not in ("thu", "chi"):

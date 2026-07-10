@@ -37,3 +37,11 @@ export function createInvoice(data: { order_id: string; buyer_name: string; buye
 export function exportInvoice(id: string) {
   return request<Invoice>(`/ke-toan/invoices/${id}/export`, { method: 'POST' });
 }
+
+export function bulkDeleteTransactions(ids: string[]) {
+  return request<{ deleted: number; status: string }>('/ke-toan/transactions/bulk-delete', { method: 'POST', body: JSON.stringify({ ids }) });
+}
+
+export function bulkExportInvoices(ids: string[]) {
+  return request<{ exported: number; status: string }>('/ke-toan/invoices/bulk-export', { method: 'POST', body: JSON.stringify({ ids }) });
+}

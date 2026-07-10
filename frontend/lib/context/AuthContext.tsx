@@ -8,6 +8,7 @@ interface AuthContextType {
   token: string | null;
   username: string;
   userRole: string;
+  branchId: string | null;
   login: (username: string, password: string) => Promise<void>;
   logout: () => void;
   isInitialized: boolean;
@@ -19,6 +20,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [token, setTokenState] = useState<string | null>(null);
   const [username, setUsername] = useState<string>('');
   const [userRole, setUserRole] = useState<string>('');
+  const [branchId, setBranchId] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
   const router = useRouter();
@@ -51,10 +53,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 setTokenState(storedToken);
                 setUsername(user?.username || '');
                 setUserRole(decoded.role || user?.role || '');
+                setBranchId(decoded.branch_id || user?.branch_id || null);
               } else {
                 setTokenState(null);
                 setUsername('');
                 setUserRole('');
+                setBranchId(null);
               }
             } else {
               // Token is expired, clear the token
@@ -81,10 +85,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const decoded = decodeJwt(res.access_token);
       const role = decoded?.role || res.user?.role || '';
       const uName = res.user?.username || userNm;
+      const bId = decoded?.branch_id || (res.user as any)?.branch_id || null;
 
       setTokenState(res.access_token);
       setUsername(uName);
       setUserRole(role);
+      setBranchId(bId);
 
       if (typeof window !== 'undefined') {
         localStorage.setItem('pos_user', JSON.stringify(res.user));
@@ -170,7 +176,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }
 
   return (
-    <AuthContext.Provider value={{ token, username, userRole, login, logout, isInitialized }}>
+    <AuthContext.Provider value={{ token, username, userRole, branchId, login, logout, isInitialized }}>
       {children}
     </AuthContext.Provider>
   );

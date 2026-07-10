@@ -83,6 +83,15 @@ export const colors = {
     warningBg:  '#FFFBEB',
     info:       '#3B82F6',
   },
+  severity: {
+    critical: '#DC2626',
+    danger:   '#EF4444',
+    warning:  '#F59E0B',
+    info:     '#3B82F6',
+    success:  '#10B981',
+    muted:    '#64748B',
+  },
+
   gradient: {
     primary: [palette.orange[500], palette.orange[600]],
   },
@@ -102,12 +111,4 @@ export const COLORS = {
   text:          colors.text.primary,
   muted:         colors.text.muted,
   border:        colors.border.default,
-};
-
-export const formatPrice = (price: number) => {
-  return price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-};
-
-export const formatPriceFull = (price: number) => {
-  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
 };

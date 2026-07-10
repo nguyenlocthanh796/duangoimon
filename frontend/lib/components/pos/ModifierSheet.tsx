@@ -5,6 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import BottomSheet, { BottomSheetTextInput, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { COLORS, colors, palette, font, formatPrice } from '../../theme';
+import { shape } from '../../theme/shape';
 import { MenuItem, CartItem } from './types';
 
 const QUICK_NOTES = ['Ít đá', 'Nhiều đá', 'Không đá', 'Ít ngọt', 'Không đường', 'Nước béo'];
@@ -74,7 +75,7 @@ export default function ModifierSheet({
           </View>
           <TouchableOpacity
             onPress={onClose}
-            style={{ width: 40, height: 40, borderRadius: 4, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}
+            style={{ width: 40, height: 40, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}
           >
             <MaterialIcons name="close" size={20} color={colors.text.body} />
           </TouchableOpacity>
@@ -82,16 +83,16 @@ export default function ModifierSheet({
 
         <ScrollComponent contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 120 }}>
           {/* Quantity stepper */}
-          <View style={{ backgroundColor: colors.surface.app, padding: 16, borderRadius: 4, borderWidth: 1, borderColor: colors.border.default, marginBottom: 16 }}>
+          <View style={{ backgroundColor: colors.surface.app, padding: 16, borderRadius: shape.radius.md, borderWidth: 1, borderColor: colors.border.default, marginBottom: 16 }}>
             <Text style={{ ...font.label, textTransform: 'uppercase', letterSpacing: 1.2, color: colors.text.secondary, marginBottom: 12 }}>Số lượng</Text>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 20 }}>
               <TouchableOpacity onPress={() => setModalQty(q => Math.max(1, q - 1))}
-                style={{ width: 52, height: 52, borderRadius: 4, backgroundColor: colors.brand.primaryBg, borderWidth: 1.5, borderColor: colors.border.brand, alignItems: 'center', justifyContent: 'center' }}>
+                style={{ width: 52, height: 52, borderRadius: shape.radius.md, backgroundColor: colors.brand.primaryBg, borderWidth: 1.5, borderColor: colors.border.brand, alignItems: 'center', justifyContent: 'center' }}>
                 <MaterialIcons name="remove" size={22} color={COLORS.primary} />
               </TouchableOpacity>
               <Text style={{ ...font.priceLarge, color: colors.text.primary, width: 60, textAlign: 'center' }}>{modalQty}</Text>
               <TouchableOpacity onPress={() => setModalQty(q => q + 1)}
-                style={{ width: 52, height: 52, borderRadius: 4, backgroundColor: colors.brand.primaryBg, borderWidth: 1.5, borderColor: colors.border.brand, alignItems: 'center', justifyContent: 'center' }}>
+                style={{ width: 52, height: 52, borderRadius: shape.radius.md, backgroundColor: colors.brand.primaryBg, borderWidth: 1.5, borderColor: colors.border.brand, alignItems: 'center', justifyContent: 'center' }}>
                 <MaterialIcons name="add" size={22} color={COLORS.primary} />
               </TouchableOpacity>
             </View>
@@ -114,7 +115,7 @@ export default function ModifierSheet({
                     return (
                       <TouchableOpacity key={s.name} onPress={() => setModalSize(s.name)}
                         style={{
-                          flex: 1, paddingVertical: 14, borderRadius: 4, borderWidth: 2, alignItems: 'center',
+                          flex: 1, paddingVertical: 14, borderRadius: shape.radius.md, borderWidth: 2, alignItems: 'center',
                           backgroundColor: sel ? colors.brand.primaryBg : colors.surface.app,
                           borderColor: sel ? COLORS.primary : colors.border.default,
                           minHeight: 44,
@@ -146,7 +147,7 @@ export default function ModifierSheet({
                     <TouchableOpacity key={t.name} onPress={() => toggleTopping(t.name)}
                       style={{
                         flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-                        padding: 12, borderRadius: 4, borderWidth: 1.5,
+                        padding: 12, borderRadius: shape.radius.md, borderWidth: 1.5,
                         backgroundColor: sel ? colors.brand.primaryBg : colors.surface.app,
                         borderColor: sel ? COLORS.primary : colors.border.default,
                       }}
@@ -179,7 +180,7 @@ export default function ModifierSheet({
                 return (
                   <TouchableOpacity key={q}
                     onPress={() => setModalNote(active ? modalNote.replace(q, '').replace(', ,', ',').replace(/^, |, $/, '').trim() : modalNote ? `${modalNote}, ${q}` : q)}
-                    style={{ paddingHorizontal: 14, paddingVertical: 10, minHeight: 44, justifyContent: 'center', borderRadius: 4, backgroundColor: active ? colors.brand.primaryBg : colors.surface.disabled, borderWidth: 1, borderColor: active ? colors.border.brand : 'transparent' }}
+                    style={{ paddingHorizontal: 14, paddingVertical: 10, minHeight: 44, justifyContent: 'center', borderRadius: shape.radius.md, backgroundColor: active ? colors.brand.primaryBg : colors.surface.disabled, borderWidth: 1, borderColor: active ? colors.border.brand : 'transparent' }}
                   >
                     <Text style={{ ...font.bodySmall, color: active ? COLORS.primary : colors.text.body }}>{q}</Text>
                   </TouchableOpacity>
@@ -192,7 +193,7 @@ export default function ModifierSheet({
                 value={modalNote} onChangeText={setModalNote}
                 placeholder="Gõ ghi chú khác..." placeholderTextColor={colors.text.placeholder}
                 style={{
-                  borderWidth: 1.5, borderColor: colors.border.default, borderRadius: 4,
+                  borderWidth: 1.5, borderColor: colors.border.default, borderRadius: shape.radius.md,
                   paddingVertical: 12, paddingLeft: 38, paddingRight: 16,
                   ...font.bodySmall, color: colors.text.primary, backgroundColor: colors.surface.app,
                 }}
@@ -210,20 +211,16 @@ export default function ModifierSheet({
         }}>
           <View style={{ flexDirection: 'row', gap: 10 }}>
             <TouchableOpacity onPress={onClose}
-              style={{ flex: 1, paddingVertical: 14, borderRadius: 4, backgroundColor: colors.surface.disabled, alignItems: 'center' }}>
+              style={{ flex: 1, paddingVertical: 14, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center' }}>
               <Text style={{ ...font.button, color: colors.text.body }}>Hủy</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={isEditMode ? onSave : onAdd}
               style={{
                 flex: 2.5,
-                borderRadius: 4,
+                borderRadius: shape.radius.md,
                 overflow: 'hidden',
-                shadowColor: palette.black,
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.15,
-                shadowRadius: 3,
-                elevation: 6,
+                boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
               }}
             >
               <LinearGradient
@@ -238,7 +235,7 @@ export default function ModifierSheet({
                   borderTopWidth: 1,
                   borderWidth: 1,
                   borderColor: 'rgba(249,115,22,0.4)',
-                  borderRadius: 4,
+                  borderRadius: shape.radius.md,
                   width: '100%',
                 }}
               >
@@ -270,13 +267,9 @@ export default function ModifierSheet({
               backgroundColor: colors.surface.card,
               width: 480,
               maxHeight: '85%',
-              borderRadius: 4,
+              borderRadius: shape.radius.md,
               overflow: 'hidden',
-              shadowColor: palette.black,
-              shadowOffset: { width: 0, height: 8 },
-              shadowOpacity: 0.25,
-              shadowRadius: 16,
-              elevation: 24,
+              boxShadow: '0 8px 16px rgba(0,0,0,0.25)',
             }}>
               {renderModifierContent(false)}
             </View>

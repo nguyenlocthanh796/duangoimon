@@ -1,15 +1,15 @@
-let API_URL = 'http://localhost:8000/api/v1';
-if (typeof window !== 'undefined' && window.location) {
-  const host = window.location.hostname;
-  const protocol = window.location.protocol;
-  // In dev mode, Expo can run on a different port. We still target the backend port.
-  if (window.location.port === '8081' || window.location.port === '19006') {
-    API_URL = `${protocol}//${host}:8000/api/v1`;
-  } else {
-    // In production, backend is served from the same host.
-    API_URL = `${protocol}//${window.location.host}/api/v1`;
-  }
-}
+// API URL resolution:
+// 1. Use EXPO_PUBLIC_API_URL env variable if set (for flexible dev/deploy)
+// 2. In production, use same host (backend serves frontend)
+// 3. Dev fallback: localhost:8000
+const API_URL =
+  (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_API_URL) ||
+  (typeof window !== 'undefined' && window.location
+    ? window.location.host === 'localhost:8081' || window.location.host === 'localhost:19006'
+      ? 'http://localhost:8000/api/v1'
+      : `${window.location.protocol}//${window.location.host}/api/v1`
+    : 'http://localhost:8000/api/v1');
+
 
 const TOKEN_KEY = 'pos_token';
 

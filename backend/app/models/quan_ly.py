@@ -30,9 +30,15 @@ class InventoryTransaction(Base):
     product_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True))
     type: Mapped[str] = mapped_column(String(10))
     quantity: Mapped[float] = mapped_column(Numeric(12, 2))
+    amount: Mapped[float] = mapped_column(Numeric(14, 2), default=0)
     note: Mapped[str | None] = mapped_column(Text)
     created_by: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    # --- Tax module (TT152 §3): weighted-average cost at period close ---
+    unit_cost: Mapped[float | None] = mapped_column(Numeric(14, 2), nullable=True)
+    avg_cost_backfilled: Mapped[bool] = mapped_column(default=False)
+    accounting_period: Mapped[str | None] = mapped_column(String(7), nullable=True)
+    locked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
 
 class ShiftLog(Base):

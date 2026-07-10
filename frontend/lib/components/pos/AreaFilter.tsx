@@ -21,10 +21,10 @@ export default function AreaFilter({ areas, selectedArea, onSelectArea }: AreaFi
         borderBottomColor: colors.border.default,
         flexGrow: 0,
         flexShrink: 0,
-        height: 44,
       }}
       contentContainerStyle={{
-        paddingVertical: 6,
+        paddingHorizontal: 12,
+        paddingVertical: 8,
         gap: 8,
         alignItems: 'center',
       }}
@@ -36,11 +36,11 @@ export default function AreaFilter({ areas, selectedArea, onSelectArea }: AreaFi
             key={areaName}
             onPress={() => onSelectArea(areaName)}
             style={{
-              paddingHorizontal: 12,
-              height: 32,
+              paddingHorizontal: 16,
+              height: 36,
               justifyContent: 'center',
               alignItems: 'center',
-              borderRadius: 4,
+              borderRadius: 8,
               backgroundColor: isSelected ? colors.brand.primary : colors.surface.disabled,
             }}
           >

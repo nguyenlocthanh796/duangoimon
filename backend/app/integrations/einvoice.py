@@ -12,7 +12,6 @@ Add when e-invoice service is contracted.
 from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any
 
 
 @dataclass
@@ -176,3 +175,55 @@ class MISAClient:
 
     async def publish(self, invoice: InvoiceData) -> dict:
         raise NotImplementedError("MISA e-invoice — add when contracted")
+
+
+class CashRegisterInvoiceClient:
+    """HĐĐT khởi tạo từ máy tính tiền (Nghị định 70/2025) — 'M' invoice.
+
+    Per NĐ70, the invoice code is 23 chars with a leading 'M'. The Cash
+    Register Provider (CRP) transmits to Tổng cục Thuế via T-VAN.
+
+    A2 decision: no real credentials yet -> stub that mimics the
+    round-trip and records status. Wire real CRP/T-VAN endpoint here
+    when contracted.
+    """
+
+    BASE_URL = "https://api.cashregister.gov.vn"
+
+    def __init__(self, provider_code: str = "", api_key: str = "", base_url: str | None = None):
+        self.provider_code = provider_code
+        self.api_key = api_key
+        self.base_url = base_url or self.BASE_URL
+
+    async def issue(self, invoice_code: str, payload: dict) -> dict:
+        """Transmit an 'M' invoice to the tax authority via CRP/T-VAN.
+
+        Stub: returns ACCEPTED without network call (A2 no creds).
+        Replace body with real httpx POST when credentials exist.
+        """
+        return {
+            "invoice_code": invoice_code,
+            "status": "accepted",
+            "tax_auth_status": "da_tiep_nhan",
+            "message": "STUB: chưa tích hợp CRP/T-VAN (A2 chưa có credential)",
+        }
+
+    async def adjust(self, invoice_code: str, original_code: str, payload: dict) -> dict:
+        """Issue an adjustment (thay thế / điều chỉnh) of an M-invoice.
+
+        NĐ70: adjustments NEVER cancel the original — they reference it.
+        """
+        return {
+            "invoice_code": invoice_code,
+            "adjustment_of": original_code,
+            "status": "accepted",
+            "tax_auth_status": "da_tiep_nhan",
+            "message": "STUB: điều chỉnh HĐĐT máy tính tiền",
+        }
+
+    async def get_status(self, invoice_code: str) -> dict:
+        return {
+            "invoice_code": invoice_code,
+            "status": "accepted",
+            "tax_auth_status": "da_tiep_nhan",
+        }

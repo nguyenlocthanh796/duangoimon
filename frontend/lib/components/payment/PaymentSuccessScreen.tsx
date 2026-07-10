@@ -31,16 +31,16 @@ export default function PaymentSuccessScreen({ tableName, total, method, cash, c
             resizeMode="contain"
           />
         </View>
-        <Text style={{ ...font.h1, fontSize: 26, color: colors.text.primary, textAlign: 'center', marginTop: 8 }}>
+        <Text style={{ ...font.h2, color: colors.text.primary, textAlign: 'center', marginTop: 8 }}>
           Thanh toán thành công!
         </Text>
         <Text style={{ ...font.bodySmall, color: colors.text.muted, textAlign: 'center', marginTop: -4 }}>
-          Tự động quay lại sau <Text style={{ fontWeight: '700', color: colors.brand.primary }}>{countdown} giây</Text>...
+          Tự động quay lại sau <Text style={{ fontWeight: '600', color: colors.brand.primary }}>{countdown} giây</Text>...
         </Text>
         <View style={{ backgroundColor: colors.surface.card, borderRadius: 4, padding: 20, width: '100%', borderWidth: 1, borderColor: colors.border.default, gap: 10 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text style={{ ...font.body, color: colors.text.muted }}>Bàn</Text>
-            <Text style={{ ...font.body, fontWeight: '700', color: colors.text.primary }}>{tableName}</Text>
+            <Text style={{ ...font.body, fontWeight: '600', color: colors.text.primary }}>{tableName}</Text>
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text style={{ ...font.body, color: colors.text.muted }}>Tổng</Text>
@@ -49,7 +49,7 @@ export default function PaymentSuccessScreen({ tableName, total, method, cash, c
           {method === 'tien_mat' && cash > 0 && (
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <Text style={{ ...font.body, color: colors.text.muted }}>Tiền thối</Text>
-              <Text style={{ ...font.body, fontWeight: '800', color: colors.status.success }}>{formatPriceFull(Math.max(0, change))}</Text>
+              <Text style={{ ...font.bodyBold, color: colors.status.success }}>{formatPriceFull(Math.max(0, change))}</Text>
             </View>
           )}
           <View style={{ height: 1, backgroundColor: colors.surface.disabled, marginVertical: 4 }} />
@@ -65,7 +65,7 @@ export default function PaymentSuccessScreen({ tableName, total, method, cash, c
             boxShadow: '0 6px 16px rgba(59,130,246,0.35)', elevation: 6,
           }}>
             <Icon name="printer-pos" size={20} color={colors.text.inverse} />
-            <Text style={{ ...font.h3, color: colors.text.inverse }}>In hóa đơn</Text>
+            <Text style={{ ...font.h4, color: colors.text.inverse }}>In hóa đơn</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={onGoBack} style={{
             flex: 1.2, backgroundColor: colors.brand.primary, paddingVertical: 16,
@@ -73,7 +73,7 @@ export default function PaymentSuccessScreen({ tableName, total, method, cash, c
             boxShadow: '0 6px 16px rgba(249,115,22,0.35)', elevation: 6,
           }}>
             <Icon name="table-furniture" size={20} color={colors.text.inverse} />
-            <Text style={{ ...font.h3, color: colors.text.inverse }}>Về sơ đồ bàn</Text>
+            <Text style={{ ...font.h4, color: colors.text.inverse }}>Về sơ đồ bàn</Text>
           </TouchableOpacity>
         </View>
       </View>

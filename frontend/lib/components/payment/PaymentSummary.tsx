@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { colors, formatPrice, formatPriceFull } from '../../theme/colors';
+import { colors, font, formatPrice, formatPriceFull } from '../../theme';
 
 export interface ReceiptItem {
   id: string;
@@ -25,10 +25,10 @@ export default function PaymentSummary({ items, total, tableName, orderId }: Pay
       {items.map(item => (
         <View key={item.id} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', paddingVertical: 4 }}>
           <View style={{ flex: 1, paddingRight: 8 }}>
-            <Text style={{ fontSize: 13, fontWeight: '600', color: '#1f2937' }}>{item.product_name}</Text>
-            {item.note && <Text style={{ fontSize: 10, color: '#d97706' }}>* {item.note}</Text>}
+            <Text style={{ ...font.bodySmall, color: '#1f2937' }}>{item.product_name}</Text>
+            {item.note && <Text style={{ ...font.caption, color: '#d97706' }}>* {item.note}</Text>}
           </View>
-          <Text style={{ fontSize: 13, color: '#6b7280' }}>
+          <Text style={{ ...font.bodySmall, color: '#6b7280' }}>
             {item.quantity} x {formatPrice(item.unit_price)}
           </Text>
         </View>

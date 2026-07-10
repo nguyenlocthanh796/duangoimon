@@ -2,7 +2,8 @@ import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Modal, Alert } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import { colors, formatPrice } from '../../theme/colors';
+import { colors, font, formatPrice } from '../../theme';
+import { shape } from '../../theme/shape';
 import { CartItem } from './types';
 import CartItemRow from './CartItemRow';
 import NoteEditor from './NoteEditor';
@@ -140,12 +141,12 @@ export default function CartPanel({
       return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16, marginTop: 40 }}>
           <MaterialIcons name="shopping-basket" size={48} color={colors.icon.muted} />
-          <Text style={{ fontSize: 15, color: colors.text.secondary }}>Giỏ hàng trống</Text>
+          <Text style={{ ...font.body, color: colors.text.secondary }}>Giỏ hàng trống</Text>
           <TouchableOpacity
             onPress={() => setCartSheet(false)}
-            style={{ paddingHorizontal: 20, paddingVertical: 10, borderRadius: 8, backgroundColor: colors.brand.primaryBg, borderWidth: 1, borderColor: colors.border.brand }}
+            style={{ paddingHorizontal: 20, paddingVertical: 10, borderRadius: shape.radius.md, backgroundColor: colors.brand.primaryBg, borderWidth: 1, borderColor: colors.border.brand }}
           >
-            <Text style={{ fontSize: 13, fontWeight: '700', color: colors.text.brand }}>Thêm món ngay</Text>
+            <Text style={{ ...font.button, color: colors.text.brand }}>Thêm món ngay</Text>
           </TouchableOpacity>
         </View>
       );
@@ -161,7 +162,7 @@ export default function CartPanel({
             <>
               {(sent.length > 0 || cancelled.length > 0) && (
                 <View style={{ paddingHorizontal: 4, paddingBottom: 4 }}>
-                  <Text style={{ fontSize: 12, fontWeight: '600', color: colors.brand.primary }}>Món mới</Text>
+                  <Text style={{ ...font.tab, color: colors.brand.primary }}>Món mới</Text>
                 </View>
               )}
               {unsent.map(item => <CartItemRow key={item.cartItemId} {...itemRowProps(item)} />)}
@@ -172,7 +173,7 @@ export default function CartPanel({
             <>
               {(unsent.length > 0 || cancelled.length > 0) && (
                 <View style={{ paddingHorizontal: 4, paddingVertical: 4 }}>
-                  <Text style={{ fontSize: 12, fontWeight: '600', color: '#16a34a' }}>Đã gửi bếp</Text>
+                  <Text style={{ ...font.tab, color: '#16a34a' }}>Đã gửi bếp</Text>
                 </View>
               )}
               {sent.map(item => <CartItemRow key={item.cartItemId} {...itemRowProps(item)} />)}
@@ -182,7 +183,7 @@ export default function CartPanel({
           {cancelled.length > 0 && (
             <>
               <View style={{ paddingHorizontal: 4, paddingVertical: 4 }}>
-                <Text style={{ fontSize: 12, fontWeight: '600', color: '#dc2626' }}>Đã huỷ</Text>
+                <Text style={{ ...font.tab, color: '#dc2626' }}>Đã huỷ</Text>
               </View>
               {cancelled.map(item => <CartItemRow key={item.cartItemId} {...itemRowProps(item)} />)}
             </>
@@ -275,26 +276,46 @@ export default function CartPanel({
   );
 
   const hasMoreActions = !!(onSplitBill || onMergeBill || onMoveTable || onSplitTable || onMergeTable);
+  const btnSize = isWide ? 40 : 36;
+  const iconSize = isWide ? 22 : 18;
+  const paddingV = 8;
+  const paddingH = isWide ? 10 : 12;
 
   const content = (
     <>
-      <View style={{ paddingHorizontal: 10, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: colors.border.default, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+      <View style={{
+        paddingTop: isWide ? paddingV : insets.top + paddingV,
+        paddingBottom: isWide ? paddingV : paddingV + 4,
+        paddingHorizontal: paddingH,
+        borderBottomWidth: 1,
+        borderBottomColor: colors.border.default,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: colors.surface.card,
+      }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           {!isWide && (
-            <TouchableOpacity onPress={() => setCartSheet(false)} hitSlop={8}>
-              <MaterialIcons name="close" size={22} color={colors.icon.default} />
+            <TouchableOpacity
+              onPress={() => setCartSheet(false)}
+              style={{ width: btnSize, height: btnSize, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center', marginRight: 2 }}
+            >
+              <MaterialIcons name="close" size={iconSize} color={colors.icon.default} />
             </TouchableOpacity>
           )}
-          <Text style={{ fontSize: 17, fontWeight: '700', color: colors.text.primary }}>Giỏ hàng</Text>
+          <Text style={{ ...(isWide ? font.h3 : font.h4), color: colors.text.primary }}>Giỏ hàng</Text>
           {itemCount > 0 && (
             <View style={{ backgroundColor: colors.brand.primary, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 4 }}>
-              <Text style={{ fontSize: 13, fontWeight: '700', color: colors.text.inverse }}>{itemCount} món</Text>
+              <Text style={{ ...font.buttonSmall, color: colors.text.inverse }}>{itemCount} món</Text>
             </View>
           )}
         </View>
         {hasMoreActions && (
-          <TouchableOpacity onPress={() => setShowMoreMenu(true)} hitSlop={8} style={{ width: 42, height: 42, borderRadius: 8, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default, alignItems: 'center', justifyContent: 'center' }}>
-            <MaterialIcons name="more-horiz" size={22} color={colors.text.primary} />
+          <TouchableOpacity
+            onPress={() => setShowMoreMenu(true)}
+            style={{ width: btnSize, height: btnSize, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default, alignItems: 'center', justifyContent: 'center' }}
+          >
+            <MaterialIcons name="more-horiz" size={iconSize} color={colors.text.primary} />
           </TouchableOpacity>
         )}
       </View>
@@ -303,13 +324,13 @@ export default function CartPanel({
         {cart.length === 0 ? (
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16 }}>
             <MaterialIcons name="shopping-basket" size={48} color={colors.icon.muted} />
-            <Text style={{ fontSize: 15, color: colors.text.secondary }}>Giỏ hàng trống</Text>
+            <Text style={{ ...font.body, color: colors.text.secondary }}>Giỏ hàng trống</Text>
             {!isWide && (
               <TouchableOpacity
                 onPress={() => setCartSheet(false)}
-                style={{ paddingHorizontal: 20, paddingVertical: 10, borderRadius: 8, backgroundColor: colors.brand.primaryBg, borderWidth: 1, borderColor: colors.border.brand }}
+                style={{ paddingHorizontal: 20, paddingVertical: 10, borderRadius: shape.radius.md, backgroundColor: colors.brand.primaryBg, borderWidth: 1, borderColor: colors.border.brand }}
               >
-                <Text style={{ fontSize: 13, fontWeight: '700', color: colors.text.brand }}>Thêm món ngay</Text>
+                <Text style={{ ...font.button, color: colors.text.brand }}>Thêm món ngay</Text>
               </TouchableOpacity>
             )}
           </View>

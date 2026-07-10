@@ -1,6 +1,7 @@
 // ─── Re-export helpers and types ─────────────────────────────────────────────
 export { getToken, setToken, clearToken, request } from './client';
 export type { Transaction, Invoice, Product, Table, User, Dashboard, SalesReport } from './client';
+export type { Branch } from './management';
 
 // ─── Re-export domain functions ─────────────────────────────────────────────
 export * as auth from './auth';
@@ -9,6 +10,7 @@ export * as payments from './payments';
 export * as products from './products';
 export * as tables from './tables';
 export * as management from './management';
+export * as thue from './thue';
 
 // ─── Re-apply all domain methods on a flat `api` object ─────────────────────
 // This preserves the original `api.method(...)` import pattern.
@@ -19,6 +21,7 @@ import * as paymentsFns from './payments';
 import * as productsFns from './products';
 import * as tablesFns from './tables';
 import * as mgmtFns from './management';
+import * as thueFns from './thue';
 
 /**
  * Legacy flat API object. All methods are also available as named exports
@@ -57,6 +60,8 @@ export const api = {
   getInvoices: paymentsFns.getInvoices,
   createInvoice: paymentsFns.createInvoice,
   exportInvoice: paymentsFns.exportInvoice,
+  bulkDeleteTransactions: paymentsFns.bulkDeleteTransactions,
+  bulkExportInvoices: paymentsFns.bulkExportInvoices,
 
   // ── Products ──
   getProducts: productsFns.getProducts,
@@ -78,4 +83,19 @@ export const api = {
   createUser: mgmtFns.createUser,
   updateUser: mgmtFns.updateUser,
   getSalesReport: mgmtFns.getSalesReport,
+  getBranches: mgmtFns.getBranches,
+
+  // ── Tax (HKD 2026) ──
+  getTaxProfiles: thueFns.getProfiles,
+  getTaxProfileStatus: thueFns.getProfileStatus,
+  createTaxProfile: thueFns.createProfile,
+  patchTaxProfile: thueFns.patchProfile,
+  getTaxBankAccounts: thueFns.getBankAccounts,
+  createTaxBankAccount: thueFns.createBankAccount,
+  getTaxDeadlines: thueFns.getDeadlines,
+  exportTaxReport: thueFns.exportTaxReport,
+  getTaxDeclarationXml: thueFns.getDeclarationXml,
+  getTaxReport: thueFns.getTaxReport,
+  getTaxLegacyChecklist: thueFns.getLegacyChecklist,
+  bulkSubmitDeadlines: thueFns.bulkSubmitDeadlines,
 };
