@@ -236,16 +236,37 @@ function EmptyBox({ icon: iconName, text, iconColor }: { icon: string; text: str
       <Icon name={iconName as any} size={28} color={iconColor ?? '#CBD5E1'} />
       <Text style={[styles.emptyText, iconColor ? { color: iconColor } : undefined]}>{text}</Text>
     </View>
+  );
+}
+
+// ── Styles ──
+
+const styles = StyleSheet.create({
+  section: {
+    backgroundColor: colors.surface.card,
+    borderRadius: shape.radius.lg,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: colors.border.light,
+    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+  },
+  sectionHeader: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10,
+  },
+  sectionHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  sectionTitle: { ...font.body, fontWeight: '700', color: colors.text.primary },
+  sectionSub: { ...font.caption, color: colors.text.secondary },
+  emptyBox: { alignItems: 'center', paddingVertical: 24, gap: 8 },
+  emptyText: { ...font.bodySmall, color: colors.text.secondary },
+
+  listRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 2 },
   colHead: { ...font.caption, color: colors.text.muted, fontWeight: '700' },
   colText: { ...font.bodySmall, color: colors.text.primary },
 
   statusDot: { width: 8, height: 8, borderRadius: 4 },
-
   navGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 6 },
-
   actDot: { width: 30, height: 30, borderRadius: shape.radius.md, alignItems: 'center', justifyContent: 'center' },
 
-  // Chart
   chartContainer: {
     flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between',
     height: 120, paddingTop: 8,
@@ -264,8 +285,7 @@ const navNormal = {
     backgroundColor: colors.surface.card,
     borderRadius: shape.radius.lg,
     borderWidth: 1, borderColor: colors.border.light,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04, shadowRadius: 4, elevation: 2,
+    boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
   },
   navIconWrap: { width: 56, height: 56, borderRadius: shape.radius.md, alignItems: 'center' as const, justifyContent: 'center' as const, backgroundColor: '#F3F4F6' },
   navLabel: { ...font.body, fontWeight: '500' as const, color: colors.text.primary, textAlign: 'center' as const },
@@ -279,8 +299,7 @@ const navCompact = {
     backgroundColor: colors.surface.card,
     borderRadius: shape.radius.lg,
     borderWidth: 1, borderColor: colors.border.light,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04, shadowRadius: 4, elevation: 2,
+    boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
   },
   navIconWrap: { width: 40, height: 40, borderRadius: shape.radius.md, alignItems: 'center' as const, justifyContent: 'center' as const, backgroundColor: '#F3F4F6' },
   navLabel: { ...font.label, fontWeight: '500' as const, color: colors.text.primary, textAlign: 'center' as const },

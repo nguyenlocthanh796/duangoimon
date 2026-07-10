@@ -1,7 +1,7 @@
 /**
  * Unit tests for useOrder hook
  */
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react-native';
 import { useOrder } from '../useOrder';
 
 jest.mock('../../api', () => ({

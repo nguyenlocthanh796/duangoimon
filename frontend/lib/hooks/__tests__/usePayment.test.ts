@@ -1,7 +1,7 @@
 /**
  * Unit tests for usePayment hook
  */
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react-native';
 import { usePayment } from '../usePayment';
 
 jest.mock('../../api', () => ({
