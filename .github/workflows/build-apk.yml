@@ -5,7 +5,6 @@ on:
     branches: ["main"]
   pull_request:
     branches: ["main"]
-  # Cho phép chạy thủ công từ GitHub UI
   workflow_dispatch:
 
 concurrency:
@@ -26,6 +25,17 @@ jobs:
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
+
+      - name: 🧹 Free up disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo rm -rf /usr/local/lib/android/sdk/ndk
+          sudo rm -rf /usr/local/lib/android/sdk/platform-tools
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          df -h
 
       - name: ☕ Setup Java 17 (Zulu)
         uses: actions/setup-java@v4
@@ -54,13 +64,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: 🧹 Clean npm cache
+        run: npm cache clean --force
+
       - name: 🏗️ Prebuild native project (Android)
         run: npx expo prebuild --platform android --clean
 
-      - name: 🔨 Build debug APK
+      - name: 🔨 Build debug APK (arm64 only)
         run: |
           cd android
-          ./gradlew assembleDebug --no-daemon --stacktrace
+          ./gradlew assembleDebug \
+            -Pandroid.injected.build.abi=arm64-v8a \
+            --no-daemon \
+            --max-workers=2
         timeout-minutes: 60
 
       - name: 📤 Upload APK lên artifact
