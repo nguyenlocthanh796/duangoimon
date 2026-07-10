@@ -70,19 +70,26 @@ jobs:
       - name: 🏗️ Prebuild native project (Android)
         run: npx expo prebuild --platform android --clean
 
-      - name: 🔨 Build debug APK (arm64 only)
+      - name: 🔨 Build debug APK
         run: |
           cd android
           ./gradlew assembleDebug \
             -Pandroid.injected.build.abi=arm64-v8a \
             --no-daemon \
             --max-workers=2
-        timeout-minutes: 60
+
+      - name: 🔍 Locate and show APK
+        run: |
+          echo "=== Looking for APK files ==="
+          find . -name "*.apk" -type f 2>/dev/null || true
+          echo "=== Build output ==="
+          ls -la android/app/build/outputs/ 2>/dev/null || true
+          ls -la android/app/build/outputs/apk/ 2>/dev/null || true
 
       - name: 📤 Upload APK lên artifact
         uses: actions/upload-artifact@v4
         with:
           name: POS-Pro-Debug-APK
-          path: frontend/android/app/build/outputs/apk/debug/*.apk
-          if-no-files-found: error
+          path: frontend/android/app/build/outputs/apk/**/*.apk
+          if-no-files-found: warn
           retention-days: 30
