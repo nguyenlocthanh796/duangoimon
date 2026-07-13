@@ -10,7 +10,11 @@ export function toCsv(headers: string[], rows: (string | number)[][]): string {
 }
 
 /** Trigger a browser download of text content (no-op outside browser). */
-export function downloadText(filename: string, content: string, mime = 'text/csv;charset=utf-8'): void {
+export function downloadText(
+  filename: string,
+  content: string,
+  mime = 'text/csv;charset=utf-8'
+): void {
   if (typeof window === 'undefined' || !window.document) return;
   const blob = new Blob([content], { type: mime });
   const url = URL.createObjectURL(blob);

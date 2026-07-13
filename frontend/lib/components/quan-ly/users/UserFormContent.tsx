@@ -12,14 +12,20 @@ interface UserFormContentProps {
 }
 
 const ROLES: Array<{ key: string; label: string; color: string; bg: string; icon: string }> = [
-  { key: 'admin',      label: 'Admin',    color: '#8B5CF6', bg: '#F5F3FF', icon: 'admin-panel-settings' },
-  { key: 'manager',   label: 'Quản lý',  color: '#EF4444', bg: '#FEF2F2', icon: 'manage-accounts' },
-  { key: 'cashier',   label: 'Thu ngân', color: '#F97316', bg: '#FFF7ED', icon: 'cash-register' },
-  { key: 'accountant',label: 'Kế toán',  color: '#10B981', bg: '#ECFDF5', icon: 'calculate' },
-  { key: 'kitchen',   label: 'Bếp',      color: '#F59E0B', bg: '#FEF3C7', icon: 'restaurant' },
+  { key: 'admin', label: 'Admin', color: '#8B5CF6', bg: '#F5F3FF', icon: 'admin-panel-settings' },
+  { key: 'manager', label: 'Quản lý', color: '#EF4444', bg: '#FEF2F2', icon: 'manage-accounts' },
+  { key: 'cashier', label: 'Thu ngân', color: '#F97316', bg: '#FFF7ED', icon: 'cash-register' },
+  { key: 'accountant', label: 'Kế toán', color: '#10B981', bg: '#ECFDF5', icon: 'calculate' },
+  { key: 'kitchen', label: 'Bếp', color: '#F59E0B', bg: '#FEF3C7', icon: 'restaurant' },
 ];
 
-export default function UserFormContent({ form, onChange, editingId, showPassword, onTogglePassword }: UserFormContentProps) {
+export default function UserFormContent({
+  form,
+  onChange,
+  editingId,
+  showPassword,
+  onTogglePassword,
+}: UserFormContentProps) {
   return (
     <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
       <View style={styles.inputWrap}>
@@ -29,7 +35,7 @@ export default function UserFormContent({ form, onChange, editingId, showPasswor
           placeholder="Nguyễn Văn A"
           placeholderTextColor={colors.text.placeholder}
           value={form.full_name}
-          onChangeText={v => onChange({ full_name: v })}
+          onChangeText={(v) => onChange({ full_name: v })}
         />
       </View>
 
@@ -41,7 +47,7 @@ export default function UserFormContent({ form, onChange, editingId, showPasswor
           placeholderTextColor={colors.text.placeholder}
           autoCapitalize="none"
           value={form.username}
-          onChangeText={v => onChange({ username: v })}
+          onChangeText={(v) => onChange({ username: v })}
           editable={!editingId}
         />
       </View>
@@ -57,7 +63,7 @@ export default function UserFormContent({ form, onChange, editingId, showPasswor
             placeholderTextColor={colors.text.placeholder}
             secureTextEntry={!showPassword}
             value={form.password}
-            onChangeText={v => onChange({ password: v })}
+            onChangeText={(v) => onChange({ password: v })}
           />
           <TouchableOpacity onPress={onTogglePassword}>
             <Icon name={showPassword ? 'eye-off' : 'eye'} size={20} color={colors.text.secondary} />
@@ -68,7 +74,7 @@ export default function UserFormContent({ form, onChange, editingId, showPasswor
       <View style={styles.inputWrap}>
         <Text style={styles.inputLabel}>Vai trò</Text>
         <View style={styles.roleGrid}>
-          {ROLES.map(r => (
+          {ROLES.map((r) => (
             <TouchableOpacity
               key={r.key}
               style={[
@@ -77,7 +83,11 @@ export default function UserFormContent({ form, onChange, editingId, showPasswor
               ]}
               onPress={() => onChange({ role: r.key })}
             >
-              <Icon name={r.icon as any} size={20} color={form.role === r.key ? r.color : colors.text.secondary} />
+              <Icon
+                name={r.icon as any}
+                size={20}
+                color={form.role === r.key ? r.color : colors.text.secondary}
+              />
               <Text style={[styles.roleCardText, form.role === r.key && { color: r.color }]}>
                 {r.label}
               </Text>
@@ -100,7 +110,7 @@ export default function UserFormContent({ form, onChange, editingId, showPasswor
         </View>
         <Switch
           value={form.is_active}
-          onValueChange={v => onChange({ is_active: v })}
+          onValueChange={(v) => onChange({ is_active: v })}
           trackColor={{ false: colors.track.off, true: colors.track.on }}
           thumbColor={form.is_active ? colors.status.success : colors.text.danger}
         />
@@ -113,32 +123,56 @@ const styles = StyleSheet.create({
   inputWrap: { marginBottom: 16 },
   inputLabel: { ...font.label, color: colors.text.body, marginBottom: 6 },
   input: {
-    borderWidth: 1.5, borderColor: colors.border.default, borderRadius: 4,
-    paddingHorizontal: 12, paddingVertical: 10, ...font.body, color: colors.text.primary,
+    borderWidth: 1.5,
+    borderColor: colors.border.default,
+    borderRadius: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    ...font.body,
+    color: colors.text.primary,
     backgroundColor: colors.surface.disabled,
   },
   passwordWrap: {
-    flexDirection: 'row', alignItems: 'center',
-    borderWidth: 1.5, borderColor: colors.border.default, borderRadius: 4,
-    paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.disabled,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: colors.border.default,
+    borderRadius: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: colors.surface.disabled,
   },
   roleGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   roleCard: {
-    paddingHorizontal: 12, paddingVertical: 10, borderRadius: 4,
-    borderWidth: 1.5, borderColor: colors.border.default,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 4,
+    borderWidth: 1.5,
+    borderColor: colors.border.default,
     backgroundColor: colors.surface.disabled,
-    flexDirection: 'row', alignItems: 'center', gap: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
     position: 'relative',
   },
   roleCardText: { ...font.bodySmall, fontWeight: '600', color: colors.text.secondary },
   roleCheck: {
-    position: 'absolute', top: -5, right: -5,
-    width: 16, height: 16, borderRadius: 4,
-    alignItems: 'center', justifyContent: 'center',
+    position: 'absolute',
+    top: -5,
+    right: -5,
+    width: 16,
+    height: 16,
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   switchRow: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    paddingVertical: 14, borderTopWidth: 1, borderTopColor: colors.border.light,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 14,
+    borderTopWidth: 1,
+    borderTopColor: colors.border.light,
   },
   switchSub: { ...font.caption, color: colors.text.secondary, marginTop: 2 },
 });

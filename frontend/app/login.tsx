@@ -1,121 +1,189 @@
 import React, { useRef, useEffect } from 'react';
 import {
-  View, Text, Image, StyleSheet,
-  useWindowDimensions, ScrollView, KeyboardAvoidingView, Platform,
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  useWindowDimensions,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
   Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from '../lib/context/AuthContext';
+import { useTheme } from '../lib/context/ThemeContext';
 import LoginForm from '../lib/components/auth/LoginForm';
 import { ASSETS } from '../lib/assets';
+import { palette } from '../lib/theme/colors';
+import { font } from '../lib/theme/typography';
 
-// ─── Floating Orb ────────────────────────────────────────────
-function Orb({
-  size, color, left, top,
-  dx = 30, dy = -20, duration = 8000, delay = 0,
-}: {
-  size: number; color: string; left: number; top: number;
-  dx?: number; dy?: number; duration?: number; delay?: number;
-}) {
-  const progress = useRef(new Animated.Value(0)).current;
+// ─── Constants ─────────────────────────────────────────────
+const ORANGE_GRADIENT: [string, string, string] = ['#F97316', '#EA580C', '#DC2626'];
+const ORANGE_GRADIENT_LIGHT: [string, string] = ['#FF8A50', '#F97316'];
+
+const FEATURES = [
+  { label: 'Bán hàng & gọi món', desc: 'Thao tác nhanh trên mọi thiết bị' },
+  { label: 'Quản lý bếp thông minh', desc: 'Tự động chuyển món đến khu vực chế biến' },
+  { label: 'Báo cáo tức thì', desc: 'Doanh thu, chi phí theo thời gian thực' },
+  { label: 'Đồng bộ đa thiết bị', desc: 'Tất cả dữ liệu luôn được cập nhật' },
+];
+
+// ─── Brand Side — iPad ────────────────────────────────────
+function BrandSide() {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(30)).current;
+
   useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.delay(delay),
-        Animated.timing(progress, { toValue: 1, duration, useNativeDriver: Platform.OS !== 'web' }),
-        Animated.timing(progress, { toValue: 0, duration, useNativeDriver: Platform.OS !== 'web' }),
-      ]),
-    ).start();
+    Animated.parallel([
+      Animated.timing(fadeAnim, { toValue: 1, duration: 800, useNativeDriver: Platform.OS !== 'web' }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 800, useNativeDriver: Platform.OS !== 'web' }),
+    ]).start();
   }, []);
 
-  const tx = progress.interpolate({
-    inputRange: [0, 0.5, 1], outputRange: [0, dx, 0],
-  });
-  const ty = progress.interpolate({
-    inputRange: [0, 0.5, 1], outputRange: [0, dy, 0],
-  });
-
   return (
-    <Animated.View
-      style={[{
-        position: 'absolute', width: size, height: size,
-        borderRadius: size / 2, backgroundColor: color,
-        left, top,
-        transform: [{ translateX: tx }, { translateY: ty }],
-      }]}
-    />
-  );
-}
+    <LinearGradient
+      colors={ORANGE_GRADIENT}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0.6, y: 1 }}
+      style={s.brandSide}
+    >
+      {/* Decorative circles */}
+      <View style={[s.decoCircle, { top: -80, right: -80, width: 300, height: 300, opacity: 0.08 }]} />
+      <View style={[s.decoCircle, { bottom: 120, left: -60, width: 200, height: 200, opacity: 0.06 }]} />
+      <View style={[s.decoCircle, { top: '40%', right: '20%', width: 80, height: 80, opacity: 0.05 }]} />
 
-// ─── Feature Row ────────────────────────────────────────────
-function FeatureRow({ text }: { text: string }) {
-  return (
-    <View style={styles.featureRow}>
-      <View style={styles.featureDot} />
-      <Text style={styles.featureText}>{text}</Text>
-    </View>
-  );
-}
-
-// ─── Brand Side (Tablet) ────────────────────────────────────
-function BrandSide() {
-  return (
-    <View style={styles.brandSide}>
-      <LinearGradient
-        colors={['rgba(249,115,22,0.10)', 'transparent']}
-        style={StyleSheet.absoluteFill}
-        start={{ x: 0, y: 0 }} end={{ x: 0, y: 1 }}
-      />
-      <View style={styles.brandContent}>
-        <Image
-          source={ASSETS.brand.logoMark}
-          style={{ width: 160, height: 48, marginBottom: 16 }}
-          resizeMode="contain"
-        />
-        <Text style={styles.brandName}>POS Pro</Text>
-        <Text style={styles.brandTagline}>
-          Hệ thống quản lý nhà hàng thông minh
-        </Text>
-        <View style={styles.featureList}>
-          <FeatureRow text="Quản lý bán hàng & bếp thời gian thực" />
-          <FeatureRow text="Báo cáo doanh thu thông minh" />
-          <FeatureRow text="Kết nối đa thiết bị, đồng bộ tức thì" />
+      <Animated.View style={[s.brandContent, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+        {/* Logo */}
+        <View style={s.logoWrap}>
+            <Image
+              source={ASSETS.brand.logoMark}
+              style={{ width: 48, height: 48 }}
+              resizeMode="contain"
+            />
         </View>
-      </View>
-    </View>
+
+        <Text style={s.brandTitle}>
+          POS{' '}<Text style={{ color: '#FED7AA' }}>Pro</Text>
+        </Text>
+        <Text style={s.brandSub}>Phần mềm quản lý nhà hàng thông minh</Text>
+
+        <View style={s.brandDivider} />
+
+        {/* Feature list */}
+        <View style={{ gap: 20 }}>
+          {FEATURES.map((item, i) => (
+            <Animated.View
+              key={item.label}
+              style={{
+                flexDirection: 'row',
+                gap: 14,
+                alignItems: 'flex-start',
+                opacity: fadeAnim,
+                transform: [{ translateX: slideAnim }],
+              }}
+            >
+              <View style={s.featureDot} />
+              <View style={{ flex: 1 }}>
+                <Text style={{ ...font.button, color: '#fff', marginBottom: 1 }}>{item.label}</Text>
+                <Text style={{ ...font.caption, color: 'rgba(255,255,255,0.65)' }}>{item.desc}</Text>
+              </View>
+            </Animated.View>
+          ))}
+        </View>
+      </Animated.View>
+
+      <Text style={s.footerText}>© 2026 POS Pro. All rights reserved.</Text>
+    </LinearGradient>
   );
 }
 
-// ─── Main Screen ────────────────────────────────────────────
+// ─── iPhone Header ──────────────────────────────────────────
+function PhoneHeader() {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(30)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: Platform.OS !== 'web' }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 600, useNativeDriver: Platform.OS !== 'web' }),
+    ]).start();
+  }, []);
+
+  return (
+    <Animated.View style={{ opacity: fadeAnim, alignItems: 'center', paddingTop: 20 }}>
+      {/* Logo icon in glassmorphic container */}
+      <View style={s.phoneLogoContainer}>
+        <LinearGradient
+          colors={['rgba(255,255,255,0.2)', 'rgba(255,255,255,0.05)']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={s.phoneGlow}
+        >
+          <Image
+            source={ASSETS.brand.logoMark}
+            style={{ width: 28, height: 28 }}
+            resizeMode="contain"
+          />
+        </LinearGradient>
+      </View>
+
+      <Text style={s.phoneTitle}>
+        POS{' '}<Text style={{ color: '#FED7AA' }}>Pro</Text>
+      </Text>
+      <Text style={s.phoneSub}>Phần mềm quản lý nhà hàng thông minh</Text>
+    </Animated.View>
+  );
+}
+
+// ─── Main Screen ──────────────────────────────────────────
 export default function LoginScreen() {
   const { login } = useAuth();
+  const { isDark } = useTheme();
   const { width } = useWindowDimensions();
   const isTablet = width >= 768;
 
-  // Entry animation
-  const entryAnim = useRef(new Animated.Value(0)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
   useEffect(() => {
-    Animated.spring(entryAnim, {
-      toValue: 1, tension: 50, friction: 8, useNativeDriver: Platform.OS !== 'web',
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: Platform.OS !== 'web',
     }).start();
   }, []);
 
-  return (
-    <SafeAreaView style={styles.root}>
-      {/* Animated Gradient Background */}
-      <LinearGradient
-        colors={['#0B1120', '#162032', '#0F172A']}
-        start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-        style={StyleSheet.absoluteFill}
-      >
-        <Orb size={300} color="rgba(249,115,22,0.08)" left={-80} top={-80} dx={40} dy={30} duration={10000} />
-        <Orb size={220} color="rgba(59,130,246,0.06)" left={width - 160} top={250} dx={-30} dy={40} duration={12000} delay={1000} />
-        <Orb size={180} color="rgba(168,85,247,0.05)" left={width * 0.3} top={500} dx={20} dy={-25} duration={8000} delay={2000} />
-        <Orb size={100} color="rgba(249,115,22,0.04)" left={width * 0.8} top={100} dx={-15} dy={15} duration={9000} delay={500} />
-      </LinearGradient>
+  const bgColor = isDark ? '#0F172A' : palette.stone[50];
+  const cardBg = isDark ? '#1E293B' : '#fff';
+  const textPrimary = isDark ? '#F1F5F9' : '#111827';
+  const textSecondary = isDark ? '#94A3B8' : '#6B7280';
+  const borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#F3F4F6';
 
-      {/* Content */}
+  // ── iPad ───────────────────────────────────────────────
+  if (isTablet) {
+    return (
+      <SafeAreaView style={[s.root, { backgroundColor: bgColor }]}>
+        <Animated.View style={{ flex: 1, flexDirection: 'row', opacity: fadeAnim }}>
+          <BrandSide />
+          <View style={[s.formSide, { backgroundColor: bgColor }]}>
+            <View style={[s.formCard, { backgroundColor: cardBg, borderColor }]}>
+              <View style={{ marginBottom: 28 }}>
+                <Text style={[s.formTitle, { color: textPrimary }]}>Đăng nhập</Text>
+                <Text style={[s.formSubtitle, { color: textSecondary }]}>
+                  Vui lòng đăng nhập để tiếp tục
+                </Text>
+              </View>
+              <LoginForm onLogin={login} isTablet />
+            </View>
+          </View>
+        </Animated.View>
+      </SafeAreaView>
+    );
+  }
+
+  // ── iPhone ─────────────────────────────────────────────
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: bgColor }}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
@@ -124,98 +192,196 @@ export default function LoginScreen() {
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
+          bounces={false}
         >
-          <Animated.View
-            style={[
-              styles.center,
-              {
-                opacity: entryAnim,
-                transform: [{
-                  translateY: entryAnim.interpolate({
-                    inputRange: [0, 1], outputRange: [24, 0],
-                  }),
-                }],
-              },
-            ]}
+          <View style={s.phoneScrollInner}>
+            <LinearGradient
+              colors={ORANGE_GRADIENT}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0.4, y: 1 }}
+              style={s.phoneGradientWrap}
           >
-            {isTablet ? (
-              <View style={styles.cardTablet}>
-                <BrandSide />
-                <View style={styles.formSide}>
-                  <LoginForm onLogin={login} />
-                </View>
+            <PhoneHeader />
+
+            {/* Form card — slides up over gradient */}
+            <Animated.View
+              style={[
+                s.phoneCard,
+                {
+                  backgroundColor: cardBg,
+                  borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.1)',
+                  opacity: fadeAnim,
+                  transform: [{ translateY: Animated.multiply(fadeAnim, new Animated.Value(0)) }],
+                },
+              ]}
+            >
+              <View style={{ marginBottom: 24 }}>
+                <Text style={[s.phoneCardTitle, { color: textPrimary }]}>Đăng nhập</Text>
+                <Text style={[s.phoneCardSub, { color: textSecondary }]}>
+                  Vui lòng đăng nhập để tiếp tục
+                </Text>
               </View>
-            ) : (
-              <View style={styles.cardPhone}>
-                <View style={styles.phoneBrand}>
-                  <Image
-                    source={ASSETS.brand.logoMark}
-                    style={{ width: 120, height: 36, marginBottom: 12 }}
-                    resizeMode="contain"
-                  />
-                  <Text style={styles.phoneBrandName}>POS Pro</Text>
-                  <Text style={styles.phoneTagline}>
-                    Quản lý nhà hàng thông minh
-                  </Text>
-                </View>
-                <LoginForm onLogin={login} />
-              </View>
-            )}
-          </Animated.View>
+              <LoginForm onLogin={login} />
+            </Animated.View>
+          </LinearGradient>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
-// ─── Styles ─────────────────────────────────────────────────
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#0B1120' },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16 },
-
-  cardTablet: {
-    flexDirection: 'row', width: '100%', maxWidth: 840,
-    borderRadius: 8,
-    backgroundColor: 'rgba(15, 23, 42, 0.75)',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)',
-    overflow: 'hidden',
-    shadowColor: '#000', shadowOffset: { width: 0, height: 20 },
-    shadowOpacity: 0.5, shadowRadius: 50, elevation: 24,
+// ─── Styles ───────────────────────────────────────────────
+const s = StyleSheet.create({
+  root: {
+    flex: 1,
   },
-
-  // Brand Side
+  decoCircle: {
+    position: 'absolute',
+    borderRadius: 999,
+    backgroundColor: '#fff',
+  },
+  // ── Brand Side ──
   brandSide: {
-    flex: 1.15, padding: 40, justifyContent: 'center', position: 'relative',
-    borderRightWidth: 1, borderRightColor: 'rgba(255,255,255,0.04)',
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 56,
+    paddingVertical: 48,
+    position: 'relative',
+    overflow: 'hidden',
   },
-  brandContent: { gap: 4 },
-  brandName: {
-    fontSize: 34, fontWeight: '800', color: '#FFFFFF', letterSpacing: -0.5,
+  brandContent: {
+    maxWidth: 420,
+    zIndex: 1,
   },
-  brandTagline: {
-    fontSize: 13, color: 'rgba(255,255,255,0.45)', marginBottom: 28, lineHeight: 20,
+  logoWrap: {
+    marginBottom: 20,
   },
-  featureList: { gap: 14 },
-  featureRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  featureDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#F97316' },
-  featureText: { fontSize: 13, color: 'rgba(255,255,255,0.6)', lineHeight: 18, flex: 1 },
+  brandTitle: {
+    ...font.h1,
+    fontSize: 40,
+    color: '#fff',
+    letterSpacing: -0.5,
+    marginBottom: 4,
+  },
+  brandSub: {
+    ...font.bodySmall,
+    color: 'rgba(255,255,255,0.75)',
+    marginBottom: 32,
+  },
+  brandDivider: {
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    marginBottom: 32,
+  },
+  featureDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#FB923C',
+    marginTop: 7,
+  },
+  footerText: {
+    position: 'absolute',
+    bottom: 48,
+    left: 56,
+    ...font.micro,
+    color: 'rgba(255,255,255,0.3)',
+  },
+  // ── Form Side ──
+  formSide: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
+  },
+  formCard: {
+    width: '100%',
+    maxWidth: 420,
+    borderRadius: 20,
+    padding: 36,
+    borderWidth: 1,
+    // Shadow
+    ...Platform.select({
+      web: { boxShadow: '0 20px 60px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.04)' },
+      default: {
+        elevation: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.1,
+        shadowRadius: 24,
+      },
+    }),
+  },
+  formTitle: {
+    ...font.h2,
+  },
+  formSubtitle: {
+    ...font.bodySmall,
+    marginTop: 4,
+  },
 
-  formSide: { flex: 1, padding: 40, justifyContent: 'center' },
-
-  cardPhone: {
-    width: '100%', maxWidth: 420,
-    borderRadius: 8,
-    backgroundColor: 'rgba(15, 23, 42, 0.75)',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)',
-    padding: 28,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 20 },
-    shadowOpacity: 0.5, shadowRadius: 50, elevation: 24,
+  // ── Phone ──
+  phoneGradientWrap: {
+    flex: 1,
+    minHeight: 700,
+    justifyContent: 'flex-start',
+    paddingHorizontal: 20,
+    paddingTop: 48,
+    paddingBottom: 40,
   },
-  phoneBrand: { alignItems: 'center', marginBottom: 28, gap: 4 },
-  phoneBrandName: {
-    fontSize: 26, fontWeight: '800', color: '#FFFFFF', letterSpacing: -0.5,
+  phoneLogoContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 20,
+    overflow: 'hidden',
+    marginBottom: 16,
   },
-  phoneTagline: {
-    fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 2,
+  phoneGlow: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  phoneTitle: {
+    ...font.h1,
+    fontSize: 28,
+    color: '#fff',
+    textAlign: 'center',
+  },
+  phoneSub: {
+    ...font.caption,
+    color: 'rgba(255,255,255,0.7)',
+    textAlign: 'center',
+    marginTop: 4,
+    marginBottom: 32,
+  },
+  phoneCard: {
+    width: '100%',
+    borderRadius: 20,
+    padding: 24,
+    borderWidth: 1,
+    ...Platform.select({
+      web: { boxShadow: '0 20px 60px rgba(0,0,0,0.12)' },
+      default: {
+        elevation: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.15,
+        shadowRadius: 24,
+      },
+    }),
+  },
+  phoneCardTitle: {
+    ...font.h3,
+    textAlign: 'center',
+  },
+  phoneCardSub: {
+    ...font.caption,
+    textAlign: 'center',
+    marginTop: 4,
+  },
+  phoneScrollInner: {
+    flex: 1,
+    justifyContent: 'center',
   },
 });

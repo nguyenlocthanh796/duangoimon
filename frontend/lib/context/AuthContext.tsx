@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter, useSegments } from 'expo-router';
+import { logger } from '../logger';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import { decodeJwt } from '../auth-helpers';
 import { api } from '../api';
+import { getToken as getSecureToken, setToken as setSecureToken, getUser as getSecureUser, setUser as setSecureUser, clearToken as clearSecureToken } from '../secure-storage';
 
 interface AuthContextType {
   token: string | null;
@@ -26,29 +28,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const router = useRouter();
   const segments = useSegments();
 
-  // On mount, read pos_token and pos_user from localStorage
+  // On mount, read token and user from secure storage
   useEffect(() => {
-    const initAuth = () => {
+    const initAuth = async () => {
       try {
-        if (typeof window !== 'undefined') {
-          const storedToken = localStorage.getItem('pos_token');
-          const storedUserStr = localStorage.getItem('pos_user');
-          if (storedToken) {
-            const decoded = decodeJwt(storedToken);
-            if (decoded && decoded.exp && decoded.exp * 1000 > Date.now()) {
-              let user = null;
-              let parseSuccess = true;
-              if (storedUserStr) {
-                try {
-                  user = JSON.parse(storedUserStr);
-                } catch (parseError) {
-                  console.error('Failed to parse pos_user from localStorage:', parseError);
-                  localStorage.removeItem('pos_token');
-                  localStorage.removeItem('pos_user');
-                  parseSuccess = false;
-                }
+        const storedToken = await getSecureToken();
+        const storedUser = await getSecureUser();
+        if (storedToken) {
+          const decoded = decodeJwt(storedToken);
+          if (decoded && decoded.exp && decoded.exp * 1000 > Date.now()) {
+            let user = null;
+            let parseSuccess = true;
+            if (storedUser) {
+              try {
+                user = storedUser;
+              } catch (parseError) {
+                logger.error('auth', 'Failed to parse pos_user:', parseError);
+                await clearSecureToken();
+                parseSuccess = false;
               }
-              
+
               if (parseSuccess) {
                 setTokenState(storedToken);
                 setUsername(user?.username || '');
@@ -62,8 +61,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               }
             } else {
               // Token is expired, clear the token
-              localStorage.removeItem('pos_token');
-              localStorage.removeItem('pos_user');
+              await clearSecureToken();
               setTokenState(null);
               setUsername('');
               setUserRole('');
@@ -71,7 +69,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
         }
       } catch (e) {
-        console.error('Error initializing auth:', e);
+        logger.error('auth', 'Error initializing auth:', e);
       } finally {
         setIsInitialized(true);
       }
@@ -92,22 +90,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUserRole(role);
       setBranchId(bId);
 
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('pos_user', JSON.stringify(res.user));
+      if (res.user) {
+        await setSecureUser(res.user);
       }
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
     try {
       api.logout();
     } catch (e) {
-      console.error('API logout error:', e);
+      logger.error('auth', 'API logout error:', e);
     }
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('pos_token');
-      localStorage.removeItem('pos_user');
-    }
+    await clearSecureToken();
     setTokenState(null);
     setUsername('');
     setUserRole('');
@@ -129,7 +124,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } else {
       // 1. Default-deny policy: check for unrecognized roles
       if (!userRole || !VALID_ROLES.includes(userRole)) {
-        console.warn(`Unrecognized or missing role: "${userRole}". Force logging out.`);
+        logger.warn('auth', `Unrecognized or missing role: "${userRole}". Force logging out.`);
         logout();
         return;
       }
@@ -176,7 +171,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }
 
   return (
-    <AuthContext.Provider value={{ token, username, userRole, branchId, login, logout, isInitialized }}>
+    <AuthContext.Provider
+      value={{ token, username, userRole, branchId, login, logout, isInitialized }}
+    >
       {children}
     </AuthContext.Provider>
   );

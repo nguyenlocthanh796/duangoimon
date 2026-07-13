@@ -24,30 +24,64 @@ interface KanbanColumnProps {
   onMoveForward: (orderId: string) => void;
 }
 
-export default function KanbanColumn({ col, orders, onMarkDone, onMoveForward }: KanbanColumnProps) {
+export default function KanbanColumn({
+  col,
+  orders,
+  onMarkDone,
+  onMoveForward,
+}: KanbanColumnProps) {
   return (
     <View style={{ flex: 1, flexDirection: 'column' }}>
       {/* Column header */}
-      <View style={{
-        flexDirection: 'row', alignItems: 'center', gap: 6,
-        backgroundColor: col.headerBg, borderRadius: shape.radius.md,
-        paddingHorizontal: 10, paddingVertical: 8, marginBottom: 10,
-        justifyContent: 'space-between',
-      }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 6,
+          backgroundColor: col.headerBg,
+          borderRadius: shape.radius.md,
+          paddingHorizontal: 10,
+          paddingVertical: 8,
+          marginBottom: 10,
+          justifyContent: 'space-between',
+        }}
+      >
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
           <Icon name={col.icon as any} size={18} color={col.headerText} />
-          <Text style={{ ...font.label, fontWeight: '800', color: col.headerText, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+          <Text
+            style={{
+              ...font.label,
+              fontWeight: '800',
+              color: col.headerText,
+              textTransform: 'uppercase',
+              letterSpacing: 0.5,
+            }}
+          >
             {col.label}
           </Text>
         </View>
-        <View style={{ width: 22, height: 22, borderRadius: 11, backgroundColor: col.dotColor, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ ...font.caption, fontWeight: '700', color: colors.text.inverse }}>{orders.length}</Text>
+        <View
+          style={{
+            width: 22,
+            height: 22,
+            borderRadius: 11,
+            backgroundColor: col.dotColor,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Text style={{ ...font.caption, fontWeight: '700', color: colors.text.inverse }}>
+            {orders.length}
+          </Text>
         </View>
       </View>
 
       {/* Cards */}
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }}>
-        {orders.map(order => (
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 20 }}
+      >
+        {orders.map((order) => (
           <TicketCard
             key={order.id}
             order={order}
@@ -58,24 +92,44 @@ export default function KanbanColumn({ col, orders, onMarkDone, onMoveForward }:
         ))}
 
         {orders.length === 0 && col.id === 'cho_xu_ly' && (
-          <View style={{
-            borderWidth: 2, borderStyle: 'dashed', borderColor: colors.border.strong,
-            borderRadius: shape.radius.md, padding: 24, alignItems: 'center', gap: 8, marginTop: 8,
-          }}>
-            <Image source={ASSETS.images.emptyStateOrders} style={{ width: 120, height: 120 }} resizeMode="contain" />
+          <View
+            style={{
+              borderWidth: 2,
+              borderStyle: 'dashed',
+              borderColor: colors.border.strong,
+              borderRadius: shape.radius.md,
+              padding: 24,
+              alignItems: 'center',
+              gap: 8,
+              marginTop: 8,
+            }}
+          >
+            <Image
+              source={ASSETS.images.emptyStateOrders}
+              style={{ width: 120, height: 120 }}
+              resizeMode="contain"
+            />
             <Text style={{ ...font.bodySmall, color: colors.text.muted, textAlign: 'center' }}>
               Không có đơn chờ
             </Text>
           </View>
         )}
         {orders.length === 0 && col.id !== 'cho_xu_ly' && (
-          <View style={{
-            borderWidth: 2, borderStyle: 'dashed', borderColor: colors.border.strong,
-            borderRadius: shape.radius.md, padding: 24, alignItems: 'center', gap: 8, marginTop: 8,
-          }}>
+          <View
+            style={{
+              borderWidth: 2,
+              borderStyle: 'dashed',
+              borderColor: colors.border.strong,
+              borderRadius: shape.radius.md,
+              padding: 24,
+              alignItems: 'center',
+              gap: 8,
+              marginTop: 8,
+            }}
+          >
             <Icon name={col.emptyIcon as any} size={36} color={colors.border.strong} />
             <Text style={{ ...font.bodySmall, color: colors.text.muted, textAlign: 'center' }}>
-              {col.id === 'dang_lam'  ? 'Chưa có món đang làm' : 'Chưa có món hoàn thành'}
+              {col.id === 'dang_lam' ? 'Chưa có món đang làm' : 'Chưa có món hoàn thành'}
             </Text>
           </View>
         )}

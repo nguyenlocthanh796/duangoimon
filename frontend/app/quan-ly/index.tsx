@@ -195,7 +195,7 @@ export default function QuanLyDashboard() {
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand.primary} />}
-        contentContainerStyle={{ paddingHorizontal: 8, paddingBottom: 40, gap: 12 }}
+        contentContainerStyle={{ paddingHorizontal: 4, paddingBottom: 40, gap: 10 }}
       >
         {renderStatRow(false)}
 
@@ -239,10 +239,7 @@ const styles = StyleSheet.create({
     padding: 14,
     borderWidth: 1,
     borderColor: colors.border.light,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
+    boxShadow: "0px 2px 8px rgba(0,0,0,0.06)",
     elevation: 3,
   },
 });

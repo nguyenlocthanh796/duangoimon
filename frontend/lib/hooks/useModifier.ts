@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { useState, useMemo } from 'react';
 import { MenuItem, CartItem } from '../components/pos/types';
 
@@ -11,9 +11,10 @@ export function useModifier() {
 
   const modalPrice = useMemo(() => {
     if (!modalItem) return 0;
-    const sp = modalItem.sizes?.find(s => s.name === modalSize)?.price || modalItem.price;
-    const tc = modalToppings.reduce((s, t) =>
-      s + (modalItem.toppings?.find(tp => tp.name === t)?.price || 0), 0
+    const sp = modalItem.sizes?.find((s) => s.name === modalSize)?.price || modalItem.price;
+    const tc = modalToppings.reduce(
+      (s, t) => s + (modalItem.toppings?.find((tp) => tp.name === t)?.price || 0),
+      0
     );
     return sp + tc;
   }, [modalItem, modalSize, modalToppings]);
@@ -42,10 +43,18 @@ export function useModifier() {
   };
 
   return {
-    modalItem, modalQty, setModalQty,
-    modalSize, setModalSize,
-    modalToppings, setModalToppings,
-    modalNote, setModalNote, modalPrice,
-    openForNew, openForEdit, close,
+    modalItem,
+    modalQty,
+    setModalQty,
+    modalSize,
+    setModalSize,
+    modalToppings,
+    setModalToppings,
+    modalNote,
+    setModalNote,
+    modalPrice,
+    openForNew,
+    openForEdit,
+    close,
   };
 }

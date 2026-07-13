@@ -1,4 +1,5 @@
-import { colors, font } from './index';
+import { colors } from './colors';
+import { font } from './typography';
 
 /**
  * Chuẩn typography "nhẹ" — rõ ràng như Sidebar.

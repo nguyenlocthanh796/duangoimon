@@ -60,6 +60,9 @@ export const api = {
   getInvoices: paymentsFns.getInvoices,
   createInvoice: paymentsFns.createInvoice,
   exportInvoice: paymentsFns.exportInvoice,
+  deleteInvoice: paymentsFns.deleteInvoice,
+  getPaidOrders: paymentsFns.getPaidOrders,
+  exportInvoicesCsv: paymentsFns.exportInvoicesCsv,
   bulkDeleteTransactions: paymentsFns.bulkDeleteTransactions,
   bulkExportInvoices: paymentsFns.bulkExportInvoices,
 

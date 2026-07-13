@@ -17,7 +17,18 @@ interface StatCardProps {
   compact?: boolean;
 }
 
-export default function StatCard({ label, value, icon, color, bgColor, loading, growth, cardStyle, hideTrend, compact }: StatCardProps) {
+export default function StatCard({
+  label,
+  value,
+  icon,
+  color,
+  bgColor,
+  loading,
+  growth,
+  cardStyle,
+  hideTrend,
+  compact,
+}: StatCardProps) {
   const s = compact ? stylesCompact : stylesNormal;
   const showTrend = !hideTrend && growth !== undefined;
 
@@ -26,13 +37,18 @@ export default function StatCard({ label, value, icon, color, bgColor, loading, 
       {/* Trend Badge - positioned absolutely */}
       {showTrend && (
         <View style={s.trendBadge}>
-          <Icon name={growth >= 0 ? 'arrow-top-right' : 'arrow-bottom-right'} size={compact ? 10 : 12} color={colors.text.secondary} />
+          <Icon
+            name={growth >= 0 ? 'arrow-top-right' : 'arrow-bottom-right'}
+            size={compact ? 10 : 12}
+            color={colors.text.secondary}
+          />
           <Text style={s.trendBadgeText}>
-            {growth! >= 0 ? '+' : ''}{growth}%
+            {growth! >= 0 ? '+' : ''}
+            {growth}%
           </Text>
         </View>
       )}
-      
+
       {/* Row 1: Icon and Value */}
       <View style={s.row1}>
         <View style={[s.iconBg, { backgroundColor: bgColor }]}>
@@ -46,7 +62,9 @@ export default function StatCard({ label, value, icon, color, bgColor, loading, 
       </View>
 
       {/* Row 2: Label */}
-      <Text style={s.label} numberOfLines={1}>{label}</Text>
+      <Text style={s.label} numberOfLines={1}>
+        {label}
+      </Text>
     </View>
   );
 }
@@ -62,13 +80,32 @@ const stylesNormal = {
   },
   trendBadge: {
     position: 'absolute' as const,
-    top: 12, right: 12,
-    flexDirection: 'row' as const, alignItems: 'center' as const, gap: 3, paddingHorizontal: 8, paddingVertical: 4, borderRadius: shape.radius.sm, backgroundColor: colors.surface.disabled
+    top: 12,
+    right: 12,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 3,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: shape.radius.sm,
+    backgroundColor: colors.surface.disabled,
   },
   trendBadgeText: { ...font.micro, fontWeight: '600' as const, color: colors.text.secondary },
   row1: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: 12 },
-  iconBg: { width: 40, height: 40, borderRadius: shape.radius.md, alignItems: 'center' as const, justifyContent: 'center' as const },
-  value: { ...font.h1, fontSize: 26, fontWeight: '700' as const, color: colors.text.primary, flex: 1 },
+  iconBg: {
+    width: 40,
+    height: 40,
+    borderRadius: shape.radius.md,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+  },
+  value: {
+    ...font.h1,
+    fontSize: 26,
+    fontWeight: '700' as const,
+    color: colors.text.primary,
+    flex: 1,
+  },
   label: { ...font.body, color: colors.text.secondary, fontWeight: '500' as const, marginTop: 4 },
 } as const;
 
@@ -83,12 +120,36 @@ const stylesCompact = {
   },
   trendBadge: {
     position: 'absolute' as const,
-    top: 8, right: 8,
-    flexDirection: 'row' as const, alignItems: 'center' as const, gap: 2, paddingHorizontal: 6, paddingVertical: 3, borderRadius: shape.radius.sm, backgroundColor: colors.surface.disabled
+    top: 8,
+    right: 8,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    gap: 2,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: shape.radius.sm,
+    backgroundColor: colors.surface.disabled,
   },
   trendBadgeText: { ...font.micro, fontWeight: '600' as const, color: colors.text.secondary },
   row1: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: 8 },
-  iconBg: { width: 34, height: 34, borderRadius: shape.radius.sm, alignItems: 'center' as const, justifyContent: 'center' as const },
-  value: { ...font.h2, fontSize: 20, fontWeight: '700' as const, color: colors.text.primary, flex: 1 },
-  label: { ...font.caption, color: colors.text.secondary, fontWeight: '500' as const, marginTop: 2 },
+  iconBg: {
+    width: 34,
+    height: 34,
+    borderRadius: shape.radius.sm,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+  },
+  value: {
+    ...font.h2,
+    fontSize: 20,
+    fontWeight: '700' as const,
+    color: colors.text.primary,
+    flex: 1,
+  },
+  label: {
+    ...font.caption,
+    color: colors.text.secondary,
+    fontWeight: '500' as const,
+    marginTop: 2,
+  },
 } as const;

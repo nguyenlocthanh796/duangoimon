@@ -18,11 +18,16 @@ export async function getQuanLyTables() {
   return [];
 }
 
-export function createTable(data: Partial<{ name: string; area: string | null; capacity: number; status: string }>) {
+export function createTable(
+  data: Partial<{ name: string; area: string | null; capacity: number; status: string }>
+) {
   return request<any>('/quan-ly/tables', { method: 'POST', body: JSON.stringify(data) });
 }
 
-export function updateTable(id: string, data: Partial<{ name: string; area: string | null; capacity: number; status: string }>) {
+export function updateTable(
+  id: string,
+  data: Partial<{ name: string; area: string | null; capacity: number; status: string }>
+) {
   return request<any>(`/quan-ly/tables/${id}`, { method: 'PUT', body: JSON.stringify(data) });
 }
 

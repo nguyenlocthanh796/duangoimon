@@ -1,167 +1,359 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert, RefreshControl, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  RefreshControl,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import { useRouter } from 'expo-router';
-import { api, Transaction, Invoice } from '../../lib/api';
+import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font, shape } from '../../lib/theme';
-import { useSidebar } from '../../lib/context/SidebarContext';
+import { useAuth } from '../../lib/context/AuthContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
-import GradientHeader from '../../lib/components/ui/GradientHeader';
+import { useSidebar } from '../../lib/context/SidebarContext';
+import { api } from '../../lib/api';
+import { logger, safeApi } from '../../lib/logger';
 import ModuleCard from '../../lib/components/ui/ModuleCard';
+import { SectionTitle } from '../../lib/components/ui/SectionTitle';
+import EmptyState from '../../lib/components/ui/EmptyState';
+import SkeletonList from '../../lib/components/ui/SkeletonList';
+import UnifiedHeader from '../../lib/components/ui/UnifiedHeader';
+import { formatPrice } from '../../lib/theme';
 
-const formatVND = (n: number) => (n ?? 0).toLocaleString('vi-VN') + '₫';
-const DEMO_BRANCH = '11111111-1111-1111-1111-111111111111';
 
-const MODULES = [
-  { key: 'thu-chi', icon: 'swap-vertical', title: 'Thu Chi', desc: 'Quản lý thu chi kế toán', path: '/ke-toan/thu-chi' },
-  { key: 'invoices', icon: 'receipt', title: 'Hóa đơn VAT', desc: 'Xuất & quản lý HĐ điện tử', path: '/ke-toan/invoices' },
-  { key: 'tier', icon: 'chart-bell-curve', title: 'Phân Tầng HKD', desc: 'Nhóm 1–4 & cảnh báo doanh thu', path: '/ke-toan/thue/tier' },
-  { key: 'so-sach', icon: 'book-open-page-variant', title: 'Sổ Kế Toán', desc: 'S1a / S2a–e / S3a (TT152)', path: '/ke-toan/thue/so-sach' },
-  { key: 'decl', icon: 'file-document-edit', title: 'Kê Khai Thuế', desc: 'Xuất XML 01/CNKD', path: '/ke-toan/thue/declaration' },
-  { key: 'bank', icon: 'bank', title: 'TK Ngân Hàng', desc: '01/BK-STK thông báo tài khoản', path: '/ke-toan/thue/bank-accounts' },
-  { key: 'deadline', icon: 'calendar-alert', title: 'Hạn Nộp & Cảnh báo', desc: 'Lịch nộp & leo thang', path: '/ke-toan/thue/deadlines' },
-  { key: 'legacy', icon: 'package-variant-closed', title: 'Kê Khai Chuyển Tiếp', desc: '01/BK-HTK tồn kho', path: '/ke-toan/thue/legacy' },
-];
-
-function daysLeft(due: string): number {
-  return Math.ceil((new Date(due).getTime() - Date.now()) / 86_400_000);
-}
 
 export default function KeToanHub() {
-  const { openSidebar } = useSidebar();
-  const { isWide, columns } = useResponsive();
   const router = useRouter();
-  const [kpi, setKpi] = useState<{ thu: number; chi: number; unpaid: number; taxDue: number } | null>(null);
-  const [alerts, setAlerts] = useState<{ text: string; severity: 'danger' | 'warning' | 'success'; path?: string }[]>([]);
-  const [loading, setLoading] = useState(false);
+  const { userRole, username, branchId } = useAuth();
+  const { isWide, columns } = useResponsive();
+
+  const [txSummary, setTxSummary] = useState<{ thu: number; chi: number; count: number } | null>(
+    null
+  );
+  const [invoiceSummary, setInvoiceSummary] = useState<{ count: number; total: number } | null>(
+    null
+  );
+  const [taxStatus, setTaxStatus] = useState<{
+    tier?: string;
+    nextDeadline?: string;
+    penaltyRisk?: boolean;
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const { openSidebar } = useSidebar();
 
-  const numCols = columns(240);
-  const modWidthPct: `${number}%` = `${100 / numCols}%`;
-
-  const load = useCallback(async (isRefresh = false) => {
-    if (isRefresh) setRefreshing(true); else setLoading(true);
+  const load = useCallback(async () => {
+    setLoadError(null);
+    const bid = branchId ?? '';
     try {
-      const [txs, invs, profiles] = await Promise.all([
-        api.getTransactions(),
-        api.getInvoices(),
-        api.getTaxProfiles(DEMO_BRANCH),
+      const [tx, inv, tax] = await Promise.all([
+        safeApi(() => api.getTransactions(undefined), {
+          transactions: [],
+          total: 0,
+          total_thu: 0,
+          total_chi: 0,
+        }),
+        safeApi(() => api.getInvoices(), { invoices: [], total: 0 }),
+        bid
+          ? safeApi(() => api.getTaxProfileStatus(bid), {
+              tier: undefined,
+              nextDeadline: undefined,
+              penaltyRisk: false,
+            } as any)
+          : Promise.resolve({
+              tier: undefined,
+              nextDeadline: undefined,
+              penaltyRisk: false,
+            } as any),
       ]);
-      const thu = (txs as Transaction[]).filter(t => t.type === 'thu').reduce((s, t) => s + t.amount, 0);
-      const chi = (txs as Transaction[]).filter(t => t.type === 'chi').reduce((s, t) => s + t.amount, 0);
-      const unpaid = (invs as Invoice[]).filter(i => i.status === 'moi').length;
+      const txList = (tx as any).transactions ?? [];
+      const thu =
+        (tx as any).total_thu ??
+        txList
+          .filter((t: any) => t.type === 'thu')
+          .reduce((s: number, t: any) => s + Number(t.amount || 0), 0);
+      const chi =
+        (tx as any).total_chi ??
+        txList
+          .filter((t: any) => t.type === 'chi')
+          .reduce((s: number, t: any) => s + Number(t.amount || 0), 0);
+      const t = (tx as any).total ?? txList.length;
+      setTxSummary({ thu, chi, count: t });
+      const invList = (inv as any).invoices ?? [];
+      setInvoiceSummary({
+        count: (inv as any).total ?? invList.length,
+        total: invList.reduce((s: number, i: any) => s + Number(i.total || 0), 0),
+      });
+      setTaxStatus({
+        tier: (tax as any).tier,
+        nextDeadline: (tax as any).nextDeadline,
+        penaltyRisk: (tax as any).penaltyRisk,
+      });
+    } catch (e) {
+      logger.error('ke-toan', 'load failed', e);
+      setLoadError('Không thể tải dữ liệu tổng quan. Vui lòng thử lại.');
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, [branchId]);
 
-      const nextAlerts: { text: string; severity: 'danger' | 'warning' | 'success'; path?: string }[] = [];
+  useEffect(() => {
+    load();
+  }, [load]);
 
-      // Tier threshold alert
-      if (profiles.length > 0) {
-        try {
-          const st = await api.getTaxProfileStatus(profiles[0].id);
-          const pct = Math.min(100, st.pct_of_1ty);
-          if (pct >= 100) nextAlerts.push({ text: `Vượt ngưỡng 1 tỷ (${pct.toFixed(0)}%) — cần chuyển đổi phương pháp`, severity: 'danger', path: '/ke-toan/thue/tier' });
-          else if (pct >= 80) nextAlerts.push({ text: `Sắp chạm ngưỡng 1 tỷ (${pct.toFixed(0)}%) — theo dõi sát`, severity: 'warning', path: '/ke-toan/thue/tier' });
-          else nextAlerts.push({ text: `Doanh thu an toàn (${pct.toFixed(0)}% ngưỡng 1 tỷ)`, severity: 'success' });
-        } catch { /* ignore */ }
-      }
+  const handleRefresh = useCallback(() => {
+    setRefreshing(true);
+    load();
+  }, [load]);
 
-      // Upcoming deadlines
-      try {
-        const dls = await api.getTaxDeadlines(DEMO_BRANCH);
-        const open = dls.filter(d => !d.submitted).sort((a, b) => daysLeft(a.due_date) - daysLeft(b.due_date));
-        for (const d of open.slice(0, 3)) {
-          const left = daysLeft(d.due_date);
-          const sev: 'danger' | 'warning' = left <= 3 ? 'danger' : left <= 14 ? 'warning' : 'success' as any;
-          nextAlerts.push({ text: `Nộp ${d.form} còn ${left > 0 ? left + ' ngày' : 'quá hạn'} (${d.due_date.slice(0, 10)})`, severity: sev, path: '/ke-toan/thue/deadlines' });
-        }
-      } catch { /* ignore */ }
+  const open = (path: string) => router.push(path as any);
 
-      setKpi({ thu, chi, unpaid, taxDue: 0 });
-      setAlerts(nextAlerts);
-    } catch (e: any) {
-      Alert.alert('Lỗi', e?.message || 'Không tải được tổng quan');
-    } finally { setLoading(false); setRefreshing(false); }
-  }, []);
+  const modules = [
+    {
+      key: 'thu-chi',
+      icon: 'swap-vertical',
+      title: 'Thu Chi',
+      description: 'Quản lý thu, chi hằng ngày',
+      path: '/ke-toan/thu-chi',
+    },
+    {
+      key: 'invoices',
+      icon: 'receipt',
+      title: 'Hóa đơn VAT',
+      description: 'Phát hành & xuất hóa đơn',
+      path: '/ke-toan/invoices',
+    },
+    {
+      key: 'tier',
+      icon: 'chart-bell-curve',
+      title: 'Phân Tầng HKD',
+      description: 'Xác định hạng kinh doanh',
+      path: '/ke-toan/thue/tier',
+    },
+    {
+      key: 'so-sach',
+      icon: 'book-open-page-variant',
+      title: 'Sổ Kế Toán',
+      description: 'Ghi chép sổ sách',
+      path: '/ke-toan/thue/so-sach',
+    },
+    {
+      key: 'declaration',
+      icon: 'file-document-edit',
+      title: 'Kê Khai Thuế',
+      description: 'Kê khai hàng kỳ',
+      path: '/ke-toan/thue/declaration',
+    },
+    {
+      key: 'bank',
+      icon: 'bank',
+      title: 'TK Ngân Hàng',
+      description: 'Quản lý tài khoản',
+      path: '/ke-toan/thue/bank-accounts',
+    },
+    {
+      key: 'deadlines',
+      icon: 'calendar-alert',
+      title: 'Hạn Nộp',
+      description: 'Lịch hạn nộp thuế',
+      path: '/ke-toan/thue/deadlines',
+    },
+    {
+      key: 'legacy',
+      icon: 'package-variant-closed',
+      title: 'Chuyển Tiếp',
+      description: 'Dữ liệu cũ',
+      path: '/ke-toan/thue/legacy',
+    },
+  ] as const;
 
-  useEffect(() => { load(); }, [load]);
+  const stats = [
+    {
+      key: 'thu',
+      icon: 'arrow-down-left',
+      label: 'Tổng thu',
+      value: txSummary ? formatPrice(txSummary.thu) : '—',
+      color: colors.brand.primary,
+      bg: colors.brand.primaryBg,
+    },
+    {
+      key: 'chi',
+      icon: 'arrow-up-right',
+      label: 'Tổng chi',
+      value: txSummary ? formatPrice(txSummary.chi) : '—',
+      color: '#DC2626',
+      bg: '#FEF2F2',
+    },
+    {
+      key: 'invoice',
+      icon: 'receipt',
+      label: 'Hóa đơn',
+      value: invoiceSummary ? `${invoiceSummary.count}` : '—',
+      color: '#7C3AED',
+      bg: '#F5F3FF',
+    },
+    {
+      key: 'deadline',
+      icon: 'calendar-alert',
+      label: 'Hạn nộp',
+      value: taxStatus?.nextDeadline ? taxStatus.nextDeadline : '—',
+      color: taxStatus?.penaltyRisk ? '#D97706' : '#059669',
+      bg: taxStatus?.penaltyRisk ? '#FFFBEB' : '#ECFDF5',
+    },
+  ] as const;
 
   return (
-    <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
-      <GradientHeader title="Kế toán & Thuế" subtitle="Tổng quan & nghĩa vụ thuế HKD 2026" icon="wallet" onMenuPress={openSidebar} compact={isWide} />
-
-      {/* KPI cards */}
-      <View style={styles.kpiRow}>
-        <KpiCard label="Tổng Thu" value={kpi ? formatVND(kpi.thu) : '—'} color={colors.status.success} icon="arrow-bottom-left" />
-        <KpiCard label="Tổng Chi" value={kpi ? formatVND(kpi.chi) : '—'} color={colors.status.danger} icon="arrow-top-right" />
-        <KpiCard label="HĐ chưa xuất" value={kpi ? String(kpi.unpaid) : '—'} color={colors.brand.primary} icon="receipt" />
-      </View>
-
-      {loading ? (
-        <View style={styles.loadingBox}><ActivityIndicator size="large" color={colors.brand.primary} /></View>
-      ) : (
-        <ScrollView
-          contentContainerStyle={[styles.scroll, isWide && { paddingHorizontal: 16 }]}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.brand.primary} colors={[colors.brand.primary]} />}
-        >
-          {/* Alert dashboard */}
-          <Text style={styles.sectionTitle}>Cảnh báo & Nghĩa vụ</Text>
-          <View style={styles.alertWrap}>
-            {alerts.length === 0 && <Text style={styles.emptyText}>Không có cảnh báo</Text>}
-            {alerts.map((a, i) => (
-              <TouchableOpacity
-                key={i}
-                style={[styles.alertItem, { borderLeftColor: ALERT_COLOR[a.severity] }]}
-                onPress={() => a.path && router.push(a.path as any)}
-                disabled={!a.path}
-                activeOpacity={a.path ? 0.7 : 1}
-              >
-                <Icon name={a.severity === 'success' ? 'check-circle' : 'alert-circle'} size={18} color={ALERT_COLOR[a.severity]} />
-                <Text style={[styles.alertText, { color: a.severity === 'success' ? colors.text.muted : ALERT_COLOR[a.severity] }]}>{a.text}</Text>
-              </TouchableOpacity>
-            ))}
+    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+      <UnifiedHeader
+        icon="wallet-outline"
+        title="Kế Toán"
+        subtitle="Tổng quan tài chính"
+        onMenuPress={openSidebar}
+      />
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+        }
+        contentContainerStyle={styles.scroll}
+      >
+        {loadError && (
+          <View style={styles.errorBox}>
+            <Icon name="alert-circle-outline" size={18} color={colors.text.danger} />
+            <Text style={styles.errorText}>{loadError}</Text>
+            <TouchableOpacity
+              onPress={() => {
+                setLoading(true);
+                load();
+              }}
+              style={styles.retryBtn}
+            >
+              <Text style={styles.retryText}>Thử lại</Text>
+            </TouchableOpacity>
           </View>
+        )}
 
-          <Text style={styles.sectionTitle}>Modules</Text>
-          <View style={[styles.grid, { maxWidth: isWide ? 1200 : '100%', alignSelf: 'center' }]}>
-            {MODULES.map((m) => (
-              <View key={m.key} style={{ width: modWidthPct, padding: 6 }}>
-                <ModuleCard icon={m.icon} title={m.title} description={m.desc} onPress={() => router.push(m.path as any)} />
+        <SectionTitle title="Chỉ số nhanh" subtitle="Cập nhật theo thời gian thực" />
+
+        {loading && !txSummary ? (
+          <View style={styles.statSkeleton}>
+            <ActivityIndicator color={colors.brand.primary} />
+          </View>
+        ) : (
+          <View style={[styles.statGrid, { flexDirection: isWide ? 'row' : 'column' }]}>
+            {stats.map((s) => (
+              <View key={s.key} style={[styles.statCard, isWide && { flex: 1 }]}>
+                <View style={[styles.statIcon, { backgroundColor: s.bg }]}>
+                  <Icon name={s.icon as any} size={20} color={s.color} />
+                </View>
+                <Text style={styles.statLabel}>{s.label}</Text>
+                <Text style={[styles.statValue, { color: s.color }]} numberOfLines={1}>
+                  {s.value}
+                </Text>
               </View>
             ))}
           </View>
-        </ScrollView>
-      )}
-    </SafeAreaView>
-  );
-}
+        )}
 
-function KpiCard({ label, value, color, icon }: { label: string; value: string; color: string; icon: string }) {
-  return (
-    <View style={styles.kpiCard}>
-      <View style={[styles.kpiIcon, { backgroundColor: color + '1A' }]}>
-        <Icon name={icon as any} size={18} color={color} />
-      </View>
-      <Text style={styles.kpiLabel}>{label}</Text>
-      <Text style={[styles.kpiValue, { color }]}>{value}</Text>
+        <SectionTitle title="Mô-đun nghiệp vụ" subtitle={`${modules.length} phân hệ`} />
+        {loading ? (
+          <SkeletonList count={4} variant="card" />
+        ) : (
+          <View style={styles.moduleGrid}>
+            {modules.map((m) => (
+              <View
+                key={m.key}
+                style={[
+                  styles.moduleWrap,
+                  { width: isWide ? `${100 / columns(180) - 1.5}%` : '100%' },
+                ]}
+              >
+                <ModuleCard
+                  icon={m.icon}
+                  title={m.title}
+                  description={m.description}
+                  onPress={() => open(m.path)}
+                />
+              </View>
+            ))}
+          </View>
+        )}
+
+        <EmptyState
+          icon="check-circle-outline"
+          title="Đã đồng bộ"
+          message="Dữ liệu kế toán được cập nhật tự động từ hệ thống POS."
+        />
+      </ScrollView>
     </View>
   );
 }
 
-const ALERT_COLOR = { success: colors.status.success, warning: '#D97706', danger: colors.status.danger };
-
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface.app },
-  kpiRow: { flexDirection: 'row', gap: 10, paddingHorizontal: 16, paddingVertical: 14, backgroundColor: colors.surface.app },
-  kpiCard: { flex: 1, backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, borderWidth: 1, borderColor: colors.border.light, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 6, elevation: 2 },
-  kpiIcon: { width: 36, height: 36, borderRadius: shape.radius.md, alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
-  kpiLabel: { ...font.caption, color: colors.text.muted, fontWeight: '500' },
-  kpiValue: { ...font.h3, fontWeight: '600', marginTop: 2 },
-  scroll: { padding: 16, gap: 8 },
-  sectionTitle: { ...font.h3, fontWeight: '600', color: colors.text.primary, marginBottom: 4, marginTop: 8 },
-  alertWrap: { gap: 8 },
-  alertItem: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: colors.surface.card, borderRadius: shape.radius.md, padding: 12, borderLeftWidth: 4, borderWidth: 1, borderColor: colors.border.light },
-  alertText: { ...font.body, fontWeight: '500', flex: 1 },
-  emptyText: { ...font.bodySmall, color: colors.text.muted, textAlign: 'center', paddingVertical: 8 },
-  grid: { flexDirection: 'row', flexWrap: 'wrap' },
-  loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingTop: 0,
+    paddingBottom: 32,
+  },
+  greeting: { ...font.h3, color: colors.text.primary, fontWeight: '700' },
+  subtitle: { ...font.caption, color: colors.text.muted, marginTop: 2 },
+  rolePill: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: shape.radius.full },
+  roleText: { ...font.badge, fontWeight: '700' },
+  scroll: { paddingHorizontal: 16, paddingBottom: 32, gap: 14 },
+  errorBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: colors.surface.danger,
+    borderWidth: 1,
+    borderColor: colors.border.danger,
+    borderRadius: shape.radius.md,
+    padding: 12,
+  },
+  errorText: { ...font.body, color: colors.text.danger, flex: 1 },
+  retryBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: shape.radius.sm,
+    backgroundColor: colors.brand.primary,
+  },
+  retryText: { ...font.button, color: '#fff' },
+  statSkeleton: {
+    height: 96,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.surface.card,
+    borderRadius: shape.radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border.light,
+  },
+  statGrid: { gap: 12 },
+  statCard: {
+    backgroundColor: colors.surface.card,
+    borderRadius: shape.radius.lg,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: colors.border.light,
+    gap: 6,
+  },
+  statIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: shape.radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
+  },
+  statLabel: { ...font.caption, color: colors.text.muted },
+  statValue: { ...font.h3, fontWeight: '800' },
+  moduleGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, justifyContent: 'flex-start' },
+  moduleWrap: { marginBottom: 4 },
 });

@@ -68,7 +68,7 @@ test('Route Guard: Unauthenticated user is redirected to /login from nested path
     isInitialized: true,
     token: null,
     userRole: '',
-    segments: ['quan-ly', 'users']
+    segments: ['quan-ly', 'users'],
   });
   assert.deepStrictEqual(result, { action: 'redirect', target: '/login' });
 
@@ -76,7 +76,7 @@ test('Route Guard: Unauthenticated user is redirected to /login from nested path
     isInitialized: true,
     token: null,
     userRole: '',
-    segments: ['ke-toan', 'invoices']
+    segments: ['ke-toan', 'invoices'],
   });
   assert.deepStrictEqual(result2, { action: 'redirect', target: '/login' });
 
@@ -85,7 +85,7 @@ test('Route Guard: Unauthenticated user is redirected to /login from nested path
     isInitialized: true,
     token: null,
     userRole: '',
-    segments: ['login']
+    segments: ['login'],
   });
   assert.deepStrictEqual(resultLogin, { action: 'none' });
 });
@@ -96,7 +96,7 @@ test('Route Guard: Cashier is restricted strictly to /ban-hang', () => {
     isInitialized: true,
     token: 'valid.token.sig',
     userRole: 'cashier',
-    segments: ['quan-ly']
+    segments: ['quan-ly'],
   });
   assert.deepStrictEqual(result, { action: 'redirect', target: '/ban-hang' });
 
@@ -105,7 +105,7 @@ test('Route Guard: Cashier is restricted strictly to /ban-hang', () => {
     isInitialized: true,
     token: 'valid.token.sig',
     userRole: 'cashier',
-    segments: ['ke-toan']
+    segments: ['ke-toan'],
   });
   assert.deepStrictEqual(result2, { action: 'redirect', target: '/ban-hang' });
 
@@ -114,7 +114,7 @@ test('Route Guard: Cashier is restricted strictly to /ban-hang', () => {
     isInitialized: true,
     token: 'valid.token.sig',
     userRole: 'cashier',
-    segments: ['ban-hang', 'kitchen']
+    segments: ['ban-hang', 'kitchen'],
   });
   assert.deepStrictEqual(resultAllowed, { action: 'none' });
 });
@@ -125,7 +125,7 @@ test('Route Guard: Accountant can access /ke-toan and /quan-ly', () => {
     isInitialized: true,
     token: 'valid.token.sig',
     userRole: 'accountant',
-    segments: ['quan-ly', 'reports']
+    segments: ['quan-ly', 'reports'],
   });
   assert.deepStrictEqual(resultQuanLy, { action: 'none' });
 
@@ -134,7 +134,7 @@ test('Route Guard: Accountant can access /ke-toan and /quan-ly', () => {
     isInitialized: true,
     token: 'valid.token.sig',
     userRole: 'accountant',
-    segments: ['ke-toan', 'invoices']
+    segments: ['ke-toan', 'invoices'],
   });
   assert.deepStrictEqual(resultKeToan, { action: 'none' });
 
@@ -143,7 +143,7 @@ test('Route Guard: Accountant can access /ke-toan and /quan-ly', () => {
     isInitialized: true,
     token: 'valid.token.sig',
     userRole: 'accountant',
-    segments: ['ban-hang']
+    segments: ['ban-hang'],
   });
   assert.deepStrictEqual(resultPos, { action: 'redirect', target: '/ke-toan' });
 });
@@ -154,7 +154,7 @@ test('Route Guard: manager and kitchen roles are correctly handled, avoiding nav
     isInitialized: true,
     token: 'valid.token.sig',
     userRole: 'manager',
-    segments: ['login']
+    segments: ['login'],
   });
   assert.deepStrictEqual(resultManagerLogin, { action: 'redirect', target: '/quan-ly' });
 
@@ -163,7 +163,7 @@ test('Route Guard: manager and kitchen roles are correctly handled, avoiding nav
     isInitialized: true,
     token: 'valid.token.sig',
     userRole: 'kitchen',
-    segments: ['login']
+    segments: ['login'],
   });
   assert.deepStrictEqual(resultKitchenLogin, { action: 'redirect', target: '/ban-hang/kitchen' });
 
@@ -172,7 +172,7 @@ test('Route Guard: manager and kitchen roles are correctly handled, avoiding nav
     isInitialized: true,
     token: 'valid.token.sig',
     userRole: 'kitchen',
-    segments: ['quan-ly']
+    segments: ['quan-ly'],
   });
   assert.deepStrictEqual(resultKitchenBypass, { action: 'redirect', target: '/ban-hang/kitchen' });
 });
@@ -182,11 +182,10 @@ test('Route Guard: Unrecognized roles trigger logout under default-deny policy',
     isInitialized: true,
     token: 'valid.token.sig',
     userRole: 'unknown-hacker-role',
-    segments: ['quan-ly']
+    segments: ['quan-ly'],
   });
   assert.deepStrictEqual(result, { action: 'logout' });
 });
-
 
 test('Security Scan: No automatic login hacks exist in source files', () => {
   const rootDir = path.resolve(__dirname, '../..');
@@ -216,13 +215,21 @@ test('Security Scan: No automatic login hacks exist in source files', () => {
     if (file === __filename) continue;
     const content = fs.readFileSync(file, 'utf8');
     // Check for auto-login bypass code like auto login, bypass credentials, etc.
-    if (content.includes('autoLogin') || content.includes('mockLogin') || /localStorage\.setItem\(['"]pos_token['"]\s*,\s*['"](admin|cashier|accountant)/.test(content)) {
+    if (
+      content.includes('autoLogin') ||
+      content.includes('mockLogin') ||
+      /localStorage\.setItem\(['"]pos_token['"]\s*,\s*['"](admin|cashier|accountant)/.test(content)
+    ) {
       foundAutoLoginHack = true;
       console.log(`Potential hack found in: ${file}`);
     }
   }
 
-  assert.strictEqual(foundAutoLoginHack, false, 'Should not find any automatic login hack in the frontend codebase');
+  assert.strictEqual(
+    foundAutoLoginHack,
+    false,
+    'Should not find any automatic login hack in the frontend codebase'
+  );
 });
 
 test('Security Scan: Token leakage via console.log or insecure exports', () => {
@@ -253,21 +260,27 @@ test('Security Scan: Token leakage via console.log or insecure exports', () => {
     // Exclude this test file itself
     if (file === __filename) continue;
     const content = fs.readFileSync(file, 'utf8');
-    
+
     // Check if console.log prints pos_token or access_token
-    if (content.includes('console.log') && (content.includes('token') || content.includes('access_token'))) {
+    if (
+      content.includes('console.log') &&
+      (content.includes('token') || content.includes('access_token'))
+    ) {
       // Exclude error logs like console.error(e)
       const lines = content.split('\n');
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
-        if (line.includes('console.log') && (line.includes('token') || line.includes('access_token'))) {
+        if (
+          line.includes('console.log') &&
+          (line.includes('token') || line.includes('access_token'))
+        ) {
           console.log(`Token logging found at ${file}:${i + 1}: ${line.trim()}`);
           tokenLogs++;
         }
       }
     }
   }
-  
+
   // Note: We won't assert strict equal 0 to avoid breaking if there's non-critical logs,
   // but we will count it to report in findings.
 });

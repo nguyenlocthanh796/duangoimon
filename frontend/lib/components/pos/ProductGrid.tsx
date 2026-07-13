@@ -35,19 +35,23 @@ export default function ProductGrid({
   const CARD_COLS = !isWide
     ? 3 // Mobile grid
     : breakpoint === 'desktop'
-    ? 4
-    : breakpoint === 'tablet-landscape'
-    ? 4
-    : 3; // tablet-portrait gets 3 columns to look optimized and compact
+      ? 4
+      : breakpoint === 'tablet-landscape'
+        ? 4
+        : 3; // tablet-portrait gets 3 columns to look optimized and compact
 
-  const cardSize = Math.floor(
-    (panelWidth - hPad * 2 - CARD_GAP * (CARD_COLS - 1)) / CARD_COLS
-  );
+  const cardSize = Math.floor((panelWidth - hPad * 2 - CARD_GAP * (CARD_COLS - 1)) / CARD_COLS);
 
   if (loading) {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, paddingTop: 60 }}>
-        <Image source={ASSETS.images.loadingFood} style={{ width: 120, height: 120 }} resizeMode="contain" />
+      <View
+        style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, paddingTop: 60 }}
+      >
+        <Image
+          source={ASSETS.images.loadingFood}
+          style={{ width: 120, height: 120 }}
+          resizeMode="contain"
+        />
         <Text style={{ color: colors.text.muted, ...font.bodySmall }}>Đang tải thực đơn...</Text>
       </View>
     );
@@ -56,15 +60,27 @@ export default function ProductGrid({
   if (products.length === 0) {
     return (
       <View style={{ alignItems: 'center', paddingTop: 60, gap: 12 }}>
-        <Image source={ASSETS.images.searchEmpty} style={{ width: 120, height: 120 }} resizeMode="contain" />
+        <Image
+          source={ASSETS.images.searchEmpty}
+          style={{ width: 120, height: 120 }}
+          resizeMode="contain"
+        />
         <Text style={{ color: colors.text.muted, ...font.bodySmall }}>Không có món nào</Text>
       </View>
     );
   }
 
   return (
-    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: CARD_GAP, paddingHorizontal: isWide ? 12 : 4 }}>
-      {products.map(item => (
+    <View
+      key={`pg-${CARD_COLS}-${cardSize}`}
+      style={{
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        gap: CARD_GAP,
+        paddingHorizontal: isWide ? 12 : 4,
+      }}
+    >
+      {products.map((item) => (
         <ProductCard
           key={item.id}
           item={item}

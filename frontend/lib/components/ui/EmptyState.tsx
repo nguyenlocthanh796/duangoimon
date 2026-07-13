@@ -7,10 +7,18 @@ interface EmptyStateProps {
   image?: ImageSourcePropType;
   title: string;
   subtitle?: string;
+  message?: string;
   iconSize?: number;
 }
 
-export default function EmptyState({ icon, image, title, subtitle, iconSize = 56 }: EmptyStateProps) {
+export default function EmptyState({
+  icon,
+  image,
+  title,
+  subtitle,
+  message,
+  iconSize = 56,
+}: EmptyStateProps) {
   return (
     <View style={{ alignItems: 'center', justifyContent: 'center', paddingTop: 60, gap: 12 }}>
       {image ? (
@@ -20,7 +28,14 @@ export default function EmptyState({ icon, image, title, subtitle, iconSize = 56
       ) : null}
       <Text style={{ ...font.h3, color: colors.text.body, marginTop: 4 }}>{title}</Text>
       {subtitle && (
-        <Text style={{ ...font.bodySmall, color: colors.text.secondary, textAlign: 'center', paddingHorizontal: 40 }}>
+        <Text
+          style={{
+            ...font.bodySmall,
+            color: colors.text.secondary,
+            textAlign: 'center',
+            paddingHorizontal: 40,
+          }}
+        >
           {subtitle}
         </Text>
       )}

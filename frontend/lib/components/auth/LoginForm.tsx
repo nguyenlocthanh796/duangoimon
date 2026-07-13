@@ -1,355 +1,476 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet,
-  ActivityIndicator, Animated, Platform,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+  Platform,
+  Animated,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '../../context/ThemeContext';
+import { palette } from '../../theme/colors';
+import { font } from '../../theme/typography';
 
-// ─── Floating Label Input ────────────────────────────────────
-function FloatingInput({
-  label, icon, value, onChangeText, secureTextEntry, error,
-  autoCapitalize,
+// ─── Input với label bên ngoài ─────────────────────────────
+function FormInput({
+  label,
+  value,
+  onChangeText,
+  secureTextEntry,
+  error,
+  icon,
+  autoCapitalize = 'none',
+  onSubmitEditing,
+  inputRef,
+  returnKeyType,
 }: {
-  label: string; icon: React.ComponentProps<typeof Icon>['name'];
-  value: string; onChangeText: (v: string) => void;
-  secureTextEntry?: boolean; error?: string;
+  label: string;
+  value: string;
+  onChangeText: (v: string) => void;
+  secureTextEntry?: boolean;
+  error?: string;
+  icon: keyof typeof MaterialCommunityIcons.glyphMap;
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
+  onSubmitEditing?: () => void;
+  inputRef?: React.RefObject<TextInput>;
+  returnKeyType?: 'next' | 'done';
 }) {
+  const { isDark } = useTheme();
   const [focused, setFocused] = useState(false);
   const [showPw, setShowPw] = useState(false);
-  const focusAnim = useRef(new Animated.Value(value ? 1 : 0)).current;
-  const borderAnim = useRef(new Animated.Value(0)).current;
 
-  useEffect(() => {
-    // Animate label
-    Animated.timing(focusAnim, {
-      toValue: focused || value.length > 0 ? 1 : 0,
-      duration: 200, useNativeDriver: false,
-    }).start();
-    // Animate focus glow
-    Animated.timing(borderAnim, {
-      toValue: focused ? 1 : 0,
-      duration: 250, useNativeDriver: false,
-    }).start();
-  }, [focused, value]);
+  const isError = !!error;
+  const borderClr = isError
+    ? '#EF4444'
+    : focused
+    ? palette.orange[500]
+    : isDark
+    ? 'rgba(255,255,255,0.12)'
+    : '#D1D5DB';
 
-  const labelTop = focusAnim.interpolate({
-    inputRange: [0, 1], outputRange: [14, -10],
-  });
-  const labelScale = focusAnim.interpolate({
-    inputRange: [0, 1], outputRange: [1, 0.82],
-  });
-  const labelColor = focusAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [
-      error ? '#F87171' : 'rgba(255,255,255,0.4)',
-      error ? '#F87171' : '#F97316',
-    ],
-  });
-  const borderGlow = borderAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [
-      error ? 'rgba(248,113,113,0.5)' : 'rgba(255,255,255,0.06)',
-      error ? 'rgba(248,113,113,0.8)' : 'rgba(249,115,22,0.5)',
-    ],
-  });
-  const iconColor = focused
-    ? (error ? '#F87171' : '#F97316')
-    : 'rgba(255,255,255,0.25)';
+  const bgClr = isError
+    ? isDark ? 'rgba(239,68,68,0.08)' : '#FEF2F2'
+    : focused
+    ? isDark ? 'rgba(249,115,22,0.06)' : '#FFFFFF'
+    : isDark
+    ? 'rgba(255,255,255,0.04)'
+    : '#F9FAFB';
+
+  const iconClr = isError
+    ? '#EF4444'
+    : focused
+    ? palette.orange[500]
+    : isDark
+    ? 'rgba(255,255,255,0.25)'
+    : '#9CA3AF';
+
+  const textClr = isDark ? '#F1F5F9' : '#111827';
+  const labelClr = isError
+    ? '#EF4444'
+    : focused
+    ? palette.orange[500]
+    : isDark
+    ? 'rgba(255,255,255,0.5)'
+    : '#374151';
 
   return (
     <View style={{ marginBottom: 20 }}>
-      <Animated.View style={[styles.inputWrapper, { borderColor: borderGlow }]}>
-        <Icon name={icon} size={20} color={iconColor} style={{ marginRight: 10 }} />
-        <View style={{ flex: 1, position: 'relative', justifyContent: 'center' }}>
-          <Animated.Text
-            style={[styles.floatingLabel, {
-              top: labelTop, transform: [{ scale: labelScale }], color: labelColor,
-            }]}
-          >
-            {label}
-          </Animated.Text>
-          <TextInput
-            style={styles.input}
-            placeholderTextColor="transparent"
-            value={value}
-            onChangeText={onChangeText}
-            secureTextEntry={secureTextEntry && !showPw}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
-            autoCapitalize={autoCapitalize}
-          />
-        </View>
+      {/* Label phía trên input */}
+      <Text
+        style={[
+          s.fieldLabel,
+          { color: labelClr },
+        ]}
+      >
+        {label}
+      </Text>
+
+      <View
+        style={[
+          s.inputWrap,
+          {
+            borderColor: borderClr,
+            backgroundColor: bgClr,
+          },
+          focused && Platform.OS === 'web' ? { boxShadow: `0 0 0 3px rgba(249,115,22,0.15)` } : {},
+        ]}
+      >
+        <Icon name={icon} size={20} color={iconClr} style={{ marginRight: 10 }} />
+
+        <TextInput
+          ref={inputRef}
+          style={[s.input, { color: textClr }]}
+          nativeID={`login_${label.toLowerCase().replace(/[^a-z0-9]/g, '_')}`}
+          placeholder={label}
+          placeholderTextColor={isDark ? 'rgba(255,255,255,0.2)' : '#9CA3AF'}
+          value={value}
+          onChangeText={onChangeText}
+          secureTextEntry={secureTextEntry && !showPw}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          autoCapitalize={autoCapitalize}
+          returnKeyType={returnKeyType || (secureTextEntry ? 'done' : 'next')}
+          blurOnSubmit={!!secureTextEntry}
+          onSubmitEditing={onSubmitEditing}
+        />
+
         {secureTextEntry && (
-          <TouchableOpacity onPress={() => setShowPw(!showPw)} style={{ padding: 4 }} accessibilityRole="button" accessibilityLabel={showPw ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}>
+          <TouchableOpacity
+            onPress={() => setShowPw(!showPw)}
+            style={s.pwToggle}
+            aria-label={showPw ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+          >
             <Icon
               name={showPw ? 'eye-off-outline' : 'eye-outline'}
               size={20}
-              color="rgba(255,255,255,0.25)"
+              color={isDark ? 'rgba(255,255,255,0.35)' : '#9CA3AF'}
             />
           </TouchableOpacity>
         )}
-      </Animated.View>
+      </View>
+
+      {/* Error message */}
       {error && (
-        <View style={styles.errorRow}>
-          <Icon name="alert-circle-outline" size={12} color="#F87171" />
-          <Text style={styles.errorText}>{error}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6, gap: 4 }}>
+          <Icon name="alert-circle-outline" size={12} color="#EF4444" />
+          <Text style={{ ...font.micro, color: '#EF4444' }}>{error}</Text>
         </View>
       )}
     </View>
   );
 }
 
-// ─── Preset Account Pill ────────────────────────────────────
-function PresetPill({
-  label, selected, onPress,
+// ─── Quick Account Pill ────────────────────────────────────
+function QuickPill({
+  label,
+  iconName,
+  iconColor,
+  selected,
+  onPress,
 }: {
-  label: string; selected: boolean; onPress: () => void;
+  label: string;
+  iconName: keyof typeof MaterialCommunityIcons.glyphMap;
+  iconColor: string;
+  selected: boolean;
+  onPress: () => void;
 }) {
   return (
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.7}
-      style={[styles.presetPill, selected && styles.presetPillActive]}
-      accessibilityRole="button"
-      accessibilityLabel={`Đăng nhập với ${label}`}
+      hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
+      style={[
+        s.pill,
+        selected && s.pillSelected,
+      ]}
     >
-      {selected ? (
-        <LinearGradient
-          colors={['#F97316', '#EA580C']}
-          start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-          style={[StyleSheet.absoluteFill, { borderRadius: 20 }]}
-        />
-      ) : null}
-      <Text style={[styles.presetPillText, selected && styles.presetPillTextActive]}>
-        {label}
-      </Text>
+      {selected && (
+        <View style={s.pillSelectedBg}>
+          <LinearGradient
+            colors={['#F97316', '#EA580C']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={StyleSheet.absoluteFill}
+            borderRadius={16}
+          />
+        </View>
+      )}
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, zIndex: 1 }}>
+        <Icon name={iconName} size={16} color={selected ? '#fff' : iconColor} />
+        <Text style={[s.pillText, selected && s.pillTextSelected]}>
+          {label}
+        </Text>
+      </View>
     </TouchableOpacity>
   );
 }
 
-// ─── Main Form ──────────────────────────────────────────────
-export default function LoginForm({
-  onLogin,
-}: {
+// ─── Main Form ────────────────────────────────────────────
+interface LoginFormProps {
   onLogin: (u: string, p: string) => Promise<void>;
-}) {
+  isTablet?: boolean;
+}
+
+export default function LoginForm({ onLogin, isTablet }: LoginFormProps) {
+  const { isDark } = useTheme();
   const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('admin123');
   const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [errors, setErrors] = useState<{ username?: string; password?: string }>({});
 
-  // Button scale animation
-  const btnScale = useRef(new Animated.Value(1)).current;
-  const pressIn = () => {
-    Animated.spring(btnScale, { toValue: 0.97, useNativeDriver: Platform.OS !== 'web' }).start();
-  };
-  const pressOut = () => {
-    Animated.spring(btnScale, { toValue: 1, friction: 5, useNativeDriver: Platform.OS !== 'web' }).start();
+  const pwRef = useRef<TextInput>(null) as React.RefObject<TextInput>;
+  const shakeAnim = useRef(new Animated.Value(0)).current;
+
+  const shake = () => {
+    Animated.sequence([
+      Animated.timing(shakeAnim, { toValue: 10, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: -10, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: 6, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: -6, duration: 50, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: 0, duration: 50, useNativeDriver: true }),
+    ]).start();
   };
 
   const handleLogin = async () => {
-    const newErrors: typeof errors = {};
-    if (!username.trim()) newErrors.username = 'Vui lòng nhập tài khoản';
-    if (!password.trim()) newErrors.password = 'Vui lòng nhập mật khẩu';
-    if (Object.keys(newErrors).length > 0) { setErrors(newErrors); return; }
+    const e: typeof errors = {};
+    if (!username.trim()) e.username = 'Vui lòng nhập tài khoản';
+    if (!password.trim()) e.password = 'Vui lòng nhập mật khẩu';
+    if (Object.keys(e).length > 0) {
+      setErrors(e);
+      shake();
+      return;
+    }
     setErrors({});
     setLoading(true);
     try {
       await onLogin(username, password);
     } catch {
       setErrors({ username: 'Sai tài khoản hoặc mật khẩu' });
+      shake();
     } finally {
       setLoading(false);
     }
   };
 
-  const selectPreset = (u: string, p: string) => {
-    setUsername(u);
-    setPassword(p);
-  };
-
-  const presets: { label: string; user: string; pass: string }[] = [
-    { label: '💼 Admin', user: 'admin', pass: 'admin123' },
-    { label: '📋 Quản Lý', user: 'manager1', pass: 'mgr123' },
-    { label: '💵 Thu Ngân', user: 'cashier1', pass: 'cs123' },
-    { label: '📊 Kế Toán', user: 'accountant1', pass: 'acc123' },
-    { label: '🍳 Bếp', user: 'kitchen1', pass: 'ktch123' },
+  const quickAccounts = [
+    { label: 'Admin', icon: 'shield-account' as const, color: '#8B5CF6', user: 'admin', pass: 'admin123' },
+    { label: 'Quản Lý', icon: 'clipboard-account-outline' as const, color: '#EF4444', user: 'manager1', pass: 'mgr123' },
+    { label: 'Thu Ngân', icon: 'cash-register' as const, color: '#F97316', user: 'cashier1', pass: 'cs123' },
+    { label: 'Kế Toán', icon: 'calculator-variant' as const, color: '#10B981', user: 'accountant1', pass: 'acc123' },
+    { label: 'Bếp', icon: 'chef-hat' as const, color: '#F59E0B', user: 'kitchen1', pass: 'ktch123' },
   ];
 
-  return (
-    <View style={styles.form}>
-      <Text style={styles.welcome}>Chào mừng trở lại</Text>
-      <Text style={styles.subtitle}>Đăng nhập để quản lý hệ thống POS</Text>
+  const mutedText = isDark ? 'rgba(255,255,255,0.35)' : '#9CA3AF';
+  const linkText = isDark ? 'rgba(255,255,255,0.5)' : '#6B7280';
 
-      <FloatingInput
+  return (
+    <Animated.View style={{ transform: [{ translateX: shakeAnim }] }}>
+      {/* Hidden form for web */}
+      {Platform.OS === 'web' && (
+        <form
+          onSubmit={(e) => { e.preventDefault(); handleLogin(); }}
+          style={{ display: 'contents' }}
+        >
+          <input type="hidden" name="username" value={username} readOnly />
+          <input type="hidden" name="password" value={password} readOnly />
+        </form>
+      )}
+
+      <FormInput
         label="Tài khoản"
         icon="account-outline"
         value={username}
         onChangeText={(v) => { setUsername(v); setErrors((e) => ({ ...e, username: undefined })); }}
         error={errors.username}
-        autoCapitalize="none"
+        onSubmitEditing={() => pwRef.current?.focus()}
+        returnKeyType="next"
       />
 
-      <FloatingInput
+      <FormInput
         label="Mật khẩu"
         icon="lock-outline"
         value={password}
         onChangeText={(v) => { setPassword(v); setErrors((e) => ({ ...e, password: undefined })); }}
         secureTextEntry
         error={errors.password}
+        onSubmitEditing={handleLogin}
+        inputRef={pwRef}
+        returnKeyType="done"
       />
 
-      {/* Remember + Forgot */}
-      <View style={styles.row}>
-        <TouchableOpacity style={styles.rememberRow} accessibilityRole="button" accessibilityLabel="Duy trì đăng nhập">
-          <View style={styles.checkbox}>
-            <Icon name="check" size={12} color="#0F172A" />
+      {/* Remember me + Forgot password */}
+      <View style={s.optionsRow}>
+        <TouchableOpacity
+          onPress={() => setRememberMe(!rememberMe)}
+          activeOpacity={0.7}
+          style={s.rememberRow}
+          aria-label="Duy trì đăng nhập"
+        >
+          <View style={[s.checkbox, rememberMe && s.checkboxChecked]}>
+            {rememberMe && <Icon name="check" size={12} color="#fff" />}
           </View>
-          <Text style={styles.rememberText}>Duy trì đăng nhập</Text>
+          <Text style={[s.rememberText, { color: mutedText }]}>Duy trì đăng nhập</Text>
         </TouchableOpacity>
-        <TouchableOpacity accessibilityRole="button" accessibilityLabel="Quên mật khẩu">
-          <Text style={styles.forgotText}>Quên mật khẩu?</Text>
+
+        <TouchableOpacity activeOpacity={0.7} aria-label="Quên mật khẩu">
+          <Text style={[s.forgotLink, { color: linkText }]}>Quên mật khẩu?</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Button */}
+      {/* Login button */}
       <TouchableOpacity
-        activeOpacity={1}
-        onPressIn={pressIn}
-        onPressOut={pressOut}
         onPress={handleLogin}
         disabled={loading}
-        accessibilityRole="button"
-        accessibilityLabel={loading ? 'Đang đăng nhập' : 'Đăng nhập'}
+        activeOpacity={0.85}
+        style={s.btnOuter}
+        aria-label="Đăng nhập"
       >
-        <Animated.View style={{ transform: [{ scale: btnScale }] }}>
-          <LinearGradient
-            colors={['#F97316', '#EA580C']}
-            start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
-            style={styles.loginBtn}
-          >
-            {loading ? (
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <ActivityIndicator color="#fff" size="small" />
-                <Text style={styles.loginText}>Đang đăng nhập...</Text>
-              </View>
-            ) : (
-              <Text style={styles.loginText}>Đăng nhập</Text>
-            )}
-          </LinearGradient>
-        </Animated.View>
+        <LinearGradient
+          colors={['#F97316', '#EA580C']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={s.btn}
+        >
+          {loading ? (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <ActivityIndicator color="#fff" size="small" />
+              <Text style={s.btnText}>Đang đăng nhập</Text>
+            </View>
+          ) : (
+            <Text style={s.btnText}>Đăng nhập</Text>
+          )}
+        </LinearGradient>
       </TouchableOpacity>
 
-      {/* Presets */}
-      <Text style={styles.presetTitle}>Demo nhanh</Text>
-      <View style={styles.presetRow}>
-        {presets.map((p) => (
-          <PresetPill
-            key={p.user}
-            label={p.label}
-            selected={username === p.user}
-            onPress={() => selectPreset(p.user, p.pass)}
-          />
-        ))}
+      {/* Quick accounts */}
+      <View style={s.quickSection}>
+        <Text style={[s.quickLabel, { color: mutedText }]}>Truy cập nhanh</Text>
+        <View style={s.quickRow}>
+          {quickAccounts.map((a) => (
+            <QuickPill
+              key={a.user}
+              iconName={a.icon}
+              iconColor={a.color}
+              label={a.label}
+              selected={username === a.user && password === a.pass}
+              onPress={() => {
+                setUsername(a.user);
+                setPassword(a.pass);
+                setErrors({});
+              }}
+            />
+          ))}
+        </View>
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
-// ─── Styles ─────────────────────────────────────────────────
-const styles = StyleSheet.create({
-  form: { width: '100%' },
-  welcome: {
-    fontSize: 24, fontWeight: '800',
-    color: '#FFFFFF', marginBottom: 4,
+// ─── Styles ───────────────────────────────────────────────
+const s = StyleSheet.create({
+  // ── Input ──
+  fieldLabel: {
+    ...font.label,
+    marginBottom: 6,
+    marginLeft: 2,
   },
-  subtitle: {
-    fontSize: 13, color: 'rgba(255,255,255,0.4)',
-    marginBottom: 28, lineHeight: 18,
-  },
-
-  // Input
-  inputWrapper: {
-    flexDirection: 'row', alignItems: 'center',
+  inputWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 14,
-    borderRadius: 8,
+    borderRadius: 12,
     borderWidth: 1.5,
-    backgroundColor: 'rgba(255,255,255,0.04)',
     height: 56,
+    transition: Platform.OS === 'web' ? 'border-color 0.2s, background-color 0.2s' : undefined,
   },
   input: {
-    flex: 1, height: '100%',
-    fontSize: 15, fontWeight: '500',
-    color: '#FFFFFF',
-    paddingTop: 8, // room for floating label
-  },
-  floatingLabel: {
-    position: 'absolute',
-    left: 0,
-    fontSize: 15,
-    fontWeight: '500',
-  },
-  errorRow: {
-    flexDirection: 'row', alignItems: 'center',
-    marginTop: 6, gap: 4,
-  },
-  errorText: {
-    fontSize: 12, color: '#F87171', fontWeight: '500',
+    flex: 1,
+    height: '100%',
+    fontFamily: font.body.fontFamily,
+    fontSize: font.body.fontSize,
+    fontWeight: '400',
+    letterSpacing: 0.2,
+    ...(Platform.OS === 'web' ? { outlineStyle: 'none' as any, outlineWidth: 0 } : {}),
   },
 
-  // Row
-  row: {
-    flexDirection: 'row', justifyContent: 'space-between',
-    alignItems: 'center', marginBottom: 24,
+  // ── Options Row ──
+  optionsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 24,
   },
-  rememberRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  rememberRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   checkbox: {
-    width: 18, height: 18, borderRadius: 4,
+    width: 20,
+    height: 20,
+    borderRadius: 5,
+    borderWidth: 1.5,
+    borderColor: '#D1D5DB',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+  },
+  checkboxChecked: {
     backgroundColor: '#F97316',
-    alignItems: 'center', justifyContent: 'center',
-  },
-  rememberText: { fontSize: 13, color: 'rgba(255,255,255,0.5)', fontWeight: '500' },
-  forgotText: { fontSize: 13, color: '#F97316', fontWeight: '600' },
-
-  // Button
-  loginBtn: {
-    borderRadius: 8,
-    height: 52,
-    alignItems: 'center', justifyContent: 'center',
-    boxShadow: '0 4px 12px rgba(249,115,22,0.35)',
-  },
-  loginText: {
-    fontSize: 16, fontWeight: '700', color: '#FFFFFF',
-  },
-
-  // Presets
-  presetTitle: {
-    fontSize: 12, color: 'rgba(255,255,255,0.3)',
-    textAlign: 'center', marginTop: 24, marginBottom: 12,
-    fontWeight: '600', letterSpacing: 0.5, textTransform: 'uppercase',
-  },
-  presetRow: {
-    flexDirection: 'row', flexWrap: 'wrap',
-    gap: 8, justifyContent: 'center',
-  },
-  presetPill: {
-    paddingHorizontal: 14, paddingVertical: 12,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)',
-    overflow: 'hidden',
-    minHeight: 44,
-  },
-  presetPillActive: {
     borderColor: '#F97316',
   },
-  presetPillText: {
-    fontSize: 12, fontWeight: '600',
-    color: 'rgba(255,255,255,0.5)',
+  rememberText: {
+    ...font.caption,
   },
-  presetPillTextActive: {
+  forgotLink: {
+    ...font.label,
+  },
+
+  // ── Button ──
+  btnOuter: {
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  btn: {
+    height: 52,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  btnText: {
+    ...font.button,
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
+  },
+  pwToggle: {
+    padding: 6,
+    marginLeft: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  // ── Quick Accounts ──
+  quickSection: {
+    marginTop: 28,
+    alignItems: 'center',
+  },
+  quickLabel: {
+    ...font.tableHeader,
+    marginBottom: 12,
+  },
+  quickRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    justifyContent: 'center',
+  },
+  pill: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 16,
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  pillSelected: {
+    borderColor: '#F97316',
+  },
+  pillSelectedBg: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 16,
+  },
+  pillText: {
+    ...font.label,
+    color: '#6B7280',
+    zIndex: 1,
+  },
+  pillTextSelected: {
     color: '#FFFFFF',
   },
 });

@@ -23,19 +23,19 @@ export function useOfflineSync(): SyncStatus & { forceSync: () => Promise<void> 
 
   const updateQueueStatus = useCallback(async () => {
     const qs = await getQueueStatus();
-    setStatus(s => ({ ...s, pendingOrders: qs.pending }));
+    setStatus((s) => ({ ...s, pendingOrders: qs.pending }));
   }, []);
 
   useEffect(() => {
     const handleOnline = () => {
-      setStatus(s => ({ ...s, isOnline: true }));
-      syncPendingOrders().then(r => {
-        setStatus(s => ({ ...s, lastSyncResult: `Synced ${r.synced}, failed ${r.failed}` }));
+      setStatus((s) => ({ ...s, isOnline: true }));
+      syncPendingOrders().then((r) => {
+        setStatus((s) => ({ ...s, lastSyncResult: `Synced ${r.synced}, failed ${r.failed}` }));
         clearSyncedOrders();
         updateQueueStatus();
       });
     };
-    const handleOffline = () => setStatus(s => ({ ...s, isOnline: false }));
+    const handleOffline = () => setStatus((s) => ({ ...s, isOnline: false }));
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
@@ -48,9 +48,13 @@ export function useOfflineSync(): SyncStatus & { forceSync: () => Promise<void> 
   }, [updateQueueStatus]);
 
   const forceSync = useCallback(async () => {
-    setStatus(s => ({ ...s, syncing: true }));
+    setStatus((s) => ({ ...s, syncing: true }));
     const r = await syncPendingOrders();
-    setStatus(s => ({ ...s, syncing: false, lastSyncResult: `Synced ${r.synced}, failed ${r.failed}` }));
+    setStatus((s) => ({
+      ...s,
+      syncing: false,
+      lastSyncResult: `Synced ${r.synced}, failed ${r.failed}`,
+    }));
     await clearSyncedOrders();
     await updateQueueStatus();
   }, [updateQueueStatus]);

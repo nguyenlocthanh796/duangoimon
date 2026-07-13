@@ -20,7 +20,9 @@ export default function ModuleCard({ icon, title, description, badge, onPress }:
       style={[styles.card, hovered && styles.cardHover]}
       onPress={onPress}
       activeOpacity={0.85}
-      {...(Platform.OS === 'web' ? { onHoverIn: () => setHovered(true), onHoverOut: () => setHovered(false) } : {})}
+      {...(Platform.OS === 'web'
+        ? { onHoverIn: () => setHovered(true), onHoverOut: () => setHovered(false) }
+        : {})}
     >
       <View style={styles.topRow}>
         <View style={[styles.iconWrap, hovered && styles.iconWrapHover]}>
@@ -32,8 +34,14 @@ export default function ModuleCard({ icon, title, description, badge, onPress }:
           </View>
         )}
       </View>
-      <Text style={styles.title} numberOfLines={2}>{title}</Text>
-      {description && <Text style={styles.desc} numberOfLines={2}>{description}</Text>}
+      <Text style={styles.title} numberOfLines={2}>
+        {title}
+      </Text>
+      {description && (
+        <Text style={styles.desc} numberOfLines={2}>
+          {description}
+        </Text>
+      )}
       <View style={styles.cta}>
         <Text style={styles.ctaText}>Mở</Text>
         <Icon name="chevron-right" size={16} color={colors.brand.primary} />
@@ -43,10 +51,32 @@ export default function ModuleCard({ icon, title, description, badge, onPress }:
 }
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, borderWidth: 1, borderColor: colors.border.light, gap: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3, minHeight: 132 },
-  cardHover: { borderColor: colors.brand.primary, shadowColor: colors.brand.primary, shadowOpacity: 0.18, shadowRadius: 14, elevation: 8, transform: [{ translateY: -2 }] as any },
+  card: {
+    backgroundColor: colors.surface.card,
+    borderRadius: shape.radius.lg,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: colors.border.light,
+    gap: 10,
+    boxShadow: "0px 2px 8px rgba(0,0,0,0.06)",
+    elevation: 3,
+    minHeight: 132,
+  },
+  cardHover: {
+    borderColor: colors.brand.primary,
+    boxShadow: '0 0 14px rgba(249,115,22,0.18)',
+    elevation: 8,
+    transform: [{ translateY: -2 }] as any,
+  },
   topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  iconWrap: { width: 46, height: 46, borderRadius: shape.radius.md, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' },
+  iconWrap: {
+    width: 46,
+    height: 46,
+    borderRadius: shape.radius.md,
+    backgroundColor: colors.brand.primaryBg,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   iconWrapHover: { backgroundColor: colors.brand.primary + '1A' },
   badge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: shape.radius.full },
   badgeText: { ...font.micro, fontWeight: '700' },

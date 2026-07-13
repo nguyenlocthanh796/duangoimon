@@ -6,8 +6,8 @@ import { colors, shape } from '../../theme';
 interface SplitViewProps {
   master: React.ReactNode;
   detail?: React.ReactNode;
-  masterRatio?: number;       // fraction of width for master pane (default 0.38)
-  showDetail?: boolean;       // when false (e.g. mobile with no selection) only master renders
+  masterRatio?: number; // fraction of width for master pane (default 0.38)
+  showDetail?: boolean; // when false (e.g. mobile with no selection) only master renders
   gap?: number;
 }
 

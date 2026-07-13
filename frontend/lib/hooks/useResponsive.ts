@@ -4,59 +4,85 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export type Breakpoint = 'mobile' | 'tablet-portrait' | 'tablet-landscape' | 'desktop';
 
 export interface ResponsiveInfo {
-  isWide: boolean;
-  isTablet: boolean;
-  isLandscape: boolean;
+  isWide: boolean;           // >= 768 — has persistent sidebar
+  isTablet: boolean;         // 768–1279
+  isTabletPortrait: boolean; // 768–1023 — sidebar icon-only (64px)
+  isTabletLandscape: boolean;// 1024–1279 — sidebar full (240px)
+  isLandscape: boolean;      // width > height
   width: number;
   height: number;
   breakpoint: Breakpoint;
-  containerWidth: number; // usable width for left panel (65% on wide, 100% on narrow)
+  containerWidth: number;    // usable width excluding sidebar
   gutter: number;
   hPad: number;
   safeBottom: number;
+  sidebarWidth: number;      // 0 | 64 | 240
   columns: (minItemWidth: number) => number;
 }
 
-const MIN_TABLE_WIDTH = 140;
+// iPad mini / iPad 9th gen portrait = 768pt
+// iPad landscape = 1024pt+
+// iPhone max = 430pt
+const TABLET_PORTRAIT_MIN = 768;
+const TABLET_LANDSCAPE_MIN = 1024;
+const DESKTOP_MIN = 1280;
 
 export function useResponsive(): ResponsiveInfo {
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  const isWide = width > 768;
   const isLandscape = width > height;
 
   let breakpoint: Breakpoint;
-  if (width > 1200) breakpoint = 'desktop';
-  else if (width >= 1024) breakpoint = 'tablet-landscape';
-  else if (width > 768) breakpoint = 'tablet-portrait';
+  if (width >= DESKTOP_MIN) breakpoint = 'desktop';
+  else if (width >= TABLET_LANDSCAPE_MIN) breakpoint = 'tablet-landscape';
+  else if (width >= TABLET_PORTRAIT_MIN) breakpoint = 'tablet-portrait';
   else breakpoint = 'mobile';
 
+  const isWide = breakpoint !== 'mobile';
   const isTablet = breakpoint === 'tablet-portrait' || breakpoint === 'tablet-landscape';
-  const containerWidth = isWide ? width * 0.65 : width;
+  const isTabletPortrait = breakpoint === 'tablet-portrait';
+  const isTabletLandscape = breakpoint === 'tablet-landscape' || breakpoint === 'desktop';
+
+  // Sidebar width by breakpoint
+  // - mobile: 0 (drawer overlay)
+  // - tablet-portrait: 64px (icon-only)
+  // - tablet-landscape/desktop: 240px (full label)
+  const sidebarWidth = isTabletPortrait ? 64 : isTabletLandscape ? 240 : 0;
+
+  // Usable content width after sidebar
+  const containerWidth = isWide ? width - sidebarWidth : width;
 
   // Scale spacing with width
   const gutter = isWide ? Math.max(8, Math.min(16, width * 0.01)) : 10;
-  const hPad = isWide ? 16 : 4;
+  const hPad = isWide ? 16 : 12;
 
-  const columns = (minItemWidth: number) => 
+  const columns = (minItemWidth: number) =>
     !isWide ? 1 : Math.max(2, calcGridCols(containerWidth, minItemWidth, hPad, gutter));
 
-  return { 
-    isWide, 
+  return {
+    isWide,
     isTablet,
+    isTabletPortrait,
+    isTabletLandscape,
     isLandscape,
-    width, 
-    height, 
-    breakpoint, 
-    containerWidth, 
-    gutter, 
+    width,
+    height,
+    breakpoint,
+    containerWidth,
+    gutter,
     hPad,
     safeBottom: insets.bottom,
-    columns
+    sidebarWidth,
+    columns,
   };
 }
 
 /** Calc numCols given containerWidth, min card width, and min clamp */
-export function calcGridCols(containerWidth: number, minItemWidth: number, hPad: number, gutter: number): number {
-  return Math.max(2, Math.floor((containerWidth - hPad * 2) / minItemWidth));
+export function calcGridCols(
+  containerWidth: number,
+  minItemWidth: number,
+  hPad: number,
+  gutter: number
+): number {
+  return Math.max(2, Math.floor((containerWidth - hPad * 2) / (minItemWidth + gutter)));
 }

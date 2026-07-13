@@ -1,30 +1,50 @@
 const PAY_METHODS = [
-  { id: 'tien_mat',    label: 'Tiền mặt',       icon: 'cash-register', },
-  { id: 'card',        label: 'Quẹt thẻ',        icon: 'credit-card-outline', },
-  { id: 'qr',          label: 'QR Code',          icon: 'qrcode-scan', },
-  { id: 'chuyen_khoan',label: 'Chuyển khoản',    icon: 'bank-transfer', },
+  { id: 'tien_mat', label: 'Tiền mặt', icon: 'cash-register' },
+  { id: 'card', label: 'Quẹt thẻ', icon: 'credit-card-outline' },
+  { id: 'qr', label: 'QR Code', icon: 'qrcode-scan' },
+  { id: 'chuyen_khoan', label: 'Chuyển khoản', icon: 'bank-transfer' },
 ];
 
 export { PAY_METHODS };
 
 export function generateReceiptHTML(opts: {
-  tableName: string; orderId: string; total: number;
-  method?: string; cash?: number; change?: number;
-  items: Array<{ product_name: string; quantity: number; unit_price: number; note?: string; options?: Record<string, string> }>;
+  tableName: string;
+  orderId: string;
+  total: number;
+  method?: string;
+  cash?: number;
+  change?: number;
+  items: Array<{
+    product_name: string;
+    quantity: number;
+    unit_price: number;
+    note?: string;
+    options?: Record<string, string>;
+  }>;
   isTemporary?: boolean;
 }): string {
-  const itemsHTML = opts.items.map(item => `
+  const itemsHTML = opts.items
+    .map(
+      (item) => `
     <div class="item" style="align-items: flex-start; margin-bottom: 8px;">
       <div style="flex: 1; padding-right: 10px; text-align: left;">
         <div><strong>${item.product_name || 'Món ăn'}</strong></div>
         ${item.note ? `<div style="font-size: 10px; color: #555;">* Ghi chú: ${item.note}</div>` : ''}
-        ${item.options && Object.keys(item.options).length ? `<div style="font-size: 10px; color: #555;">* ${Object.entries(item.options).map(([k, v]) => `${k}: ${v}`).join(', ')}</div>` : ''}
+        ${
+          item.options && Object.keys(item.options).length
+            ? `<div style="font-size: 10px; color: #555;">* ${Object.entries(item.options)
+                .map(([k, v]) => `${k}: ${v}`)
+                .join(', ')}</div>`
+            : ''
+        }
       </div>
       <div style="white-space: nowrap; text-align: right;">
         ${item.quantity} x ${(item.unit_price || 0).toLocaleString('vi-VN')}đ
       </div>
     </div>
-  `).join('');
+  `
+    )
+    .join('');
 
   return `
     <html>
@@ -59,12 +79,16 @@ export function generateReceiptHTML(opts: {
           <span>${opts.isTemporary ? 'Tạm tính' : 'Tổng thanh toán'}</span>
           <span>${opts.total.toLocaleString('vi-VN')}đ</span>
         </div>
-        ${!opts.isTemporary ? `
+        ${
+          !opts.isTemporary
+            ? `
         <div class="item" style="margin-top: 8px;">
           <span>Phương thức</span>
-          <span>${opts.method ? (PAY_METHODS.find(m => m.id === opts.method)?.label || opts.method) : '—'}</span>
+          <span>${opts.method ? PAY_METHODS.find((m) => m.id === opts.method)?.label || opts.method : '—'}</span>
         </div>
-        ${opts.method === 'tien_mat' ? `
+        ${
+          opts.method === 'tien_mat'
+            ? `
         <div class="item">
           <span>Khách đưa</span>
           <span>${(opts.cash || 0).toLocaleString('vi-VN')}đ</span>
@@ -73,8 +97,12 @@ export function generateReceiptHTML(opts: {
           <span>Tiền trả lại</span>
           <span>${Math.max(0, opts.change || 0).toLocaleString('vi-VN')}đ</span>
         </div>
-        ` : ''}
-        ` : ''}
+        `
+            : ''
+        }
+        `
+            : ''
+        }
         <div class="divider"></div>
         <div class="footer">
           <p>Cảm ơn Quý khách. Hẹn gặp lại!</p>

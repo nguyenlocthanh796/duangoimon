@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { useEffect, useRef, useState, useCallback } from 'react';
 
 const WS_URL = 'ws://localhost:8000/ws/kitchen';
@@ -7,7 +7,10 @@ export type OrderEvent =
   | { event: 'new_order'; order: any }
   | { event: 'order_updated'; order: any }
   | { event: 'item_status_changed'; item: { id: string; status: string } }
-  | { event: 'stock_alert'; data: { raw_material: string; current_stock: number; min_stock: number } };
+  | {
+      event: 'stock_alert';
+      data: { raw_material: string; current_stock: number; min_stock: number };
+    };
 
 export function useKitchenWS() {
   const wsRef = useRef<WebSocket | null>(null);
@@ -33,8 +36,10 @@ export function useKitchenWS() {
         try {
           const data = JSON.parse(ev.data) as OrderEvent;
           setLastEvent(data);
-          listenersRef.current.forEach(fn => fn(data));
-        } catch { /* ignore parse errors */ }
+          listenersRef.current.forEach((fn) => fn(data));
+        } catch {
+          /* ignore parse errors */
+        }
       };
     } catch {
       // Failed to connect, try again later
@@ -51,7 +56,9 @@ export function useKitchenWS() {
 
   const subscribe = useCallback((fn: (ev: OrderEvent) => void) => {
     listenersRef.current.add(fn);
-    return () => { listenersRef.current.delete(fn); };
+    return () => {
+      listenersRef.current.delete(fn);
+    };
   }, []);
 
   useEffect(() => {

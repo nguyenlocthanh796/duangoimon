@@ -17,18 +17,42 @@ export default function OccupancyProgress({ trong, coKhach, daDat }: OccupancyPr
 
   return (
     <View>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 12,
+        }}
+      >
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <Icon name="chart-donut" size={18} color={colors.brand.primary} />
           <Text style={{ ...font.h3, color: colors.text.primary }}>Mật độ bàn ăn</Text>
         </View>
-        <Text style={{ ...font.bodySmall, color: colors.text.secondary }}>{coKhach}/{total} bàn đang dùng</Text>
+        <Text style={{ ...font.bodySmall, color: colors.text.secondary }}>
+          {coKhach}/{total} bàn đang dùng
+        </Text>
       </View>
 
-      <View style={{ flexDirection: 'row', height: 12, borderRadius: 6, backgroundColor: colors.surface.disabled, overflow: 'hidden', marginBottom: 14 }}>
-        {pctTrong > 0 && <View style={{ width: `${pctTrong}%`, height: '100%', backgroundColor: '#10B981' }} />}
-        {pctCoKhach > 0 && <View style={{ width: `${pctCoKhach}%`, height: '100%', backgroundColor: '#F97316' }} />}
-        {pctDaDat > 0 && <View style={{ width: `${pctDaDat}%`, height: '100%', backgroundColor: '#64748B' }} />}
+      <View
+        style={{
+          flexDirection: 'row',
+          height: 12,
+          borderRadius: 6,
+          backgroundColor: colors.surface.disabled,
+          overflow: 'hidden',
+          marginBottom: 14,
+        }}
+      >
+        {pctTrong > 0 && (
+          <View style={{ width: `${pctTrong}%`, height: '100%', backgroundColor: '#10B981' }} />
+        )}
+        {pctCoKhach > 0 && (
+          <View style={{ width: `${pctCoKhach}%`, height: '100%', backgroundColor: '#F97316' }} />
+        )}
+        {pctDaDat > 0 && (
+          <View style={{ width: `${pctDaDat}%`, height: '100%', backgroundColor: '#64748B' }} />
+        )}
       </View>
 
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
@@ -38,7 +62,9 @@ export default function OccupancyProgress({ trong, coKhach, daDat }: OccupancyPr
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#F97316' }} />
-          <Text style={{ ...font.bodySmall, color: colors.text.secondary }}>Có khách: {coKhach}</Text>
+          <Text style={{ ...font.bodySmall, color: colors.text.secondary }}>
+            Có khách: {coKhach}
+          </Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#64748B' }} />

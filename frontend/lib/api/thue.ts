@@ -79,7 +79,10 @@ export async function getProfiles(branchId: string): Promise<HKDProfile[]> {
 }
 
 export async function patchProfile(id: string, body: Partial<HKDProfile>): Promise<HKDProfile> {
-  return request<HKDProfile>(`${BASE}/profiles/${id}`, { method: 'PATCH', body: JSON.stringify(body) });
+  return request<HKDProfile>(`${BASE}/profiles/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(body),
+  });
 }
 
 export async function getProfileStatus(id: string): Promise<ProfileStatus> {
@@ -95,7 +98,10 @@ export async function getBankAccounts(branchId: string): Promise<BankAccount[]> 
 }
 
 export async function createBankAccount(body: Partial<BankAccount>): Promise<BankAccount> {
-  return request<BankAccount>(`${BASE}/bank-accounts`, { method: 'POST', body: JSON.stringify(body) });
+  return request<BankAccount>(`${BASE}/bank-accounts`, {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
 }
 
 export async function getDeadlines(branchId: string): Promise<DeclarationDeadline[]> {
@@ -103,13 +109,20 @@ export async function getDeadlines(branchId: string): Promise<DeclarationDeadlin
 }
 
 export function bulkSubmitDeadlines(ids: string[], note?: string) {
-  return request<{ submitted: number; status: string }>(`${BASE}/deadlines/bulk-submit`, { method: 'POST', body: JSON.stringify({ ids, note: note ?? null }) });
+  return request<{ submitted: number; status: string }>(`${BASE}/deadlines/bulk-submit`, {
+    method: 'POST',
+    body: JSON.stringify({ ids, note: note ?? null }),
+  });
 }
 
 /** P4.1 — download the 12-month tax report as CSV or PDF (blob). */
-export async function exportTaxReport(branchId: string, year: number, format: 'csv' | 'pdf'): Promise<void> {
-  const token = (typeof window !== 'undefined') ? localStorage.getItem('pos_token') : null;
-  const origin = (typeof window !== 'undefined') ? window.location.origin : '';
+export async function exportTaxReport(
+  branchId: string,
+  year: number,
+  format: 'csv' | 'pdf'
+): Promise<void> {
+  const token = await (await import('../secure-storage')).getToken();
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
   const url = `${origin}/api/v1${BASE}/report/${branchId}/export?year=${year}&fmt=${format}`;
   const res = await fetch(url, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
   if (!res.ok) throw new Error('Xuất báo cáo thất bại');
@@ -128,8 +141,14 @@ export async function exportTaxReport(branchId: string, year: number, format: 'c
   }
 }
 
-export async function getDeclarationXml(form: string, branchId: string, period: string): Promise<string> {
-  return request<string>(`${BASE}/declaration/${form}/${branchId}?period=${encodeURIComponent(period)}`);
+export async function getDeclarationXml(
+  form: string,
+  branchId: string,
+  period: string
+): Promise<string> {
+  return request<string>(
+    `${BASE}/declaration/${form}/${branchId}?period=${encodeURIComponent(period)}`
+  );
 }
 
 export async function getTaxReport(branchId: string, year: number): Promise<TaxReport> {
@@ -137,5 +156,8 @@ export async function getTaxReport(branchId: string, year: number): Promise<TaxR
 }
 
 export async function getLegacyChecklist(branchId: string): Promise<LegacyChecklist> {
-  return request<LegacyChecklist>(`${BASE}/legacy-inventory/checklist/${branchId}`, { method: 'POST', body: '{}' });
+  return request<LegacyChecklist>(`${BASE}/legacy-inventory/checklist/${branchId}`, {
+    method: 'POST',
+    body: '{}',
+  });
 }

@@ -13,14 +13,17 @@ export function useSortState(initialKey?: string, initialDir: SortDir = 'asc'): 
   const [sortKey, setSortKey] = useState<string | undefined>(initialKey);
   const [sortDir, setSortDir] = useState<SortDir>(initialDir);
 
-  const toggle = useCallback((key: string) => {
-    if (key === sortKey) {
-      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
-    } else {
-      setSortKey(key);
-      setSortDir('asc');
-    }
-  }, [sortKey]);
+  const toggle = useCallback(
+    (key: string) => {
+      if (key === sortKey) {
+        setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+      } else {
+        setSortKey(key);
+        setSortDir('asc');
+      }
+    },
+    [sortKey]
+  );
 
   return { sortKey, sortDir, toggle };
 }
@@ -30,7 +33,7 @@ export function applySort<T>(
   rows: T[],
   sortKey: string | undefined,
   sortDir: SortDir,
-  columns: { key: string; sortValue?: (row: T) => number | string }[],
+  columns: { key: string; sortValue?: (row: T) => number | string }[]
 ): T[] {
   if (!sortKey) return rows;
   const col = columns.find((c) => c.key === sortKey);

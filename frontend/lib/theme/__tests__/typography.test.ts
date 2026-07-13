@@ -8,12 +8,12 @@ const originalLoad = (Module as any)._load;
   if (request === 'react-native') {
     return {
       Dimensions: {
-        get: () => ({ width: 375, height: 812 })
+        get: () => ({ width: 375, height: 812 }),
       },
       Platform: {
         OS: 'ios',
-        isPad: false
-      }
+        isPad: false,
+      },
     };
   }
   return originalLoad.apply(this, arguments);
@@ -33,7 +33,7 @@ test('typography font definitions have correct weights and font families', () =>
   // Check headers
   assert.strictEqual(font.h1.fontFamily, 'BeVietnamPro_700Bold');
   assert.strictEqual(font.h1.fontWeight, '700');
-  
+
   assert.strictEqual(font.h2.fontFamily, 'BeVietnamPro_700Bold');
   assert.strictEqual(font.h2.fontWeight, '700');
 

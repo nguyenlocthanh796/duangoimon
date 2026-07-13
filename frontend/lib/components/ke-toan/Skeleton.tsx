@@ -9,7 +9,12 @@ export interface SkeletonProps {
   style?: any;
 }
 
-export function Skeleton({ width = '100%', height = 16, radius = shape.radius.md, style }: SkeletonProps) {
+export function Skeleton({
+  width = '100%',
+  height = 16,
+  radius = shape.radius.md,
+  style,
+}: SkeletonProps) {
   const opacity = useRef(new Animated.Value(0.4)).current;
   useEffect(() => {
     const loop = Animated.loop(
@@ -22,13 +27,19 @@ export function Skeleton({ width = '100%', height = 16, radius = shape.radius.md
     return () => loop.stop();
   }, [opacity]);
   return (
-    <Animated.View
-      style={[styles.box, { width, height, borderRadius: radius, opacity }, style]}
-    />
+    <Animated.View style={[styles.box, { width, height, borderRadius: radius, opacity }, style]} />
   );
 }
 
-export function SkeletonList({ count = 4, rowHeight = 64, gap = 12 }: { count?: number; rowHeight?: number; gap?: number }) {
+export function SkeletonList({
+  count = 4,
+  rowHeight = 64,
+  gap = 12,
+}: {
+  count?: number;
+  rowHeight?: number;
+  gap?: number;
+}) {
   return (
     <View style={{ gap }}>
       {Array.from({ length: count }).map((_, i) => (

@@ -24,7 +24,7 @@ export async function cachedGet<T>(
   key: string,
   fetcher: () => Promise<T>,
   staleMs = DEFAULT_STALE_MS,
-  expireMs = DEFAULT_EXPIRE_MS,
+  expireMs = DEFAULT_EXPIRE_MS
 ): Promise<T> {
   const now = Date.now();
   const existing = _store.get(key);
@@ -47,7 +47,7 @@ async function _refetch<T>(
   key: string,
   fetcher: () => Promise<T>,
   staleMs: number,
-  expireMs: number,
+  expireMs: number
 ): Promise<T> {
   const now = Date.now();
   try {

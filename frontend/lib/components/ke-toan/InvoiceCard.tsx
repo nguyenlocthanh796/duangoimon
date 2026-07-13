@@ -6,8 +6,16 @@ import { shape } from '../../theme/shape';
 import type { Invoice } from '../../api';
 
 const STATUS_LABEL: Record<string, string> = { moi: 'Mới', da_xuat: 'Đã xuất', huy: 'Hủy' };
-const STATUS_COLOR: Record<string, string> = { moi: colors.status.warning, da_xuat: colors.status.success, huy: colors.status.danger };
-const STATUS_BG: Record<string, string> = { moi: colors.status.warningBg, da_xuat: colors.status.successBg, huy: colors.status.dangerBg };
+const STATUS_COLOR: Record<string, string> = {
+  moi: colors.status.warning,
+  da_xuat: colors.status.success,
+  huy: colors.status.danger,
+};
+const STATUS_BG: Record<string, string> = {
+  moi: colors.status.warningBg,
+  da_xuat: colors.status.successBg,
+  huy: colors.status.dangerBg,
+};
 
 const formatAmount = (n: number) => n.toLocaleString('vi-VN') + '₫';
 const formatDate = (iso: string | null) => (iso ? iso.slice(0, 10) : '');
@@ -19,7 +27,12 @@ interface InvoiceCardProps {
   isWide?: boolean;
 }
 
-export default function InvoiceCard({ item, exportingId, onExport, isWide = false }: InvoiceCardProps) {
+export default function InvoiceCard({
+  item,
+  exportingId,
+  onExport,
+  isWide = false,
+}: InvoiceCardProps) {
   const isExporting = exportingId === item.id;
   const beforeTax = item.total_amount - (item.vat_amount || 0);
 
@@ -45,18 +58,28 @@ export default function InvoiceCard({ item, exportingId, onExport, isWide = fals
         <Text style={[styles.colText, { flex: 1.2, textAlign: 'right' }]}>
           {formatAmount(beforeTax)}
         </Text>
-        <Text style={[styles.colText, { flex: 0.8, textAlign: 'center' }]}>
-          {item.vat_rate}%
-        </Text>
+        <Text style={[styles.colText, { flex: 0.8, textAlign: 'center' }]}>{item.vat_rate}%</Text>
         <Text style={[styles.colText, { flex: 1, textAlign: 'right', color: colors.text.muted }]}>
           {formatAmount(item.vat_amount || 0)}
         </Text>
-        <Text style={[styles.colText, { flex: 1.2, textAlign: 'right', fontWeight: '800', color: colors.text.primary }]}>
+        <Text
+          style={[
+            styles.colText,
+            { flex: 1.2, textAlign: 'right', fontWeight: '800', color: colors.text.primary },
+          ]}
+        >
           {formatAmount(item.total_amount)}
         </Text>
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <View style={[styles.badge, { backgroundColor: STATUS_BG[item.status] ?? colors.surface.disabled }]}>
-            <Text style={[styles.badgeText, { color: STATUS_COLOR[item.status] ?? colors.text.muted }]}>
+          <View
+            style={[
+              styles.badge,
+              { backgroundColor: STATUS_BG[item.status] ?? colors.surface.disabled },
+            ]}
+          >
+            <Text
+              style={[styles.badgeText, { color: STATUS_COLOR[item.status] ?? colors.text.muted }]}
+            >
               {STATUS_LABEL[item.status] ?? item.status}
             </Text>
           </View>
@@ -93,7 +116,12 @@ export default function InvoiceCard({ item, exportingId, onExport, isWide = fals
           {item.buyer_name || 'Khách vãng lai'}
         </Text>
       </View>
-      <Text style={[styles.colText, { flex: 1.2, textAlign: 'right', fontWeight: '800', color: colors.text.primary }]}>
+      <Text
+        style={[
+          styles.colText,
+          { flex: 1.2, textAlign: 'right', fontWeight: '800', color: colors.text.primary },
+        ]}
+      >
         {formatAmount(item.total_amount)}
       </Text>
       <View style={{ flex: 1.2, alignItems: 'flex-end', justifyContent: 'center' }}>
@@ -110,8 +138,15 @@ export default function InvoiceCard({ item, exportingId, onExport, isWide = fals
             )}
           </TouchableOpacity>
         ) : (
-          <View style={[styles.badge, { backgroundColor: STATUS_BG[item.status] ?? colors.surface.disabled }]}>
-            <Text style={[styles.badgeText, { color: STATUS_COLOR[item.status] ?? colors.text.muted }]}>
+          <View
+            style={[
+              styles.badge,
+              { backgroundColor: STATUS_BG[item.status] ?? colors.surface.disabled },
+            ]}
+          >
+            <Text
+              style={[styles.badgeText, { color: STATUS_COLOR[item.status] ?? colors.text.muted }]}
+            >
               {STATUS_LABEL[item.status] ?? item.status}
             </Text>
           </View>

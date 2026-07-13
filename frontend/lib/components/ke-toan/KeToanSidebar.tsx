@@ -1,30 +1,45 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Image } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { colors, font, shape } from '../../lib/theme';
+import { colors, font, shape } from '../../theme';
 import { useSegments, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAuth } from '../../lib/context/AuthContext';
-import { ASSETS } from '../../lib/assets';
+import { useAuth } from '../../context/AuthContext';
+import { ASSETS } from '../../assets';
 
 const NAV_ITEMS = [
   { key: 'hub', path: '/ke-toan', icon: 'chart-box-outline', label: 'Tổng quan' },
   { key: 'thu-chi', path: '/ke-toan/thu-chi', icon: 'swap-vertical', label: 'Thu Chi' },
   { key: 'invoices', path: '/ke-toan/invoices', icon: 'receipt', label: 'Hóa đơn VAT' },
   { key: 'tier', path: '/ke-toan/thue/tier', icon: 'chart-bell-curve', label: 'Phân Tầng HKD' },
-  { key: 'so-sach', path: '/ke-toan/thue/so-sach', icon: 'book-open-page-variant', label: 'Sổ Kế Toán' },
-  { key: 'declaration', path: '/ke-toan/thue/declaration', icon: 'file-document-edit', label: 'Kê Khai Thuế' },
+  {
+    key: 'so-sach',
+    path: '/ke-toan/thue/so-sach',
+    icon: 'book-open-page-variant',
+    label: 'Sổ Kế Toán',
+  },
+  {
+    key: 'declaration',
+    path: '/ke-toan/thue/declaration',
+    icon: 'file-document-edit',
+    label: 'Kê Khai Thuế',
+  },
   { key: 'bank', path: '/ke-toan/thue/bank-accounts', icon: 'bank', label: 'TK Ngân Hàng' },
   { key: 'deadlines', path: '/ke-toan/thue/deadlines', icon: 'calendar-alert', label: 'Hạn Nộp' },
-  { key: 'legacy', path: '/ke-toan/thue/legacy', icon: 'package-variant-closed', label: 'Chuyển Tiếp' },
+  {
+    key: 'legacy',
+    path: '/ke-toan/thue/legacy',
+    icon: 'package-variant-closed',
+    label: 'Chuyển Tiếp',
+  },
 ];
 
 const ROLE_INFO: Record<string, { label: string; color: string; bg: string; emoji: string }> = {
-  admin:       { label: 'Quản trị viên', color: '#7C3AED', bg: '#F5F3FF', emoji: '👑' },
-  manager:     { label: 'Quản lý',       color: '#2563EB', bg: '#EFF6FF', emoji: '🏢' },
-  accountant:  { label: 'Kế toán',       color: '#059669', bg: '#ECFDF5', emoji: '📊' },
-  cashier:     { label: 'Thu ngân',      color: '#D97706', bg: '#FFFBEB', emoji: '💵' },
-  kitchen:     { label: 'Nhà bếp',       color: '#DC2626', bg: '#FEF2F2', emoji: '🍳' },
+  admin: { label: 'Quản trị viên', color: '#7C3AED', bg: '#F5F3FF', emoji: '👑' },
+  manager: { label: 'Quản lý', color: '#2563EB', bg: '#EFF6FF', emoji: '🏢' },
+  accountant: { label: 'Kế toán', color: '#059669', bg: '#ECFDF5', emoji: '📊' },
+  cashier: { label: 'Thu ngân', color: '#D97706', bg: '#FFFBEB', emoji: '💵' },
+  kitchen: { label: 'Nhà bếp', color: '#DC2626', bg: '#FEF2F2', emoji: '🍳' },
 };
 
 function isPathActive(path: string, segments: string[]): boolean {
@@ -41,7 +56,12 @@ export default function KeToanSidebar({ isWide }: { isWide: boolean }) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { userRole, username, logout } = useAuth();
-  const roleInfo = ROLE_INFO[userRole] ?? { label: userRole, color: '#64748B', bg: '#F1F5F9', emoji: '❓' };
+  const roleInfo = ROLE_INFO[userRole] ?? {
+    label: userRole,
+    color: '#64748B',
+    bg: '#F1F5F9',
+    emoji: '❓',
+  };
 
   // System navigation items by role (mirrors menuByRole in Sidebar.tsx)
   const systemItems: { path: string; icon: string; label: string }[] = [];
@@ -58,9 +78,15 @@ export default function KeToanSidebar({ isWide }: { isWide: boolean }) {
     <View style={[styles.container, { paddingTop: Math.max(12, insets.top) }]}>
       {/* Header brand + User card (matched Sidebar.tsx L108-137) */}
       <View style={styles.header}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <View
+          style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
+        >
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-            <Image source={ASSETS.brand.logoMark} style={{ width: 40, height: 40, borderRadius: shape.radius.sm }} resizeMode="contain" />
+            <Image
+              source={ASSETS.brand.logoMark}
+              style={{ width: 40, height: 40, borderRadius: shape.radius.sm }}
+              resizeMode="contain"
+            />
             <View>
               <Text style={{ ...font.h3, color: colors.text.primary }}>POS Pro</Text>
               <Text style={{ ...font.caption, color: colors.text.muted }}>Kế toán & Thuế</Text>
@@ -73,9 +99,13 @@ export default function KeToanSidebar({ isWide }: { isWide: boolean }) {
               <Text style={{ fontSize: 18 }}>{roleInfo.emoji}</Text>
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={{ ...font.bodyBold, color: colors.text.primary }} numberOfLines={1}>{username}</Text>
+              <Text style={{ ...font.bodyBold, color: colors.text.primary }} numberOfLines={1}>
+                {username}
+              </Text>
               <View style={[styles.roleBadge, { backgroundColor: roleInfo.bg }]}>
-                <Text style={{ ...font.badge, color: roleInfo.color }}>{roleInfo.label.toUpperCase()}</Text>
+                <Text style={{ ...font.badge, color: roleInfo.color }}>
+                  {roleInfo.label.toUpperCase()}
+                </Text>
               </View>
             </View>
           </View>
@@ -83,7 +113,11 @@ export default function KeToanSidebar({ isWide }: { isWide: boolean }) {
       </View>
 
       {/* Navigation — ScrollView */}
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 12 }} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingHorizontal: 12 }}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Kế toán section */}
         <Text style={styles.groupLabel}>KẾ TOÁN & THUẾ</Text>
         {NAV_ITEMS.map((item) => {
@@ -96,7 +130,11 @@ export default function KeToanSidebar({ isWide }: { isWide: boolean }) {
               style={[styles.navItem, active && styles.navItemActive]}
             >
               <View style={[styles.navIcon, active && styles.navIconActive]}>
-                <Icon name={item.icon as any} size={20} color={active ? '#fff' : colors.icon.muted} />
+                <Icon
+                  name={item.icon as any}
+                  size={20}
+                  color={active ? '#fff' : colors.icon.muted}
+                />
               </View>
               <Text style={[styles.navLabel, active && styles.navLabelActive]}>{item.label}</Text>
             </TouchableOpacity>
@@ -126,7 +164,12 @@ export default function KeToanSidebar({ isWide }: { isWide: boolean }) {
 
       {/* Logout (matched Sidebar.tsx L200-208) */}
       <View style={[styles.logoutWrap, { paddingBottom: Math.max(16, insets.bottom) }]}>
-        <TouchableOpacity onPress={() => logout()} activeOpacity={0.7} style={styles.logoutBtn} accessibilityLabel="Đăng xuất">
+        <TouchableOpacity
+          onPress={() => logout()}
+          activeOpacity={0.7}
+          style={styles.logoutBtn}
+          accessibilityLabel="Đăng xuất"
+        >
           <View style={styles.logoutIcon}>
             <Icon name="logout" size={20} color={colors.text.danger} />
           </View>
@@ -143,10 +186,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface.card,
     borderRightWidth: 1,
     borderRightColor: colors.border.default,
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 8, height: 0 },
-    shadowOpacity: 0.12,
-    shadowRadius: 24,
+    boxShadow: '8px 0 24px rgba(15, 23, 42, 0.12)',
     elevation: 12,
     flexDirection: 'column',
   },

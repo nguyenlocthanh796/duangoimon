@@ -21,28 +21,46 @@ export default function POSOrderScreen({ tableId, tableName, onClose }: POSOrder
   const { openSidebar } = useSidebar();
   const { width: SCREEN_WIDTH } = useWindowDimensions();
   const isWide = SCREEN_WIDTH > 768;
-  const breakpoint = SCREEN_WIDTH > 1200 ? 'desktop'
-    : SCREEN_WIDTH > 1024 ? 'tablet-landscape'
-    : SCREEN_WIDTH > 768 ? 'tablet-portrait'
-    : 'mobile';
+  const breakpoint =
+    SCREEN_WIDTH > 1200
+      ? 'desktop'
+      : SCREEN_WIDTH > 1024
+        ? 'tablet-landscape'
+        : SCREEN_WIDTH > 768
+          ? 'tablet-portrait'
+          : 'mobile';
   const panelWidth = isWide ? SCREEN_WIDTH * 0.65 : SCREEN_WIDTH;
 
   const ord = useTableOrder(tableId, tableName, onClose);
 
-  const filteredItems = useMemo(() =>
-    ord.activeCategory === 'all' ? ord.products : ord.products.filter(i => i.category === ord.activeCategory),
-    [ord.activeCategory, ord.products]);
+  const filteredItems = useMemo(
+    () =>
+      ord.activeCategory === 'all'
+        ? ord.products
+        : ord.products.filter((i) => i.category === ord.activeCategory),
+    [ord.activeCategory, ord.products]
+  );
 
   if (ord.loading) {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surface.app }}>
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: colors.surface.app,
+        }}
+      >
         <ActivityIndicator size="large" color={colors.brand.primary} />
       </View>
     );
   }
 
   return (
-    <SafeAreaView edges={['left', 'right', 'bottom']} style={{ flex: 1, backgroundColor: colors.surface.app }}>
+    <SafeAreaView
+      edges={['left', 'right', 'bottom']}
+      style={{ flex: 1, backgroundColor: colors.surface.app }}
+    >
       <OrderHeader
         tableName={tableName}
         itemsCount={ord.itemCount}
@@ -60,8 +78,22 @@ export default function POSOrderScreen({ tableId, tableName, onClose }: POSOrder
 
       {isWide ? (
         <View style={{ flex: 1, flexDirection: 'row', backgroundColor: colors.surface.app }}>
-          <View style={{ flex: 6, position: 'relative', borderRightWidth: 1, borderRightColor: colors.border.default }}>
-            <ScrollView contentContainerStyle={{ paddingVertical: 16, paddingHorizontal: 12, paddingBottom: 32 }} showsVerticalScrollIndicator={false}>
+          <View
+            style={{
+              flex: 6,
+              position: 'relative',
+              borderRightWidth: 1,
+              borderRightColor: colors.border.default,
+            }}
+          >
+            <ScrollView
+              contentContainerStyle={{
+                paddingVertical: 16,
+                paddingHorizontal: 12,
+                paddingBottom: 32,
+              }}
+              showsVerticalScrollIndicator={false}
+            >
               <ProductGrid
                 products={filteredItems}
                 loading={ord.loading}
@@ -108,7 +140,11 @@ export default function POSOrderScreen({ tableId, tableName, onClose }: POSOrder
         </View>
       ) : (
         <View style={{ flex: 1, position: 'relative', minHeight: 0 }}>
-          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingVertical: 6, paddingBottom: 90 }} showsVerticalScrollIndicator={false}>
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{ paddingVertical: 6, paddingBottom: 90 }}
+            showsVerticalScrollIndicator={false}
+          >
             <ProductGrid
               products={filteredItems}
               loading={ord.loading}
@@ -126,9 +162,15 @@ export default function POSOrderScreen({ tableId, tableName, onClose }: POSOrder
             itemCount={ord.itemCount}
             total={ord.total}
             onPress={() => ord.setCartSheet(true)}
+            onSendToKitchen={ord.handleSendToKitchen}
             onSave={ord.handleSaveTable}
             onPay={ord.handlePay}
             submitting={ord.submitting}
+            hasUnsentItems={ord.cart.some(
+              (i) =>
+                !(i.isSent && i.status && !['moi', undefined, ''].includes(i.status)) &&
+                !i.cancelReason
+            )}
           />
 
           <CartPanel

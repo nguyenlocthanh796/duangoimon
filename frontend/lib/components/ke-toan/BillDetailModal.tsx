@@ -1,10 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Modal, ScrollView, TouchableOpacity, ActivityIndicator, StyleSheet, useWindowDimensions } from 'react-native';
+import {
+  View,
+  Text,
+  Modal,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+  StyleSheet,
+  useWindowDimensions,
+} from 'react-native';
 import { useSafeAreaInsets, SafeAreaView } from 'react-native-safe-area-context';
 import { api } from '../../api';
 import { colors, font } from '../../theme';
 import { shape } from '../../theme/shape';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
+import { logger } from '../../logger';
 
 interface BillDetailModalProps {
   visible: boolean;
@@ -22,12 +32,13 @@ export default function BillDetailModal({ visible, orderId, onClose }: BillDetai
     if (visible && orderId) {
       setLoading(true);
       setOrder(null);
-      api.getOrder(orderId)
-        .then(data => {
+      api
+        .getOrder(orderId)
+        .then((data) => {
           setOrder(data);
         })
-        .catch(err => {
-          console.error("Lỗi tải chi tiết đơn hàng: ", err);
+        .catch((err) => {
+          logger.error('bill-detail', 'Lỗi tải chi tiết đơn hàng: ', err);
         })
         .finally(() => {
           setLoading(false);
@@ -59,13 +70,18 @@ export default function BillDetailModal({ visible, orderId, onClose }: BillDetai
       return (
         <View style={styles.center}>
           <Icon name="alert-circle-outline" size={48} color={colors.text.danger} />
-          <Text style={[styles.loadingText, { color: colors.text.danger, marginTop: 8 }]}>Không tìm thấy dữ liệu hóa đơn này.</Text>
+          <Text style={[styles.loadingText, { color: colors.text.danger, marginTop: 8 }]}>
+            Không tìm thấy dữ liệu hóa đơn này.
+          </Text>
         </View>
       );
     }
 
     return (
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={isWide ? styles.billWrapper : styles.billWrapperMobile}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={isWide ? styles.billWrapper : styles.billWrapperMobile}
+      >
         <View style={isWide ? styles.receipt : styles.receiptMobile}>
           <Text style={styles.shopName}>POS PRO F&B</Text>
           <Text style={styles.shopSub}>Đ/c: 123 Đường Số 1, Phường 4, Quận 3</Text>
@@ -74,7 +90,9 @@ export default function BillDetailModal({ visible, orderId, onClose }: BillDetai
           <Text style={styles.receiptTitle}>HÓA ĐƠN THANH TOÁN</Text>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Bàn:</Text>
-            <Text style={styles.infoVal}>{order.table_name || `Bàn ${(order.table_id || '').slice(0, 4)}`}</Text>
+            <Text style={styles.infoVal}>
+              {order.table_name || `Bàn ${(order.table_id || '').slice(0, 4)}`}
+            </Text>
           </View>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Thời gian:</Text>
@@ -108,8 +126,12 @@ export default function BillDetailModal({ visible, orderId, onClose }: BillDetai
                   </Text>
                 ) : null}
               </View>
-              <Text style={[styles.cellText, { flex: 0.5, textAlign: 'center' }]}>{item.quantity}</Text>
-              <Text style={[styles.cellText, { flex: 1.2, textAlign: 'right' }]}>{formatPrice(item.unit_price)}</Text>
+              <Text style={[styles.cellText, { flex: 0.5, textAlign: 'center' }]}>
+                {item.quantity}
+              </Text>
+              <Text style={[styles.cellText, { flex: 1.2, textAlign: 'right' }]}>
+                {formatPrice(item.unit_price)}
+              </Text>
               <Text style={[styles.cellText, { flex: 1.3, textAlign: 'right', fontWeight: '700' }]}>
                 {formatPrice(item.unit_price * item.quantity)}
               </Text>
@@ -127,8 +149,15 @@ export default function BillDetailModal({ visible, orderId, onClose }: BillDetai
             </View>
           ) : null}
           <View style={[styles.summaryRow, { marginTop: 4 }]}>
-            <Text style={[styles.summaryLabel, { fontSize: 16, fontWeight: '900' }]}>TỔNG CỘNG:</Text>
-            <Text style={[styles.summaryVal, { fontSize: 18, fontWeight: '900', color: colors.brand.primary }]}>
+            <Text style={[styles.summaryLabel, { fontSize: 16, fontWeight: '900' }]}>
+              TỔNG CỘNG:
+            </Text>
+            <Text
+              style={[
+                styles.summaryVal,
+                { fontSize: 18, fontWeight: '900', color: colors.brand.primary },
+              ]}
+            >
               {formatPrice(order.total_amount)}
             </Text>
           </View>
@@ -166,7 +195,9 @@ export default function BillDetailModal({ visible, orderId, onClose }: BillDetai
           </TouchableOpacity>
           <View style={styles.mobileHeaderTitleBlock}>
             <Text style={styles.mobileTitle}>Chi tiết hóa đơn</Text>
-            {order ? <Text style={styles.mobileSubtitle}>#{order.id.slice(0, 8).toUpperCase()}</Text> : null}
+            {order ? (
+              <Text style={styles.mobileSubtitle}>#{order.id.slice(0, 8).toUpperCase()}</Text>
+            ) : null}
           </View>
           <View style={{ width: 38 }} />
         </View>
@@ -190,11 +221,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface.card,
     borderRadius: shape.radius.lg,
     maxHeight: '90%',
-    shadowColor: '#0F172A',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.15,
-    shadowRadius: 20,
-    elevation: 10,
+    boxShadow: '0px 10px 20px rgba(15,23,42,0.15)',
     overflow: 'hidden',
   },
   header: {
@@ -240,6 +267,7 @@ const styles = StyleSheet.create({
     borderColor: '#E5E5E5',
     padding: 16,
     borderRadius: 4,
+    boxShadow: '0px 2px 4px rgba(0,0,0,0.15)',
   },
   receiptMobile: {
     backgroundColor: '#FFFDF9',
@@ -247,6 +275,7 @@ const styles = StyleSheet.create({
     borderColor: '#E5E5E5',
     padding: 16,
     borderRadius: shape.radius.md,
+    boxShadow: '0px 2px 8px rgba(0,0,0,0.05)',
   },
   shopName: {
     fontSize: 18,

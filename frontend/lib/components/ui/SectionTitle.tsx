@@ -4,19 +4,40 @@ import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font } from '../../theme';
 import { shape } from '../../theme/shape';
 
-export function SectionTitle({ title, icon, right }: { title: string; icon?: string; right?: React.ReactNode }) {
+export function SectionTitle({
+  title,
+  subtitle,
+  icon,
+  right,
+}: {
+  title: string;
+  subtitle?: string;
+  icon?: string;
+  right?: React.ReactNode;
+}) {
   return (
     <View style={styles.wrap}>
       <View style={styles.left}>
         {icon && <Icon name={icon as any} size={18} color={colors.brand.primary} />}
-        <Text style={styles.text}>{title}</Text>
+        <View>
+          <Text style={styles.text}>{title}</Text>
+          {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+        </View>
       </View>
       {right}
     </View>
   );
 }
 
-export function StatPill({ label, value, color = colors.text.primary }: { label: string; value: string; color?: string }) {
+export function StatPill({
+  label,
+  value,
+  color = colors.text.primary,
+}: {
+  label: string;
+  value: string;
+  color?: string;
+}) {
   return (
     <View style={styles.pill}>
       <Text style={styles.pillLabel}>{label}</Text>
@@ -26,10 +47,26 @@ export function StatPill({ label, value, color = colors.text.primary }: { label:
 }
 
 const styles = StyleSheet.create({
-  wrap: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 4, marginBottom: 10, marginTop: 6 },
+  wrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 4,
+    marginBottom: 10,
+    marginTop: 6,
+  },
   left: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   text: { ...font.h3, color: colors.text.primary, fontWeight: '800' },
-  pill: { backgroundColor: colors.surface.card, borderRadius: shape.radius.md, paddingHorizontal: 14, paddingVertical: 12, borderWidth: 1, borderColor: colors.border.light, minWidth: 96 },
+  subtitle: { ...font.caption, color: colors.text.muted, marginTop: 2 },
+  pill: {
+    backgroundColor: colors.surface.card,
+    borderRadius: shape.radius.md,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderWidth: 1,
+    borderColor: colors.border.light,
+    minWidth: 96,
+  },
   pillLabel: { ...font.caption, color: colors.text.muted, fontWeight: '700' },
   pillValue: { ...font.h3, fontWeight: '900', marginTop: 2 },
 });

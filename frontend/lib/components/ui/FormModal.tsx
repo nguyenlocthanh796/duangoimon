@@ -8,10 +8,13 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
-  useWindowDimensions,
-  SafeAreaView,
+  StyleSheet,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
+import { useResponsive } from '../../hooks/useResponsive';
+import { colors, font } from '../../theme';
+import { shape } from '../../theme/shape';
 
 interface FormModalProps {
   visible: boolean;
@@ -34,9 +37,29 @@ export default function FormModal({
   saving = false,
   children,
 }: FormModalProps) {
-  const { width } = useWindowDimensions();
-  const isWide = width > 768;
+  const { isWide } = useResponsive();
 
+  // ─── Shared action buttons ─────────────────────────────────
+  const ActionButtons = () => (
+    <View style={styles.actionRow}>
+      <TouchableOpacity onPress={onClose} style={styles.cancelBtn}>
+        <Text style={styles.cancelText}>Hủy</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={onSave}
+        disabled={saving || !onSave}
+        style={[styles.saveBtn, (saving || !onSave) && { opacity: 0.65 }]}
+      >
+        {saving ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.saveText}>{saveLabel}</Text>
+        )}
+      </TouchableOpacity>
+    </View>
+  );
+
+  // ─── iPad/Desktop: bottom sheet ───────────────────────────
   if (isWide) {
     return (
       <Modal visible={visible} animationType="slide" transparent statusBarTranslucent>
@@ -44,42 +67,34 @@ export default function FormModal({
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={{ flex: 1 }}
         >
-          <View style={{ flex: 1, justifyContent: 'flex-end', backgroundColor: 'rgba(0,0,0,0.45)' }}>
-            <View
-              style={{
-                backgroundColor: '#fff',
-                borderTopLeftRadius: 24,
-                borderTopRightRadius: 24,
-                padding: 24,
-                paddingBottom: 40,
-                maxHeight: '90%',
-              }}
-            >
-              <View
-                style={{
-                  width: 36, height: 4, borderRadius: 2,
-                  backgroundColor: '#E2E8F0', alignSelf: 'center', marginBottom: 20,
-                }}
-              />
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+          <View style={styles.sheetOverlay}>
+            <View style={styles.sheetContainer}>
+              {/* Drag handle */}
+              <View style={styles.dragHandle} />
+
+              {/* Header */}
+              <View style={styles.sheetHeader}>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 20, fontWeight: '800', color: '#1E293B' }}>{title}</Text>
-                  {subtitle && <Text style={{ fontSize: 13, color: '#64748B', marginTop: 2 }}>{subtitle}</Text>}
+                  <Text style={styles.sheetTitle}>{title}</Text>
+                  {subtitle && <Text style={styles.sheetSubtitle}>{subtitle}</Text>}
                 </View>
-                <TouchableOpacity onPress={onClose} style={{ width: 32, height: 32, borderRadius: 8, backgroundColor: '#F1F5F9', alignItems: 'center', justifyContent: 'center' }}>
-                  <Icon name="close" size={22} color="#64748B" />
+                <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+                  <Icon name="close" size={20} color={colors.icon.muted} />
                 </TouchableOpacity>
               </View>
-              <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+
+              {/* Content */}
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+                contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 8 }}
+              >
                 {children}
               </ScrollView>
-              <View style={{ flexDirection: 'row', gap: 12, marginTop: 20 }}>
-                <TouchableOpacity onPress={onClose} style={{ flex: 1, padding: 15, borderRadius: 12, backgroundColor: '#F1F5F9', alignItems: 'center' }}>
-                  <Text style={{ fontWeight: '700', color: '#64748B', fontSize: 15 }}>Hủy</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={onSave} disabled={saving || !onSave} style={{ flex: 2, padding: 15, borderRadius: 12, backgroundColor: '#F97316', alignItems: 'center', opacity: (saving || !onSave) ? 0.7 : 1 }}>
-                  {saving ? <ActivityIndicator color="#fff" /> : <Text style={{ fontWeight: '700', color: '#fff', fontSize: 15 }}>{saveLabel}</Text>}
-                </TouchableOpacity>
+
+              {/* Actions */}
+              <View style={styles.sheetActions}>
+                <ActionButtons />
               </View>
             </View>
           </View>
@@ -88,37 +103,164 @@ export default function FormModal({
     );
   }
 
-  // Mobile: full-screen
+  // ─── iPhone: full-screen with sticky header + footer ──────
   return (
     <Modal visible={visible} animationType="slide" transparent={false} statusBarTranslucent>
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface.card }} edges={['top', 'bottom']}>
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={{ flex: 1 }}
+          keyboardVerticalOffset={0}
         >
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 12, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#E2E8F0' }}>
-            <TouchableOpacity onPress={onClose} style={{ width: 38, height: 38, borderRadius: 10, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name="arrow-left" size={22} color="#fff" />
+          {/* Sticky top bar */}
+          <View style={styles.phoneHeader}>
+            <TouchableOpacity onPress={onClose} style={styles.backBtn}>
+              <Icon name="arrow-left" size={20} color="#fff" />
             </TouchableOpacity>
-            <View style={{ alignItems: 'center' }}>
-              <Text style={{ fontSize: 17, fontWeight: '800', color: '#1E293B', textAlign: 'center' }}>{title}</Text>
-              {subtitle && <Text style={{ fontSize: 12, color: '#64748B', marginTop: 1 }}>{subtitle}</Text>}
+            <View style={{ flex: 1, alignItems: 'center' }}>
+              <Text style={styles.phoneTitle} numberOfLines={1}>{title}</Text>
+              {subtitle && <Text style={styles.phoneSubtitle} numberOfLines={1}>{subtitle}</Text>}
             </View>
             <View style={{ width: 38 }} />
           </View>
-          <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
+
+          {/* Scrollable content — keyboard pushes up */}
+          <ScrollView
+            style={{ flex: 1 }}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={{ padding: 16, paddingBottom: 24 }}
+          >
             {children}
           </ScrollView>
-          <View style={{ padding: 16, paddingBottom: 12, borderTopWidth: 1, borderTopColor: '#E2E8F0', flexDirection: 'row', gap: 12 }}>
-            <TouchableOpacity onPress={onClose} style={{ flex: 1, padding: 15, borderRadius: 12, backgroundColor: '#F1F5F9', alignItems: 'center' }}>
-              <Text style={{ fontWeight: '700', color: '#64748B', fontSize: 15 }}>Hủy</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={onSave} disabled={saving || !onSave} style={{ flex: 2, padding: 15, borderRadius: 12, backgroundColor: '#F97316', alignItems: 'center', opacity: (saving || !onSave) ? 0.7 : 1 }}>
-              {saving ? <ActivityIndicator color="#fff" /> : <Text style={{ fontWeight: '700', color: '#fff', fontSize: 15 }}>{saveLabel}</Text>}
-            </TouchableOpacity>
+
+          {/* Sticky footer buttons — stays above keyboard */}
+          <View style={styles.phoneFooter}>
+            <ActionButtons />
           </View>
         </KeyboardAvoidingView>
       </SafeAreaView>
     </Modal>
   );
 }
+
+const styles = StyleSheet.create({
+  // ── Shared ──────────────────────────────────────────────────
+  actionRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  cancelBtn: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: shape.radius.md,
+    backgroundColor: colors.surface.disabled,
+    alignItems: 'center',
+  },
+  cancelText: {
+    ...font.buttonSmall,
+    color: colors.text.secondary,
+    fontWeight: '700',
+  },
+  saveBtn: {
+    flex: 2,
+    paddingVertical: 14,
+    borderRadius: shape.radius.md,
+    backgroundColor: colors.brand.primary,
+    alignItems: 'center',
+  },
+  saveText: {
+    ...font.buttonSmall,
+    color: '#fff',
+    fontWeight: '700',
+  },
+
+  // ── Bottom Sheet (iPad) ─────────────────────────────────────
+  sheetOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.45)',
+  },
+  sheetContainer: {
+    backgroundColor: colors.surface.card,
+    borderTopLeftRadius: shape.radius.xl,
+    borderTopRightRadius: shape.radius.xl,
+    maxHeight: '88%',
+    paddingBottom: 32,
+  },
+  dragHandle: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: colors.border.default,
+    alignSelf: 'center',
+    marginTop: 12,
+    marginBottom: 4,
+  },
+  sheetHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
+  },
+  sheetTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: colors.text.primary,
+  },
+  sheetSubtitle: {
+    fontSize: 12,
+    color: colors.text.muted,
+    marginTop: 2,
+  },
+  closeBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: shape.radius.md,
+    backgroundColor: colors.surface.disabled,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sheetActions: {
+    paddingHorizontal: 20,
+    paddingTop: 12,
+  },
+
+  // ── Full-screen Phone ────────────────────────────────────────
+  phoneHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: colors.brand.primary,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.brand,
+  },
+  backBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: shape.radius.md,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  phoneTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#fff',
+  },
+  phoneSubtitle: {
+    fontSize: 11,
+    color: 'rgba(255,255,255,0.8)',
+    marginTop: 1,
+  },
+  phoneFooter: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderTopColor: colors.border.light,
+    backgroundColor: colors.surface.card,
+  },
+});

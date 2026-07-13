@@ -18,11 +18,35 @@ export async function getQuanLyProducts() {
   return [];
 }
 
-export function createProduct(data: Partial<{ id: string; code: string; name: string; category: string | null; price: number; cost_price: number; unit: string; is_active: boolean; options: any[] }>) {
+export function createProduct(
+  data: Partial<{
+    id: string;
+    code: string;
+    name: string;
+    category: string | null;
+    price: number;
+    cost_price: number;
+    unit: string;
+    is_active: boolean;
+    options: any[];
+  }>
+) {
   return request<any>('/quan-ly/products', { method: 'POST', body: JSON.stringify(data) });
 }
 
-export function updateProduct(id: string, data: Partial<{ code: string; name: string; category: string | null; price: number; cost_price: number; unit: string; is_active: boolean; options: any[] }>) {
+export function updateProduct(
+  id: string,
+  data: Partial<{
+    code: string;
+    name: string;
+    category: string | null;
+    price: number;
+    cost_price: number;
+    unit: string;
+    is_active: boolean;
+    options: any[];
+  }>
+) {
   return request<any>(`/quan-ly/products/${id}`, { method: 'PUT', body: JSON.stringify(data) });
 }
 

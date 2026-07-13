@@ -29,7 +29,7 @@ export default function AreaFilter({ areas, selectedArea, onSelectArea }: AreaFi
         alignItems: 'center',
       }}
     >
-      {areas.map(areaName => {
+      {areas.map((areaName) => {
         const isSelected = selectedArea === areaName;
         return (
           <TouchableOpacity
@@ -44,7 +44,9 @@ export default function AreaFilter({ areas, selectedArea, onSelectArea }: AreaFi
               backgroundColor: isSelected ? colors.brand.primary : colors.surface.disabled,
             }}
           >
-            <Text style={{ ...font.tab, color: isSelected ? colors.text.inverse : colors.text.body }}>
+            <Text
+              style={{ ...font.tab, color: isSelected ? colors.text.inverse : colors.text.body }}
+            >
               {areaName}
             </Text>
           </TouchableOpacity>

@@ -1,4 +1,14 @@
-import { View, Text, TouchableOpacity, Image, Animated, useWindowDimensions, ScrollView, PanResponder, Platform } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  Animated,
+  useWindowDimensions,
+  ScrollView,
+  PanResponder,
+  Platform,
+} from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font, shape } from '../theme';
@@ -7,216 +17,447 @@ import { useSidebar } from '../context/SidebarContext';
 import { useRouter, useSegments } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ASSETS } from '../assets';
+import { menuByRole } from './SidebarMenu';
 
-interface MenuItemType {
-  path: string; icon: string; label: string; description: string;
+// ─── Types ────────────────────────────────────────────────
+export interface SidebarItem {
+  path: string;
+  icon: string;
+  label: string;
+  description?: string;
   isActive: (segments: string[]) => boolean;
 }
-interface MenuSubGroup { label: string; items: MenuItemType[]; }
-interface MenuGroup { groupLabel?: string; items: (MenuItemType | MenuSubGroup)[]; }
 
-const allMenuItems: Record<string, MenuItemType> = {
-  pos:      { path: '/ban-hang',          icon: 'cash-register',       label: 'Thu Ngân (POS)', description: 'Bàn & đặt món',        isActive: (segs) => segs[0] === 'ban-hang' && segs[1] !== 'kitchen' },
-  kitchen:  { path: '/ban-hang/kitchen',   icon: 'chef-hat',           label: 'Nhà Bếp',        description: 'Quản lý order bếp',   isActive: (segs) => segs[0] === 'ban-hang' && segs[1] === 'kitchen' },
-  invoices: { path: '/ke-toan/invoices',   icon: 'receipt',            label: 'Hóa đơn VAT',    description: 'Xuất & quản lý HĐ',   isActive: (segs) => segs[0] === 'ke-toan' && segs[1] === 'invoices' },
-  quanLy:   { path: '/quan-ly',            icon: 'cog-outline',        label: 'Quản Lý',        description: 'Menu & nhân sự',     isActive: (segs) => segs[0] === 'quan-ly' && !segs[1] },
-  recipes:  { path: '/quan-ly/recipes',    icon: 'flask-outline',      label: 'Công Thức',      description: 'Recipe BOM & giá thành', isActive: (segs) => segs[0] === 'quan-ly' && segs[1] === 'recipes' },
-  stock:    { path: '/quan-ly/stock',      icon: 'package-variant-closed', label: 'Tồn Kho',    description: 'Nguyên liệu & nhập hàng', isActive: (segs) => segs[0] === 'quan-ly' && segs[1] === 'stock' },
-  suppliers: { path: '/quan-ly/suppliers',  icon: 'truck-delivery',     label: 'Nhà Cung Cấp', description: 'NCC & đơn đặt hàng',  isActive: (segs) => segs[0] === 'quan-ly' && segs[1] === 'suppliers' },
-  purchaseOrders: { path: '/quan-ly/purchase-orders', icon: 'file-document-outline', label: 'Đơn Đặt Hàng', description: 'PO & nhập kho', isActive: (segs) => segs[0] === 'quan-ly' && segs[1] === 'purchase-orders' },
-  shifts: { path: '/quan-ly/shifts', icon: 'clock-outline', label: ' Ca Làm Việc', description: 'Mở/kết ca & doanh thu', isActive: (segs) => segs[0] === 'quan-ly' && segs[1] === 'shifts' },
-  audit: { path: '/quan-ly/audit', icon: 'clipboard-text-outline', label: 'Audit Log', description: 'Lịch sử thao tác', isActive: (segs) => segs[0] === 'quan-ly' && segs[1] === 'audit' },
-  booking: { path: '/quan-ly/booking', icon: 'calendar-text', label: 'Đặt Bàn', description: 'Quản lý đặt bàn trước', isActive: (segs) => segs[0] === 'quan-ly' && segs[1] === 'booking' },
-  customers: { path: '/quan-ly/customers', icon: 'account-group', label: 'Khách Hàng', description: 'CRM & lịch sử KH', isActive: (segs) => segs[0] === 'quan-ly' && segs[1] === 'customers' },
-  marketing: { path: '/quan-ly/marketing', icon: 'bullhorn', label: 'Marketing', description: 'Chiến dịch & gửi tin', isActive: (segs) => segs[0] === 'quan-ly' && segs[1] === 'marketing' },
-  membership: { path: '/quan-ly/membership', icon: 'crown', label: 'Hội Viên', description: 'Hạng & tích điểm', isActive: (segs) => segs[0] === 'quan-ly' && segs[1] === 'membership' },
-  promo: { path: '/quan-ly/promo', icon: 'ticket-percent', label: 'Khuyến Mãi', description: 'Voucher & quy tắc KM', isActive: (segs) => segs[0] === 'quan-ly' && segs[1] === 'promo' },
-  menuEng: { path: '/quan-ly/menu-eng', icon: 'chart-pie', label: 'Menu Eng.', description: 'BCG matrix & top/bottom', isActive: (segs) => segs[0] === 'quan-ly' && segs[1] === 'menu-eng' },
-  biReports: { path: '/quan-ly/bi-reports', icon: 'chart-box-outline', label: 'BI Reports', description: 'Báo cáo doanh thu & food cost', isActive: (segs) => segs[0] === 'quan-ly' && segs[1] === 'bi-reports' },
-  execDashboard: { path: '/quan-ly/exec-dashboard', icon: 'view-dashboard', label: 'Exec Dashboard', description: 'Dashboard lãnh đạo', isActive: (segs) => segs[0] === 'quan-ly' && segs[1] === 'exec-dashboard' },
-  stations: { path: '/quan-ly/stations', icon: 'stove', label: 'Trạm Bếp', description: 'Phân luồng món & máy in', isActive: (segs) => segs[0] === 'quan-ly' && segs[1] === 'stations' },
-  branches: { path: '/quan-ly/branches', icon: 'domain', label: 'Chi Nhánh', description: 'Quản lý chi nhánh', isActive: (segs) => segs[0] === 'quan-ly' && segs[1] === 'branches' },
-  forecast: { path: '/quan-ly/forecast', icon: 'chart-timeline-variant', label: 'Dự Báo', description: 'Dự báo nhu cầu', isActive: (segs) => segs[0] === 'quan-ly' && segs[1] === 'forecast' },
-  keToanHub: { path: '/ke-toan', icon: 'wallet', label: 'Kế toán & Thuế', description: 'Tổng quan & nghĩa vụ thuế HKD', isActive: (segs) => segs[0] === 'ke-toan' },
-  thuChi: { path: '/ke-toan/thu-chi', icon: 'swap-vertical', label: 'Thu Chi', description: 'Quản lý thu chi kế toán', isActive: (segs) => segs[0] === 'ke-toan' && segs[1] === 'thu-chi' },
-  thueTier: { path: '/ke-toan/thue/tier', icon: 'chart-bell-curve', label: 'Phân Tầng HKD', description: 'Nhóm 1-4 & cảnh báo', isActive: (segs) => segs[0] === 'ke-toan' && segs[1] === 'thue' && segs[2] === 'tier' },
-  thueSoSach: { path: '/ke-toan/thue/so-sach', icon: 'book-open-page-variant', label: 'Sổ Kế Toán', description: 'S1a / S2a-e / S3a', isActive: (segs) => segs[0] === 'ke-toan' && segs[1] === 'thue' && segs[2] === 'so-sach' },
-  thueDecl: { path: '/ke-toan/thue/declaration', icon: 'file-document-edit', label: 'Kê Khai Thuế', description: 'Xuất XML 01/CNKD', isActive: (segs) => segs[0] === 'ke-toan' && segs[1] === 'thue' && segs[2] === 'declaration' },
-  thueBank: { path: '/ke-toan/thue/bank-accounts', icon: 'bank', label: 'TK Ngân Hàng', description: '01/BK-STK', isActive: (segs) => segs[0] === 'ke-toan' && segs[1] === 'thue' && segs[2] === 'bank-accounts' },
-  thueDeadline: { path: '/ke-toan/thue/deadlines', icon: 'calendar-alert', label: 'Hạn Nộp & Cảnh báo', description: 'Lịch & leo thang', isActive: (segs) => segs[0] === 'ke-toan' && segs[1] === 'thue' && segs[2] === 'deadlines' },
-  thueLegacy: { path: '/ke-toan/thue/legacy', icon: 'package-variant-closed', label: 'Kê Khai Chuyển Tiếp', description: '01/BK-HTK', isActive: (segs) => segs[0] === 'ke-toan' && segs[1] === 'thue' && segs[2] === 'legacy' },
-};
+export interface SidebarGroup {
+  label?: string;
+  items: (SidebarItem | SidebarSubGroup)[];
+}
 
-// Revert back to the clean look as requested (only main hub entry, no submodules in sidebar)
-const keToanThueItems: MenuItemType[] = [
-  allMenuItems.keToanHub,
-];
-
-const quanLySubGroups: MenuSubGroup[] = [
-  { label: '📊 Tổng Quan', items: [allMenuItems.quanLy, allMenuItems.execDashboard, allMenuItems.audit] },
-  { label: '📦 Kho & SX', items: [allMenuItems.recipes, allMenuItems.stock, allMenuItems.suppliers, allMenuItems.purchaseOrders] },
-  { label: '👥 Khách Hàng', items: [allMenuItems.customers, allMenuItems.membership, allMenuItems.booking] },
-  { label: '📣 Marketing', items: [allMenuItems.marketing, allMenuItems.promo] },
-  { label: '📈 Báo Cáo', items: [allMenuItems.menuEng, allMenuItems.biReports, allMenuItems.forecast] },
-  { label: '⚙️ Vận Hành', items: [allMenuItems.shifts, allMenuItems.stations, allMenuItems.branches] },
-];
-
-const menuByRole: Record<string, MenuGroup[]> = {
-  cashier:    [{ groupLabel: 'Bán Hàng', items: [allMenuItems.pos, allMenuItems.kitchen] }],
-  kitchen:    [{ groupLabel: 'Nhà Bếp',  items: [allMenuItems.kitchen] }],
-  accountant: [
-    { groupLabel: 'Kế toán & Thuế', items: keToanThueItems },
-    { groupLabel: 'Quản Lý', items: [allMenuItems.quanLy] },
-  ],
-  admin: [
-    { groupLabel: 'Bán Hàng', items: [allMenuItems.pos, allMenuItems.kitchen] },
-    { groupLabel: 'Kế toán & Thuế', items: keToanThueItems },
-    { groupLabel: 'Quản Lý', items: quanLySubGroups },
-  ],
-  manager: [
-    { groupLabel: 'Bán Hàng', items: [allMenuItems.pos, allMenuItems.kitchen] },
-    { groupLabel: 'Kế toán & Thuế', items: keToanThueItems },
-    { groupLabel: 'Quản Lý', items: quanLySubGroups },
-  ],
-};
-
-const ROLE_DISPLAY: Record<string, { label: string; color: string; bg: string }> = {
-  admin:       { label: 'Quản trị viên', color: '#7C3AED', bg: '#F5F3FF' },
-  manager:     { label: 'Quản lý',       color: '#2563EB', bg: '#EFF6FF' },
-  accountant:  { label: 'Kế toán',       color: '#059669', bg: '#ECFDF5' },
-  cashier:     { label: 'Thu ngân',     color: '#D97706', bg: '#FFFBEB' },
-  kitchen:     { label: 'Nhà bếp',      color: '#DC2626', bg: '#FEF2F2' },
-};
+export interface SidebarSubGroup {
+  label: string;
+  items: SidebarItem[];
+}
 
 interface SidebarProps {
   isWide?: boolean;
-  persistent?: boolean; // when true AND isWide → render as inline static column (iPad landscape)
+  persistent?: boolean;
+  sections?: SidebarGroup[];
 }
 
-/** Inner panels (header + nav + logout) reused by overlay and persistent modes. */
-function SidebarBody({ width, onNavigate, onClose }: { width: number; onNavigate: (p: string) => void; onClose: (() => void) | null }) {
-  const { userRole, username, logout } = useAuth();
-  const segments = useSegments();
-  const insets = useSafeAreaInsets();
+const EXPANDED_W = 280;
+const COLLAPSED_W = 72;
 
-  const groups: MenuGroup[] = menuByRole[userRole] ?? [];
-  const roleInfo = ROLE_DISPLAY[userRole] ?? { label: userRole, color: '#64748B', bg: '#F1F5F9' };
-
+// ─── Logo header ──────────────────────────────────────────
+function LogoHeader({ collapsed, onToggle }: { collapsed: boolean; onToggle?: () => void }) {
   return (
-    <View style={{ width, height: '100%', backgroundColor: colors.surface.card, flexDirection: 'column', borderRightWidth: 1, borderRightColor: colors.border.default }}>
-      {/* Header */}
-      <View style={{ paddingHorizontal: 20, paddingTop: Math.max(24, insets.top), paddingBottom: 20, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.default }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-            <Image source={ASSETS.brand.logoMark} style={{ width: 40, height: 40, borderRadius: shape.radius.sm }} resizeMode="contain" />
-            <View>
-              <Text style={{ ...font.h3, color: colors.text.primary }}>POS Pro</Text>
-              <Text style={{ ...font.caption, color: colors.text.muted }}>Hệ thống quản lý F&B</Text>
-            </View>
-          </View>
-          {onClose ? (
-            <TouchableOpacity onPress={onClose} style={{ width: 44, height: 44, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }} accessibilityLabel="Đóng menu">
-              <Icon name="close" size={20} color={colors.icon.muted} />
-            </TouchableOpacity>
-          ) : null}
+    <TouchableOpacity
+      activeOpacity={0.7}
+      onPress={onToggle}
+      disabled={!onToggle}
+      style={{
+        paddingHorizontal: collapsed ? 12 : 20,
+        paddingVertical: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: colors.border.default,
+        alignItems: collapsed ? 'center' : 'flex-start',
+      }}
+    >
+      {collapsed ? (
+        <View style={{ width: 40, height: 40, borderRadius: shape.radius.sm, overflow: 'hidden' }}>
+          <Image
+            source={ASSETS.brand.logoMark}
+            style={{ width: 40, height: 40 }}
+            resizeMode="contain"
+          />
         </View>
-
-        {username ? (
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 16, padding: 12, borderRadius: shape.radius.md, backgroundColor: colors.surface.card, borderWidth: 1, borderColor: colors.border.default }}>
-            <View style={{ width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: roleInfo.bg, alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={{ fontSize: 18 }}>{userRole === 'admin' ? '👑' : userRole === 'manager' ? '🏢' : userRole === 'accountant' ? '📊' : userRole === 'kitchen' ? '🍳' : '💵'}</Text>
-            </View>
-            <View style={{ flex: 1 }}>
-              <Text style={{ ...font.bodyBold, color: colors.text.primary }} numberOfLines={1}>{username}</Text>
-              <View style={{ alignSelf: 'flex-start', marginTop: 2, paddingHorizontal: 8, paddingVertical: 2, borderRadius: shape.radius.full, backgroundColor: roleInfo.bg }}>
-                <Text style={{ ...font.badge, color: roleInfo.color }}>{(roleInfo.label || '').toUpperCase()}</Text>
-              </View>
-            </View>
+      ) : (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <View style={{ width: 36, height: 36, borderRadius: shape.radius.sm, overflow: 'hidden' }}>
+            <Image
+              source={ASSETS.brand.logoMark}
+              style={{ width: 36, height: 36 }}
+              resizeMode="contain"
+            />
           </View>
-        ) : null}
-      </View>
+          <View>
+            <Text style={{ ...font.h3, color: colors.text.primary }}>OngChu POS</Text>
+            <Text style={{ ...font.micro, color: colors.text.muted, marginTop: 1 }}>Hệ thống quản lý F&B</Text>
+          </View>
+        </View>
+      )}
+    </TouchableOpacity>
+  );
+}
 
-      {/* Navigation — ScrollView */}
-      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 12, paddingBottom: 8 }} showsVerticalScrollIndicator={false}>
-        {groups.map((group, gi) => (
-          <View key={gi} style={{ marginBottom: 8 }}>
-            {group.groupLabel && (
-              <Text style={{ ...font.badge, color: colors.text.muted, textTransform: 'uppercase', letterSpacing: 1.2, paddingHorizontal: 8, marginBottom: 6, marginTop: gi > 0 ? 8 : 0 }}>
-                {group.groupLabel}
-              </Text>
-            )}
-            {group.items.map((item, idx) => {
-              // Sub-group
-              if ('items' in item && 'label' in item) {
-                const sub = item as MenuSubGroup;
-                return (
-                  <View key={idx} style={{ marginBottom: 6 }}>
-                    <Text style={{ ...font.label, color: colors.text.muted, paddingHorizontal: 14, paddingVertical: 4, marginTop: idx > 0 ? 4 : 0 }}>
+// ─── Nav items ────────────────────────────────────────────
+function NavItems({
+  sections,
+  segments,
+  collapsed,
+  onNavigate,
+}: {
+  sections: SidebarGroup[];
+  segments: string[];
+  collapsed: boolean;
+  onNavigate: (path: string) => void;
+}) {
+  return (
+    <ScrollView
+      style={{ flex: 1 }}
+      contentContainerStyle={{ paddingHorizontal: collapsed ? 8 : 12, paddingTop: 12, paddingBottom: 8 }}
+      showsVerticalScrollIndicator={false}
+    >
+      {sections.map((group, gi) => (
+        <View key={gi} style={{ marginBottom: 8 }}>
+          {group.label && !collapsed && (
+            <Text
+              style={{
+                ...font.badge,
+                color: colors.text.muted,
+                textTransform: 'uppercase',
+                letterSpacing: 1.2,
+                paddingHorizontal: 8,
+                marginBottom: 6,
+                marginTop: gi > 0 ? 8 : 0,
+              }}
+            >
+              {group.label}
+            </Text>
+          )}
+
+          {group.items.map((item, idx) => {
+            if ('items' in item && 'label' in item) {
+              const sub = item as SidebarSubGroup;
+              return (
+                <View key={idx} style={{ marginBottom: 4 }}>
+                  {!collapsed && (
+                    <Text
+                      style={{
+                        ...font.label,
+                        color: colors.text.muted,
+                        paddingHorizontal: 14,
+                        paddingVertical: 4,
+                        marginTop: idx > 0 ? 4 : 0,
+                      }}
+                    >
                       {sub.label}
                     </Text>
-                    {sub.items.map((subItem, si) => {
-                      const active = subItem.isActive(segments as string[]);
-                      return (
-                        <TouchableOpacity key={si} onPress={() => onNavigate(subItem.path)} activeOpacity={0.7}
-                          style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, paddingVertical: 10, borderRadius: shape.radius.md, marginBottom: 1, backgroundColor: active ? colors.brand.primaryBg : 'transparent', borderWidth: 1, borderColor: active ? colors.border.brand : 'transparent', minHeight: 44 }}
-                          accessibilityLabel={subItem.label}>
-                          <View style={{ width: 32, height: 32, borderRadius: shape.radius.md, alignItems: 'center', justifyContent: 'center', backgroundColor: active ? colors.brand.primary : colors.surface.disabled }}>
-                            <Icon name={subItem.icon as any} size={20} color={active ? colors.text.inverse : colors.icon.muted} />
-                          </View>
-                          <View style={{ flex: 1 }}>
-                            <Text style={{ ...font.body, color: active ? colors.brand.primary : colors.text.primary }}>{subItem.label}</Text>
-                            <Text style={{ ...font.caption, color: active ? colors.brand.primary : colors.text.muted, marginTop: 1 }}>{subItem.description}</Text>
-                          </View>
-                          {active && <Icon name="chevron-right" size={16} color={colors.brand.primary} />}
-                        </TouchableOpacity>
-                      );
-                    })}
-                  </View>
-                );
-              }
-              // Regular item
-              const regularItem = item as MenuItemType;
-              const active = regularItem.isActive(segments as string[]);
-              return (
-                <TouchableOpacity key={idx} onPress={() => onNavigate(regularItem.path)} activeOpacity={0.7}
-                  style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, paddingVertical: 12, borderRadius: shape.radius.md, marginBottom: 2, backgroundColor: active ? colors.brand.primaryBg : 'transparent', borderWidth: 1, borderColor: active ? colors.border.brand : 'transparent', minHeight: 52 }}
-                  accessibilityLabel={regularItem.label}>
-                  <View style={{ width: 36, height: 36, borderRadius: shape.radius.md, alignItems: 'center', justifyContent: 'center', backgroundColor: active ? colors.brand.primary : colors.surface.disabled }}>
-                    <Icon name={regularItem.icon as any} size={22} color={active ? colors.text.inverse : colors.icon.muted} />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ ...font.body, color: active ? colors.brand.primary : colors.text.primary }}>{regularItem.label}</Text>
-                    <Text style={{ ...font.caption, color: active ? colors.brand.primary : colors.text.muted, marginTop: 1 }}>{regularItem.description}</Text>
-                  </View>
-                  {active && <Icon name="chevron-right" size={18} color={colors.brand.primary} />}
-                </TouchableOpacity>
+                  )}
+                  {sub.items.map((si, siIdx) => (
+                    <NavItemRow
+                      key={siIdx}
+                      item={si}
+                      active={si.isActive(segments)}
+                      collapsed={collapsed}
+                      onPress={() => onNavigate(si.path)}
+                    />
+                  ))}
+                </View>
               );
-            })}
-          </View>
-        ))}
-      </ScrollView>
+            }
 
-      {/* Logout */}
-      <View style={{ padding: 16, borderTopWidth: 1, borderTopColor: colors.border.default, paddingBottom: Math.max(16, insets.bottom) }}>
-        <TouchableOpacity onPress={() => { onClose?.(); logout(); }} activeOpacity={0.7}
-          style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 14, paddingVertical: 13, borderRadius: shape.radius.md, backgroundColor: colors.surface.danger, borderWidth: 1, borderColor: colors.border.danger, minHeight: 52 }}
-          accessibilityLabel="Đăng xuất">
-          <View style={{ width: 44, height: 44, borderRadius: shape.radius.md, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FEE2E2' }}>
-            <Icon name="logout" size={20} color={colors.text.danger} />
-          </View>
-          <Text style={{ ...font.button, color: colors.text.danger }}>Đăng xuất</Text>
-        </TouchableOpacity>
+            const ri = item as SidebarItem;
+            return (
+              <NavItemRow
+                key={idx}
+                item={ri}
+                active={ri.isActive(segments)}
+                collapsed={collapsed}
+                onPress={() => onNavigate(ri.path)}
+              />
+            );
+          })}
+        </View>
+      ))}
+    </ScrollView>
+  );
+}
+
+function NavItemRow({
+  item,
+  active,
+  collapsed,
+  onPress,
+}: {
+  item: SidebarItem;
+  active: boolean;
+  collapsed: boolean;
+  onPress: () => void;
+}) {
+  if (collapsed) {
+    return (
+      <TouchableOpacity
+        onPress={onPress}
+        activeOpacity={0.7}
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingVertical: 10,
+          borderRadius: shape.radius.md,
+          marginBottom: 2,
+          backgroundColor: active ? colors.brand.primaryBg : 'transparent',
+          borderWidth: 1,
+          borderColor: active ? colors.border.brand : 'transparent',
+        }}
+        accessibilityLabel={item.label}
+      >
+        <View
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: shape.radius.md,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: active ? colors.brand.primary : colors.surface.disabled,
+          }}
+        >
+          <Icon
+            name={item.icon as any}
+            size={20}
+            color={active ? colors.text.inverse : colors.icon.muted}
+          />
+        </View>
+      </TouchableOpacity>
+    );
+  }
+
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.7}
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        paddingHorizontal: 14,
+        paddingVertical: 11,
+        borderRadius: shape.radius.md,
+        marginBottom: 2,
+        backgroundColor: active ? colors.brand.primaryBg : 'transparent',
+        borderWidth: 1,
+        borderColor: active ? colors.border.brand : 'transparent',
+        minHeight: 50,
+      }}
+      accessibilityLabel={item.label}
+    >
+      <View
+        style={{
+          width: 36,
+          height: 36,
+          borderRadius: shape.radius.md,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: active ? colors.brand.primary : colors.surface.disabled,
+        }}
+      >
+        <Icon
+          name={item.icon as any}
+          size={20}
+          color={active ? colors.text.inverse : colors.icon.muted}
+        />
       </View>
+      <View style={{ flex: 1 }}>
+        <Text
+          style={{
+            ...font.body,
+            color: active ? colors.brand.primary : colors.text.primary,
+          }}
+        >
+          {item.label}
+        </Text>
+        {item.description && (
+          <Text
+            style={{
+              ...font.caption,
+              color: active ? colors.brand.primary : colors.text.muted,
+              marginTop: 1,
+            }}
+          >
+            {item.description}
+          </Text>
+        )}
+      </View>
+      {active && (
+        <View
+          style={{
+            width: 6,
+            height: 6,
+            borderRadius: 3,
+            backgroundColor: colors.brand.primary,
+          }}
+        />
+      )}
+    </TouchableOpacity>
+  );
+}
+
+// ─── Logout button ─────────────────────────────────────────
+function LogoutButton({ collapsed, onClose }: { collapsed: boolean; onClose: (() => void) | null }) {
+  const { logout } = useAuth();
+  return (
+    <View
+      style={{
+        padding: collapsed ? 8 : 16,
+        borderTopWidth: 1,
+        borderTopColor: colors.border.default,
+      }}
+    >
+      <TouchableOpacity
+        onPress={() => {
+          onClose?.();
+          logout();
+        }}
+        activeOpacity={0.7}
+        style={{
+          flexDirection: collapsed ? 'column' : 'row',
+          alignItems: 'center',
+          justifyContent: collapsed ? 'center' : 'flex-start',
+          gap: collapsed ? 6 : 12,
+          paddingHorizontal: collapsed ? 0 : 14,
+          paddingVertical: 13,
+          borderRadius: shape.radius.md,
+          backgroundColor: colors.surface.danger,
+          borderWidth: 1,
+          borderColor: colors.border.danger,
+        }}
+        accessibilityLabel="Đăng xuất"
+      >
+        <View
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: shape.radius.md,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#FEE2E2',
+          }}
+        >
+          <Icon name="logout" size={18} color={colors.text.danger} />
+        </View>
+        {!collapsed && (
+          <Text style={{ ...font.button, color: colors.text.danger }}>Đăng xuất</Text>
+        )}
+      </TouchableOpacity>
     </View>
   );
 }
 
-export default function Sidebar({ isWide = false, persistent = false }: SidebarProps) {
-  const { isOpen, closeSidebar } = useSidebar();
+// ─── SidebarBody (inner) ──────────────────────────────────
+function SidebarBody({
+  width,
+  collapsed,
+  sections,
+  onNavigate,
+  onClose,
+  onToggleCollapse,
+}: {
+  width: number;
+  collapsed: boolean;
+  sections: SidebarGroup[];
+  onNavigate: (p: string) => void;
+  onClose: (() => void) | null;
+  onToggleCollapse?: () => void;
+}) {
+  const segments = useSegments();
+  return (
+    <View
+      style={{
+        width,
+        height: '100%',
+        backgroundColor: colors.surface.card,
+        flexDirection: 'column',
+        borderRightWidth: 1,
+        borderRightColor: colors.border.default,
+      }}
+    >
+      <View>
+        <LogoHeader collapsed={collapsed} onToggle={onToggleCollapse} />
+      </View>
+      <NavItems sections={sections} segments={segments as string[]} collapsed={collapsed} onNavigate={onNavigate} />
+      <LogoutButton collapsed={collapsed} onClose={onClose} />
+    </View>
+  );
+}
+
+// ─── Main Sidebar ─────────────────────────────────────────
+export default function Sidebar({ isWide = false, persistent = false, sections }: SidebarProps) {
+  const { isOpen, closeSidebar, isCollapsed, toggleCollapse, openSidebar, setCollapsed } = useSidebar();
   const router = useRouter();
   const { width: screenWidth } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
 
-  const sidebarWidth = screenWidth > 768 ? 320 : Math.min(300, screenWidth * 0.8);
+  // Default sections = based on user role
+  const { userRole } = useAuth();
+  const resolvedSections = sections ?? (menuByRole[userRole] ?? menuByRole.admin);
+
+  // ── Docked-collapsed mode (non-POS modules on wide screens) ─────
+  // Sidebar is always visible at 72px. Click logo to expand as overlay.
+  // Only when persistent=true AND isWide, use this docked pattern.
+  if (persistent && isWide) {
+    const overlayOpen = isOpen;
+
+    return (
+      <>
+        {/* Docked collapsed bar — always visible */}
+        <View style={{ width: COLLAPSED_W, zIndex: 400 }}>
+          <SidebarBody
+            width={COLLAPSED_W}
+            collapsed
+            sections={resolvedSections}
+            onNavigate={(p) => {
+              router.push(p as any);
+            }}
+            onClose={null}
+            onToggleCollapse={() => {
+              openSidebar();
+              setCollapsed(false);
+            }}
+          />
+        </View>
+
+        {/* Overlay expanded panel — slides over content */}
+        {overlayOpen && (
+          <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 500 }}>
+            {/* Backdrop */}
+            <TouchableOpacity
+              style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(15, 23, 42, 0.4)' }}
+              activeOpacity={1}
+              onPress={closeSidebar}
+            />
+            {/* Expanded sidebar */}
+            <View
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                bottom: 0,
+                width: EXPANDED_W,
+                borderWidth: 1,
+                borderColor: colors.border.default,
+                boxShadow: '4px 0 16px rgba(15,23,42,0.1)',
+              }}
+            >
+              <SidebarBody
+                width={EXPANDED_W}
+                collapsed={false}
+                sections={resolvedSections}
+                onNavigate={(p) => {
+                  router.push(p as any);
+                  closeSidebar();
+                }}
+                onClose={closeSidebar}
+                onToggleCollapse={closeSidebar}
+              />
+            </View>
+          </View>
+        )}
+      </>
+    );
+  }
+
+  // ── Overlay mode (iPhone) ─────────────────────────────
+  const collapsed = false;
+  const sidebarWidth = EXPANDED_W;
   const translateX = useRef(new Animated.Value(-sidebarWidth)).current;
   const overlayOpacity = useRef(new Animated.Value(0)).current;
   const [rendered, setRendered] = useState(false);
@@ -228,22 +469,30 @@ export default function Sidebar({ isWide = false, persistent = false }: SidebarP
   useEffect(() => {
     if (!rendered) return;
     Animated.parallel([
-      Animated.timing(translateX, { toValue: isOpen ? 0 : -sidebarWidth, duration: 280, useNativeDriver: Platform.OS !== 'web' }),
-      Animated.timing(overlayOpacity, { toValue: isOpen ? 1 : 0, duration: 280, useNativeDriver: Platform.OS !== 'web' }),
-    ]).start(() => { if (!isOpen) setRendered(false); });
+      Animated.timing(translateX, {
+        toValue: isOpen ? 0 : -sidebarWidth,
+        duration: 280,
+        useNativeDriver: Platform.OS !== 'web',
+      }),
+      Animated.timing(overlayOpacity, {
+        toValue: isOpen ? 1 : 0,
+        duration: 280,
+        useNativeDriver: Platform.OS !== 'web',
+      }),
+    ]).start(() => {
+      if (!isOpen) setRendered(false);
+    });
   }, [isOpen, rendered, sidebarWidth]);
 
   useEffect(() => {
     if (!isOpen) translateX.setValue(-sidebarWidth);
   }, [sidebarWidth, isOpen]);
 
-  // PanResponder for swipe-to-close
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => false,
-      onMoveShouldSetPanResponder: (_, gs) => {
-        return isOpen && gs.dx < -10 && Math.abs(gs.dx) > Math.abs(gs.dy);
-      },
+      onMoveShouldSetPanResponder: (_, gs) =>
+        isOpen && gs.dx < -10 && Math.abs(gs.dx) > Math.abs(gs.dy),
       onPanResponderMove: (_, gs) => {
         const clamped = Math.max(-sidebarWidth, Math.min(0, gs.dx));
         translateX.setValue(clamped);
@@ -262,33 +511,51 @@ export default function Sidebar({ isWide = false, persistent = false }: SidebarP
     })
   ).current;
 
-  const navigate = (path: string) => { router.push(path as any); closeSidebar(); };
-
-  // Persistent mode (iPad landscape): inline static column, no overlay
-  if (persistent && isWide) {
-    return <SidebarBody width={300} onNavigate={navigate} onClose={null} />;
-  }
+  const navigate = (path: string) => {
+    router.push(path as any);
+    closeSidebar();
+  };
 
   if (!rendered) return null;
 
   return (
     <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 400 }}>
-      <Animated.View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(15, 23, 42, 0.6)', opacity: overlayOpacity }}>
+      <Animated.View
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(15, 23, 42, 0.6)',
+          opacity: overlayOpacity,
+        }}
+      >
         <TouchableOpacity style={{ flex: 1 }} onPress={closeSidebar} activeOpacity={1} />
       </Animated.View>
       <Animated.View
         {...panResponder.panHandlers}
         style={{
           position: 'absolute',
-          top: 0, left: 0, bottom: 0,
+          top: 0,
+          left: 0,
+          bottom: 0,
           width: sidebarWidth,
-          borderWidth: 1, borderColor: colors.border.subtle, boxShadow: '8px 0 24px rgba(15,23,42,0.12)',
+          borderWidth: 1,
+          borderColor: colors.border.default,
+          boxShadow: '8px 0 24px rgba(15,23,42,0.12)',
           transform: [{ translateX }],
           flexDirection: 'column',
           zIndex: 500,
         }}
       >
-        <SidebarBody width={sidebarWidth} onNavigate={navigate} onClose={closeSidebar} />
+        <SidebarBody
+          width={sidebarWidth}
+          collapsed={false}
+          sections={resolvedSections}
+          onNavigate={navigate}
+          onClose={closeSidebar}
+        />
       </Animated.View>
     </View>
   );

@@ -43,5 +43,3 @@ export async function getBranches(): Promise<Branch[]> {
   if (res && Array.isArray(res.items)) return res.items;
   return [];
 }
-
-

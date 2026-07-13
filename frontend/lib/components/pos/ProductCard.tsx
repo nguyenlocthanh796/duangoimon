@@ -13,8 +13,8 @@ interface ProductCardProps {
   cardSize: number;
   isWide: boolean;
   inCartCount: number;
-  onPress: () => void;      // Triggers options modal (size/toppings selection)
-  onQuickAdd: () => void;   // Triggers quick add (default size M)
+  onPress: () => void; // Triggers options modal (size/toppings selection)
+  onQuickAdd: () => void; // Triggers quick add (default size M)
 }
 
 export default function ProductCard({
@@ -32,10 +32,10 @@ export default function ProductCard({
     'sua-chua': ASSETS.images.categorySuaChua,
     'tra-chanh': ASSETS.images.categoryTraChanh,
     'do-an-vat': ASSETS.images.categoryDoAnVat,
-    'che': ASSETS.images.categoryChe,
+    che: ASSETS.images.categoryChe,
     'tra-sua': ASSETS.images.categoryTraSua,
-    'soda': ASSETS.images.categorySoda,
-    'kem': ASSETS.images.categoryKem,
+    soda: ASSETS.images.categorySoda,
+    kem: ASSETS.images.categoryKem,
   };
 
   return (
@@ -85,7 +85,10 @@ export default function ProductCard({
           borderBottomRightRadius: shape.radius.md,
         }}
       >
-        <Text style={{ ...font.bodySmall, color: '#FFFFFF', textAlign: 'center', marginBottom: 3 }} numberOfLines={1}>
+        <Text
+          style={{ ...font.bodySmall, color: '#FFFFFF', textAlign: 'center', marginBottom: 3 }}
+          numberOfLines={1}
+        >
           {item.name}
         </Text>
         <Text style={{ ...font.label, color: '#FDBA74', textAlign: 'center' }}>

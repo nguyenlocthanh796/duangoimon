@@ -1,3 +1,5 @@
+import { ApiError, ExpectedNotFoundError } from '../logger';
+
 // API URL resolution:
 // 1. Use EXPO_PUBLIC_API_URL env variable if set (for flexible dev/deploy)
 // 2. In production, use same host (backend serves frontend)
@@ -10,20 +12,30 @@ const API_URL =
       : `${window.location.protocol}//${window.location.host}/api/v1`
     : 'http://localhost:8000/api/v1');
 
+import { getToken as getSecureToken, setToken as setSecureToken, clearToken as clearSecureToken } from '../secure-storage';
+
+// In-memory token cache for synchronous access (secure-storage is async on native)
+let cachedToken: string | null = null;
+
+// Initialize: read token from storage on module load
+if (typeof window !== 'undefined') {
+  getSecureToken().then(t => { cachedToken = t; });
+}
 
 const TOKEN_KEY = 'pos_token';
 
 export function getToken(): string | null {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem(TOKEN_KEY);
+  return cachedToken;
 }
 
-export function setToken(token: string) {
-  localStorage.setItem(TOKEN_KEY, token);
+export async function setToken(token: string) {
+  cachedToken = token;
+  await setSecureToken(token);
 }
 
-export function clearToken() {
-  localStorage.removeItem(TOKEN_KEY);
+export async function clearToken() {
+  cachedToken = null;
+  await clearSecureToken();
 }
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
@@ -38,13 +50,28 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const timeoutId = setTimeout(() => controller.abort(), 15000);
   try {
     const cleanPath = path.startsWith('/api/v1') ? path.substring(7) : path;
-    const res = await fetch(`${API_URL}${cleanPath}`, { ...options, headers, signal: controller.signal });
+    const res = await fetch(`${API_URL}${cleanPath}`, {
+      ...options,
+      headers,
+      signal: controller.signal,
+    });
     clearTimeout(timeoutId);
     if (!res.ok) {
-      if (res.status === 401) { clearToken(); window.location.href = '/login'; throw new Error('Unauthorized'); }
-      if (res.status === 403) { clearToken(); window.location.href = '/login'; throw new Error('Forbidden'); }
+      if (res.status === 401) {
+        clearToken();
+        window.location.href = '/login';
+        throw new ApiError('Unauthorized', 401);
+      }
+      if (res.status === 403) {
+        clearToken();
+        window.location.href = '/login';
+        throw new ApiError('Forbidden', 403);
+      }
       const err = await res.json().catch(() => ({ detail: res.statusText }));
-      throw new Error(err.detail || `HTTP ${res.status}`);
+      if (res.status === 404) {
+        throw new ExpectedNotFoundError(err.detail || 'Not found');
+      }
+      throw new ApiError(err.detail || `HTTP ${res.status}`, res.status);
     }
     return res.json();
   } catch (e: any) {

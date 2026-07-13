@@ -12,21 +12,25 @@ function formatDayLabel(dateStr: string): string {
     const d = new Date(dateStr);
     const days = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
     return days[d.getDay()];
-  } catch { return ''; }
+  } catch {
+    return '';
+  }
 }
 
 function formatDate(dateStr: string): string {
   try {
     const d = new Date(dateStr);
     return `${d.getDate()}/${d.getMonth() + 1}`;
-  } catch { return dateStr; }
+  } catch {
+    return dateStr;
+  }
 }
 
 type Daily = { date: string; orders: number; revenue: number };
 
 export default function BarChart({ data }: { data: Daily[] }) {
   if (!data || data.length === 0) return null;
-  const maxRevenue = Math.max(...data.map(d => d.revenue), 1);
+  const maxRevenue = Math.max(...data.map((d) => d.revenue), 1);
 
   return (
     <View style={chartStyles.container}>
@@ -36,9 +40,7 @@ export default function BarChart({ data }: { data: Daily[] }) {
           const isToday = i === data.length - 1;
           return (
             <View key={i} style={chartStyles.barCol}>
-              <Text style={chartStyles.barValue}>
-                {d.revenue > 0 ? formatVND(d.revenue) : ''}
-              </Text>
+              <Text style={chartStyles.barValue}>{d.revenue > 0 ? formatVND(d.revenue) : ''}</Text>
               <View style={chartStyles.barTrack}>
                 <View
                   style={[
@@ -50,7 +52,9 @@ export default function BarChart({ data }: { data: Daily[] }) {
                   ]}
                 />
               </View>
-              <Text style={[chartStyles.barLabel, isToday && { color: '#F97316', fontWeight: '700' }]}>
+              <Text
+                style={[chartStyles.barLabel, isToday && { color: '#F97316', fontWeight: '700' }]}
+              >
                 {formatDayLabel(d.date)}
               </Text>
               <Text style={chartStyles.barDate}>{formatDate(d.date)}</Text>

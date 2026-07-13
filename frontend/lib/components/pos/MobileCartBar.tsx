@@ -9,12 +9,23 @@ interface MobileCartBarProps {
   itemCount: number;
   total: number;
   onPress: () => void;
+  onSendToKitchen: () => void;
   onSave: () => void;
   onPay: () => void;
   submitting: boolean;
+  hasUnsentItems?: boolean;
 }
 
-export default function MobileCartBar({ itemCount, total, onPress, onSave, onPay, submitting }: MobileCartBarProps) {
+export default function MobileCartBar({
+  itemCount,
+  total,
+  onPress,
+  onSendToKitchen,
+  onSave,
+  onPay,
+  submitting,
+  hasUnsentItems = false,
+}: MobileCartBarProps) {
   return (
     <View
       style={{
@@ -63,12 +74,37 @@ export default function MobileCartBar({ itemCount, total, onPress, onSave, onPay
         </View>
       </TouchableOpacity>
 
-      <View style={{ flexDirection: 'row', gap: 10 }}>
+      <View style={{ flexDirection: 'row', gap: 8 }}>
+        <TouchableOpacity
+          onPress={onSendToKitchen}
+          disabled={!hasUnsentItems || submitting}
+          style={{
+            paddingHorizontal: 14,
+            paddingVertical: 0,
+            height: 48,
+            borderRadius: shape.radius.md,
+            backgroundColor: hasUnsentItems ? colors.brand.primaryBg : colors.surface.disabled,
+            borderWidth: 1.5,
+            borderColor: hasUnsentItems ? colors.border.brand : colors.border.default,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Text
+            style={{
+              ...font.button,
+              color: hasUnsentItems ? colors.text.brand : colors.text.muted,
+            }}
+          >
+            Gửi Bếp
+          </Text>
+        </TouchableOpacity>
+
         <TouchableOpacity
           onPress={onSave}
           disabled={submitting}
           style={{
-            paddingHorizontal: 18,
+            paddingHorizontal: 14,
             paddingVertical: 0,
             height: 48,
             borderRadius: shape.radius.md,
@@ -86,7 +122,7 @@ export default function MobileCartBar({ itemCount, total, onPress, onSave, onPay
           onPress={onPay}
           disabled={submitting}
           style={{
-            paddingHorizontal: 22,
+            paddingHorizontal: 18,
             paddingVertical: 0,
             height: 48,
             borderRadius: shape.radius.md,
@@ -94,7 +130,7 @@ export default function MobileCartBar({ itemCount, total, onPress, onSave, onPay
             alignItems: 'center',
             justifyContent: 'center',
             flexDirection: 'row',
-            gap: 6,
+            gap: 4,
           }}
         >
           <Text style={{ ...font.button, color: colors.text.inverse }}>Thanh toán</Text>

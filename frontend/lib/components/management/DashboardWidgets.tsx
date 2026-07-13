@@ -1,9 +1,10 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font } from '../../theme';
 import { shape } from '../../theme/shape';
 import SkeletonBox from '../ui/SkeletonBox';
+import { useResponsive } from '../../hooks/useResponsive';
 import type { Dashboard } from '../../api';
 
 // ── Top Products ──
@@ -18,7 +19,7 @@ export function TopProductsList({ data, loading }: TopProductsProps) {
     <View style={styles.section}>
       <SectionHeader icon="chart-bar" title="Sản phẩm bán chạy" subtitle="Hôm nay" />
       {loading ? (
-        [1, 2, 3].map(i => (
+        [1, 2, 3].map((i) => (
           <View key={i} style={[styles.listRow, { gap: 10 }]}>
             <SkeletonBox w={24} h={24} borderRadius={4} />
             <SkeletonBox w="55%" h={16} />
@@ -30,18 +31,45 @@ export function TopProductsList({ data, loading }: TopProductsProps) {
       ) : (
         <View style={{ gap: 0 }}>
           {/* mini table header */}
-          <View style={[styles.listRow, { borderBottomWidth: 1, borderBottomColor: colors.border.light, paddingBottom: 8, marginBottom: 4 }]}>
+          <View
+            style={[
+              styles.listRow,
+              {
+                borderBottomWidth: 1,
+                borderBottomColor: colors.border.light,
+                paddingBottom: 8,
+                marginBottom: 4,
+              },
+            ]}
+          >
             <Text style={[styles.colHead, { flex: 0.5, textAlign: 'center' }]}>#</Text>
             <Text style={[styles.colHead, { flex: 2 }]}>Tên món</Text>
             <Text style={[styles.colHead, { flex: 1, textAlign: 'right' }]}>SL</Text>
           </View>
           {data!.map((p, i) => (
             <View key={i} style={styles.listRow}>
-              <Text style={[styles.colText, { flex: 0.5, textAlign: 'center', fontWeight: '700', color: i < 3 ? colors.brand.primary : colors.text.muted }]}>
+              <Text
+                style={[
+                  styles.colText,
+                  {
+                    flex: 0.5,
+                    textAlign: 'center',
+                    fontWeight: '700',
+                    color: i < 3 ? colors.brand.primary : colors.text.muted,
+                  },
+                ]}
+              >
                 {i + 1}
               </Text>
-              <Text style={[styles.colText, { flex: 2 }]} numberOfLines={1}>{p.name}</Text>
-              <Text style={[styles.colText, { flex: 1, textAlign: 'right', fontWeight: '700', color: colors.text.primary }]}>
+              <Text style={[styles.colText, { flex: 2 }]} numberOfLines={1}>
+                {p.name}
+              </Text>
+              <Text
+                style={[
+                  styles.colText,
+                  { flex: 1, textAlign: 'right', fontWeight: '700', color: colors.text.primary },
+                ]}
+              >
                 {p.quantity}
               </Text>
             </View>
@@ -65,21 +93,40 @@ const NAV_ITEMS = [
   { title: 'Chi nhánh', icon: 'store-outline', route: '/quan-ly/branches' },
 ];
 
-interface NavGridProps { compact?: boolean }
+interface NavGridProps {
+  compact?: boolean;
+}
 
 export function NavigationGrid({ compact }: NavGridProps) {
   const router = useRouter();
-  const s = compact ? navCompact : navNormal;
+  const { isTabletLandscape, isTabletPortrait, breakpoint } = useResponsive();
+
+  // 4 cols iPad landscape/desktop, 3 cols iPad portrait + iPhone
+  const numCols = isTabletLandscape ? 4 : 3;
+  const cardWidth = `${Math.floor(100 / numCols) - 1.5}%` as const;
+
   return (
     <View style={styles.section}>
-      <SectionHeader icon="view-grid-outline" title="Phân hệ quản lý" subtitle={`${NAV_ITEMS.length} mục`} compact={compact} />
+      <SectionHeader
+        icon="view-grid-outline"
+        title="Phân hệ quản lý"
+        subtitle={`${NAV_ITEMS.length} mục`}
+        compact={compact}
+      />
       <View style={styles.navGrid}>
         {NAV_ITEMS.map((item, i) => (
-          <TouchableOpacity key={i} style={[s.navCard]} onPress={() => router.push(item.route as any)} activeOpacity={0.7}>
-            <View style={s.navIconWrap}>
+          <TouchableOpacity
+            key={i}
+            style={[compact ? navCompact.navCard : navNormal.navCard, { width: cardWidth }]}
+            onPress={() => router.push(item.route as any)}
+            activeOpacity={0.7}
+          >
+            <View style={compact ? navCompact.navIconWrap : navNormal.navIconWrap}>
               <Icon name={item.icon as any} size={compact ? 22 : 28} color={colors.text.muted} />
             </View>
-            <Text style={s.navLabel}>{item.title}</Text>
+            <Text style={compact ? navCompact.navLabel : navNormal.navLabel} numberOfLines={1}>
+              {item.title}
+            </Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -89,9 +136,17 @@ export function NavigationGrid({ compact }: NavGridProps) {
 
 // ── Low Stock ──
 
-interface LowStockItem { name: string; unit: string; current: number; min: number }
+interface LowStockItem {
+  name: string;
+  unit: string;
+  current: number;
+  min: number;
+}
 
-interface LowStockWidgetProps { items?: LowStockItem[]; loading?: boolean }
+interface LowStockWidgetProps {
+  items?: LowStockItem[];
+  loading?: boolean;
+}
 
 export function LowStockList({ items, loading }: LowStockWidgetProps) {
   const stockItems = items ?? [
@@ -103,15 +158,31 @@ export function LowStockList({ items, loading }: LowStockWidgetProps) {
     return (
       <View style={styles.section}>
         <SectionHeader icon="alert-circle-outline" title="Tồn kho thấp" />
-        {[1, 2, 3].map(i => <SkeletonBox key={i} w="100%" h={20} style={{ marginBottom: 8 }} />)}
+        {[1, 2, 3].map((i) => (
+          <SkeletonBox key={i} w="100%" h={20} style={{ marginBottom: 8 }} />
+        ))}
       </View>
     );
   }
   return (
     <View style={styles.section}>
-      <SectionHeader icon="alert-circle-outline" title="Tồn kho thấp" subtitle={`${stockItems.length} mặt hàng`} />
+      <SectionHeader
+        icon="alert-circle-outline"
+        title="Tồn kho thấp"
+        subtitle={`${stockItems.length} mặt hàng`}
+      />
       <View style={{ gap: 0 }}>
-        <View style={[styles.listRow, { borderBottomWidth: 1, borderBottomColor: colors.border.light, paddingBottom: 8, marginBottom: 4 }]}>
+        <View
+          style={[
+            styles.listRow,
+            {
+              borderBottomWidth: 1,
+              borderBottomColor: colors.border.light,
+              paddingBottom: 8,
+              marginBottom: 4,
+            },
+          ]}
+        >
           <Text style={[styles.colHead, { flex: 2 }]}>Nguyên liệu</Text>
           <Text style={[styles.colHead, { flex: 1.2, textAlign: 'right' }]}>Tồn / Tối thiểu</Text>
         </View>
@@ -124,14 +195,35 @@ export function LowStockList({ items, loading }: LowStockWidgetProps) {
             return (
               <View key={i} style={styles.listRow}>
                 <View style={{ flex: 2, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <View style={[styles.statusDot, { backgroundColor: isCritical ? colors.status.danger : colors.status.warning }]} />
-                  <Text style={styles.colText} numberOfLines={1}>{item.name}</Text>
+                  <View
+                    style={[
+                      styles.statusDot,
+                      {
+                        backgroundColor: isCritical ? colors.status.danger : colors.status.warning,
+                      },
+                    ]}
+                  />
+                  <Text style={styles.colText} numberOfLines={1}>
+                    {item.name}
+                  </Text>
                 </View>
-                <View style={{ flex: 1.2, flexDirection: 'row', justifyContent: 'flex-end', gap: 4 }}>
-                  <Text style={[styles.colText, { fontWeight: '700', color: isCritical ? colors.status.danger : colors.status.warning }]}>
+                <View
+                  style={{ flex: 1.2, flexDirection: 'row', justifyContent: 'flex-end', gap: 4 }}
+                >
+                  <Text
+                    style={[
+                      styles.colText,
+                      {
+                        fontWeight: '700',
+                        color: isCritical ? colors.status.danger : colors.status.warning,
+                      },
+                    ]}
+                  >
                     {item.current}
                   </Text>
-                  <Text style={[styles.colText, { color: colors.text.muted }]}>/ {item.min} {item.unit}</Text>
+                  <Text style={[styles.colText, { color: colors.text.muted }]}>
+                    / {item.min} {item.unit}
+                  </Text>
                 </View>
               </View>
             );
@@ -144,16 +236,44 @@ export function LowStockList({ items, loading }: LowStockWidgetProps) {
 
 // ── Recent Activities ──
 
-interface Activity { icon: string; text: string; time: string; color?: string }
+interface Activity {
+  icon: string;
+  text: string;
+  time: string;
+  color?: string;
+}
 
-interface ActivitiesProps { activities?: Activity[]; loading?: boolean }
+interface ActivitiesProps {
+  activities?: Activity[];
+  loading?: boolean;
+}
 
 export function RecentActivitiesList({ activities, loading }: ActivitiesProps) {
   const defaultActs: Activity[] = [
-    { icon: 'receipt', text: 'Hóa đơn #INV-1029 vừa thanh toán', time: '5 phút trước', color: '#10B981' },
-    { icon: 'clock-outline', text: 'Ca chiều bắt đầu - Trưởng ca: Minh Anh', time: '30 phút trước', color: '#F97316' },
-    { icon: 'close-circle', text: 'Món cà phê sữa #1203 bị hủy', time: '1 giờ trước', color: '#EF4444' },
-    { icon: 'account-plus', text: 'Khách mới: Nguyễn Văn B đăng ký thành viên', time: '2 giờ trước', color: '#8B5CF6' },
+    {
+      icon: 'receipt',
+      text: 'Hóa đơn #INV-1029 vừa thanh toán',
+      time: '5 phút trước',
+      color: '#10B981',
+    },
+    {
+      icon: 'clock-outline',
+      text: 'Ca chiều bắt đầu - Trưởng ca: Minh Anh',
+      time: '30 phút trước',
+      color: '#F97316',
+    },
+    {
+      icon: 'close-circle',
+      text: 'Món cà phê sữa #1203 bị hủy',
+      time: '1 giờ trước',
+      color: '#EF4444',
+    },
+    {
+      icon: 'account-plus',
+      text: 'Khách mới: Nguyễn Văn B đăng ký thành viên',
+      time: '2 giờ trước',
+      color: '#8B5CF6',
+    },
   ];
   const acts = activities ?? defaultActs;
 
@@ -161,7 +281,9 @@ export function RecentActivitiesList({ activities, loading }: ActivitiesProps) {
     return (
       <View style={styles.section}>
         <SectionHeader icon="history" title="Hoạt động" />
-        {[1, 2, 3].map(i => <SkeletonBox key={i} w="100%" h={20} style={{ marginBottom: 8 }} />)}
+        {[1, 2, 3].map((i) => (
+          <SkeletonBox key={i} w="100%" h={20} style={{ marginBottom: 8 }} />
+        ))}
       </View>
     );
   }
@@ -170,7 +292,17 @@ export function RecentActivitiesList({ activities, loading }: ActivitiesProps) {
     <View style={styles.section}>
       <SectionHeader icon="history" title="Hoạt động gần đây" />
       <View style={{ gap: 0 }}>
-        <View style={[styles.listRow, { borderBottomWidth: 1, borderBottomColor: colors.border.light, paddingBottom: 8, marginBottom: 4 }]}>
+        <View
+          style={[
+            styles.listRow,
+            {
+              borderBottomWidth: 1,
+              borderBottomColor: colors.border.light,
+              paddingBottom: 8,
+              marginBottom: 4,
+            },
+          ]}
+        >
           <Text style={[styles.colHead, { flex: 2.5 }]}>Sự kiện</Text>
           <Text style={[styles.colHead, { flex: 1, textAlign: 'right' }]}>Thời gian</Text>
         </View>
@@ -180,9 +312,15 @@ export function RecentActivitiesList({ activities, loading }: ActivitiesProps) {
               <View style={[styles.actDot, { backgroundColor: (act.color ?? '#CBD5E1') + '20' }]}>
                 <Icon name={act.icon as any} size={14} color={act.color ?? '#CBD5E1'} />
               </View>
-              <Text style={styles.colText} numberOfLines={2}>{act.text}</Text>
+              <Text style={styles.colText} numberOfLines={2}>
+                {act.text}
+              </Text>
             </View>
-            <Text style={[styles.colText, { flex: 1, textAlign: 'right', color: colors.text.muted }]}>{act.time}</Text>
+            <Text
+              style={[styles.colText, { flex: 1, textAlign: 'right', color: colors.text.muted }]}
+            >
+              {act.time}
+            </Text>
           </View>
         ))}
       </View>
@@ -205,7 +343,15 @@ export function RevenueChart() {
           return (
             <View key={i} style={styles.chartCol}>
               <View style={styles.chartBarOuter}>
-                <View style={[styles.chartBar, { height: `${h}%`, backgroundColor: i >= VALUES.length - 2 ? colors.brand.primary : '#FCD6B6' }]} />
+                <View
+                  style={[
+                    styles.chartBar,
+                    {
+                      height: `${h}%`,
+                      backgroundColor: i >= VALUES.length - 2 ? colors.brand.primary : '#FCD6B6',
+                    },
+                  ]}
+                />
               </View>
               <Text style={styles.chartLabel}>{HOURS[i]}h</Text>
             </View>
@@ -218,19 +364,39 @@ export function RevenueChart() {
 
 // ── Shared helpers ──
 
-function SectionHeader({ icon: iconName, title, subtitle, compact }: { icon: string; title: string; subtitle?: string; compact?: boolean }) {
+function SectionHeader({
+  icon: iconName,
+  title,
+  subtitle,
+  compact,
+}: {
+  icon: string;
+  title: string;
+  subtitle?: string;
+  compact?: boolean;
+}) {
   return (
     <View style={styles.sectionHeader}>
       <View style={styles.sectionHeaderLeft}>
         <Icon name={iconName as any} size={compact ? 16 : 20} color={colors.text.muted} />
-        <Text style={[styles.sectionTitle, compact && { fontSize: 15, lineHeight: 20 }]}>{title}</Text>
+        <Text style={[styles.sectionTitle, compact && { fontSize: 15, lineHeight: 20 }]}>
+          {title}
+        </Text>
       </View>
       {subtitle && <Text style={styles.sectionSub}>{subtitle}</Text>}
     </View>
   );
 }
 
-function EmptyBox({ icon: iconName, text, iconColor }: { icon: string; text: string; iconColor?: string }) {
+function EmptyBox({
+  icon: iconName,
+  text,
+  iconColor,
+}: {
+  icon: string;
+  text: string;
+  iconColor?: string;
+}) {
   return (
     <View style={styles.emptyBox}>
       <Icon name={iconName as any} size={28} color={iconColor ?? '#CBD5E1'} />
@@ -251,7 +417,10 @@ const styles = StyleSheet.create({
     boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
   },
   sectionHeader: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
   },
   sectionHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   sectionTitle: { ...font.body, fontWeight: '700', color: colors.text.primary },
@@ -265,11 +434,20 @@ const styles = StyleSheet.create({
 
   statusDot: { width: 8, height: 8, borderRadius: 4 },
   navGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 6 },
-  actDot: { width: 30, height: 30, borderRadius: shape.radius.md, alignItems: 'center', justifyContent: 'center' },
+  actDot: {
+    width: 30,
+    height: 30,
+    borderRadius: shape.radius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 
   chartContainer: {
-    flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between',
-    height: 120, paddingTop: 8,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    height: 120,
+    paddingTop: 8,
   },
   chartCol: { flex: 1, alignItems: 'center' },
   chartBarOuter: { flex: 1, width: '60%', justifyContent: 'flex-end', alignItems: 'center' },
@@ -279,28 +457,60 @@ const styles = StyleSheet.create({
 
 const navNormal = {
   navCard: {
-    width: '23%' as const, minWidth: 100,
-    alignItems: 'center' as const, gap: 10,
-    paddingVertical: 20, paddingHorizontal: 8,
+    width: '23%' as const,
+    minWidth: 100,
+    alignItems: 'center' as const,
+    gap: 10,
+    paddingVertical: 20,
+    paddingHorizontal: 8,
     backgroundColor: colors.surface.card,
     borderRadius: shape.radius.lg,
-    borderWidth: 1, borderColor: colors.border.light,
+    borderWidth: 1,
+    borderColor: colors.border.light,
     boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
   },
-  navIconWrap: { width: 56, height: 56, borderRadius: shape.radius.md, alignItems: 'center' as const, justifyContent: 'center' as const, backgroundColor: '#F3F4F6' },
-  navLabel: { ...font.body, fontWeight: '500' as const, color: colors.text.primary, textAlign: 'center' as const },
+  navIconWrap: {
+    width: 56,
+    height: 56,
+    borderRadius: shape.radius.md,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    backgroundColor: '#F3F4F6',
+  },
+  navLabel: {
+    ...font.body,
+    fontWeight: '500' as const,
+    color: colors.text.primary,
+    textAlign: 'center' as const,
+  },
 } as const;
 
 const navCompact = {
   navCard: {
-    width: '23%' as const, minWidth: 76,
-    alignItems: 'center' as const, gap: 6,
-    paddingVertical: 12, paddingHorizontal: 4,
+    width: '23%' as const,
+    minWidth: 76,
+    alignItems: 'center' as const,
+    gap: 6,
+    paddingVertical: 12,
+    paddingHorizontal: 4,
     backgroundColor: colors.surface.card,
     borderRadius: shape.radius.lg,
-    borderWidth: 1, borderColor: colors.border.light,
+    borderWidth: 1,
+    borderColor: colors.border.light,
     boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
   },
-  navIconWrap: { width: 40, height: 40, borderRadius: shape.radius.md, alignItems: 'center' as const, justifyContent: 'center' as const, backgroundColor: '#F3F4F6' },
-  navLabel: { ...font.label, fontWeight: '500' as const, color: colors.text.primary, textAlign: 'center' as const },
+  navIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: shape.radius.md,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    backgroundColor: '#F3F4F6',
+  },
+  navLabel: {
+    ...font.label,
+    fontWeight: '500' as const,
+    color: colors.text.primary,
+    textAlign: 'center' as const,
+  },
 } as const;

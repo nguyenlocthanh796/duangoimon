@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
   addBtnText: { ...font.buttonSmall, fontWeight: '700', color: colors.text.inverse },
 
   /* Right panel */
-  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 },
+  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 12, boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   panelHeaderText: { ...font.body, fontWeight: '700', color: colors.text.primary },
   panelStatRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface.card, marginHorizontal: 12, marginBottom: 6,
     borderRadius: shape.radius.lg, padding: 14,
     borderWidth: 1, borderColor: colors.border.light,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3,
+    boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3,
   },
   avatar: { width: 44, height: 44, borderRadius: shape.radius.md, alignItems: 'center', justifyContent: 'center' },
   avatarText: { color: colors.text.inverse, ...font.h3 },

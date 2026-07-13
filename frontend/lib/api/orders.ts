@@ -15,7 +15,14 @@ export function getActiveOrderForTable(tableId: string) {
 
 export function createOrder(data: {
   table_id: string;
-  items: { product_id: string; product_name?: string; quantity: number; unit_price: number; note?: string; options?: any }[];
+  items: {
+    product_id: string;
+    product_name?: string;
+    quantity: number;
+    unit_price: number;
+    note?: string;
+    options?: any;
+  }[];
 }) {
   return request<any>('/ban-hang/orders', { method: 'POST', body: JSON.stringify(data) });
 }
@@ -25,7 +32,10 @@ export function updateOrder(orderId: string, data: any) {
 }
 
 export function updateOrderStatus(orderId: string, status: string) {
-  return request<any>(`/ban-hang/orders/${orderId}/status`, { method: 'PUT', body: JSON.stringify({ status }) });
+  return request<any>(`/ban-hang/orders/${orderId}/status`, {
+    method: 'PUT',
+    body: JSON.stringify({ status }),
+  });
 }
 
 export function splitOrder(data: { order_id: string; item_ids: string[]; new_table_id?: string }) {
@@ -33,7 +43,10 @@ export function splitOrder(data: { order_id: string; item_ids: string[]; new_tab
 }
 
 export function splitTable(data: { order_id: string; item_ids: string[]; new_table_id: string }) {
-  return request<any>('/ban-hang/orders/split-table', { method: 'POST', body: JSON.stringify(data) });
+  return request<any>('/ban-hang/orders/split-table', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
 }
 
 export function mergeOrders(data: { source_order_id: string; target_order_id?: string }) {
@@ -41,11 +54,17 @@ export function mergeOrders(data: { source_order_id: string; target_order_id?: s
 }
 
 export function moveTable(orderId: string, data: { table_id: string }) {
-  return request<any>(`/ban-hang/orders/${orderId}/move-table`, { method: 'PATCH', body: JSON.stringify(data) });
+  return request<any>(`/ban-hang/orders/${orderId}/move-table`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  });
 }
 
 export function cancelOrderItem(data: { item_id: string; reason: string }) {
-  return request<any>('/ban-hang/orders/cancel-item', { method: 'POST', body: JSON.stringify(data) });
+  return request<any>('/ban-hang/orders/cancel-item', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
 }
 
 export function getOrder(orderId: string) {

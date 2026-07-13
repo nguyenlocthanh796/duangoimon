@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
   addBtnText: { ...font.buttonSmall, fontWeight: '600', color: colors.text.inverse },
 
   /* Right panel */
-  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3 },
+  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 10, boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   panelHeaderText: { ...font.body, fontWeight: '700', color: colors.text.primary },
   panelStatRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 4 },
@@ -282,7 +282,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface.card, marginHorizontal: 12, marginBottom: 8,
     borderRadius: shape.radius.lg, paddingHorizontal: 14, paddingVertical: 10,
     borderWidth: 1, borderColor: colors.border.light,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3,
+    boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3,
   },
   searchInput: { flex: 1, ...font.body, color: colors.text.primary },
 
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface.card, marginHorizontal: 12, marginBottom: 8,
     borderRadius: shape.radius.lg, padding: 14,
     borderWidth: 1, borderColor: colors.border.light,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3,
+    boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3,
   },
   codeTag: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: shape.radius.sm },
   codeText: { ...font.caption, fontWeight: '700' },

@@ -5,7 +5,7 @@ import { colors, font, shape } from '../../theme';
 
 export interface TransactionFormValues {
   type: 'thu' | 'chi';
-  amount: string;        // raw text from input
+  amount: string; // raw text from input
   category: string;
   note: string;
 }
@@ -17,9 +17,21 @@ interface TransactionFormContentProps {
 }
 
 const CATEGORIES_THU = ['Bán hàng', 'Đặt cọc', 'Thu nợ', 'Hoàn tiền', 'Khác'];
-const CATEGORIES_CHI = ['Mua nguyên liệu', 'Tiền lương', 'Tiền thuê', 'Điện nước', 'Marketing', 'Sửa chữa', 'Khác'];
+const CATEGORIES_CHI = [
+  'Mua nguyên liệu',
+  'Tiền lương',
+  'Tiền thuê',
+  'Điện nước',
+  'Marketing',
+  'Sửa chữa',
+  'Khác',
+];
 
-export default function TransactionFormContent({ initial, onChange, onSubmit }: TransactionFormContentProps) {
+export default function TransactionFormContent({
+  initial,
+  onChange,
+  onSubmit,
+}: TransactionFormContentProps) {
   const [type, setType] = useState<'thu' | 'chi'>(initial?.type ?? 'thu');
   const [amount, setAmount] = useState(initial?.amount ?? '');
   const [category, setCategory] = useState(initial?.category ?? CATEGORIES_THU[0]);
@@ -34,7 +46,9 @@ export default function TransactionFormContent({ initial, onChange, onSubmit }: 
 
   const switchType = (t: 'thu' | 'chi') => {
     const defCat = t === 'thu' ? CATEGORIES_THU[0] : CATEGORIES_CHI[0];
-    setType(t); setCategory(defCat); emit({ type: t, category: defCat });
+    setType(t);
+    setCategory(defCat);
+    emit({ type: t, category: defCat });
   };
 
   return (
@@ -45,14 +59,22 @@ export default function TransactionFormContent({ initial, onChange, onSubmit }: 
           style={[styles.segBtn, type === 'thu' && styles.segBtnActiveThu]}
           onPress={() => switchType('thu')}
         >
-          <Icon name="arrow-bottom-left" size={18} color={type === 'thu' ? '#fff' : colors.status.success} />
+          <Icon
+            name="arrow-bottom-left"
+            size={18}
+            color={type === 'thu' ? '#fff' : colors.status.success}
+          />
           <Text style={[styles.segText, type === 'thu' && styles.segTextActive]}>Thu</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.segBtn, type === 'chi' && styles.segBtnActiveChi]}
           onPress={() => switchType('chi')}
         >
-          <Icon name="arrow-top-right" size={18} color={type === 'chi' ? '#fff' : colors.status.danger} />
+          <Icon
+            name="arrow-top-right"
+            size={18}
+            color={type === 'chi' ? '#fff' : colors.status.danger}
+          />
           <Text style={[styles.segText, type === 'chi' && styles.segTextActive]}>Chi</Text>
         </TouchableOpacity>
       </View>
@@ -66,7 +88,10 @@ export default function TransactionFormContent({ initial, onChange, onSubmit }: 
           placeholder="0"
           placeholderTextColor={colors.text.muted}
           value={amount}
-          onChangeText={(t) => { setAmount(t); emit({ amount: t }); }}
+          onChangeText={(t) => {
+            setAmount(t);
+            emit({ amount: t });
+          }}
         />
       </View>
 
@@ -77,7 +102,10 @@ export default function TransactionFormContent({ initial, onChange, onSubmit }: 
           <TouchableOpacity
             key={c}
             style={[styles.catChip, category === c && styles.catChipActive]}
-            onPress={() => { setCategory(c); emit({ category: c }); }}
+            onPress={() => {
+              setCategory(c);
+              emit({ category: c });
+            }}
           >
             <Text style={[styles.catText, category === c && styles.catTextActive]}>{c}</Text>
           </TouchableOpacity>
@@ -93,7 +121,10 @@ export default function TransactionFormContent({ initial, onChange, onSubmit }: 
           placeholder="Ghi chú thêm (không bắt buộc)"
           placeholderTextColor={colors.text.muted}
           value={note}
-          onChangeText={(t) => { setNote(t); emit({ note: t }); }}
+          onChangeText={(t) => {
+            setNote(t);
+            emit({ note: t });
+          }}
         />
       </View>
     </View>
@@ -102,19 +133,55 @@ export default function TransactionFormContent({ initial, onChange, onSubmit }: 
 
 const styles = StyleSheet.create({
   seg: { flexDirection: 'row', gap: 12, marginBottom: 18 },
-  segBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 14, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default },
+  segBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 14,
+    borderRadius: shape.radius.md,
+    backgroundColor: colors.surface.disabled,
+    borderWidth: 1,
+    borderColor: colors.border.default,
+  },
   segBtnActiveThu: { backgroundColor: colors.status.success, borderColor: colors.status.success },
   segBtnActiveChi: { backgroundColor: colors.status.danger, borderColor: colors.status.danger },
   segText: { ...font.body, fontWeight: '700', color: colors.text.primary },
   segTextActive: { color: '#fff' },
   label: { ...font.label, color: colors.text.secondary, marginBottom: 8, marginTop: 6 },
-  inputWrap: { backgroundColor: colors.surface.card, borderRadius: shape.radius.md, borderWidth: 1, borderColor: colors.border.default, marginBottom: 14 },
-  input: { paddingHorizontal: 14, paddingVertical: 14, ...font.body, color: colors.text.primary, textAlignVertical: 'top' },
+  inputWrap: {
+    backgroundColor: colors.surface.card,
+    borderRadius: shape.radius.md,
+    borderWidth: 1,
+    borderColor: colors.border.default,
+    marginBottom: 14,
+  },
+  input: {
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    ...font.body,
+    color: colors.text.primary,
+    textAlignVertical: 'top',
+  },
   catWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 14 },
-  catChip: { paddingHorizontal: 14, paddingVertical: 9, borderRadius: shape.radius.full, backgroundColor: colors.surface.card, borderWidth: 1, borderColor: colors.border.default },
+  catChip: {
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    borderRadius: shape.radius.full,
+    backgroundColor: colors.surface.card,
+    borderWidth: 1,
+    borderColor: colors.border.default,
+  },
   catChipActive: { backgroundColor: colors.brand.primaryBg, borderColor: colors.brand.primary },
   catText: { ...font.caption, color: colors.text.muted, fontWeight: '600' },
   catTextActive: { color: colors.brand.primary },
-  submit: { marginTop: 8, paddingVertical: 16, borderRadius: shape.radius.md, alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 8, elevation: 3 },
+  submit: {
+    marginTop: 8,
+    paddingVertical: 16,
+    borderRadius: shape.radius.md,
+    alignItems: 'center',
+    boxShadow: '0px 4px 8px rgba(0,0,0,0.12)',
+  },
   submitText: { ...font.button, color: '#fff', fontWeight: '800' },
 });

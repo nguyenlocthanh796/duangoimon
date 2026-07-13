@@ -22,8 +22,16 @@ interface PaymentSummaryProps {
 export default function PaymentSummary({ items, total, tableName, orderId }: PaymentSummaryProps) {
   return (
     <View style={{ gap: 4 }}>
-      {items.map(item => (
-        <View key={item.id} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', paddingVertical: 4 }}>
+      {items.map((item) => (
+        <View
+          key={item.id}
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            paddingVertical: 4,
+          }}
+        >
           <View style={{ flex: 1, paddingRight: 8 }}>
             <Text style={{ ...font.bodySmall, color: '#1f2937' }}>{item.product_name}</Text>
             {item.note && <Text style={{ ...font.caption, color: '#d97706' }}>* {item.note}</Text>}

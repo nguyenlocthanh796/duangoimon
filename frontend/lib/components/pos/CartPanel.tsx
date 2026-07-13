@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Modal, Alert } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { colors, font, formatPrice } from '../../theme';
@@ -44,10 +45,32 @@ interface CartPanelProps {
 }
 
 export default function CartPanel({
-  cart, total, itemCount, onUpdateQty, onSetQty, onRemoveItem, onCancelItem, onMoveItem,
-  onSplitBill, onMergeBill, onMoveTable, onSplitTable, onMergeTable,
-  onOpenModifier, onSendToKitchen, onSaveTable, onPay, onPrintTemporary, submitting, isWide, cartSheet, setCartSheet,
-  onToggleServiceType, onEditNote, serviceChargePercent = 0, tableId,
+  cart,
+  total,
+  itemCount,
+  onUpdateQty,
+  onSetQty,
+  onRemoveItem,
+  onCancelItem,
+  onMoveItem,
+  onSplitBill,
+  onMergeBill,
+  onMoveTable,
+  onSplitTable,
+  onMergeTable,
+  onOpenModifier,
+  onSendToKitchen,
+  onSaveTable,
+  onPay,
+  onPrintTemporary,
+  submitting,
+  isWide,
+  cartSheet,
+  setCartSheet,
+  onToggleServiceType,
+  onEditNote,
+  serviceChargePercent = 0,
+  tableId,
 }: CartPanelProps) {
   const insets = useSafeAreaInsets();
 
@@ -57,11 +80,13 @@ export default function CartPanel({
   const [splitMode, setSplitMode] = React.useState(false);
   const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
   const [showMoreMenu, setShowMoreMenu] = React.useState(false);
-  const [moveAction, setMoveAction] = React.useState<'move_table' | 'split_table' | 'merge_bill' | 'merge_table' | 'move_item' | null>(null);
+  const [moveAction, setMoveAction] = React.useState<
+    'move_table' | 'split_table' | 'merge_bill' | 'merge_table' | 'move_item' | null
+  >(null);
   const [moveItemCartId, setMoveItemCartId] = React.useState<string | null>(null);
 
   const openNoteEditor = (cartItemId: string) => {
-    const item = cart.find(i => i.cartItemId === cartItemId);
+    const item = cart.find((i) => i.cartItemId === cartItemId);
     if (!item) return;
     setNoteText(item.note || '');
     setNoteEditId(cartItemId);
@@ -73,13 +98,25 @@ export default function CartPanel({
   };
 
   const groupedItems = React.useMemo(() => {
-    const groups: { category: string; label: string; unsent: CartItem[]; sent: CartItem[]; cancelled: CartItem[] }[] = [];
+    const groups: {
+      category: string;
+      label: string;
+      unsent: CartItem[];
+      sent: CartItem[];
+      cancelled: CartItem[];
+    }[] = [];
     const map: Record<string, { canc: CartItem[]; unsent: CartItem[]; sent: CartItem[] }> = {};
-    cart.forEach(item => {
+    cart.forEach((item) => {
       const cat = item.category || 'khac';
       if (!map[cat]) map[cat] = { canc: [], unsent: [], sent: [] };
-      if (item.cancelReason) { map[cat].canc.push(item); return; }
-      if (item.isSent && item.status && !['moi', undefined, ''].includes(item.status)) { map[cat].sent.push(item); return; }
+      if (item.cancelReason) {
+        map[cat].canc.push(item);
+        return;
+      }
+      if (item.isSent && item.status && !['moi', undefined, ''].includes(item.status)) {
+        map[cat].sent.push(item);
+        return;
+      }
       map[cat].unsent.push(item);
     });
     Object.entries(map).forEach(([cat, { canc, unsent, sent }]) => {
@@ -88,7 +125,8 @@ export default function CartPanel({
     return groups;
   }, [cart]);
 
-  const serviceCharge = serviceChargePercent > 0 ? Math.round(total * serviceChargePercent / 100) : 0;
+  const serviceCharge =
+    serviceChargePercent > 0 ? Math.round((total * serviceChargePercent) / 100) : 0;
   const grandTotal = total + serviceCharge;
   const vatAmount = React.useMemo(() => {
     return cart.reduce((sum, item) => {
@@ -98,15 +136,18 @@ export default function CartPanel({
       return sum + itemTax;
     }, 0);
   }, [cart]);
-  const hasUnsentItems = cart.some(i => !(i.isSent && i.status && !['moi', undefined, ''].includes(i.status)) && !i.cancelReason);
-  const allDineIn = cart.length > 0 && cart.every(i => i.serviceType !== 'takeaway');
-  const allTakeaway = cart.length > 0 && cart.every(i => i.serviceType === 'takeaway');
+  const hasUnsentItems = cart.some(
+    (i) => !(i.isSent && i.status && !['moi', undefined, ''].includes(i.status)) && !i.cancelReason
+  );
+  const allDineIn = cart.length > 0 && cart.every((i) => i.serviceType !== 'takeaway');
+  const allTakeaway = cart.length > 0 && cart.every((i) => i.serviceType === 'takeaway');
   const canBulkToggle = hasUnsentItems && (allDineIn || allTakeaway);
 
   const toggleSelectItem = (id: string) => {
-    setSelectedItems(prev => {
+    setSelectedItems((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
   };
@@ -133,18 +174,36 @@ export default function CartPanel({
     splitMode,
     onToggleSelect: toggleSelectItem,
     isSelected: selectedItems.has(item.cartItemId),
-    onRequestMoveItem: (id: string) => { setMoveItemCartId(id); setMoveAction('move_item'); },
+    onRequestMoveItem: (id: string) => {
+      setMoveItemCartId(id);
+      setMoveAction('move_item');
+    },
   });
 
   const renderCartItems = () => {
     if (cart.length === 0) {
       return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16, marginTop: 40 }}>
+        <View
+          style={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 16,
+            marginTop: 40,
+          }}
+        >
           <MaterialIcons name="shopping-basket" size={48} color={colors.icon.muted} />
           <Text style={{ ...font.body, color: colors.text.secondary }}>Giỏ hàng trống</Text>
           <TouchableOpacity
             onPress={() => setCartSheet(false)}
-            style={{ paddingHorizontal: 20, paddingVertical: 10, borderRadius: shape.radius.md, backgroundColor: colors.brand.primaryBg, borderWidth: 1, borderColor: colors.border.brand }}
+            style={{
+              paddingHorizontal: 20,
+              paddingVertical: 10,
+              borderRadius: shape.radius.md,
+              backgroundColor: colors.brand.primaryBg,
+              borderWidth: 1,
+              borderColor: colors.border.brand,
+            }}
           >
             <Text style={{ ...font.button, color: colors.text.brand }}>Thêm món ngay</Text>
           </TouchableOpacity>
@@ -152,7 +211,7 @@ export default function CartPanel({
       );
     }
 
-    return groupedItems.map(group => {
+    return groupedItems.map((group) => {
       const { unsent, sent, cancelled } = group;
       if (!unsent.length && !sent.length && !cancelled.length) return null;
 
@@ -165,7 +224,9 @@ export default function CartPanel({
                   <Text style={{ ...font.tab, color: colors.brand.primary }}>Món mới</Text>
                 </View>
               )}
-              {unsent.map(item => <CartItemRow key={item.cartItemId} {...itemRowProps(item)} />)}
+              {unsent.map((item) => (
+                <CartItemRow key={item.cartItemId} {...itemRowProps(item)} />
+              ))}
             </>
           )}
 
@@ -176,7 +237,9 @@ export default function CartPanel({
                   <Text style={{ ...font.tab, color: '#16a34a' }}>Đã gửi bếp</Text>
                 </View>
               )}
-              {sent.map(item => <CartItemRow key={item.cartItemId} {...itemRowProps(item)} />)}
+              {sent.map((item) => (
+                <CartItemRow key={item.cartItemId} {...itemRowProps(item)} />
+              ))}
             </>
           )}
 
@@ -185,7 +248,9 @@ export default function CartPanel({
               <View style={{ paddingHorizontal: 4, paddingVertical: 4 }}>
                 <Text style={{ ...font.tab, color: '#dc2626' }}>Đã huỷ</Text>
               </View>
-              {cancelled.map(item => <CartItemRow key={item.cartItemId} {...itemRowProps(item)} />)}
+              {cancelled.map((item) => (
+                <CartItemRow key={item.cartItemId} {...itemRowProps(item)} />
+              ))}
             </>
           )}
         </View>
@@ -194,31 +259,44 @@ export default function CartPanel({
   };
 
   const handleBulkToggle = () => {
-    cart.forEach(i => {
+    cart.forEach((i) => {
       if (!(i.isSent && i.status && !['moi', undefined, ''].includes(i.status)) && !i.cancelReason)
         onToggleServiceType?.(i.cartItemId);
     });
   };
 
   const renderFooter = () => (
-    <View style={{
-      paddingHorizontal: 8,
-      paddingTop: 8,
-      paddingBottom: isWide ? insets.bottom + 8 : 8,
-      gap: 8,
-      borderTopWidth: 1,
-      borderTopColor: colors.border.default,
-      backgroundColor: colors.surface.card
-    }}>
-      <CartSummary total={total} serviceChargePercent={serviceChargePercent} serviceCharge={serviceCharge} vatAmount={vatAmount} grandTotal={grandTotal} />
+    <View
+      style={{
+        paddingHorizontal: 8,
+        paddingTop: 8,
+        paddingBottom: isWide ? insets.bottom + 8 : 8,
+        gap: 8,
+        borderTopWidth: 1,
+        borderTopColor: colors.border.default,
+        backgroundColor: colors.surface.card,
+      }}
+    >
+      <CartSummary
+        total={total}
+        serviceChargePercent={serviceChargePercent}
+        serviceCharge={serviceCharge}
+        vatAmount={vatAmount}
+        grandTotal={grandTotal}
+      />
 
       {splitMode ? (
         <CartSplitActions
           cart={cart}
           selectedItems={selectedItems}
-          onSelectAll={() => setSelectedItems(new Set(cart.filter(i => !i.cancelReason).map(i => i.cartItemId)))}
+          onSelectAll={() =>
+            setSelectedItems(new Set(cart.filter((i) => !i.cancelReason).map((i) => i.cartItemId)))
+          }
           onDeselectAll={() => setSelectedItems(new Set())}
-          onCancelSplit={() => { setSplitMode(false); setSelectedItems(new Set()); }}
+          onCancelSplit={() => {
+            setSplitMode(false);
+            setSelectedItems(new Set());
+          }}
           onConfirmSplit={handleSplit}
         />
       ) : (
@@ -268,14 +346,30 @@ export default function CartPanel({
           }
           setMoveAction(null);
         }}
-        title={moveAction === 'move_table' ? 'Chọn bàn đích' : moveAction === 'merge_bill' ? 'Chọn hoá đơn cần gộp' : moveAction === 'split_table' ? 'Chọn bàn mới' : moveAction === 'merge_table' ? 'Chọn bàn cần gộp' : 'Chọn bàn'}
+        title={
+          moveAction === 'move_table'
+            ? 'Chọn bàn đích'
+            : moveAction === 'merge_bill'
+              ? 'Chọn hoá đơn cần gộp'
+              : moveAction === 'split_table'
+                ? 'Chọn bàn mới'
+                : moveAction === 'merge_table'
+                  ? 'Chọn bàn cần gộp'
+                  : 'Chọn bàn'
+        }
         filterOccupied={moveAction === 'merge_bill' || moveAction === 'merge_table'}
         excludeTableId={tableId}
       />
     </View>
   );
 
-  const hasMoreActions = !!(onSplitBill || onMergeBill || onMoveTable || onSplitTable || onMergeTable);
+  const hasMoreActions = !!(
+    onSplitBill ||
+    onMergeBill ||
+    onMoveTable ||
+    onSplitTable ||
+    onMergeTable
+  );
   const btnSize = isWide ? 40 : 36;
   const iconSize = isWide ? 22 : 18;
   const paddingV = 8;
@@ -283,42 +377,70 @@ export default function CartPanel({
 
   const content = (
     <>
-      <View style={{
-        paddingTop: isWide ? paddingV : insets.top + paddingV,
-        paddingBottom: isWide ? paddingV : paddingV + 4,
-        paddingHorizontal: paddingH,
-        borderBottomWidth: 1,
-        borderBottomColor: colors.border.default,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        backgroundColor: colors.surface.card,
-      }}>
+      <LinearGradient
+        colors={colors.gradient.header as [string, string]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{
+          paddingTop: isWide ? paddingV : insets.top + paddingV,
+          paddingBottom: isWide ? paddingV : paddingV + 4,
+          paddingHorizontal: paddingH,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}
+      >
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           {!isWide && (
             <TouchableOpacity
               onPress={() => setCartSheet(false)}
-              style={{ width: btnSize, height: btnSize, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center', marginRight: 2 }}
+              style={{
+                width: btnSize,
+                height: btnSize,
+                borderRadius: shape.radius.md,
+                backgroundColor: 'rgba(255,255,255,0.18)',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginRight: 2,
+              }}
             >
-              <MaterialIcons name="close" size={iconSize} color={colors.icon.default} />
+              <MaterialIcons name="close" size={iconSize} color={colors.icon.inverse} />
             </TouchableOpacity>
           )}
-          <Text style={{ ...(isWide ? font.h3 : font.h4), color: colors.text.primary }}>Giỏ hàng</Text>
+          <Text style={{ ...(isWide ? font.h3 : font.h4), color: colors.text.inverse, fontWeight: '600' }}>
+            Giỏ hàng
+          </Text>
           {itemCount > 0 && (
-            <View style={{ backgroundColor: colors.brand.primary, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 4 }}>
-              <Text style={{ ...font.buttonSmall, color: colors.text.inverse }}>{itemCount} món</Text>
+            <View
+              style={{
+                backgroundColor: 'rgba(255,255,255,0.25)',
+                paddingHorizontal: 8,
+                paddingVertical: 3,
+                borderRadius: 4,
+              }}
+            >
+              <Text style={{ ...font.buttonSmall, color: colors.text.inverse }}>
+                {itemCount} món
+              </Text>
             </View>
           )}
         </View>
         {hasMoreActions && (
           <TouchableOpacity
             onPress={() => setShowMoreMenu(true)}
-            style={{ width: btnSize, height: btnSize, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default, alignItems: 'center', justifyContent: 'center' }}
+            style={{
+              width: btnSize,
+              height: btnSize,
+              borderRadius: shape.radius.md,
+              backgroundColor: 'rgba(255,255,255,0.18)',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
-            <MaterialIcons name="more-horiz" size={iconSize} color={colors.text.primary} />
+            <MaterialIcons name="more-horiz" size={iconSize} color={colors.icon.inverse} />
           </TouchableOpacity>
         )}
-      </View>
+      </LinearGradient>
 
       <View style={{ flex: 1, backgroundColor: colors.surface.card }}>
         {cart.length === 0 ? (
@@ -328,7 +450,14 @@ export default function CartPanel({
             {!isWide && (
               <TouchableOpacity
                 onPress={() => setCartSheet(false)}
-                style={{ paddingHorizontal: 20, paddingVertical: 10, borderRadius: shape.radius.md, backgroundColor: colors.brand.primaryBg, borderWidth: 1, borderColor: colors.border.brand }}
+                style={{
+                  paddingHorizontal: 20,
+                  paddingVertical: 10,
+                  borderRadius: shape.radius.md,
+                  backgroundColor: colors.brand.primaryBg,
+                  borderWidth: 1,
+                  borderColor: colors.border.brand,
+                }}
               >
                 <Text style={{ ...font.button, color: colors.text.brand }}>Thêm món ngay</Text>
               </TouchableOpacity>
@@ -336,7 +465,11 @@ export default function CartPanel({
           </View>
         ) : (
           <>
-            <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 4, paddingTop: 8, paddingBottom: 16 }} showsVerticalScrollIndicator={false}>
+            <ScrollView
+              style={{ flex: 1 }}
+              contentContainerStyle={{ paddingHorizontal: 4, paddingTop: 8, paddingBottom: 16 }}
+              showsVerticalScrollIndicator={false}
+            >
               {renderCartItems()}
             </ScrollView>
             {renderFooter()}
@@ -344,15 +477,51 @@ export default function CartPanel({
         )}
       </View>
 
-      <NoteEditor visible={!!noteEditId} noteText={noteText} onChangeText={setNoteText} onSave={saveNote} onCancel={() => setNoteEditId(null)} />
+      <NoteEditor
+        visible={!!noteEditId}
+        noteText={noteText}
+        onChangeText={setNoteText}
+        onSave={saveNote}
+        onCancel={() => setNoteEditId(null)}
+      />
       <MoreMenu
         visible={showMoreMenu}
         onClose={() => setShowMoreMenu(false)}
-        onSplitBill={onSplitBill ? () => { setSplitMode(true); } : undefined}
-        onMergeBill={onMergeBill ? () => { setMoveAction('merge_bill'); } : undefined}
-        onMoveTable={onMoveTable ? () => { setMoveAction('move_table'); } : undefined}
-        onSplitTable={onSplitTable ? () => { setMoveAction('split_table'); } : undefined}
-        onMergeTable={onMergeTable ? () => { setMoveAction('merge_table'); } : undefined}
+        onSplitBill={
+          onSplitBill
+            ? () => {
+                setSplitMode(true);
+              }
+            : undefined
+        }
+        onMergeBill={
+          onMergeBill
+            ? () => {
+                setMoveAction('merge_bill');
+              }
+            : undefined
+        }
+        onMoveTable={
+          onMoveTable
+            ? () => {
+                setMoveAction('move_table');
+              }
+            : undefined
+        }
+        onSplitTable={
+          onSplitTable
+            ? () => {
+                setMoveAction('split_table');
+              }
+            : undefined
+        }
+        onMergeTable={
+          onMergeTable
+            ? () => {
+                setMoveAction('merge_table');
+              }
+            : undefined
+        }
       />
     </>
   );
@@ -363,7 +532,10 @@ export default function CartPanel({
 
   return (
     <Modal visible={cartSheet} animationType="slide" presentationStyle="fullScreen">
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface.card }} edges={['bottom', 'left', 'right']}>
+      <SafeAreaView
+        style={{ flex: 1, backgroundColor: colors.surface.card }}
+        edges={['bottom', 'left', 'right']}
+      >
         {content}
       </SafeAreaView>
     </Modal>

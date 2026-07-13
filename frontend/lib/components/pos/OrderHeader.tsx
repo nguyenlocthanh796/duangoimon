@@ -15,7 +15,14 @@ interface OrderHeaderProps {
   onOpenSidebar: () => void;
 }
 
-export default function OrderHeader({ tableName, itemsCount, productsCount, isWide, onClose, onOpenSidebar }: OrderHeaderProps) {
+export default function OrderHeader({
+  tableName,
+  itemsCount,
+  productsCount,
+  isWide,
+  onClose,
+  onOpenSidebar,
+}: OrderHeaderProps) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const btnSize = isWide ? 40 : 36;
@@ -28,30 +35,56 @@ export default function OrderHeader({ tableName, itemsCount, productsCount, isWi
   };
 
   return (
-    <View style={{
-      paddingTop: insets.top + paddingV,
-      paddingBottom: paddingV + 4,
-      paddingHorizontal: isWide ? 16 : 12,
-      backgroundColor: colors.surface.header,
-      borderBottomWidth: 1,
-      borderBottomColor: colors.border.default,
-      flexDirection: 'row',
-      alignItems: 'center',
-      boxShadow: '0 1px 4px rgba(15,23,42,0.06)',
-      zIndex: 10,
-    }}>
+    <View
+      style={{
+        paddingTop: insets.top + paddingV,
+        paddingBottom: paddingV + 4,
+        paddingHorizontal: isWide ? 16 : 12,
+        backgroundColor: colors.surface.header,
+        borderBottomWidth: 1,
+        borderBottomColor: colors.border.default,
+        flexDirection: 'row',
+        alignItems: 'center',
+        boxShadow: '0 1px 4px rgba(15,23,42,0.06)',
+        zIndex: 10,
+      }}
+    >
       {isWide && (
-        <TouchableOpacity onPress={onOpenSidebar} style={{ width: btnSize, height: btnSize, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center', marginRight: 6 }}>
+        <TouchableOpacity
+          onPress={onOpenSidebar}
+          style={{
+            width: btnSize,
+            height: btnSize,
+            borderRadius: shape.radius.md,
+            backgroundColor: colors.surface.disabled,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginRight: 6,
+          }}
+        >
           <Icon name="menu" size={iconSize} color={colors.icon.default} />
         </TouchableOpacity>
       )}
       {!onClose && (
-        <TouchableOpacity onPress={handleBack} style={{ width: btnSize, height: btnSize, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
+        <TouchableOpacity
+          onPress={handleBack}
+          style={{
+            width: btnSize,
+            height: btnSize,
+            borderRadius: shape.radius.md,
+            backgroundColor: colors.surface.disabled,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           <Icon name="arrow-left" size={iconSize} color={colors.icon.default} />
         </TouchableOpacity>
       )}
       <View style={{ marginHorizontal: 8, flex: 1, justifyContent: 'center' }}>
-        <Text style={{ ...(isWide ? font.h3 : font.h4), color: colors.text.primary }} numberOfLines={1}>
+        <Text
+          style={{ ...(isWide ? font.h3 : font.h4), color: colors.text.primary }}
+          numberOfLines={1}
+        >
           {tableName || 'Bàn ăn'}
         </Text>
         <Text style={{ ...font.badge, color: colors.text.muted, marginTop: 1 }}>
@@ -59,8 +92,19 @@ export default function OrderHeader({ tableName, itemsCount, productsCount, isWi
         </Text>
       </View>
       {onClose && (
-        <TouchableOpacity onPress={handleBack}
-          style={{ width: btnSize, height: btnSize, borderRadius: shape.radius.md, backgroundColor: colors.surface.danger, borderWidth: 1, borderColor: colors.border.danger, alignItems: 'center', justifyContent: 'center' }}>
+        <TouchableOpacity
+          onPress={handleBack}
+          style={{
+            width: btnSize,
+            height: btnSize,
+            borderRadius: shape.radius.md,
+            backgroundColor: colors.surface.danger,
+            borderWidth: 1,
+            borderColor: colors.border.danger,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           <Icon name="close" size={iconSize} color={colors.icon.danger} />
         </TouchableOpacity>
       )}

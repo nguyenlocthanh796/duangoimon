@@ -9,10 +9,10 @@ export async function login(username: string, password: string) {
     method: 'POST',
     body: JSON.stringify({ username, password }),
   });
-  setToken(data.access_token);
+  await setToken(data.access_token);
   return data;
 }
 
-export function logout() {
-  clearToken();
+export async function logout() {
+  await clearToken();
 }

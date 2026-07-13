@@ -1,6 +1,5 @@
-/// <reference types="jest" />
+// Jest setup file - runs BEFORE each test suite
+// Must be specified in jest.config.js "setupFiles" (NOT setupFilesAfterFramework)
 
-// Mock native modules for Jest
-jest.mock('react-native-gesture-handler', () => {});
-jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
-jest.mock('@gorhom/bottom-sheet', () => ({}));
+// Mock react-native-css-interop before it gets loaded by jest-expo preset
+jest.mock('react-native-css-interop', () => ({}), { virtual: true });

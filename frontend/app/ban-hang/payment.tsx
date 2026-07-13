@@ -9,27 +9,43 @@ import { shape } from '../../lib/theme/shape';
 import { formatPrice, formatPriceFull } from '../../lib/utils/format';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
-import { usePayment, PAY_METHODS, QUICK_AMOUNTS } from '../../lib/hooks/usePayment';
+import { usePayment, PAY_METHODS, QUICK_AMOUNTS, getSmartCashSuggestions } from '../../lib/hooks/usePayment';
 import Numpad from '../../lib/components/payment/Numpad';
 import PaymentSuccessScreen from '../../lib/components/payment/PaymentSuccessScreen';
 import { generateReceiptHTML } from '../../lib/components/payment/receipt';
 import SplitBillToggle from '../../lib/components/payment/SplitBillToggle';
 import OrderItemsList from '../../lib/components/payment/OrderItemsList';
+import UnifiedHeader from '../../lib/components/ui/UnifiedHeader';
 
 export default function PaymentScreen() {
-  const { tableId, tableName, total: totalStr, orderId } = useLocalSearchParams<{
-    tableId: string; tableName: string; total: string; orderId: string;
+  const {
+    tableId,
+    tableName,
+    total: totalStr,
+    orderId,
+  } = useLocalSearchParams<{
+    tableId: string;
+    tableName: string;
+    total: string;
+    orderId: string;
   }>();
   const total = Number(totalStr || '0');
+  const suggestions = getSmartCashSuggestions(total);
   const insets = useSafeAreaInsets();
   const { openSidebar } = useSidebar();
-  const { isWide } = useResponsive();
+  const { isWide, isLandscape, breakpoint } = useResponsive();
+  const isIPadLandscape = isLandscape && (breakpoint === 'tablet-landscape' || breakpoint === 'desktop');
 
   const [splits, setSplits] = useState<{ method: string; amount: number }[]>([]);
   const [showSplitter, setShowSplitter] = useState(false);
   const [mobileTab, setMobileTab] = useState<'payment' | 'invoice'>('payment');
 
-  const pm = usePayment({ tableId: tableId || '', tableName: tableName || '', total, orderId: orderId || '' });
+  const pm = usePayment({
+    tableId: tableId || '',
+    tableName: tableName || '',
+    total,
+    orderId: orderId || '',
+  });
 
   if (pm.paid) {
     return (
@@ -54,35 +70,132 @@ export default function PaymentScreen() {
   // iPad split layout
   const iPadView = (
     <View style={{ flex: 1, flexDirection: 'row' }}>
-      <View style={{ flex: 65, borderRightWidth: 1, borderColor: colors.border.default, padding: 16, gap: 16 }}>
-        <View style={{ flex: 1, flexDirection: 'row', gap: 16 }}>
+      <View
+        style={{
+          flex: 62,
+          borderRightWidth: 1,
+          borderColor: colors.border.default,
+          padding: 16,
+          gap: 16,
+        }}
+      >
+        <View style={{ flex: 1, flexDirection: isIPadLandscape ? 'row' : 'column', gap: 16 }}>
           <View style={{ flex: 1, gap: 16 }}>
-            <View style={{ backgroundColor: colors.surface.card, borderRadius: shape.radius.md, padding: 16, borderWidth: 1, borderColor: colors.border.default }}>
-              <Text style={{ ...font.tab, textTransform: 'uppercase', letterSpacing: 1, color: colors.text.muted, marginBottom: 12 }}>Tóm tắt đơn hàng</Text>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
+            <View
+              style={{
+                backgroundColor: colors.surface.card,
+                borderRadius: shape.radius.md,
+                padding: 16,
+                borderWidth: 1,
+                borderColor: colors.border.default,
+              }}
+            >
+              <Text
+                style={{
+                  ...font.tab,
+                  textTransform: 'uppercase',
+                  letterSpacing: 1,
+                  color: colors.text.muted,
+                  marginBottom: 12,
+                }}
+              >
+                Tóm tắt đơn hàng
+              </Text>
+              <View
+                style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}
+              >
                 <Text style={{ ...font.body, color: colors.text.body }}>Tên bàn</Text>
-                <Text style={{ ...font.body, fontWeight: '600', color: colors.text.primary }}>{tableName}</Text>
+                <Text style={{ ...font.body, fontWeight: '600', color: colors.text.primary }}>
+                  {tableName}
+                </Text>
               </View>
-              <View style={{ height: 1, backgroundColor: colors.surface.disabled, marginVertical: 8 }} />
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Text style={{ ...font.body, fontWeight: '600', color: colors.text.primary }}>Tổng thanh toán</Text>
-                <Text style={{ ...font.priceLarge, color: colors.brand.primary }}>{formatPriceFull(total)}</Text>
+              <View
+                style={{ height: 1, backgroundColor: colors.surface.disabled, marginVertical: 8 }}
+              />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}
+              >
+                <Text style={{ ...font.body, fontWeight: '600', color: colors.text.primary }}>
+                  Tổng thanh toán
+                </Text>
+                <Text style={{ ...font.priceLarge, color: colors.brand.primary }}>
+                  {formatPriceFull(total)}
+                </Text>
               </View>
             </View>
             <View>
-              <Text style={{ ...font.tab, textTransform: 'uppercase', letterSpacing: 1, color: colors.text.muted, marginBottom: 10 }}>Phương thức thanh toán</Text>
+              <Text
+                style={{
+                  ...font.tab,
+                  textTransform: 'uppercase',
+                  letterSpacing: 1,
+                  color: colors.text.muted,
+                  marginBottom: 10,
+                }}
+              >
+                Phương thức thanh toán
+              </Text>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                {PAY_METHODS.map(m => {
+                {PAY_METHODS.map((m) => {
                   const sel = pm.method === m.id;
                   return (
-                    <TouchableOpacity key={m.id} onPress={() => pm.setMethod(m.id)}
-                      style={{ width: '47%', paddingVertical: 14, borderRadius: shape.radius.md, backgroundColor: sel ? m.bg : colors.surface.card, borderWidth: 2, borderColor: sel ? m.color : colors.border.default, alignItems: 'center', gap: 6 }}>
-                      <View style={{ width: 40, height: 40, borderRadius: shape.radius.md, backgroundColor: sel ? m.color + '20' : colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
-                        <Icon name={m.icon as any} size={22} color={sel ? m.color : colors.icon.muted} />
+                    <TouchableOpacity
+                      key={m.id}
+                      onPress={() => pm.setMethod(m.id)}
+                      style={{
+                        width: '47%',
+                        paddingVertical: 14,
+                        borderRadius: shape.radius.md,
+                        backgroundColor: sel ? m.bg : colors.surface.card,
+                        borderWidth: 2,
+                        borderColor: sel ? m.color : colors.border.default,
+                        alignItems: 'center',
+                        gap: 6,
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: shape.radius.md,
+                          backgroundColor: sel ? m.color + '20' : colors.surface.disabled,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <Icon
+                          name={m.icon as any}
+                          size={22}
+                          color={sel ? m.color : colors.icon.muted}
+                        />
                       </View>
-                      <Text style={{ ...font.tab, color: sel ? m.color : colors.text.muted, textAlign: 'center' }}>{m.label}</Text>
+                      <Text
+                        style={{
+                          ...font.tab,
+                          color: sel ? m.color : colors.text.muted,
+                          textAlign: 'center',
+                        }}
+                      >
+                        {m.label}
+                      </Text>
                       {sel && (
-                        <View style={{ position: 'absolute', top: 8, right: 8, width: 18, height: 18, borderRadius: shape.radius.md, backgroundColor: m.color, alignItems: 'center', justifyContent: 'center' }}>
+                        <View
+                          style={{
+                            position: 'absolute',
+                            top: 8,
+                            right: 8,
+                            width: 18,
+                            height: 18,
+                            borderRadius: shape.radius.md,
+                            backgroundColor: m.color,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
                           <Icon name="check" size={12} color={colors.text.inverse} />
                         </View>
                       )}
@@ -92,44 +205,113 @@ export default function PaymentScreen() {
               </View>
             </View>
           </View>
-          <View style={{ flex: 1, backgroundColor: colors.surface.card, borderRadius: shape.radius.md, padding: 16, borderWidth: 1, borderColor: colors.border.default }}>
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: colors.surface.card,
+              borderRadius: shape.radius.md,
+              padding: 16,
+              borderWidth: 1,
+              borderColor: colors.border.default,
+            }}
+          >
             {pm.method === 'tien_mat' || pm.method === 'card' ? (
               <View style={{ flex: 1 }}>
-                <Text style={{ ...font.tab, color: colors.text.muted, marginBottom: 8, textTransform: 'uppercase', letterSpacing: 1 }}>Chi tiết món ăn</Text>
+                <Text
+                  style={{
+                    ...font.tab,
+                    color: colors.text.muted,
+                    marginBottom: 8,
+                    textTransform: 'uppercase',
+                    letterSpacing: 1,
+                  }}
+                >
+                  Chi tiết món ăn
+                </Text>
                 {pm.orderItems.length > 0 ? (
                   <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
                     {pm.orderItems.map((item, idx) => (
-                      <View key={idx} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colors.border.light }}>
-                        <Text style={{ ...font.bodySmall, color: colors.text.primary, flex: 1 }} numberOfLines={1}>{item.quantity}x {item.product_name}</Text>
-                        <Text style={{ ...font.bodySmall, color: colors.text.secondary }}>{formatPriceFull(item.unit_price * item.quantity)}</Text>
+                      <View
+                        key={idx}
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          paddingVertical: 6,
+                          borderBottomWidth: 1,
+                          borderBottomColor: colors.border.light,
+                        }}
+                      >
+                        <Text
+                          style={{ ...font.bodySmall, color: colors.text.primary, flex: 1 }}
+                          numberOfLines={1}
+                        >
+                          {item.quantity}x {item.product_name}
+                        </Text>
+                        <Text style={{ ...font.bodySmall, color: colors.text.secondary }}>
+                          {formatPriceFull(item.unit_price * item.quantity)}
+                        </Text>
                       </View>
                     ))}
                   </ScrollView>
                 ) : (
                   <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                     <Icon name="file-document-outline" size={24} color={colors.icon.muted} />
-                    <Text style={{ ...font.caption, color: colors.text.muted }}>Không có chi tiết món ăn</Text>
+                    <Text style={{ ...font.caption, color: colors.text.muted }}>
+                      Không có chi tiết món ăn
+                    </Text>
                   </View>
                 )}
               </View>
             ) : (
               <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 16 }}>
-                <View style={{ width: 140, height: 140, borderRadius: shape.radius.md, borderWidth: 1.5, borderColor: colors.border.default, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', padding: 8 }}>
+                <View
+                  style={{
+                    width: 140,
+                    height: 140,
+                    borderRadius: shape.radius.md,
+                    borderWidth: 1.5,
+                    borderColor: colors.border.default,
+                    backgroundColor: '#FFFFFF',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: 8,
+                  }}
+                >
                   <Icon name="qrcode-scan" size={100} color={colors.text.primary} />
                 </View>
-                <Text style={{ ...font.h3, color: colors.text.primary, textAlign: 'center' }}>Quét mã QR để thanh toán</Text>
+                <Text style={{ ...font.h3, color: colors.text.primary, textAlign: 'center' }}>
+                  Quét mã QR để thanh toán
+                </Text>
                 <View style={{ gap: 6, width: '100%', marginTop: 8 }}>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Text style={{ ...font.caption, color: colors.text.muted }}>Ngân hàng</Text>
-                    <Text style={{ ...font.caption, fontWeight: '600', color: colors.text.primary }}>MB Bank</Text>
+                    <Text
+                      style={{ ...font.caption, fontWeight: '600', color: colors.text.primary }}
+                    >
+                      MB Bank
+                    </Text>
                   </View>
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 2 }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      marginVertical: 2,
+                    }}
+                  >
                     <Text style={{ ...font.caption, color: colors.text.muted }}>Số tài khoản</Text>
-                    <Text style={{ ...font.caption, fontWeight: '600', color: colors.text.primary }}>0987654321</Text>
+                    <Text
+                      style={{ ...font.caption, fontWeight: '600', color: colors.text.primary }}
+                    >
+                      0987654321
+                    </Text>
                   </View>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <Text style={{ ...font.caption, color: colors.text.muted }}>Số tiền</Text>
-                    <Text style={{ ...font.caption, fontWeight: '600', color: colors.brand.primary }}>{formatPriceFull(total)}</Text>
+                    <Text
+                      style={{ ...font.caption, fontWeight: '600', color: colors.brand.primary }}
+                    >
+                      {formatPriceFull(total)}
+                    </Text>
                   </View>
                 </View>
               </View>
@@ -138,34 +320,121 @@ export default function PaymentScreen() {
         </View>
       </View>
 
-      <View style={{ flex: 35, backgroundColor: colors.surface.card, padding: 16 }}>
+      <View style={{ flex: 38, backgroundColor: colors.surface.card, padding: 16 }}>
         <View style={{ flex: 1 }}>
           {pm.method === 'tien_mat' ? (
             <View style={{ flex: 1 }}>
               <View style={{ flex: 1 }}>
-                <Text style={{ ...font.tab, textTransform: 'uppercase', letterSpacing: 1, color: colors.text.muted, marginBottom: 12 }}>Nhập tiền khách đưa</Text>
-                <View style={{ backgroundColor: colors.surface.app, borderRadius: shape.radius.md, padding: 16, marginBottom: 12, alignItems: 'center', borderWidth: 1, borderColor: colors.border.default }}>
-                  <Text style={{ ...font.h1, color: pm.cashInput ? colors.text.primary : colors.text.placeholder }}>
+                <Text
+                  style={{
+                    ...font.tab,
+                    textTransform: 'uppercase',
+                    letterSpacing: 1,
+                    color: colors.text.muted,
+                    marginBottom: 12,
+                  }}
+                >
+                  Nhập tiền khách đưa
+                </Text>
+                <View
+                  style={{
+                    backgroundColor: colors.surface.app,
+                    borderRadius: shape.radius.md,
+                    padding: 16,
+                    marginBottom: 12,
+                    alignItems: 'center',
+                    borderWidth: 1,
+                    borderColor: colors.border.default,
+                  }}
+                >
+                  <Text
+                    style={{
+                      ...font.h1,
+                      color: pm.cashInput ? colors.text.primary : colors.text.placeholder,
+                    }}
+                  >
                     {pm.cashInput ? formatPriceFull(pm.cash) : '0đ'}
                   </Text>
                 </View>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 14, borderRadius: shape.radius.md, backgroundColor: changeBg, marginBottom: 14, borderWidth: 1, borderColor: changeBorder }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    paddingVertical: 10,
+                    paddingHorizontal: 14,
+                    borderRadius: shape.radius.md,
+                    backgroundColor: changeBg,
+                    marginBottom: 14,
+                    borderWidth: 1,
+                    borderColor: changeBorder,
+                  }}
+                >
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <Icon name={pm.change >= 0 ? 'check-circle' : 'alert-circle'} size={16} color={pm.change >= 0 ? colors.status.success : colors.status.danger} />
-                    <Text style={{ ...font.bodySmall, color: pm.change >= 0 ? palette.green[800] : colors.status.danger }}>Tiền thối lại:</Text>
+                    <Icon
+                      name={pm.change >= 0 ? 'check-circle' : 'alert-circle'}
+                      size={16}
+                      color={pm.change >= 0 ? colors.status.success : colors.status.danger}
+                    />
+                    <Text
+                      style={{
+                        ...font.bodySmall,
+                        color: pm.change >= 0 ? palette.green[800] : colors.status.danger,
+                      }}
+                    >
+                      Tiền thối lại:
+                    </Text>
                   </View>
-                  <Text style={{ ...font.h3, color: pm.change >= 0 ? colors.status.success : colors.status.danger }}>
-                    {pm.change >= 0 ? formatPriceFull(pm.change) : `Thiếu ${formatPriceFull(Math.abs(pm.change))}`}
+                  <Text
+                    style={{
+                      ...font.h3,
+                      color: pm.change >= 0 ? colors.status.success : colors.status.danger,
+                    }}
+                  >
+                    {pm.change >= 0
+                      ? formatPriceFull(pm.change)
+                      : `Thiếu ${formatPriceFull(Math.abs(pm.change))}`}
                   </Text>
                 </View>
-                <View style={{ flexDirection: 'row', gap: 6, marginBottom: 14 }}>
-                  <TouchableOpacity onPress={() => pm.setCashInput(String(total))} style={{ flex: 1.2, height: 44, justifyContent: 'center', borderRadius: shape.radius.md, backgroundColor: colors.brand.primaryBg, borderWidth: 1.5, borderColor: colors.border.brand, alignItems: 'center' }}>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
+                  <TouchableOpacity
+                    onPress={() => pm.setCashInput(String(total))}
+                    style={{
+                      flex: 1.2,
+                      minWidth: 100,
+                      height: 48,
+                      justifyContent: 'center',
+                      borderRadius: shape.radius.md,
+                      backgroundColor: colors.brand.primaryBg,
+                      borderWidth: 1.5,
+                      borderColor: colors.border.brand,
+                      alignItems: 'center',
+                    }}
+                  >
                     <Text style={{ ...font.caption, color: colors.brand.primary }}>Đúng tiền</Text>
-                    <Text style={{ ...font.badge, color: colors.brand.primary }}>{formatPriceFull(total)}</Text>
+                    <Text style={{ ...font.badge, fontWeight: '600', color: colors.brand.primary }}>
+                      {formatPriceFull(total)}
+                    </Text>
                   </TouchableOpacity>
-                  {QUICK_AMOUNTS.map(amt => (
-                    <TouchableOpacity key={amt} onPress={() => pm.setCashInput(String(amt))} style={{ flex: 1, height: 44, justifyContent: 'center', borderRadius: shape.radius.md, backgroundColor: colors.surface.app, borderWidth: 1, borderColor: colors.border.default, alignItems: 'center' }}>
-                      <Text style={{ ...font.caption, color: colors.text.body }}>{formatPriceFull(amt)}</Text>
+                  {suggestions.map((amt) => (
+                    <TouchableOpacity
+                      key={amt}
+                      onPress={() => pm.setCashInput(String(amt))}
+                      style={{
+                        flex: 1,
+                        minWidth: 80,
+                        height: 48,
+                        justifyContent: 'center',
+                        borderRadius: shape.radius.md,
+                        backgroundColor: colors.surface.app,
+                        borderWidth: 1,
+                        borderColor: colors.border.default,
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Text style={{ ...font.caption, color: colors.text.body }}>
+                        {formatPriceFull(amt)}
+                      </Text>
                     </TouchableOpacity>
                   ))}
                 </View>
@@ -173,60 +442,175 @@ export default function PaymentScreen() {
             </View>
           ) : pm.method === 'card' ? (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-              <View style={{ width: 100, height: 64, borderRadius: 8, backgroundColor: '#1E293B', alignItems: 'center', justifyContent: 'center' }}>
+              <View
+                style={{
+                  width: 100,
+                  height: 64,
+                  borderRadius: 8,
+                  backgroundColor: '#1E293B',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
                 <Icon name="credit-card-chip" size={24} color="#FBBF24" />
-                <Text style={{ ...font.caption, color: '#94A3B8', marginTop: 4, letterSpacing: 2 }}>•••• 4242</Text>
+                <Text style={{ ...font.caption, color: '#94A3B8', marginTop: 4, letterSpacing: 2 }}>
+                  •••• 4242
+                </Text>
               </View>
-              <Text style={{ ...font.h2, color: colors.text.primary, textAlign: 'center' }}>Đang chờ quẹt thẻ</Text>
-              <Text style={{ ...font.body, color: colors.text.muted, textAlign: 'center' }}>Vui lòng đưa thẻ vào đầu đọc hoặc chạm thẻ lên màn hình.</Text>
-              <Text style={{ ...font.h1, color: colors.brand.primary }}>{formatPriceFull(total)}</Text>
+              <Text style={{ ...font.h2, color: colors.text.primary, textAlign: 'center' }}>
+                Đang chờ quẹt thẻ
+              </Text>
+              <Text style={{ ...font.body, color: colors.text.muted, textAlign: 'center' }}>
+                Vui lòng đưa thẻ vào đầu đọc hoặc chạm thẻ lên màn hình.
+              </Text>
+              <Text style={{ ...font.h1, color: colors.brand.primary }}>
+                {formatPriceFull(total)}
+              </Text>
               <ActivityIndicator size="small" color={colors.brand.primary} />
             </View>
           ) : pm.method === 'qr' ? (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-              <View style={{ width: 120, height: 120, borderRadius: 8, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: colors.border.default }}>
+              <View
+                style={{
+                  width: 120,
+                  height: 120,
+                  borderRadius: 8,
+                  backgroundColor: '#FFFFFF',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderWidth: 1.5,
+                  borderColor: colors.border.default,
+                }}
+              >
                 <Icon name="qrcode-scan" size={90} color={colors.text.primary} />
               </View>
-              <Text style={{ ...font.h2, color: colors.text.primary, textAlign: 'center' }}>Quét mã QR để thanh toán</Text>
-              <Text style={{ ...font.h1, color: colors.brand.primary }}>{formatPriceFull(total)}</Text>
-              <Text style={{ ...font.bodySmall, color: colors.text.muted, textAlign: 'center' }}>Sử dụng app ngân hàng hoặc ví điện tử quét mã trên.</Text>
+              <Text style={{ ...font.h2, color: colors.text.primary, textAlign: 'center' }}>
+                Quét mã QR để thanh toán
+              </Text>
+              <Text style={{ ...font.h1, color: colors.brand.primary }}>
+                {formatPriceFull(total)}
+              </Text>
+              <Text style={{ ...font.bodySmall, color: colors.text.muted, textAlign: 'center' }}>
+                Sử dụng app ngân hàng hoặc ví điện tử quét mã trên.
+              </Text>
             </View>
           ) : (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-              <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: '#FEF2F2', alignItems: 'center', justifyContent: 'center' }}>
+              <View
+                style={{
+                  width: 80,
+                  height: 80,
+                  borderRadius: 40,
+                  backgroundColor: '#FEF2F2',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
                 <Icon name="bank-transfer" size={40} color="#E11D48" />
               </View>
-              <Text style={{ ...font.h2, color: colors.text.primary, textAlign: 'center' }}>Chuyển khoản ngân hàng</Text>
-              <View style={{ backgroundColor: colors.surface.card, borderRadius: 8, padding: 12, width: '100%', borderWidth: 1, borderColor: colors.border.default, gap: 6 }}>
+              <Text style={{ ...font.h2, color: colors.text.primary, textAlign: 'center' }}>
+                Chuyển khoản ngân hàng
+              </Text>
+              <View
+                style={{
+                  backgroundColor: colors.surface.card,
+                  borderRadius: 8,
+                  padding: 12,
+                  width: '100%',
+                  borderWidth: 1,
+                  borderColor: colors.border.default,
+                  gap: 6,
+                }}
+              >
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                   <Text style={{ ...font.caption, color: colors.text.muted }}>Ngân hàng</Text>
-                  <Text style={{ ...font.caption, fontWeight: '600', color: colors.text.primary }}>MB Bank</Text>
+                  <Text style={{ ...font.caption, fontWeight: '600', color: colors.text.primary }}>
+                    MB Bank
+                  </Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                   <Text style={{ ...font.caption, color: colors.text.muted }}>Số tài khoản</Text>
-                  <Text style={{ ...font.caption, fontWeight: '600', color: colors.text.primary }}>0987654321</Text>
+                  <Text style={{ ...font.caption, fontWeight: '600', color: colors.text.primary }}>
+                    0987654321
+                  </Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                   <Text style={{ ...font.caption, color: colors.text.muted }}>Chủ tài khoản</Text>
-                  <Text style={{ ...font.caption, fontWeight: '600', color: colors.text.primary }}>NGUYEN VAN A</Text>
+                  <Text style={{ ...font.caption, fontWeight: '600', color: colors.text.primary }}>
+                    NGUYEN VAN A
+                  </Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                   <Text style={{ ...font.caption, color: colors.text.muted }}>Số tiền</Text>
-                  <Text style={{ ...font.caption, fontWeight: '600', color: colors.brand.primary }}>{formatPriceFull(total)}</Text>
+                  <Text style={{ ...font.caption, fontWeight: '600', color: colors.brand.primary }}>
+                    {formatPriceFull(total)}
+                  </Text>
                 </View>
               </View>
-              <Text style={{ ...font.h3, color: colors.text.primary, textAlign: 'center' }}>Nội dung chuyển khoản</Text>
-              <View style={{ backgroundColor: '#FFF7ED', borderRadius: shape.radius.md, paddingVertical: 8, paddingHorizontal: 16, borderWidth: 1, borderColor: colors.border.brand }}>
-                <Text style={{ ...font.body, fontWeight: '600', color: colors.brand.primary, textAlign: 'center' }}>TT {tableName} #{orderId?.slice(-6)}</Text>
+              <Text style={{ ...font.h3, color: colors.text.primary, textAlign: 'center' }}>
+                Nội dung chuyển khoản
+              </Text>
+              <View
+                style={{
+                  backgroundColor: '#FFF7ED',
+                  borderRadius: shape.radius.md,
+                  paddingVertical: 8,
+                  paddingHorizontal: 16,
+                  borderWidth: 1,
+                  borderColor: colors.border.brand,
+                }}
+              >
+                <Text
+                  style={{
+                    ...font.body,
+                    fontWeight: '600',
+                    color: colors.brand.primary,
+                    textAlign: 'center',
+                  }}
+                >
+                  TT {tableName} #{orderId?.slice(-6)}
+                </Text>
               </View>
             </View>
           )}
           <Numpad method={pm.method} onKey={pm.handleKey} />
         </View>
-        <TouchableOpacity onPress={() => { pm.handlePay(); }} disabled={!pm.canPay || pm.paying}
-          style={{ paddingVertical: 16, borderRadius: shape.radius.md, alignItems: 'center', backgroundColor: !pm.canPay || pm.paying ? disabledBg : colors.status.success, flexDirection: 'row', justifyContent: 'center', gap: 8, marginTop: 16 }}>
-          {pm.paying ? <ActivityIndicator size="small" color={pm.canPay ? colors.text.inverse : disabledText} /> : <Icon name="check-circle" size={22} color={!pm.canPay || pm.paying ? disabledText : colors.text.inverse} />}
-          <Text style={{ ...font.h3, color: !pm.canPay || pm.paying ? disabledText : colors.text.inverse }}>{pm.paying ? 'Đang xử lý...' : 'Hoàn tất thanh toán'}</Text>
+        <TouchableOpacity
+          onPress={() => {
+            pm.handlePay();
+          }}
+          disabled={!pm.canPay || pm.paying}
+          style={{
+            paddingVertical: 16,
+            borderRadius: shape.radius.md,
+            alignItems: 'center',
+            backgroundColor: !pm.canPay || pm.paying ? disabledBg : colors.status.success,
+            flexDirection: 'row',
+            justifyContent: 'center',
+            gap: 8,
+            marginTop: 16,
+          }}
+        >
+          {pm.paying ? (
+            <ActivityIndicator
+              size="small"
+              color={pm.canPay ? colors.text.inverse : disabledText}
+            />
+          ) : (
+            <Icon
+              name="check-circle"
+              size={22}
+              color={!pm.canPay || pm.paying ? disabledText : colors.text.inverse}
+            />
+          )}
+          <Text
+            style={{
+              ...font.h3,
+              color: !pm.canPay || pm.paying ? disabledText : colors.text.inverse,
+            }}
+          >
+            {pm.paying ? 'Đang xử lý...' : 'Hoàn tất thanh toán'}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -239,14 +623,47 @@ export default function PaymentScreen() {
   const iPhoneView = (
     <View style={{ flex: 1 }}>
       {/* Tab bar */}
-      <View style={{ flexDirection: 'row', paddingHorizontal: 8, paddingVertical: 6, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light, gap: 6 }}>
-        {tabs.map(t => {
+      <View
+        style={{
+          flexDirection: 'row',
+          paddingHorizontal: 8,
+          paddingVertical: 6,
+          backgroundColor: colors.surface.card,
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border.light,
+          gap: 6,
+        }}
+      >
+        {tabs.map((t) => {
           const sel = mobileTab === t;
           return (
-            <TouchableOpacity key={t} onPress={() => setMobileTab(t)}
-              style={{ flex: 1, paddingVertical: 10, borderRadius: shape.radius.md, backgroundColor: sel ? colors.brand.primary : colors.surface.disabled, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }}>
-              <Icon name={tabIcons[t] as any} size={18} color={sel ? colors.text.inverse : colors.text.secondary} />
-              <Text style={{ ...font.bodyBold, color: sel ? colors.text.inverse : colors.text.secondary }}>{tabLabels[t]}</Text>
+            <TouchableOpacity
+              key={t}
+              onPress={() => setMobileTab(t)}
+              style={{
+                flex: 1,
+                paddingVertical: 10,
+                borderRadius: shape.radius.md,
+                backgroundColor: sel ? colors.brand.primary : colors.surface.disabled,
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexDirection: 'row',
+                gap: 6,
+              }}
+            >
+              <Icon
+                name={tabIcons[t] as any}
+                size={18}
+                color={sel ? colors.text.inverse : colors.text.secondary}
+              />
+              <Text
+                style={{
+                  ...font.bodyBold,
+                  color: sel ? colors.text.inverse : colors.text.secondary,
+                }}
+              >
+                {tabLabels[t]}
+              </Text>
             </TouchableOpacity>
           );
         })}
@@ -254,23 +671,45 @@ export default function PaymentScreen() {
 
       {/* Tab: Invoice detail */}
       {mobileTab === 'invoice' && (
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 8, gap: 10, flexGrow: 1 }}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ padding: 8, gap: 10, flexGrow: 1 }}
+        >
           <OrderItemsList items={pm.orderItems} />
-          <View style={{ backgroundColor: colors.surface.card, borderRadius: shape.radius.md, padding: 12, borderWidth: 1, borderColor: colors.border.default, gap: 4 }}>
+          <View
+            style={{
+              backgroundColor: colors.surface.card,
+              borderRadius: shape.radius.md,
+              padding: 12,
+              borderWidth: 1,
+              borderColor: colors.border.default,
+              gap: 4,
+            }}
+          >
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <Text style={{ ...font.bodySmall, color: colors.text.secondary }}>Tạm tính</Text>
-              <Text style={{ ...font.bodySmall, fontWeight: '600', color: colors.text.primary }}>{formatPriceFull(total)}</Text>
+              <Text style={{ ...font.bodySmall, fontWeight: '600', color: colors.text.primary }}>
+                {formatPriceFull(total)}
+              </Text>
             </View>
             {pm.vatAmount > 0 && (
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={{ ...font.bodySmall, color: colors.text.secondary }}>Thuế VAT (đã gồm)</Text>
-                <Text style={{ ...font.bodySmall, fontWeight: '600', color: colors.text.secondary }}>{formatPriceFull(pm.vatAmount)}</Text>
+                <Text style={{ ...font.bodySmall, color: colors.text.secondary }}>
+                  Thuế VAT (đã gồm)
+                </Text>
+                <Text
+                  style={{ ...font.bodySmall, fontWeight: '600', color: colors.text.secondary }}
+                >
+                  {formatPriceFull(pm.vatAmount)}
+                </Text>
               </View>
             )}
             <View style={{ height: 1, backgroundColor: colors.border.light, marginVertical: 4 }} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <Text style={{ ...font.bodyBold, color: colors.text.primary }}>Tổng cộng</Text>
-              <Text style={{ ...font.priceLarge, color: colors.brand.primary }}>{formatPriceFull(total)}</Text>
+              <Text style={{ ...font.priceLarge, color: colors.brand.primary }}>
+                {formatPriceFull(total)}
+              </Text>
             </View>
           </View>
         </ScrollView>
@@ -278,21 +717,79 @@ export default function PaymentScreen() {
 
       {/* Tab: Payment */}
       {mobileTab === 'payment' && (
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 8, gap: 10, flexGrow: 1 }}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ padding: 8, gap: 10, flexGrow: 1 }}
+        >
           {/* Payment methods 2x2 grid */}
-          <Text style={{ ...font.label, textTransform: 'uppercase', letterSpacing: 0.5, color: colors.text.muted }}>Phương thức thanh toán</Text>
+          <Text
+            style={{
+              ...font.label,
+              textTransform: 'uppercase',
+              letterSpacing: 0.5,
+              color: colors.text.muted,
+            }}
+          >
+            Phương thức thanh toán
+          </Text>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-            {PAY_METHODS.map(m => {
+            {PAY_METHODS.map((m) => {
               const sel = pm.method === m.id;
               return (
-                <TouchableOpacity key={m.id} onPress={() => pm.setMethod(m.id)}
-                  style={{ width: '48%', paddingVertical: 14, borderRadius: shape.radius.md, backgroundColor: sel ? m.bg : colors.surface.card, borderWidth: 2, borderColor: sel ? m.color : colors.border.default, alignItems: 'center', gap: 6 }}>
-                  <View style={{ width: 44, height: 44, borderRadius: shape.radius.md, backgroundColor: sel ? m.color + '20' : colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
-                    <Icon name={m.icon as any} size={24} color={sel ? m.color : colors.icon.muted} />
+                <TouchableOpacity
+                  key={m.id}
+                  onPress={() => pm.setMethod(m.id)}
+                  style={{
+                    width: '48%',
+                    paddingVertical: 14,
+                    borderRadius: shape.radius.md,
+                    backgroundColor: sel ? m.bg : colors.surface.card,
+                    borderWidth: 2,
+                    borderColor: sel ? m.color : colors.border.default,
+                    alignItems: 'center',
+                    gap: 6,
+                  }}
+                >
+                  <View
+                    style={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: shape.radius.md,
+                      backgroundColor: sel ? m.color + '20' : colors.surface.disabled,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Icon
+                      name={m.icon as any}
+                      size={24}
+                      color={sel ? m.color : colors.icon.muted}
+                    />
                   </View>
-                  <Text style={{ ...font.bodySmall, fontWeight: '600', color: sel ? m.color : colors.text.muted, textAlign: 'center' }}>{m.label}</Text>
+                  <Text
+                    style={{
+                      ...font.bodySmall,
+                      fontWeight: '600',
+                      color: sel ? m.color : colors.text.muted,
+                      textAlign: 'center',
+                    }}
+                  >
+                    {m.label}
+                  </Text>
                   {sel && (
-                    <View style={{ position: 'absolute', top: 8, right: 8, width: 20, height: 20, borderRadius: 3, backgroundColor: m.color, alignItems: 'center', justifyContent: 'center' }}>
+                    <View
+                      style={{
+                        position: 'absolute',
+                        top: 8,
+                        right: 8,
+                        width: 20,
+                        height: 20,
+                        borderRadius: 3,
+                        backgroundColor: m.color,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
                       <Icon name="check" size={14} color={colors.text.inverse} />
                     </View>
                   )}
@@ -303,24 +800,98 @@ export default function PaymentScreen() {
 
           {/* Cash — smartSuggestions replacing Numpad */}
           {pm.method === 'tien_mat' && (
-            <View style={{ backgroundColor: colors.surface.card, borderRadius: shape.radius.md, padding: 12, borderWidth: 1, borderColor: colors.border.default, gap: 10 }}>
-              <View style={{ backgroundColor: colors.surface.app, borderRadius: shape.radius.md, paddingVertical: 12, alignItems: 'center', borderWidth: 1, borderColor: colors.border.default }}>
-                <Text style={{ ...font.priceLarge, color: pm.cashInput ? colors.text.primary : colors.text.placeholder }}>
+            <View
+              style={{
+                backgroundColor: colors.surface.card,
+                borderRadius: shape.radius.md,
+                padding: 12,
+                borderWidth: 1,
+                borderColor: colors.border.default,
+                gap: 10,
+              }}
+            >
+              <View
+                style={{
+                  backgroundColor: colors.surface.app,
+                  borderRadius: shape.radius.md,
+                  paddingVertical: 12,
+                  alignItems: 'center',
+                  borderWidth: 1,
+                  borderColor: colors.border.default,
+                }}
+              >
+                <Text
+                  style={{
+                    ...font.priceLarge,
+                    color: pm.cashInput ? colors.text.primary : colors.text.placeholder,
+                  }}
+                >
                   {pm.cashInput ? formatPriceFull(pm.cash) : '0đ'}
                 </Text>
               </View>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 12, borderRadius: shape.radius.md, backgroundColor: changeBg, borderWidth: 1, borderColor: changeBorder }}>
-                <Text style={{ ...font.bodySmall, fontWeight: '600', color: pm.change >= 0 ? palette.green[800] : colors.status.danger }}>Tiền thối:</Text>
-                <Text style={{ ...font.bodyBold, color: pm.change >= 0 ? colors.status.success : colors.status.danger }}>
-                  {pm.change >= 0 ? formatPriceFull(pm.change) : `Thiếu ${formatPriceFull(Math.abs(pm.change))}`}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  paddingVertical: 8,
+                  paddingHorizontal: 12,
+                  borderRadius: shape.radius.md,
+                  backgroundColor: changeBg,
+                  borderWidth: 1,
+                  borderColor: changeBorder,
+                }}
+              >
+                <Text
+                  style={{
+                    ...font.bodySmall,
+                    fontWeight: '600',
+                    color: pm.change >= 0 ? palette.green[800] : colors.status.danger,
+                  }}
+                >
+                  Tiền thối:
+                </Text>
+                <Text
+                  style={{
+                    ...font.bodyBold,
+                    color: pm.change >= 0 ? colors.status.success : colors.status.danger,
+                  }}
+                >
+                  {pm.change >= 0
+                    ? formatPriceFull(pm.change)
+                    : `Thiếu ${formatPriceFull(Math.abs(pm.change))}`}
                 </Text>
               </View>
-              <Text style={{ ...font.caption, color: colors.text.muted }}>Chọn số tiền khách đưa:</Text>
+              <Text style={{ ...font.caption, color: colors.text.muted }}>
+                Chọn số tiền khách đưa:
+              </Text>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
-                {pm.smartSuggestions.slice(0, 6).map(amt => (
-                  <TouchableOpacity key={amt} onPress={() => pm.setCashInput(String(amt))}
-                    style={{ flex: 1, minWidth: '30%', height: 44, borderRadius: shape.radius.md, backgroundColor: pm.cash === amt ? colors.brand.primaryBg : colors.surface.app, borderWidth: pm.cash === amt ? 1.5 : 1, borderColor: pm.cash === amt ? colors.brand.primary : colors.border.default, alignItems: 'center', justifyContent: 'center' }}>
-                    <Text style={{ ...font.bodySmall, fontWeight: '600', color: pm.cash === amt ? colors.brand.primary : colors.text.primary }}>{formatPriceFull(amt)}</Text>
+                {pm.smartSuggestions.slice(0, 6).map((amt) => (
+                  <TouchableOpacity
+                    key={amt}
+                    onPress={() => pm.setCashInput(String(amt))}
+                    style={{
+                      flex: 1,
+                      minWidth: '30%',
+                      height: 44,
+                      borderRadius: shape.radius.md,
+                      backgroundColor:
+                        pm.cash === amt ? colors.brand.primaryBg : colors.surface.app,
+                      borderWidth: pm.cash === amt ? 1.5 : 1,
+                      borderColor: pm.cash === amt ? colors.brand.primary : colors.border.default,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Text
+                      style={{
+                        ...font.bodySmall,
+                        fontWeight: '600',
+                        color: pm.cash === amt ? colors.brand.primary : colors.text.primary,
+                      }}
+                    >
+                      {formatPriceFull(amt)}
+                    </Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -329,50 +900,147 @@ export default function PaymentScreen() {
 
           {/* Card reader */}
           {pm.method === 'card' && (
-            <View style={{ backgroundColor: colors.surface.card, borderRadius: shape.radius.md, padding: 20, borderWidth: 1, borderColor: colors.border.default, gap: 12, alignItems: 'center' }}>
-              <View style={{ width: 80, height: 52, borderRadius: 8, backgroundColor: '#1E293B', alignItems: 'center', justifyContent: 'center' }}>
+            <View
+              style={{
+                backgroundColor: colors.surface.card,
+                borderRadius: shape.radius.md,
+                padding: 20,
+                borderWidth: 1,
+                borderColor: colors.border.default,
+                gap: 12,
+                alignItems: 'center',
+              }}
+            >
+              <View
+                style={{
+                  width: 80,
+                  height: 52,
+                  borderRadius: 8,
+                  backgroundColor: '#1E293B',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
                 <Icon name="credit-card-chip" size={20} color="#FBBF24" />
-                <Text style={{ ...font.micro, color: '#94A3B8', marginTop: 2, letterSpacing: 2 }}>•••• 4242</Text>
+                <Text style={{ ...font.micro, color: '#94A3B8', marginTop: 2, letterSpacing: 2 }}>
+                  •••• 4242
+                </Text>
               </View>
               <Text style={{ ...font.h3, color: colors.text.primary }}>Đang chờ quẹt thẻ</Text>
-              <Text style={{ ...font.priceLarge, color: colors.brand.primary }}>{formatPriceFull(total)}</Text>
+              <Text style={{ ...font.priceLarge, color: colors.brand.primary }}>
+                {formatPriceFull(total)}
+              </Text>
               <ActivityIndicator size="small" color={colors.brand.primary} />
             </View>
           )}
 
           {/* QR code */}
           {pm.method === 'qr' && (
-            <View style={{ backgroundColor: colors.surface.card, borderRadius: shape.radius.md, padding: 16, borderWidth: 1, borderColor: colors.border.default, gap: 12, alignItems: 'center' }}>
-              <View style={{ width: 140, height: 140, borderRadius: shape.radius.md, borderWidth: 1.5, borderColor: colors.border.default, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', padding: 8 }}>
+            <View
+              style={{
+                backgroundColor: colors.surface.card,
+                borderRadius: shape.radius.md,
+                padding: 16,
+                borderWidth: 1,
+                borderColor: colors.border.default,
+                gap: 12,
+                alignItems: 'center',
+              }}
+            >
+              <View
+                style={{
+                  width: 140,
+                  height: 140,
+                  borderRadius: shape.radius.md,
+                  borderWidth: 1.5,
+                  borderColor: colors.border.default,
+                  backgroundColor: '#FFFFFF',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: 8,
+                }}
+              >
                 <Icon name="qrcode-scan" size={100} color={colors.text.primary} />
               </View>
-              <Text style={{ ...font.h3, color: colors.text.primary }}>Quét mã QR để thanh toán</Text>
-              <Text style={{ ...font.priceLarge, color: colors.brand.primary }}>{formatPriceFull(total)}</Text>
+              <Text style={{ ...font.h3, color: colors.text.primary }}>
+                Quét mã QR để thanh toán
+              </Text>
+              <Text style={{ ...font.priceLarge, color: colors.brand.primary }}>
+                {formatPriceFull(total)}
+              </Text>
             </View>
           )}
 
           {/* Bank transfer with QR mockup */}
           {pm.method === 'chuyen_khoan' && (
-            <View style={{ backgroundColor: colors.surface.card, borderRadius: shape.radius.md, padding: 16, borderWidth: 1, borderColor: colors.border.default, gap: 12, alignItems: 'center' }}>
-              <View style={{ width: 140, height: 140, borderRadius: shape.radius.md, borderWidth: 1.5, borderColor: colors.border.default, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', padding: 8 }}>
+            <View
+              style={{
+                backgroundColor: colors.surface.card,
+                borderRadius: shape.radius.md,
+                padding: 16,
+                borderWidth: 1,
+                borderColor: colors.border.default,
+                gap: 12,
+                alignItems: 'center',
+              }}
+            >
+              <View
+                style={{
+                  width: 140,
+                  height: 140,
+                  borderRadius: shape.radius.md,
+                  borderWidth: 1.5,
+                  borderColor: colors.border.default,
+                  backgroundColor: '#FFFFFF',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: 8,
+                }}
+              >
                 <Icon name="qrcode-scan" size={100} color={colors.text.primary} />
               </View>
               <View style={{ width: '100%', gap: 6 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                   <Text style={{ ...font.caption, color: colors.text.muted }}>Ngân hàng</Text>
-                  <Text style={{ ...font.caption, fontWeight: '600', color: colors.text.primary }}>MB Bank</Text>
+                  <Text style={{ ...font.caption, fontWeight: '600', color: colors.text.primary }}>
+                    MB Bank
+                  </Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                   <Text style={{ ...font.caption, color: colors.text.muted }}>Số tài khoản</Text>
-                  <Text style={{ ...font.caption, fontWeight: '600', color: colors.text.primary }}>0987654321</Text>
+                  <Text style={{ ...font.caption, fontWeight: '600', color: colors.text.primary }}>
+                    0987654321
+                  </Text>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                   <Text style={{ ...font.caption, color: colors.text.muted }}>Số tiền</Text>
-                  <Text style={{ ...font.caption, fontWeight: '600', color: colors.brand.primary }}>{formatPriceFull(total)}</Text>
+                  <Text style={{ ...font.caption, fontWeight: '600', color: colors.brand.primary }}>
+                    {formatPriceFull(total)}
+                  </Text>
                 </View>
               </View>
-              <View style={{ backgroundColor: '#FFF7ED', borderRadius: shape.radius.md, paddingVertical: 8, paddingHorizontal: 14, borderWidth: 1, borderColor: colors.border.brand, width: '100%', alignItems: 'center' }}>
-                <Text style={{ ...font.bodySmall, fontWeight: '600', color: colors.brand.primary, textAlign: 'center' }}>TT {tableName} #{orderId?.slice(-6)}</Text>
+              <View
+                style={{
+                  backgroundColor: '#FFF7ED',
+                  borderRadius: shape.radius.md,
+                  paddingVertical: 8,
+                  paddingHorizontal: 14,
+                  borderWidth: 1,
+                  borderColor: colors.border.brand,
+                  width: '100%',
+                  alignItems: 'center',
+                }}
+              >
+                <Text
+                  style={{
+                    ...font.bodySmall,
+                    fontWeight: '600',
+                    color: colors.brand.primary,
+                    textAlign: 'center',
+                  }}
+                >
+                  TT {tableName} #{orderId?.slice(-6)}
+                </Text>
               </View>
             </View>
           )}
@@ -382,10 +1050,38 @@ export default function PaymentScreen() {
       {/* Pay button (always visible) */}
       {mobileTab === 'payment' && (
         <View style={{ paddingHorizontal: 8, paddingBottom: 8, paddingTop: 2 }}>
-          <TouchableOpacity onPress={() => { pm.handlePay(); }} disabled={!pm.canPay || pm.paying}
-            style={{ paddingVertical: 16, borderRadius: shape.radius.md, alignItems: 'center', backgroundColor: !pm.canPay || pm.paying ? disabledBg : colors.status.success, flexDirection: 'row', justifyContent: 'center', gap: 8 }}>
-            {pm.paying ? <ActivityIndicator size="small" color={!pm.canPay ? disabledText : colors.text.inverse} /> : <Icon name="check-circle" size={22} color={!pm.canPay || pm.paying ? disabledText : colors.text.inverse} />}
-            <Text style={{ ...font.button, color: !pm.canPay || pm.paying ? disabledText : colors.text.inverse }}>{pm.paying ? 'Đang xử lý...' : 'Hoàn tất thanh toán'}</Text>
+          <TouchableOpacity
+            onPress={() => {
+              pm.handlePay();
+            }}
+            disabled={!pm.canPay || pm.paying}
+            style={{
+              paddingVertical: 16,
+              borderRadius: shape.radius.md,
+              alignItems: 'center',
+              backgroundColor: !pm.canPay || pm.paying ? disabledBg : colors.status.success,
+              flexDirection: 'row',
+              justifyContent: 'center',
+              gap: 8,
+            }}
+          >
+            {pm.paying ? (
+              <ActivityIndicator
+                size="small"
+                color={!pm.canPay ? disabledText : colors.text.inverse}
+              />
+            ) : (
+              <Icon
+                name="check-circle"
+                size={22}
+                color={!pm.canPay || pm.paying ? disabledText : colors.text.inverse}
+              />
+            )}
+            <Text
+              style={{ ...(isWide ? font.bodyBold : font.buttonSmall), color: '#fff' }}
+            >
+              {pm.paying ? 'Đang xử lý...' : 'Hoàn tất thanh toán'}
+            </Text>
           </TouchableOpacity>
         </View>
       )}
@@ -393,50 +1089,67 @@ export default function PaymentScreen() {
   );
 
   const btnSize = isWide ? 40 : 36;
-  const iconSize = isWide ? 20 : 18;
-  const paddingV = isWide ? 10 : 8;
-  const gapSize = isWide ? 12 : 8;
 
   return (
-    <SafeAreaView edges={['left', 'right', 'bottom']} style={{ flex: 1, backgroundColor: colors.surface.app }}>
-      <View style={{
-        paddingTop: insets.top + paddingV,
-        paddingBottom: paddingV + 4,
-        paddingHorizontal: isWide ? 16 : 12,
-        backgroundColor: colors.surface.card,
-        borderBottomWidth: 1,
-        borderBottomColor: colors.border.default,
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: gapSize,
-        shadowColor: palette.slate[900],
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.06,
-        shadowRadius: 4,
-        elevation: 2,
-        zIndex: 10
-      }}>
-        <TouchableOpacity onPress={() => router.back()} style={{ width: btnSize, height: btnSize, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' }}>
-          <Icon name="arrow-left" size={iconSize} color={colors.icon.default} />
-        </TouchableOpacity>
-        <View style={{ flex: 1, justifyContent: 'center' }}>
-          <Text style={{ ...(isWide ? font.h3 : font.h4), color: colors.text.primary }} numberOfLines={1}>Thanh toán · {tableName}</Text>
-          <Text style={{ ...font.caption, color: colors.text.muted, marginTop: 1 }}>Order #{orderId?.slice(-6) || '—'}</Text>
-        </View>
-        <View style={{ backgroundColor: colors.brand.primaryBg, paddingHorizontal: isWide ? 14 : 10, height: btnSize, borderRadius: shape.radius.md, borderWidth: 1, borderColor: colors.border.brand, justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={{ ...(isWide ? font.bodyBold : font.buttonSmall), color: colors.brand.primary }}>{formatPriceFull(total)}</Text>
-        </View>
-      </View>
-
+    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+      <UnifiedHeader
+        icon="receipt"
+        title="Thanh toán"
+        subtitle={tableName ? `Bàn ${tableName}` : undefined}
+        onBackPress={() => router.back()}
+        backLabel="Quay lại"
+        right={
+          <View
+            style={{
+              backgroundColor: 'rgba(255,255,255,0.18)',
+              paddingHorizontal: isWide ? 14 : 10,
+              height: btnSize,
+              borderRadius: shape.radius.md,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <Text
+              style={{ ...(isWide ? font.bodyBold : font.buttonSmall), color: '#fff' }}
+            >
+              {formatPriceFull(total)}
+            </Text>
+          </View>
+        }
+      />
       <View style={{ flex: 1 }}>
         {!orderId && (
-          <View style={{ margin: 16, backgroundColor: colors.surface.danger, borderColor: palette.red[300], borderWidth: 1.5, borderRadius: 4, padding: 16, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <View
+            style={{
+              margin: 16,
+              backgroundColor: colors.surface.danger,
+              borderColor: palette.red[300],
+              borderWidth: 1.5,
+              borderRadius: 4,
+              padding: 16,
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 10,
+            }}
+          >
             <Icon name="alert-circle" size={24} color={colors.status.danger} />
             <View style={{ flex: 1 }}>
-              <Text style={{ ...font.body, fontWeight: '600', color: palette.red[800] }}>Thiếu ID đơn hàng</Text>
-              <Text style={{ ...font.tab, color: colors.status.danger, marginTop: 2 }}>Không thể tiếp tục thanh toán vì chưa tạo được đơn hàng trên hệ thống.</Text>
+              <Text style={{ ...font.body, fontWeight: '600', color: palette.red[800] }}>
+                Thiếu ID đơn hàng
+              </Text>
+              <Text style={{ ...font.tab, color: colors.status.danger, marginTop: 2 }}>
+                Không thể tiếp tục thanh toán vì chưa tạo được đơn hàng trên hệ thống.
+              </Text>
             </View>
-            <TouchableOpacity onPress={() => router.back()} style={{ backgroundColor: colors.status.danger, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 4 }}>
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={{
+                backgroundColor: colors.status.danger,
+                paddingHorizontal: 12,
+                paddingVertical: 8,
+                borderRadius: 4,
+              }}
+            >
               <Text style={{ ...font.caption, color: colors.text.inverse }}>Quay lại</Text>
             </TouchableOpacity>
           </View>
@@ -455,6 +1168,6 @@ export default function PaymentScreen() {
           total={total}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
