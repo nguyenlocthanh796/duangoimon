@@ -3,7 +3,6 @@ import {
   View, Text, SectionList, TouchableOpacity, StyleSheet,
   Alert, ActivityIndicator, ScrollView,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api, User } from '../../lib/api';
@@ -12,6 +11,7 @@ import { useResponsive } from '../../lib/hooks/useResponsive';
 import { colors, font } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
+import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import FormModal from '../../lib/components/ui/FormModal';
 import FAB from '../../lib/components/ui/FAB';
 import EmptyState from '../../lib/components/ui/EmptyState';
@@ -34,11 +34,11 @@ const EMPTY_FORM: FormState = {
 };
 
 const ROLES: Array<{ key: string; label: string; color: string; bg: string; icon: string }> = [
-  { key: 'admin',      label: 'Admin',    color: '#8B5CF6', bg: '#F5F3FF', icon: 'admin-panel-settings' },
-  { key: 'manager',    label: 'Quản lý',  color: '#EF4444', bg: '#FEF2F2', icon: 'manage-accounts' },
+  { key: 'admin',      label: 'Admin',    color: '#8B5CF6', bg: '#F5F3FF', icon: 'shield-account' },
+  { key: 'manager',    label: 'Quản lý',  color: '#EF4444', bg: '#FEF2F2', icon: 'account-tie' },
   { key: 'cashier',    label: 'Thu ngân', color: '#F97316', bg: '#FFF7ED', icon: 'cash-register' },
-  { key: 'accountant', label: 'Kế toán',  color: '#10B981', bg: '#ECFDF5', icon: 'calculate' },
-  { key: 'kitchen',    label: 'Bếp',      color: '#F59E0B', bg: '#FEF3C7', icon: 'restaurant' },
+  { key: 'accountant', label: 'Kế toán',  color: '#10B981', bg: '#ECFDF5', icon: 'calculator-variant' },
+  { key: 'kitchen',    label: 'Bếp',      color: '#F59E0B', bg: '#FEF3C7', icon: 'silverware-fork-knife' },
 ];
 
 function getRoleConfig(role: string) {
@@ -238,7 +238,7 @@ export default function UsersScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <ScreenContainer compact>
       <ScreenHeader
         title="Nhân viên"
         subtitle={`${users.length} người`}
@@ -258,7 +258,7 @@ export default function UsersScreen() {
         )}
       />
       {isWide ? (
-        <View style={{ flex: 1, flexDirection: 'row', paddingVertical: 12 }}>
+        <View style={{ flex: 1, flexDirection: 'row', paddingVertical: 8 }}>
           <View style={{ flex: 0.55 }}>{renderList()}</View>
           <View style={styles.separator} />
           <View style={{ flex: 0.45, backgroundColor: colors.surface.app }}>
@@ -285,7 +285,7 @@ export default function UsersScreen() {
           />
         </FormModal>
       )}
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 
@@ -349,3 +349,4 @@ const styles = StyleSheet.create({
 
   separator: { width: 1, backgroundColor: colors.border.light },
 });
+

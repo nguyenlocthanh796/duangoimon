@@ -1,10 +1,8 @@
-"use client";
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View, Text, FlatList, TouchableOpacity, StyleSheet,
   Alert, ActivityIndicator, RefreshControl, TextInput,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { colors, font } from '../../lib/theme';
@@ -12,6 +10,7 @@ import { shape } from '../../lib/theme/shape';
 import { useResponsive, calcGridCols } from '../../lib/hooks/useResponsive';
 import { request } from '../../lib/api/client';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
+import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import RecipeForm from '../../lib/components/recipes/RecipeForm';
 
 const API = '/api/v1/quan-ly';
@@ -336,11 +335,11 @@ export default function RecipesScreen() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface.app }}>
+    <ScreenContainer compact>
       <ScreenHeader
         title="Công thức"
         subtitle={`${recipes.length} công thức · Quản lý giá thành`}
-        onMenuPress={openSidebar}
+        onMenuPress={openSidebar} compact
         right={
           <View style={{ flexDirection: 'row', gap: 6 }}>
             <TouchableOpacity onPress={load} style={s.headerBtn}>
@@ -396,7 +395,7 @@ export default function RecipesScreen() {
         onClose={() => { setShowForm(false); setEditRecipe(null); setCloneRecipe(null); }}
         onSaved={() => { setShowForm(false); setEditRecipe(null); setCloneRecipe(null); load(); }}
       />
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 
@@ -465,3 +464,4 @@ const s = StyleSheet.create({
 
   separator: { width: 1, backgroundColor: colors.border.light },
 });
+

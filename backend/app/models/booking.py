@@ -1,6 +1,7 @@
 """Online booking model."""
+
 import uuid
-from datetime import datetime, timezone, date, time
+from datetime import date, datetime, time, timezone
 
 from sqlalchemy import Boolean, Date, DateTime, Integer, String, Text, Time
 from sqlalchemy.dialects.postgresql import UUID
@@ -21,6 +22,10 @@ class Booking(Base):
     booking_date: Mapped[date] = mapped_column(Date)
     booking_time: Mapped[time] = mapped_column(Time)
     note: Mapped[str | None] = mapped_column(Text)
-    status: Mapped[str] = mapped_column(String(20), default="pending")  # pending / confirmed / cancelled / done
+    status: Mapped[str] = mapped_column(
+        String(20), default="pending"
+    )  # pending / confirmed / cancelled / done
     confirmed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )

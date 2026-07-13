@@ -1,11 +1,9 @@
-"use client";
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../../lib/context/AuthContext';
 import {
   View, Text, FlatList, TouchableOpacity, StyleSheet,
   TextInput, Alert, ActivityIndicator, RefreshControl,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive, calcGridCols } from '../../lib/hooks/useResponsive';
@@ -13,6 +11,7 @@ import { colors, font } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
+import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import FormModal from '../../lib/components/ui/FormModal';
 import EmptyState from '../../lib/components/ui/EmptyState';
 
@@ -337,11 +336,11 @@ export default function StockScreen() {
   };
 
   return (
-    <SafeAreaView style={s.container}>
+    <ScreenContainer compact>
       <ScreenHeader
         title="Kho hàng"
         subtitle={`${stats.total} mặt hàng · ${stats.critical} cảnh báo`}
-        onMenuPress={openSidebar}
+        onMenuPress={openSidebar} compact
         right={
           <View style={{ flexDirection: 'row', gap: 6 }}>
             <TouchableOpacity onPress={load} style={s.headerBtn}>
@@ -405,7 +404,7 @@ export default function StockScreen() {
           </View>
         </View>
       </FormModal>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 
@@ -510,3 +509,4 @@ const s = StyleSheet.create({
   // FAB
   fab: { position: 'absolute', bottom: 24, right: 20, width: 56, height: 56, borderRadius: 28, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center', elevation: 4, boxShadow: "0px 4px 8px rgba(249,115,22,0.3)" },
 });
+

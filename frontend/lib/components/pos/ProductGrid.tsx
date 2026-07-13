@@ -40,7 +40,19 @@ export default function ProductGrid({
         ? 4
         : 3; // tablet-portrait gets 3 columns to look optimized and compact
 
-  const cardSize = Math.floor((panelWidth - hPad * 2 - CARD_GAP * (CARD_COLS - 1)) / CARD_COLS);
+  // Scrollbar safety buffer: Firefox uses classic scrollbars that take ~17px of content width,
+  // while Chrome uses overlay scrollbars that don't. 'scrollbar-width: thin' in global.css reduces
+  // Firefox to ~6px, but we add a conservative 8px buffer here for cross-browser safety.
+  const SCROLLBAR_SAFETY = 8;
+
+  // Step 1: calculate card size using minimum padding (hPad)
+  const cardSize = Math.floor((panelWidth - hPad * 2 - CARD_GAP * (CARD_COLS - 1) - SCROLLBAR_SAFETY) / CARD_COLS);
+
+  // Step 2: calculate actual grid width, then distribute leftover space equally
+  // to left and right → perfectly even margins every time
+  const gridWidth = cardSize * CARD_COLS + CARD_GAP * (CARD_COLS - 1);
+  const remaining = panelWidth - gridWidth - SCROLLBAR_SAFETY;
+  const sidePadding = Math.max(hPad, Math.floor(remaining / 2));
 
   if (loading) {
     return (
@@ -72,12 +84,12 @@ export default function ProductGrid({
 
   return (
     <View
-      key={`pg-${CARD_COLS}-${cardSize}`}
+      key={`pg-${CARD_COLS}-${cardSize}-${sidePadding}`}
       style={{
         flexDirection: 'row',
         flexWrap: 'wrap',
         gap: CARD_GAP,
-        paddingHorizontal: isWide ? 12 : 4,
+        paddingHorizontal: sidePadding,
       }}
     >
       {products.map((item) => (

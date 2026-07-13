@@ -2,9 +2,12 @@
 
 ponytail: uses naive historical avg. Replace with prophet/sklearn when data volume > 6 months.
 """
-from datetime import datetime, timezone, timedelta, date
-from sqlalchemy import select, func
+
+from datetime import date, datetime, timedelta, timezone
+
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.models.ban_hang import Order, OrderItem
 
 
@@ -44,11 +47,13 @@ async def predict_demand(
     predictions = []
     for i in range(1, days_ahead + 1):
         d = date.today() + timedelta(days=i)
-        predictions.append({
-            "date": d.isoformat(),
-            "predicted_orders": round(avg_daily, 1),
-            "weekday": d.strftime("%A"),
-        })
+        predictions.append(
+            {
+                "date": d.isoformat(),
+                "predicted_orders": round(avg_daily, 1),
+                "weekday": d.strftime("%A"),
+            }
+        )
 
     return {
         "lookback_days": lookback_days,

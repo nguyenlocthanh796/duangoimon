@@ -1,7 +1,5 @@
-"use client";
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
@@ -10,6 +8,7 @@ import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import type { Station } from '../../lib/api/client';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
+import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import FormModal from '../../lib/components/ui/FormModal';
 import FAB from '../../lib/components/ui/FAB';
 import EmptyState from '../../lib/components/ui/EmptyState';
@@ -141,9 +140,9 @@ export default function StationsScreen() {
   };
 
   return (
-    <SafeAreaView style={s.container}>
+    <ScreenContainer compact>
       <ScreenHeader title="Trạm bếp" subtitle={`${stats.total} trạm · ${stats.hasPrinter} có máy in`}
-        onMenuPress={openSidebar}
+        onMenuPress={openSidebar} compact
         right={isWide ? undefined : <TouchableOpacity onPress={openNew} style={s.addBtn}><Icon name="plus" size={18} color="#fff" /></TouchableOpacity>}
       />
       <View style={s.statsBar}>
@@ -155,15 +154,15 @@ export default function StationsScreen() {
         <View style={{ flex: 1, flexDirection: 'row' }}>
           <View style={{ flex: 0.6 }}>{renderList()}</View>
           <View style={s.separator} />
-          <View style={{ flex: 0.4, backgroundColor: colors.surface.app, paddingTop: 12 }}>{renderPanel()}</View>
+          <View style={{ flex: 0.4, backgroundColor: colors.surface.app, paddingTop: 8 }}>{renderPanel()}</View>
         </View>
       ) : renderList()}
       {!isWide && <FAB onPress={openNew} />}
 
       <FormModal visible={showForm} title={editing ? 'Sửa trạm' : 'Thêm trạm'}
         onClose={() => setShowForm(false)} onSave={handleSave} saveLabel={editing ? 'Cập nhật' : 'Thêm'}>
-        <View style={{ gap: 12, paddingTop: 4 }}>
-          <View style={{ flexDirection: 'row', gap: 10 }}>
+        <View style={{ gap: 10, paddingTop: 4 }}>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
             <View style={{ flex: 1 }}><Text style={s.fieldLabel}>Tên *</Text><TextInput value={form.name} onChangeText={v => setForm(p => ({ ...p, name: v }))} style={s.fieldInput} placeholder="VD: Bếp chính" /></View>
             <View style={{ flex: 1 }}><Text style={s.fieldLabel}>Mã *</Text><TextInput value={form.code} onChangeText={v => setForm(p => ({ ...p, code: v }))} style={s.fieldInput} placeholder="B1" /></View>
           </View>
@@ -173,7 +172,7 @@ export default function StationsScreen() {
           <TextInput value={form.printer_name} onChangeText={v => setForm(p => ({ ...p, printer_name: v }))} style={s.fieldInput} placeholder="Tên máy in" />
         </View>
       </FormModal>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 

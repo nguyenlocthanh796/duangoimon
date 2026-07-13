@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, ActivityIndicator, Alert, StyleSheet, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api as taxApi } from '../../../lib/api';
 import { toCsv, downloadText } from '../../../lib/api/csvExport';
@@ -9,6 +8,7 @@ import { useSidebar } from '../../../lib/context/SidebarContext';
 import { useRouter } from 'expo-router';
 import { useResponsive } from '../../../lib/hooks/useResponsive';
 import UnifiedHeader from '../../../lib/components/ui/UnifiedHeader';
+import ScreenContainer from '../../../lib/components/ui/ScreenContainer';
 import BranchPeriodFilter from '../../../lib/components/ke-toan/BranchPeriodFilter';
 import { useAuth } from '../../../lib/context/AuthContext';
 import InfoCard from '../../../lib/components/ke-toan/InfoCard';
@@ -21,6 +21,7 @@ export default function LegacyInventoryScreen() {
   const { openSidebar } = useSidebar();
   const router = useRouter();
   const { isWide } = useResponsive();
+  const hPad = isWide ? 16 : 4;
   const { branchId } = useAuth();
   const [checklist, setChecklist] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -32,7 +33,8 @@ export default function LegacyInventoryScreen() {
       if (isRefresh) setRefreshing(true);
       else setLoading(true);
       try {
-        const data = await taxApi.getTaxLegacyChecklist(branchId ?? '');
+        if (!branchId) return;
+        const data = await taxApi.getTaxLegacyChecklist(branchId);
         setChecklist(data);
       } catch (e: any) {
         if (!isRefresh) setChecklist(null);
@@ -44,14 +46,13 @@ export default function LegacyInventoryScreen() {
     [branchId]
   );
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  useEffect(() => { load(); }, [load]);
 
   const generate = async () => {
     setGenerating(true);
     try {
-      const data = await taxApi.getTaxLegacyChecklist(branchId ?? '');
+      if (!branchId) return;
+      const data = await taxApi.getTaxLegacyChecklist(branchId);
       setChecklist(data);
       Alert.alert('Thành công', 'Đã tạo 01/BK-HTK (Biên bản kiểm kê & Bảng kê tồn kho).');
     } catch (e: any) {
@@ -134,7 +135,7 @@ export default function LegacyInventoryScreen() {
   ];
 
   return (
-    <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
+    <ScreenContainer compact>
       <UnifiedHeader icon="package-variant-closed" 
         title="Kê Khai Chuyển Tiếp"
         subtitle="01/BK-HTK — Tồn kho đầu kỳ (§6)"
@@ -166,7 +167,7 @@ export default function LegacyInventoryScreen() {
         </View>
       ) : checklist ? (
         <View style={{ flex: 1 }}>
-          <View style={styles.infoWrap}>
+          <View style={[styles.infoWrap, { paddingHorizontal: hPad }]}>
             <InfoCard
               title="01/BK-HTK"
               subtitle={`Chi nhánh: ${checklist.branch_id} · ${checklist.generated_at?.slice(0, 10)}`}
@@ -216,7 +217,7 @@ export default function LegacyInventoryScreen() {
           </Text>
         </View>
       )}
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 

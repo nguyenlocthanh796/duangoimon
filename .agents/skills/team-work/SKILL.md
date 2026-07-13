@@ -144,3 +144,26 @@ Sau mỗi pipeline hoàn thành (status = "done"), orchestrator PHẢI cập nh�
 3. **Thời điểm**: Ngay sau khi `save_state(state)` với step="done" trong `run_review_loop` hoặc `run_pipeline`.
 4. **Brain directory**: Đường dẫn brain lấy từ environment `ANTIGRAVITY_BRAIN_DIR` hoặc mặc định `C:\Users\locthanhit\.gemini\antigravity\brain\{conversation_id}`.
 5. **Không update nếu**: Task bị hủy giữa chừng hoặc không có thay đổi file thực tế (chỉ research).
+
+---
+
+## Related Skills
+
+| Skill | Why |
+|-------|-----|
+| [9router](../9router/SKILL.md) | Gateway cho tất cả LLM calls |
+| [subagent-orchestrator](../subagent-orchestrator/SKILL.md) | Dùng cho task phức tạp hơn (multi-agent function calling) |
+| [security-auditor](../security-auditor/SKILL.md) | Tích hợp security scan vào pipeline CI/CD |
+
+## From GitHub: CI/CD Integration Patterns
+
+| Tool | Integration | Benefit |
+|------|-------------|---------|
+| **GitHub Actions** | workflow.yml → trigger team-work pipeline | Tự động review mỗi PR |
+| **Pre-commit hooks** | pre-commit → security-auditor | Block commit nếu có vuln |
+| **Semgrep CI** | GitHub Actions + semgrep | Auto scan mỗi push |
+
+## References
+
+- [LangGraph Multi-Agent](https://langchain-ai.github.io/langgraph/) — Graph-based agent orchestration
+- [CrewAI](https://docs.crewai.com/) — Role-based agent teams

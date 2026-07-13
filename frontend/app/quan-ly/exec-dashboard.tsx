@@ -1,7 +1,5 @@
-"use client";
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
@@ -10,6 +8,7 @@ import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import type { ExecDashboard } from '../../lib/api/client';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
+import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import EmptyState from '../../lib/components/ui/EmptyState';
 
 function formatVND(v: number) { return (v || 0).toLocaleString('vi-VN') + 'đ'; }
@@ -123,12 +122,11 @@ export default function ExecDashboardScreen() {
   };
 
   return (
-    <SafeAreaView style={s.container}>
+    <ScreenContainer compact>
       <ScreenHeader title="Exec Dashboard" subtitle="Tổng quan"
-        onMenuPress={openSidebar}
+        onMenuPress={openSidebar} compact
         right={<TouchableOpacity onPress={load} style={s.refreshBtn}><Icon name="refresh" size={18} color={colors.icon.default} /></TouchableOpacity>}
       />
-      {/* Stats bar */}
       <View style={s.statsBar}>
         <StatItem icon="currency-usd" value={d ? formatVND(d.total_revenue) : '-'} label="Doanh thu" />
         <View style={s.barDivider} />
@@ -138,7 +136,6 @@ export default function ExecDashboardScreen() {
         <View style={s.barDivider} />
         <StatItem icon="chart-line" value={d ? `${d.table_occupancy}%` : '-'} label="Occupancy" />
       </View>
-      {/* Tab filter */}
       <View style={s.filterRow}>
         {(['branch', 'daily'] as const).map(t => (
           <TouchableOpacity key={t} onPress={() => setTab(t)}
@@ -151,10 +148,10 @@ export default function ExecDashboardScreen() {
         <View style={{ flex: 1, flexDirection: 'row' }}>
           <View style={{ flex: 0.6 }}>{renderList()}</View>
           <View style={s.separator} />
-          <View style={{ flex: 0.4, backgroundColor: colors.surface.app, paddingTop: 12 }}>{renderPanel()}</View>
+          <View style={{ flex: 0.4, backgroundColor: colors.surface.app, paddingTop: 8 }}>{renderPanel()}</View>
         </View>
       ) : renderList()}
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 

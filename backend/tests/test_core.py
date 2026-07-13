@@ -60,6 +60,28 @@ class TestSoftDelete:
         assert hasattr(SoftDeleteMixin, "soft_delete")
         assert hasattr(SoftDeleteMixin, "is_deleted")
 
+    def test_soft_delete_behavior(self):
+        """soft_delete() sets deleted_at; is_deleted reflects the state."""
+        from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+        from app.core.soft_delete import SoftDeleteMixin
+
+        class _Base(DeclarativeBase):
+            pass
+
+        class _Widget(_Base, SoftDeleteMixin):
+            __tablename__ = "_test_widget_softdelete"
+            id: Mapped[int] = mapped_column(primary_key=True)
+
+        w = _Widget(id=1)
+        # Fresh instance is not deleted
+        assert w.is_deleted is False
+        # After soft_delete, deleted_at is set and is_deleted flips
+        w.soft_delete()
+        assert w.deleted_at is not None
+        assert w.is_deleted is True
+
+
 
 class TestSearch:
     def test_apply_filters_is_active(self):

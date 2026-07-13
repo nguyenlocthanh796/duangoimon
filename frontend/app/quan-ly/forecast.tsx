@@ -1,7 +1,5 @@
-"use client";
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
@@ -9,6 +7,7 @@ import { colors, font } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
+import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import EmptyState from '../../lib/components/ui/EmptyState';
 
 type SortKey = 'date' | 'forecast' | 'confidence';
@@ -127,9 +126,9 @@ export default function ForecastScreen() {
   };
 
   return (
-    <SafeAreaView style={s.container}>
+    <ScreenContainer compact>
       <ScreenHeader title="Dự báo" subtitle={`${days} ngày`}
-        onMenuPress={openSidebar} />
+        onMenuPress={openSidebar} compact />
       <View style={s.statsBar}>
         <StatItem icon="chart-line" value={total} label="Tổng dự báo" />
         <View style={s.barDivider} />
@@ -149,10 +148,10 @@ export default function ForecastScreen() {
         <View style={{ flex: 1, flexDirection: 'row' }}>
           <View style={{ flex: 0.6 }}>{renderList()}</View>
           <View style={s.separator} />
-          <View style={{ flex: 0.4, backgroundColor: colors.surface.app, paddingTop: 12 }}>{renderPanel()}</View>
+          <View style={{ flex: 0.4, backgroundColor: colors.surface.app, paddingTop: 8 }}>{renderPanel()}</View>
         </View>
       ) : renderList()}
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 

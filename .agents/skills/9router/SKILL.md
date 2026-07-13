@@ -54,6 +54,20 @@ When the user needs a specific capability, fetch that skill's `SKILL.md` from it
 | Web search | https://raw.githubusercontent.com/decolua/9router/refs/heads/master/skills/9router-web-search/SKILL.md |
 | Web fetch (URL → markdown) | https://raw.githubusercontent.com/decolua/9router/refs/heads/master/skills/9router-web-fetch/SKILL.md |
 
+## Related Skills
+
+| Skill | Why |
+|-------|-----|
+| [subagent-orchestrator](../subagent-orchestrator/SKILL.md) | Uses 9Router as gateway for multi-agent orchestration |
+| [team-work](../team-work/SKILL.md) | Routes all LLM calls through 9Router |
+| [security-auditor](../security-auditor/SKILL.md) | Can scan 9Router config for API key leaks |
+
+## Alternatives (from GitHub)
+
+If you want a full UI-managed gateway with billing, user management, and multi-tenant support, check:
+- [coaidev/coai](https://github.com/coaidev/coai) ⭐9.2k — Enterprise LLM Gateway (TypeScript)
+- [Nayjest/lm-proxy](https://github.com/Nayjest/lm-proxy) ⭐139 — Lightweight FastAPI proxy (Python)
+
 ## Errors
 
 - 401 → set/refresh `NINEROUTER_KEY` (Dashboard → Keys)

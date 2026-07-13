@@ -1,13 +1,14 @@
 """Multi-station KDS routing - stations CRUD + routing logic."""
+
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.database import get_db
 from app.core.auth import get_current_user
+from app.core.database import get_db
 from app.core.pagination import PageParams, paginate
 from app.models.station import Station
 
@@ -15,16 +16,16 @@ router = APIRouter(prefix="/quan-ly/stations", tags=["quan-ly"])
 
 
 class StationCreate(BaseModel):
-    name: str
-    code: str
+    name: str = Field(..., max_length=100)
+    code: str = Field(..., max_length=20, pattern="^[A-Z0-9]+$")
     categories: list[str] = []
-    printer_name: str | None = None
+    printer_name: str | None = Field(None, max_length=100)
 
 
 class StationUpdate(BaseModel):
-    name: str | None = None
+    name: str | None = Field(None, max_length=100)
     categories: list[str] | None = None
-    printer_name: str | None = None
+    printer_name: str | None = Field(None, max_length=100)
     is_active: bool | None = None
 
 
@@ -64,10 +65,10 @@ def resolve_station_for_category(category: str | None, stations: list[Station]) 
 
 @router.get("")
 async def list_stations(
-        page: PageParams = Depends(),
-        db: AsyncSession = Depends(get_db),
-        _user: dict = Depends(get_current_user),
-    ):
+    page: PageParams = Depends(),
+    db: AsyncSession = Depends(get_db),
+    _user: dict = Depends(get_current_user),
+):
     query = select(Station).order_by(Station.name)
     page_result = await paginate(db, query, page.page, page.page_size)
     page_result["items"] = [_station_dict(s) for s in page_result["items"]]
@@ -75,7 +76,9 @@ async def list_stations(
 
 
 @router.post("", status_code=201)
-async def create_station(body: StationCreate, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)):
+async def create_station(
+    body: StationCreate, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)
+):
     s = Station(**body.model_dump())
     db.add(s)
     await db.commit()
@@ -84,7 +87,12 @@ async def create_station(body: StationCreate, db: AsyncSession = Depends(get_db)
 
 
 @router.put("/{s_id}")
-async def update_station(s_id: str, body: StationUpdate, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)):
+async def update_station(
+    s_id: str,
+    body: StationUpdate,
+    db: AsyncSession = Depends(get_db),
+    _user: dict = Depends(get_current_user),
+):
     result = await db.execute(select(Station).where(Station.id == uuid.UUID(s_id)))
     s = result.scalar_one_or_none()
     if not s:

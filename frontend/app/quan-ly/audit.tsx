@@ -1,7 +1,5 @@
-"use client";
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, TextInput } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
@@ -9,6 +7,8 @@ import { colors, font } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
+import ScreenContainer from '../../lib/components/ui/ScreenContainer';
+import SearchBar from '../../lib/components/ui/SearchBar';
 import EmptyState from '../../lib/components/ui/EmptyState';
 
 const API = '/api/v1/quan-ly';
@@ -143,9 +143,9 @@ export default function AuditScreen() {
 
   const actions = Object.keys(counts);
   return (
-    <SafeAreaView style={s.container}>
+    <ScreenContainer compact>
       <ScreenHeader title="Audit Log" subtitle={`${logs.length} logs`}
-        onMenuPress={openSidebar}
+        onMenuPress={openSidebar} compact
         right={<TouchableOpacity onPress={load} style={s.refreshBtn}><Icon name="refresh" size={18} color={colors.icon.default} /></TouchableOpacity>}
       />
       <View style={s.statsBar}>
@@ -168,16 +168,16 @@ export default function AuditScreen() {
           </TouchableOpacity>
         ))}
         <View style={{ flex: 1 }} />
-        <TextInput value={searchUser} onChangeText={setSearchUser} placeholder="Tìm user..." style={s.searchInput} placeholderTextColor="#94A3B8" />
+        <SearchBar value={searchUser} onChangeText={setSearchUser} placeholder="Tìm user..." />
       </View>
       {isWide ? (
         <View style={{ flex: 1, flexDirection: 'row' }}>
           <View style={{ flex: 0.6 }}>{renderList()}</View>
           <View style={s.separator} />
-          <View style={{ flex: 0.4, backgroundColor: colors.surface.app, paddingTop: 12 }}>{renderPanel()}</View>
+          <View style={{ flex: 0.4, backgroundColor: colors.surface.app, paddingTop: 8 }}>{renderPanel()}</View>
         </View>
       ) : renderList()}
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 

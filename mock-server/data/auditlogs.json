@@ -1,0 +1,630 @@
+[
+  {
+    "id": "log_001",
+    "user_id": "us_05",
+    "username": "Quản Lý",
+    "action": "Xóa",
+    "entity_type": "user",
+    "entity_id": null,
+    "changes": null,
+    "ip_address": "192.168.1.154",
+    "created_at": "2026-06-20T10:06:38.362Z"
+  },
+  {
+    "id": "log_002",
+    "user_id": "us_05",
+    "username": "Thu Ngân 2",
+    "action": "Xuất báo cáo",
+    "entity_type": "recipe",
+    "entity_id": "id_6l3j8b",
+    "changes": null,
+    "ip_address": "192.168.1.60",
+    "created_at": "2026-07-05T10:06:38.362Z"
+  },
+  {
+    "id": "log_003",
+    "user_id": "us_06",
+    "username": "Thu Ngân 1",
+    "action": "Cập nhật giá",
+    "entity_type": "raw_material",
+    "entity_id": "id_9hy5xh",
+    "changes": null,
+    "ip_address": "192.168.1.154",
+    "created_at": "2026-06-20T10:06:38.362Z"
+  },
+  {
+    "id": "log_004",
+    "user_id": "us_01",
+    "username": "Thu Ngân 2",
+    "action": "Cập nhật",
+    "entity_type": "user",
+    "entity_id": "id_zx88et",
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.124",
+    "created_at": "2026-06-24T10:06:38.362Z"
+  },
+  {
+    "id": "log_005",
+    "user_id": "us_06",
+    "username": "Quản Lý",
+    "action": "Xóa",
+    "entity_type": "supplier",
+    "entity_id": null,
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.31",
+    "created_at": "2026-06-18T10:06:38.362Z"
+  },
+  {
+    "id": "log_006",
+    "user_id": "us_04",
+    "username": "Thu Ngân 2",
+    "action": "Xuất báo cáo",
+    "entity_type": "product",
+    "entity_id": "id_zgsucf",
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.251",
+    "created_at": "2026-06-27T10:06:38.362Z"
+  },
+  {
+    "id": "log_007",
+    "user_id": "us_03",
+    "username": "Bếp Trưởng",
+    "action": "Cập nhật giá",
+    "entity_type": "product",
+    "entity_id": null,
+    "changes": null,
+    "ip_address": "192.168.1.213",
+    "created_at": "2026-07-06T10:06:38.362Z"
+  },
+  {
+    "id": "log_008",
+    "user_id": "us_02",
+    "username": null,
+    "action": "Xuất báo cáo",
+    "entity_type": "user",
+    "entity_id": "id_07fznf",
+    "changes": null,
+    "ip_address": "192.168.1.79",
+    "created_at": "2026-06-19T10:06:38.362Z"
+  },
+  {
+    "id": "log_009",
+    "user_id": "us_05",
+    "username": "Thu Ngân 2",
+    "action": "Đăng nhập",
+    "entity_type": "booking",
+    "entity_id": null,
+    "changes": null,
+    "ip_address": "192.168.1.61",
+    "created_at": "2026-07-08T10:06:38.362Z"
+  },
+  {
+    "id": "log_010",
+    "user_id": "us_02",
+    "username": null,
+    "action": "Xuất báo cáo",
+    "entity_type": "voucher",
+    "entity_id": null,
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.83",
+    "created_at": "2026-07-07T10:06:38.362Z"
+  },
+  {
+    "id": "log_011",
+    "user_id": "us_02",
+    "username": "Bếp Trưởng",
+    "action": "Xuất báo cáo",
+    "entity_type": "product",
+    "entity_id": null,
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.26",
+    "created_at": "2026-06-30T10:06:38.362Z"
+  },
+  {
+    "id": "log_012",
+    "user_id": "us_04",
+    "username": "Thu Ngân 2",
+    "action": "Đăng nhập",
+    "entity_type": "supplier",
+    "entity_id": null,
+    "changes": null,
+    "ip_address": "192.168.1.198",
+    "created_at": "2026-06-16T10:06:38.362Z"
+  },
+  {
+    "id": "log_013",
+    "user_id": "us_02",
+    "username": null,
+    "action": "Xóa",
+    "entity_type": "booking",
+    "entity_id": "id_v8m8ub",
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.164",
+    "created_at": "2026-07-11T10:06:38.362Z"
+  },
+  {
+    "id": "log_014",
+    "user_id": "us_06",
+    "username": "Admin",
+    "action": "Cập nhật giá",
+    "entity_type": "order",
+    "entity_id": "id_almlrv",
+    "changes": null,
+    "ip_address": "192.168.1.224",
+    "created_at": "2026-06-20T10:06:38.362Z"
+  },
+  {
+    "id": "log_015",
+    "user_id": "us_02",
+    "username": "Thu Ngân 1",
+    "action": "Cập nhật",
+    "entity_type": "supplier",
+    "entity_id": "id_dkgjc6",
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.23",
+    "created_at": "2026-06-28T10:06:38.362Z"
+  },
+  {
+    "id": "log_016",
+    "user_id": "us_05",
+    "username": "Bếp Trưởng",
+    "action": "Xóa",
+    "entity_type": "supplier",
+    "entity_id": "id_n911fh",
+    "changes": null,
+    "ip_address": "192.168.1.174",
+    "created_at": "2026-07-06T10:06:38.362Z"
+  },
+  {
+    "id": "log_017",
+    "user_id": "us_05",
+    "username": null,
+    "action": "Cập nhật",
+    "entity_type": "branch",
+    "entity_id": "id_kvpzkq",
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.163",
+    "created_at": "2026-06-21T10:06:38.362Z"
+  },
+  {
+    "id": "log_018",
+    "user_id": "us_03",
+    "username": null,
+    "action": "Cập nhật tồn kho",
+    "entity_type": "supplier",
+    "entity_id": "id_b85wcf",
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.117",
+    "created_at": "2026-06-28T10:06:38.362Z"
+  },
+  {
+    "id": "log_019",
+    "user_id": "us_02",
+    "username": "Thu Ngân 1",
+    "action": "Xóa",
+    "entity_type": "voucher",
+    "entity_id": "id_b008it",
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.172",
+    "created_at": "2026-06-21T10:06:38.362Z"
+  },
+  {
+    "id": "log_020",
+    "user_id": "us_05",
+    "username": "Thu Ngân 1",
+    "action": "Xóa",
+    "entity_type": "order",
+    "entity_id": null,
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.112",
+    "created_at": "2026-06-27T10:06:38.362Z"
+  },
+  {
+    "id": "log_021",
+    "user_id": "us_02",
+    "username": "Bếp Trưởng",
+    "action": "Cập nhật giá",
+    "entity_type": "recipe",
+    "entity_id": null,
+    "changes": null,
+    "ip_address": "192.168.1.60",
+    "created_at": "2026-07-02T10:06:38.362Z"
+  },
+  {
+    "id": "log_022",
+    "user_id": "us_06",
+    "username": "Bếp Trưởng",
+    "action": "Xóa",
+    "entity_type": "recipe",
+    "entity_id": null,
+    "changes": null,
+    "ip_address": "192.168.1.191",
+    "created_at": "2026-06-13T10:06:38.362Z"
+  },
+  {
+    "id": "log_023",
+    "user_id": "us_04",
+    "username": "Thu Ngân 1",
+    "action": "Đăng nhập",
+    "entity_type": "order",
+    "entity_id": "id_hl9iu2",
+    "changes": null,
+    "ip_address": "192.168.1.217",
+    "created_at": "2026-07-01T10:06:38.362Z"
+  },
+  {
+    "id": "log_024",
+    "user_id": "us_02",
+    "username": "Admin",
+    "action": "Cập nhật giá",
+    "entity_type": "raw_material",
+    "entity_id": "id_sdy8q5",
+    "changes": null,
+    "ip_address": "192.168.1.50",
+    "created_at": "2026-07-08T10:06:38.362Z"
+  },
+  {
+    "id": "log_025",
+    "user_id": "us_06",
+    "username": "Quản Lý",
+    "action": "Cập nhật giá",
+    "entity_type": "raw_material",
+    "entity_id": null,
+    "changes": null,
+    "ip_address": "192.168.1.149",
+    "created_at": "2026-06-22T10:06:38.362Z"
+  },
+  {
+    "id": "log_026",
+    "user_id": "us_02",
+    "username": null,
+    "action": "Cập nhật giá",
+    "entity_type": "recipe",
+    "entity_id": "id_ejfpmg",
+    "changes": null,
+    "ip_address": "192.168.1.150",
+    "created_at": "2026-07-01T10:06:38.362Z"
+  },
+  {
+    "id": "log_027",
+    "user_id": "us_02",
+    "username": "Admin",
+    "action": "Xóa",
+    "entity_type": "voucher",
+    "entity_id": "id_snvkwl",
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.7",
+    "created_at": "2026-07-11T10:06:38.362Z"
+  },
+  {
+    "id": "log_028",
+    "user_id": "us_01",
+    "username": "Thu Ngân 1",
+    "action": "Xuất báo cáo",
+    "entity_type": "product",
+    "entity_id": "id_nyewod",
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.174",
+    "created_at": "2026-07-05T10:06:38.362Z"
+  },
+  {
+    "id": "log_029",
+    "user_id": "us_01",
+    "username": "Thu Ngân 1",
+    "action": "Đăng nhập",
+    "entity_type": "customer",
+    "entity_id": null,
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.136",
+    "created_at": "2026-06-30T10:06:38.362Z"
+  },
+  {
+    "id": "log_030",
+    "user_id": "us_02",
+    "username": null,
+    "action": "Cập nhật giá",
+    "entity_type": "booking",
+    "entity_id": null,
+    "changes": null,
+    "ip_address": "192.168.1.229",
+    "created_at": "2026-06-22T10:06:38.362Z"
+  },
+  {
+    "id": "log_031",
+    "user_id": "us_05",
+    "username": null,
+    "action": "Cập nhật",
+    "entity_type": "recipe",
+    "entity_id": "id_d6diaz",
+    "changes": null,
+    "ip_address": "192.168.1.200",
+    "created_at": "2026-06-28T10:06:38.362Z"
+  },
+  {
+    "id": "log_032",
+    "user_id": "us_04",
+    "username": "Thu Ngân 1",
+    "action": "Cập nhật",
+    "entity_type": "raw_material",
+    "entity_id": "id_nkdg72",
+    "changes": null,
+    "ip_address": "192.168.1.129",
+    "created_at": "2026-07-06T10:06:38.362Z"
+  },
+  {
+    "id": "log_033",
+    "user_id": "us_01",
+    "username": "Thu Ngân 1",
+    "action": "Thêm mới",
+    "entity_type": "booking",
+    "entity_id": "id_b63g1j",
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.253",
+    "created_at": "2026-07-11T10:06:38.362Z"
+  },
+  {
+    "id": "log_034",
+    "user_id": "us_01",
+    "username": "Bếp Trưởng",
+    "action": "Cập nhật tồn kho",
+    "entity_type": "user",
+    "entity_id": null,
+    "changes": null,
+    "ip_address": "192.168.1.7",
+    "created_at": "2026-07-06T10:06:38.362Z"
+  },
+  {
+    "id": "log_035",
+    "user_id": "us_04",
+    "username": "Quản Lý",
+    "action": "Cập nhật giá",
+    "entity_type": "customer",
+    "entity_id": null,
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.230",
+    "created_at": "2026-06-24T10:06:38.362Z"
+  },
+  {
+    "id": "log_036",
+    "user_id": "us_03",
+    "username": "Quản Lý",
+    "action": "Thêm mới",
+    "entity_type": "supplier",
+    "entity_id": null,
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.111",
+    "created_at": "2026-06-13T10:06:38.362Z"
+  },
+  {
+    "id": "log_037",
+    "user_id": "us_05",
+    "username": "Quản Lý",
+    "action": "Thêm mới",
+    "entity_type": "branch",
+    "entity_id": "id_lwxqcl",
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.97",
+    "created_at": "2026-06-13T10:06:38.362Z"
+  },
+  {
+    "id": "log_038",
+    "user_id": "us_05",
+    "username": "Quản Lý",
+    "action": "Cập nhật tồn kho",
+    "entity_type": "supplier",
+    "entity_id": null,
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.100",
+    "created_at": "2026-06-14T10:06:38.362Z"
+  },
+  {
+    "id": "log_039",
+    "user_id": "us_04",
+    "username": null,
+    "action": "Xóa",
+    "entity_type": "branch",
+    "entity_id": null,
+    "changes": null,
+    "ip_address": "192.168.1.90",
+    "created_at": "2026-06-26T10:06:38.362Z"
+  },
+  {
+    "id": "log_040",
+    "user_id": "us_04",
+    "username": "Thu Ngân 1",
+    "action": "Xóa",
+    "entity_type": "supplier",
+    "entity_id": "id_7qztdm",
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.23",
+    "created_at": "2026-06-22T10:06:38.362Z"
+  },
+  {
+    "id": "log_041",
+    "user_id": "us_03",
+    "username": "Thu Ngân 1",
+    "action": "Cập nhật tồn kho",
+    "entity_type": "supplier",
+    "entity_id": null,
+    "changes": null,
+    "ip_address": "192.168.1.146",
+    "created_at": "2026-06-27T10:06:38.362Z"
+  },
+  {
+    "id": "log_042",
+    "user_id": "us_01",
+    "username": "Quản Lý",
+    "action": "Cập nhật giá",
+    "entity_type": "product",
+    "entity_id": "id_kpas5y",
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.136",
+    "created_at": "2026-07-09T10:06:38.362Z"
+  },
+  {
+    "id": "log_043",
+    "user_id": "us_03",
+    "username": "Thu Ngân 1",
+    "action": "Cập nhật",
+    "entity_type": "branch",
+    "entity_id": null,
+    "changes": null,
+    "ip_address": "192.168.1.107",
+    "created_at": "2026-06-19T10:06:38.363Z"
+  },
+  {
+    "id": "log_044",
+    "user_id": "us_02",
+    "username": "Thu Ngân 1",
+    "action": "Xóa",
+    "entity_type": "customer",
+    "entity_id": null,
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.80",
+    "created_at": "2026-06-22T10:06:38.363Z"
+  },
+  {
+    "id": "log_045",
+    "user_id": "us_03",
+    "username": "Thu Ngân 1",
+    "action": "Đăng nhập",
+    "entity_type": "voucher",
+    "entity_id": "id_49ausi",
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.119",
+    "created_at": "2026-06-22T10:06:38.363Z"
+  },
+  {
+    "id": "log_046",
+    "user_id": "us_05",
+    "username": null,
+    "action": "Cập nhật tồn kho",
+    "entity_type": "raw_material",
+    "entity_id": null,
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.180",
+    "created_at": "2026-07-05T10:06:38.363Z"
+  },
+  {
+    "id": "log_047",
+    "user_id": "us_03",
+    "username": "Bếp Trưởng",
+    "action": "Đăng nhập",
+    "entity_type": "booking",
+    "entity_id": "id_q8znvf",
+    "changes": null,
+    "ip_address": "192.168.1.73",
+    "created_at": "2026-06-18T10:06:38.363Z"
+  },
+  {
+    "id": "log_048",
+    "user_id": "us_04",
+    "username": "Bếp Trưởng",
+    "action": "Xóa",
+    "entity_type": "product",
+    "entity_id": "id_mfzvbu",
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.164",
+    "created_at": "2026-06-21T10:06:38.363Z"
+  },
+  {
+    "id": "log_049",
+    "user_id": "us_01",
+    "username": "Thu Ngân 1",
+    "action": "Cập nhật tồn kho",
+    "entity_type": "supplier",
+    "entity_id": "id_mvuedp",
+    "changes": {
+      "before": {},
+      "after": {}
+    },
+    "ip_address": "192.168.1.45",
+    "created_at": "2026-06-19T10:06:38.363Z"
+  },
+  {
+    "id": "log_050",
+    "user_id": "us_03",
+    "username": "Admin",
+    "action": "Cập nhật",
+    "entity_type": "branch",
+    "entity_id": "id_6pzp0l",
+    "changes": null,
+    "ip_address": "192.168.1.87",
+    "created_at": "2026-07-05T10:06:38.363Z"
+  }
+]

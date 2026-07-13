@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   StyleSheet,
-  ActivityIndicator,
+  Dimensions,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
@@ -18,342 +18,382 @@ import { api } from '../../lib/api';
 import { logger, safeApi } from '../../lib/logger';
 import ModuleCard from '../../lib/components/ui/ModuleCard';
 import { SectionTitle } from '../../lib/components/ui/SectionTitle';
-import EmptyState from '../../lib/components/ui/EmptyState';
-import SkeletonList from '../../lib/components/ui/SkeletonList';
 import UnifiedHeader from '../../lib/components/ui/UnifiedHeader';
 import { formatPrice } from '../../lib/theme';
+import {
+  DonutChart,
+  MiniLineChart,
+} from '../../lib/components/ke-toan/ChartComponents';
 
+const SCREEN_W = Dimensions.get('window').width;
+const fmt = (n: number) => Intl.NumberFormat('vi-VN').format(n);
 
+// ─── Badge components ────────────────────────────────────────────────────────
+function TxBadge({ type }: { type: string }) {
+  const isThu = type === 'thu';
+  return (
+    <View style={{ paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, backgroundColor: isThu ? '#E8F5E9' : '#FFEBEE' }}>
+      <Text style={{ fontFamily: 'BeVietnamPro_700Bold', fontWeight: '700', ...font.badge, color: isThu ? '#2E7D32' : '#C62828' }}>
+        {isThu ? 'Thu' : 'Chi'}
+      </Text>
+    </View>
+  );
+}
 
+function InvBadge({ status }: { status: string }) {
+  const ok = status === 'da_xuat' || status === 'exported';
+  return (
+    <View style={{ paddingHorizontal: 6, paddingVertical: 3, borderRadius: 4, backgroundColor: ok ? '#E8F5E9' : '#FFF8E1' }}>
+      <Text style={{ ...font.badge, color: ok ? '#2E7D32' : '#F57F17' }}>
+        {ok ? 'Đã xuất' : 'Nháp'}
+      </Text>
+    </View>
+  );
+}
+
+// ─── Default data (when API fails) ───────────────────────────────────────────
+const DEFAULT_DASHBOARD = {
+  summary: { total_thu: 0, total_chi: 0, balance: 0, transaction_count: 0, invoice_count: 0, exported_count: 0, invoice_total: 0 },
+  monthly_revenue: Array.from({ length: 12 }, (_, i) => ({ label: `T${i + 1}`, value: 0, current: i === 6 })),
+  expense_by_category: [],
+  trend: Array.from({ length: 14 }, (_, i) => ({ label: `Ng${i + 1}`, value: 0 })),
+  recent_transactions: [],
+  recent_invoices: [],
+  this_month: { thu: 0, chi: 0, thu_growth: 0, chi_growth: 0 },
+  deadlines: [
+    { label: 'Thuế GTGT tháng 6/2026', due: '20/07/2026', days_left: 7 },
+    { label: 'Thuế TNCN tháng 6/2026', due: '20/07/2026', days_left: 7 },
+    { label: 'Báo cáo thuế quý 2/2026', due: '30/07/2026', days_left: 17 },
+    { label: 'Quyết toán thuế năm 2026', due: '31/03/2027', days_left: 261 },
+  ],
+};
+
+// ─── Main component ──────────────────────────────────────────────────────────
 export default function KeToanHub() {
   const router = useRouter();
-  const { userRole, username, branchId } = useAuth();
-  const { isWide, columns } = useResponsive();
+  const { branchId } = useAuth();
+  const { isWide, columns, containerWidth } = useResponsive();
+  const { openSidebar } = useSidebar();
 
-  const [txSummary, setTxSummary] = useState<{ thu: number; chi: number; count: number } | null>(
-    null
-  );
-  const [invoiceSummary, setInvoiceSummary] = useState<{ count: number; total: number } | null>(
-    null
-  );
-  const [taxStatus, setTaxStatus] = useState<{
-    tier?: string;
-    nextDeadline?: string;
-    penaltyRisk?: boolean;
-  } | null>(null);
+  const [data, setData] = useState<any>(DEFAULT_DASHBOARD);
+  const [taxStatus, setTaxStatus] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const { openSidebar } = useSidebar();
 
   const load = useCallback(async () => {
     setLoadError(null);
     const bid = branchId ?? '';
     try {
-      const [tx, inv, tax] = await Promise.all([
-        safeApi(() => api.getTransactions(undefined), {
-          transactions: [],
-          total: 0,
-          total_thu: 0,
-          total_chi: 0,
-        }),
-        safeApi(() => api.getInvoices(), { invoices: [], total: 0 }),
+      const [dash, tax] = await Promise.all([
+        safeApi(() => api.getKeToanDashboard(), DEFAULT_DASHBOARD),
         bid
-          ? safeApi(() => api.getTaxProfileStatus(bid), {
-              tier: undefined,
-              nextDeadline: undefined,
-              penaltyRisk: false,
-            } as any)
-          : Promise.resolve({
-              tier: undefined,
-              nextDeadline: undefined,
-              penaltyRisk: false,
-            } as any),
+          ? safeApi(() => api.getTaxProfileStatus(bid), null)
+          : Promise.resolve(null),
       ]);
-      const txList = (tx as any).transactions ?? [];
-      const thu =
-        (tx as any).total_thu ??
-        txList
-          .filter((t: any) => t.type === 'thu')
-          .reduce((s: number, t: any) => s + Number(t.amount || 0), 0);
-      const chi =
-        (tx as any).total_chi ??
-        txList
-          .filter((t: any) => t.type === 'chi')
-          .reduce((s: number, t: any) => s + Number(t.amount || 0), 0);
-      const t = (tx as any).total ?? txList.length;
-      setTxSummary({ thu, chi, count: t });
-      const invList = (inv as any).invoices ?? [];
-      setInvoiceSummary({
-        count: (inv as any).total ?? invList.length,
-        total: invList.reduce((s: number, i: any) => s + Number(i.total || 0), 0),
-      });
-      setTaxStatus({
-        tier: (tax as any).tier,
-        nextDeadline: (tax as any).nextDeadline,
-        penaltyRisk: (tax as any).penaltyRisk,
-      });
+      setData(dash);
+      setTaxStatus(tax);
     } catch (e) {
       logger.error('ke-toan', 'load failed', e);
-      setLoadError('Không thể tải dữ liệu tổng quan. Vui lòng thử lại.');
+      setLoadError('Không thể tải dữ liệu tổng quan.');
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
   }, [branchId]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  useEffect(() => { load(); }, [load]);
 
-  const handleRefresh = useCallback(() => {
-    setRefreshing(true);
-    load();
-  }, [load]);
-
+  const handleRefresh = useCallback(() => { setRefreshing(true); load(); }, [load]);
   const open = (path: string) => router.push(path as any);
 
   const modules = [
-    {
-      key: 'thu-chi',
-      icon: 'swap-vertical',
-      title: 'Thu Chi',
-      description: 'Quản lý thu, chi hằng ngày',
-      path: '/ke-toan/thu-chi',
-    },
-    {
-      key: 'invoices',
-      icon: 'receipt',
-      title: 'Hóa đơn VAT',
-      description: 'Phát hành & xuất hóa đơn',
-      path: '/ke-toan/invoices',
-    },
-    {
-      key: 'tier',
-      icon: 'chart-bell-curve',
-      title: 'Phân Tầng HKD',
-      description: 'Xác định hạng kinh doanh',
-      path: '/ke-toan/thue/tier',
-    },
-    {
-      key: 'so-sach',
-      icon: 'book-open-page-variant',
-      title: 'Sổ Kế Toán',
-      description: 'Ghi chép sổ sách',
-      path: '/ke-toan/thue/so-sach',
-    },
-    {
-      key: 'declaration',
-      icon: 'file-document-edit',
-      title: 'Kê Khai Thuế',
-      description: 'Kê khai hàng kỳ',
-      path: '/ke-toan/thue/declaration',
-    },
-    {
-      key: 'bank',
-      icon: 'bank',
-      title: 'TK Ngân Hàng',
-      description: 'Quản lý tài khoản',
-      path: '/ke-toan/thue/bank-accounts',
-    },
-    {
-      key: 'deadlines',
-      icon: 'calendar-alert',
-      title: 'Hạn Nộp',
-      description: 'Lịch hạn nộp thuế',
-      path: '/ke-toan/thue/deadlines',
-    },
-    {
-      key: 'legacy',
-      icon: 'package-variant-closed',
-      title: 'Chuyển Tiếp',
-      description: 'Dữ liệu cũ',
-      path: '/ke-toan/thue/legacy',
-    },
+    { key: 'thu-chi', icon: 'swap-vertical', title: 'Thu Chi', desc: 'Quản lý thu, chi hằng ngày', path: '/ke-toan/thu-chi' },
+    { key: 'invoices', icon: 'receipt', title: 'Hóa đơn VAT', desc: 'Phát hành xuất hóa đơn', path: '/ke-toan/invoices' },
+    { key: 'tier', icon: 'chart-bell-curve', title: 'Phân Tầng HKD', desc: 'Xác định hạng KD', path: '/ke-toan/thue/tier' },
+    { key: 'so-sach', icon: 'book-open-page-variant', title: 'Sổ Kế Toán', desc: 'Ghi chép sổ sách', path: '/ke-toan/thue/so-sach' },
+    { key: 'declaration', icon: 'file-document-edit', title: 'Kê Khai Thuế', desc: 'Kê khai hàng kỳ', path: '/ke-toan/thue/declaration' },
+    { key: 'bank', icon: 'bank', title: 'TK Ngân Hàng', desc: 'Quản lý tài khoản', path: '/ke-toan/thue/bank-accounts' },
+    { key: 'deadlines', icon: 'calendar-alert', title: 'Hạn Nộp', desc: 'Lịch hạn nộp thuế', path: '/ke-toan/thue/deadlines' },
+    { key: 'legacy', icon: 'package-variant-closed', title: 'Chuyển Tiếp', desc: 'Dữ liệu cũ', path: '/ke-toan/thue/legacy' },
   ] as const;
 
-  const stats = [
-    {
-      key: 'thu',
-      icon: 'arrow-down-left',
-      label: 'Tổng thu',
-      value: txSummary ? formatPrice(txSummary.thu) : '—',
-      color: colors.brand.primary,
-      bg: colors.brand.primaryBg,
-    },
-    {
-      key: 'chi',
-      icon: 'arrow-up-right',
-      label: 'Tổng chi',
-      value: txSummary ? formatPrice(txSummary.chi) : '—',
-      color: '#DC2626',
-      bg: '#FEF2F2',
-    },
-    {
-      key: 'invoice',
-      icon: 'receipt',
-      label: 'Hóa đơn',
-      value: invoiceSummary ? `${invoiceSummary.count}` : '—',
-      color: '#7C3AED',
-      bg: '#F5F3FF',
-    },
-    {
-      key: 'deadline',
-      icon: 'calendar-alert',
-      label: 'Hạn nộp',
-      value: taxStatus?.nextDeadline ? taxStatus.nextDeadline : '—',
-      color: taxStatus?.penaltyRisk ? '#D97706' : '#059669',
-      bg: taxStatus?.penaltyRisk ? '#FFFBEB' : '#ECFDF5',
-    },
-  ] as const;
+  const hPad = isWide ? 24 : 4;
+  const chartW = isWide ? Math.min(containerWidth * 0.55, 520) : SCREEN_W - hPad * 2 - 40;
+  const s = data.summary || {};
+  const profit = s.balance || s.total_thu - s.total_chi;
+  const profitPct = s.total_thu > 0 ? Math.round((profit / s.total_thu) * 100) : 0;
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+    <View style={{ flex: 1, backgroundColor: '#F8FAFC' }}>
       <UnifiedHeader
         icon="wallet-outline"
-        title="Kế Toán"
-        subtitle="Tổng quan tài chính"
+        title="Kế Toán & Thuế"
+        subtitle="Tổng quan tài chính — dữ liệu thực tế"
         onMenuPress={openSidebar}
       />
       <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
-        }
-        contentContainerStyle={styles.scroll}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#64748B" />}
+        contentContainerStyle={{ paddingHorizontal: hPad, paddingBottom: 40, gap: 0 }}
+        showsVerticalScrollIndicator={false}
       >
         {loadError && (
-          <View style={styles.errorBox}>
-            <Icon name="alert-circle-outline" size={18} color={colors.text.danger} />
-            <Text style={styles.errorText}>{loadError}</Text>
-            <TouchableOpacity
-              onPress={() => {
-                setLoading(true);
-                load();
-              }}
-              style={styles.retryBtn}
-            >
-              <Text style={styles.retryText}>Thử lại</Text>
+          <View style={errBanner}>
+            <Icon name="alert-circle-outline" size={16} color="#DC2626" />
+            <Text style={{ flex: 1, ...font.bodySmall, color: '#DC2626' }}>{loadError}</Text>
+            <TouchableOpacity onPress={() => { setLoading(true); load(); }} style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 6, backgroundColor: '#DC2626' }}>
+              <Text style={{ ...font.buttonSmall, color: '#fff' }}>Thử lại</Text>
             </TouchableOpacity>
           </View>
         )}
 
-        <SectionTitle title="Chỉ số nhanh" subtitle="Cập nhật theo thời gian thực" />
-
-        {loading && !txSummary ? (
-          <View style={styles.statSkeleton}>
-            <ActivityIndicator color={colors.brand.primary} />
+        {/* ═══════════════════════ KPI CARDS ═══════════════════════ */}
+        <View style={secHeader}>
+          <Icon name="speedometer" size={16} color="#64748B" />
+          <Text style={secTitle}>Tổng quan tài chính</Text>
+        </View>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
+          {/* Tổng thu */}
+          <View style={[kpiCard, { width: isWide ? undefined : '48%', flex: isWide ? 1 : undefined }]}>
+            <Text style={kpiLabel}>Tổng thu</Text>
+            <Text style={[kpiVal, { color: '#059669' }]}>{formatPrice(s.total_thu)}</Text>
+            <Text style={kpiSub}>↑ {data.this_month?.thu_growth ?? 0}% so với tháng trước</Text>
           </View>
-        ) : (
-          <View style={[styles.statGrid, { flexDirection: isWide ? 'row' : 'column' }]}>
-            {stats.map((s) => (
-              <View key={s.key} style={[styles.statCard, isWide && { flex: 1 }]}>
-                <View style={[styles.statIcon, { backgroundColor: s.bg }]}>
-                  <Icon name={s.icon as any} size={20} color={s.color} />
-                </View>
-                <Text style={styles.statLabel}>{s.label}</Text>
-                <Text style={[styles.statValue, { color: s.color }]} numberOfLines={1}>
-                  {s.value}
+          {/* Tổng chi */}
+          <View style={[kpiCard, { width: isWide ? undefined : '48%', flex: isWide ? 1 : undefined }]}>
+            <Text style={kpiLabel}>Tổng chi</Text>
+            <Text style={[kpiVal, { color: '#DC2626' }]}>{formatPrice(s.total_chi)}</Text>
+            <Text style={kpiSub}>↑ {data.this_month?.chi_growth ?? 0}% so với tháng trước</Text>
+          </View>
+          {/* Lợi nhuận */}
+          <View style={[kpiCard, { width: isWide ? undefined : '48%', flex: isWide ? 1 : undefined }]}>
+            <Text style={kpiLabel}>Lợi nhuận</Text>
+            <Text style={[kpiVal, { color: profit >= 0 ? '#059669' : '#DC2626' }]}>{formatPrice(profit)}</Text>
+            <Text style={kpiSub}>Biên lợi nhuận {profitPct}%</Text>
+          </View>
+          {/* Hóa đơn VAT */}
+          <View style={[kpiCard, { width: isWide ? undefined : '48%', flex: isWide ? 1 : undefined }]}>
+            <Text style={kpiLabel}>Hóa đơn VAT</Text>
+            <Text style={[kpiVal, { color: '#7C3AED' }]}>{s.invoice_count ?? 0}</Text>
+            <Text style={kpiSub}>{s.exported_count ?? 0} đã xuất / {s.invoice_count ?? 0} tổng</Text>
+          </View>
+        </View>
+
+        {/* ═══════════════════════ CHARTS ═══════════════════════ */}
+        <View style={secHeader}>
+          <Icon name="chart-line" size={16} color="#64748B" />
+          <Text style={secTitle}>Biểu đồ doanh thu & chi phí</Text>
+        </View>
+        <View style={{ flexDirection: isWide ? 'row' : 'column', gap: 10, marginBottom: 10 }}>
+          {/* Bar chart */}
+          <View style={[chartCard, isWide ? { flex: 3 } : {}, { minWidth: isWide ? containerWidth * 0.55 - hPad : 0 }]}>
+            <Text style={{ ...font.caption, color: '#64748B', fontWeight: '600', marginBottom: 8 }}>
+              Doanh thu 12 tháng
+            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'flex-end', height: 160, gap: 4 }}>
+              {data.monthly_revenue.map((m: any, i: number) => {
+                const maxVal = Math.max(...data.monthly_revenue.map((r: any) => r.value), 1);
+                const h = maxVal > 0 ? (m.value / maxVal) * 140 : 2;
+                return (
+                  <View key={i} style={{ flex: 1, alignItems: 'center', gap: 2 }}>
+                    <View
+                      style={{
+                        width: '70%',
+                        height: Math.max(h, 2),
+                        borderRadius: 3,
+                        backgroundColor: m.current ? '#0F172A' : '#CBD5E1',
+                      }}
+                    />
+                    <Text style={{ ...font.micro, color: '#94A3B8', textAlign: 'center' }}>{m.label}</Text>
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+          {/* Expense donut */}
+          {isWide && data.expense_by_category.length > 0 && (
+            <View style={[chartCard, { flex: 2 }]}>
+              <Text style={{ ...font.caption, color: '#64748B', fontWeight: '600', marginBottom: 8 }}>
+                Chi phí theo nhóm
+              </Text>
+              <DonutChart data={data.expense_by_category} size={Math.min(chartW * 0.35, 160)} />
+              <View style={{ gap: 4, marginTop: 8 }}>
+                {data.expense_by_category.slice(0, 5).map((e: any, i: number) => (
+                  <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                    <View style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: e.color }} />
+                    <Text style={{ flex: 1, ...font.micro, color: '#64748B' }} numberOfLines={1}>{e.category}</Text>
+                    <Text style={{ ...font.micro, color: '#0F172A', fontWeight: '600' }}>{e.pct}%</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+        </View>
+
+        {/* ═══════════════════════ TAX STATUS ═══════════════════════ */}
+        <View style={secHeader}>
+          <Icon name="file-document-outline" size={16} color="#64748B" />
+          <Text style={secTitle}>Trạng thái thuế</Text>
+        </View>
+        <View style={{ flexDirection: 'row', gap: 8, marginBottom: 18 }}>
+          <View style={[taxCard, { backgroundColor: '#EFF6FF' }]}>
+            <Icon name="chart-bell-curve" size={16} color="#2563EB" />
+            <Text style={taxLabel}>Phân tầng</Text>
+            <Text style={[taxValue, { color: '#2563EB' }]}>{taxStatus?.tier ?? '—'}</Text>
+          </View>
+          <View style={[taxCard, { backgroundColor: '#FFF7ED' }]}>
+            <Icon name="currency-usd" size={16} color="#EA580C" />
+            <Text style={taxLabel}>Doanh số YTD</Text>
+            <Text style={[taxValue, { color: '#EA580C' }]}>
+              {taxStatus?.revenueYtd || taxStatus?.revenue_ytd ? formatPrice(taxStatus.revenueYtd || taxStatus.revenue_ytd) : '—'}
+            </Text>
+          </View>
+          <View style={[taxCard, { backgroundColor: taxStatus?.penaltyRisk ? '#FFFBEB' : '#F0FDF4' }]}>
+            <Icon name="calendar-alert" size={16} color={taxStatus?.penaltyRisk ? '#D97706' : '#059669'} />
+            <Text style={taxLabel}>Hạn nộp</Text>
+            <Text style={[taxValue, { color: taxStatus?.penaltyRisk ? '#D97706' : '#059669' }]}>
+              {taxStatus?.nextDeadline ?? '—'}
+            </Text>
+          </View>
+        </View>
+
+        {/* ═══════════════════════ QUICK TABLES ═══════════════════════ */}
+        <View style={secHeader}>
+          <Icon name="table-eye" size={16} color="#64748B" />
+          <Text style={secTitle}>Bảng xem nhanh</Text>
+        </View>
+        <View style={{ flexDirection: isWide ? 'row' : 'column', gap: 10, marginBottom: 18 }}>
+          {/* Transactions */}
+          <View style={[tblWrap, { flex: isWide ? 1 : undefined }]}>
+            <View style={tblHead}>
+              <Icon name="swap-vertical" size={14} color="#64748B" />
+              <Text style={tblHeadText}>Giao dịch gần đây</Text>
+              <TouchableOpacity onPress={() => open('/ke-toan/thu-chi')}>
+                <Text style={{ ...font.badge, color: '#2563EB' }}>Xem tất cả →</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={tblCols}>
+              <Text style={[tblCol, { flex: 1 }]}>Ngày</Text>
+              <Text style={[tblCol, { flex: 0.5 }]}>Loại</Text>
+              <Text style={[tblCol, { flex: 2 }]}>Mô tả</Text>
+              <Text style={[tblCol, { flex: 1, textAlign: 'right' }]}>Số tiền</Text>
+            </View>
+            {(data.recent_transactions || []).slice(0, isWide ? 5 : 3).map((t: any, i: number) => (
+              <View key={t.id || i} style={[tblRow, i % 2 === 1 && { backgroundColor: '#F8FAFC' }]}>
+                <Text style={[tblCell, { flex: 1 }]}>{t.created_at ? t.created_at.slice(0, 10) : '—'}</Text>
+                <View style={{ flex: 0.5 }}><TxBadge type={t.type} /></View>
+                <Text style={[tblCell, { flex: 2, color: '#0F172A' }]} numberOfLines={1}>{t.note || t.category || '—'}</Text>
+                <Text style={[tblCell, { flex: 1, textAlign: 'right', ...font.tableCellBold }]}>
+                  {fmt(Number(t.amount) || 0)}₫
                 </Text>
               </View>
             ))}
+            {(data.recent_transactions || []).length === 0 && (
+              <View style={{ padding: 20, alignItems: 'center' }}>
+                <Text style={{ ...font.caption, color: '#94A3B8' }}>Chưa có dữ liệu giao dịch</Text>
+              </View>
+            )}
           </View>
-        )}
-
-        <SectionTitle title="Mô-đun nghiệp vụ" subtitle={`${modules.length} phân hệ`} />
-        {loading ? (
-          <SkeletonList count={4} variant="card" />
-        ) : (
-          <View style={styles.moduleGrid}>
-            {modules.map((m) => (
-              <View
-                key={m.key}
-                style={[
-                  styles.moduleWrap,
-                  { width: isWide ? `${100 / columns(180) - 1.5}%` : '100%' },
-                ]}
-              >
-                <ModuleCard
-                  icon={m.icon}
-                  title={m.title}
-                  description={m.description}
-                  onPress={() => open(m.path)}
-                />
+          {/* Invoices */}
+          <View style={[tblWrap, { flex: isWide ? 1 : undefined }]}>
+            <View style={tblHead}>
+              <Icon name="receipt" size={14} color="#64748B" />
+              <Text style={tblHeadText}>Hóa đơn gần đây</Text>
+              <TouchableOpacity onPress={() => open('/ke-toan/invoices')}>
+                <Text style={{ ...font.badge, color: '#2563EB' }}>Xem tất cả →</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={tblCols}>
+              <Text style={[tblCol, { flex: 1 }]}>Số HĐ</Text>
+              <Text style={[tblCol, { flex: 1.5 }]}>Người mua</Text>
+              <Text style={[tblCol, { flex: 1, textAlign: 'right' }]}>Giá trị</Text>
+              <Text style={[tblCol, { flex: 0.8, textAlign: 'center' }]}>Trạng thái</Text>
+            </View>
+            {(data.recent_invoices || []).slice(0, isWide ? 4 : 2).map((inv: any, i: number) => (
+              <View key={inv.id || i} style={[tblRow, i % 2 === 1 && { backgroundColor: '#F8FAFC' }]}>
+                <Text style={[tblCell, { flex: 1, fontFamily: 'BeVietnamPro_500Medium', fontWeight: '500' }]}>{inv.invoice_number || '—'}</Text>
+                <Text style={[tblCell, { flex: 1.5, color: '#0F172A' }]} numberOfLines={1}>{inv.buyer_name || '—'}</Text>
+                <Text style={[tblCell, { flex: 1, textAlign: 'right', ...font.tableCellBold }]}>
+                  {fmt(Number(inv.total_amount) || 0)}₫
+                </Text>
+                <View style={{ flex: 0.8, alignItems: 'center' }}><InvBadge status={inv.status} /></View>
               </View>
             ))}
+            {(data.recent_invoices || []).length === 0 && (
+              <View style={{ padding: 20, alignItems: 'center' }}>
+                <Text style={{ ...font.caption, color: '#94A3B8' }}>Chưa có dữ liệu hóa đơn</Text>
+              </View>
+            )}
           </View>
-        )}
+        </View>
 
-        <EmptyState
-          icon="check-circle-outline"
-          title="Đã đồng bộ"
-          message="Dữ liệu kế toán được cập nhật tự động từ hệ thống POS."
-        />
+        {/* ═══════════════════════ DEADLINES ═══════════════════════ */}
+        <View style={secHeader}>
+          <Icon name="calendar-clock" size={16} color="#64748B" />
+          <Text style={secTitle}>Hạn nộp thuế</Text>
+        </View>
+        <View style={{ gap: 6, marginBottom: 24 }}>
+          {(data.deadlines || []).map((d: any, i: number) => {
+            const urgent = d.days_left <= 7;
+            const warn = d.days_left > 7 && d.days_left <= 17;
+            return (
+              <View key={i} style={[dlCard, { backgroundColor: urgent ? '#FEF2F2' : warn ? '#FFFBEB' : '#F0FDF4' }]}>
+                <View style={{ flex: 1 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                    <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: urgent ? '#DC2626' : warn ? '#D97706' : '#059669' }} />
+                    <Text style={{ ...font.bodySmall, color: '#0F172A', fontWeight: '600' }}>{d.label}</Text>
+                  </View>
+                  <Text style={{ ...font.micro, color: '#64748B', marginTop: 2, marginLeft: 12 }}>Hạn: {d.due}</Text>
+                </View>
+                <View style={[dlPill, { backgroundColor: urgent ? '#FEE2E2' : warn ? '#FEF3C7' : '#DCFCE7' }]}>
+                  <Text style={{ ...font.badge, color: urgent ? '#DC2626' : warn ? '#D97706' : '#059669', fontWeight: '700' }}>
+                    Còn {d.days_left} ngày
+                  </Text>
+                </View>
+              </View>
+            );
+          })}
+        </View>
+
+        {/* ═══════════════════════ MODULES ═══════════════════════ */}
+        <View style={secHeader}>
+          <Icon name="grid" size={16} color="#64748B" />
+          <Text style={secTitle}>Mô-đun nghiệp vụ</Text>
+        </View>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          {modules.map((m) => (
+            <View key={m.key} style={{ width: isWide ? `${100 / columns(180) - 1.5}%` : '48%' }}>
+              <ModuleCard icon={m.icon} title={m.title} description={m.desc} onPress={() => open(m.path)} />
+            </View>
+          ))}
+        </View>
+        <View style={{ height: 60 }} />
       </ScrollView>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface.app },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingTop: 0,
-    paddingBottom: 32,
-  },
-  greeting: { ...font.h3, color: colors.text.primary, fontWeight: '700' },
-  subtitle: { ...font.caption, color: colors.text.muted, marginTop: 2 },
-  rolePill: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: shape.radius.full },
-  roleText: { ...font.badge, fontWeight: '700' },
-  scroll: { paddingHorizontal: 16, paddingBottom: 32, gap: 14 },
-  errorBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    backgroundColor: colors.surface.danger,
-    borderWidth: 1,
-    borderColor: colors.border.danger,
-    borderRadius: shape.radius.md,
-    padding: 12,
-  },
-  errorText: { ...font.body, color: colors.text.danger, flex: 1 },
-  retryBtn: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: shape.radius.sm,
-    backgroundColor: colors.brand.primary,
-  },
-  retryText: { ...font.button, color: '#fff' },
-  statSkeleton: {
-    height: 96,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border.light,
-  },
-  statGrid: { gap: 12 },
-  statCard: {
-    backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.lg,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: colors.border.light,
-    gap: 6,
-  },
-  statIcon: {
-    width: 38,
-    height: 38,
-    borderRadius: shape.radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 4,
-  },
-  statLabel: { ...font.caption, color: colors.text.muted },
-  statValue: { ...font.h3, fontWeight: '800' },
-  moduleGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, justifyContent: 'flex-start' },
-  moduleWrap: { marginBottom: 4 },
-});
+// ─── Styles — sử dụng font tokens ────────────────────────────────────────────
+const secHeader: any = { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10, marginTop: 16 };
+const secTitle: any = { ...font.tableHeader, color: '#0F172A' };
+
+const kpiCard: any = { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: '#E2E8F0' };
+const kpiLabel: any = { ...font.badge, color: '#64748B', textTransform: 'uppercase', letterSpacing: 0.5 };
+const kpiVal: any = { ...font.h2, marginTop: 2 };
+const kpiSub: any = { ...font.micro, color: '#94A3B8', marginTop: 2 };
+
+const chartCard: any = { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: '#E2E8F0' };
+const taxCard: any = { flex: 1, borderRadius: 12, padding: 14, minWidth: 90 };
+const taxLabel: any = { ...font.micro, color: '#64748B', marginTop: 4 };
+const taxValue: any = { ...font.h4, marginTop: 2 };
+
+const tblWrap: any = { backgroundColor: '#FFFFFF', borderRadius: 12, borderWidth: 1, borderColor: '#E2E8F0', overflow: 'hidden' };
+const tblHead: any = { flexDirection: 'row', alignItems: 'center', gap: 6, padding: 12, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' };
+const tblHeadText: any = { ...font.caption, color: '#0F172A', fontWeight: '600', flex: 1 };
+const tblCols: any = { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 6, backgroundColor: '#F8FAFC', borderBottomWidth: 1, borderBottomColor: '#F1F5F9' };
+const tblCol: any = { ...font.tableHeader, color: '#94A3B8' };
+const tblRow: any = { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#F8FAFC' };
+const tblCell: any = { ...font.tableCell, color: '#64748B' };
+const dlCard: any = { flexDirection: 'row', alignItems: 'center', borderRadius: 10, padding: 12, gap: 8 };
+const dlPill: any = { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6 };
+const errBanner: any = { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#FEF2F2', borderRadius: 8, padding: 10, marginBottom: 8, borderWidth: 1, borderColor: '#FECACA' };

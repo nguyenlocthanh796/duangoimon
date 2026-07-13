@@ -1,0 +1,58 @@
+[
+  {
+    "id": "sp_01",
+    "branch_id": "br_01",
+    "code": "NCC001",
+    "name": "Công ty TNHH Thực Phẩm Xanh",
+    "contact_person": "Nguyễn Văn Tuấn",
+    "phone": "0912345671",
+    "email": "tp.xanh@gmail.com",
+    "address": "12 Lý Tự Trọng, Quận 1",
+    "tax_code": "0123456789",
+    "payment_terms": "net30",
+    "is_active": true,
+    "created_at": "2025-12-24T10:06:38.352Z"
+  },
+  {
+    "id": "sp_02",
+    "branch_id": "br_01",
+    "code": "NCC002",
+    "name": "Trang Trại Sạch Farm",
+    "contact_person": "Trần Thị Hương",
+    "phone": "0912345672",
+    "email": "sach.farm@gmail.com",
+    "address": "45 Xa lộ Hà Nội, Thủ Đức",
+    "tax_code": "0987654321",
+    "payment_terms": "cod",
+    "is_active": true,
+    "created_at": "2026-01-13T10:06:38.352Z"
+  },
+  {
+    "id": "sp_03",
+    "branch_id": "br_01",
+    "code": "NCC003",
+    "name": "Công ty CP Đồ Uống Việt",
+    "contact_person": "Lê Minh Tài",
+    "phone": "0912345673",
+    "email": "douongviet@gmail.com",
+    "address": "78 Nguyễn Trãi, Quận 5",
+    "tax_code": "0112233445",
+    "payment_terms": "net15",
+    "is_active": true,
+    "created_at": "2026-02-02T10:06:38.352Z"
+  },
+  {
+    "id": "sp_04",
+    "branch_id": "br_01",
+    "code": "NCC004",
+    "name": "Hải Sản Biển Đông",
+    "contact_person": "Hoàng Thị Lan",
+    "phone": "0912345674",
+    "email": "biendong.hs@gmail.com",
+    "address": "90 Bùi Thị Xuân, Quận 1",
+    "tax_code": "0556677889",
+    "payment_terms": "cod",
+    "is_active": true,
+    "created_at": "2026-02-22T10:06:38.352Z"
+  }
+]

@@ -7,6 +7,7 @@
 Notifications are stubbed (log intent) until real SMS/Zalo/Email
 credentials are wired (see core/thue/notify.py).
 """
+
 import logging
 from datetime import date, timedelta
 from decimal import Decimal
@@ -15,8 +16,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.thue.tier import ONE_TY
-from app.models.thue.hkd_profile import HKDProfile
 from app.models.thue.declaration_deadline import DeclarationDeadline
+from app.models.thue.hkd_profile import HKDProfile
 
 logger = logging.getLogger("thue.threshold")
 
@@ -29,7 +30,9 @@ async def notify_multichannel(profile: HKDProfile, message: str) -> None:
     """Stub: push App/Zalo/SMS/Email. Logs intent only (A2: no creds)."""
     logger.info(
         "NOTIFY_STUB branch=%s tax_code=%s msg=%s",
-        profile.branch_id, profile.tax_code, message,
+        profile.branch_id,
+        profile.tax_code,
+        message,
     )
 
 

@@ -18,8 +18,10 @@ Usage:
             q = q.where(Order.note.ilike(f"%{search}%"))
         ...
 """
+
 from datetime import datetime, timezone
-from sqlalchemy import select, func
+
+from sqlalchemy import func, select
 from sqlalchemy.sql import Select
 
 
@@ -29,7 +31,7 @@ def apply_filters(
     **kwargs,
 ) -> Select:
     """Apply common filters to a query based on kwargs.
-    
+
     Supported filter keys:
     - status: exact match
     - is_active: boolean match
@@ -50,8 +52,11 @@ def apply_filters(
         if val is not None:
             filters[key] = val
 
-    # Date range
+    # Date range — only allow whitelisted field names
     date_field_name = kwargs.pop("date_field", "created_at")
+    ALLOWED_DATE_FIELDS = {"created_at", "updated_at", "paid_at", "exported_at", "issued_at"}
+    if date_field_name not in ALLOWED_DATE_FIELDS:
+        date_field_name = "created_at"
     date_field = getattr(model, date_field_name, None)
     date_from = kwargs.pop("date_from", None)
     date_to = kwargs.pop("date_to", None)
@@ -64,6 +69,7 @@ def apply_filters(
             # If date_to has no time component, include full day
             if "T" not in str(date_to):
                 from datetime import timedelta
+
                 end = end + timedelta(days=1)
             query = query.where(date_field < end)
 

@@ -3,9 +3,11 @@
 ponytail: adds JSON logging. Install structlog: pip install structlog.
 When Sentry is configured, logs go to both stdout + Sentry.
 """
-import structlog
+
 import logging
 import sys
+
+import structlog
 
 
 def configure_logging(log_level: str = "INFO", json_output: bool = True):

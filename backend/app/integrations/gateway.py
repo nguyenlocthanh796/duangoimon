@@ -4,14 +4,16 @@ Supports: GrabFood, ShopeeFood, Momo, ZaloPay, VietQR, e-invoice (Viettel/VNPT/M
 
 ponytail: stub implementations. Add real API calls when keys are provisioned.
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Any
-
 
 # ────────────────────────────────────────────
 # Delivery Aggregators
 # ────────────────────────────────────────────
+
 
 @dataclass
 class DeliveryOrder:
@@ -39,6 +41,7 @@ async def pull_shopeefood_orders(api_key: str) -> list[DeliveryOrder]:
 # Payment Gateways
 # ────────────────────────────────────────────
 
+
 @dataclass
 class PaymentResult:
     success: bool
@@ -58,7 +61,9 @@ async def zalopay_pay(amount: float, order_info: str, return_url: str) -> Paymen
 
 def generate_vietqr(amount: float, bank_account: str, bank_name: str, note: str) -> str:
     """Generate VietQR image URL (static QR)."""
-    import base64, json
+    import base64
+    import json
+
     # Simplified QR content — in production use VietQR API
     data = json.dumps({"bank": bank_name, "acc": bank_account, "amount": amount, "note": note})
     return f"https://img.vietqr.io/image/{bank_name}-{bank_account}-compact.png?amount={int(amount)}&addInfo={note}"
@@ -67,6 +72,7 @@ def generate_vietqr(amount: float, bank_account: str, bank_name: str, note: str)
 # ────────────────────────────────────────────
 # E-Invoice Gateways
 # ────────────────────────────────────────────
+
 
 @dataclass
 class InvoiceResult:

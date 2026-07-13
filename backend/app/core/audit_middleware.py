@@ -5,6 +5,7 @@ This catches POST/PUT/DELETE on any /api/v1/... route and records:
 
 For detailed old/new_value logging, wire `log_action()` directly in the endpoint.
 """
+
 import json
 import uuid
 from datetime import datetime, timezone
@@ -12,9 +13,9 @@ from datetime import datetime, timezone
 from fastapi import Request, Response
 from sqlalchemy import select
 
-from app.models.audit import AuditLog
-from app.core.database import AsyncSessionLocal
 from app.core.auth import decode_token
+from app.core.database import AsyncSessionLocal
+from app.models.audit import AuditLog
 
 
 async def audit_mutation_middleware(request: Request, call_next):

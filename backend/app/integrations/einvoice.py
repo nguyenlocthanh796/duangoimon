@@ -9,7 +9,9 @@ Usage:
 ponytail: needs real API credentials + supplier registration.
 Add when e-invoice service is contracted.
 """
+
 from __future__ import annotations
+
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 
@@ -17,6 +19,7 @@ from datetime import datetime, timezone
 @dataclass
 class InvoiceLine:
     """Single line in an e-invoice."""
+
     product_code: str
     product_name: str
     unit: str = "phần"
@@ -30,6 +33,7 @@ class InvoiceLine:
 @dataclass
 class InvoiceData:
     """Data required for a Vietnamese e-invoice."""
+
     buyer_name: str
     buyer_tax_code: str = ""
     buyer_address: str = ""
@@ -44,10 +48,10 @@ class InvoiceData:
 
 class ViettelClient:
     """Viettel HDDT (Hoa don dien tu) client.
-    
+
     API docs: https://hddt.viettel.vn/
     """
-    
+
     def __init__(
         self,
         username: str,
@@ -64,6 +68,7 @@ class ViettelClient:
     async def _login(self) -> str:
         """Authenticate with Viettel API and get token."""
         import httpx
+
         async with httpx.AsyncClient() as client:
             resp = await client.post(
                 f"{self.base_url}/auth/login",
@@ -84,6 +89,7 @@ class ViettelClient:
             await self._login()
 
         import httpx
+
         async with httpx.AsyncClient() as client:
             payload = self._build_payload(invoice)
             resp = await client.post(
@@ -99,6 +105,7 @@ class ViettelClient:
         if not self._token:
             await self._login()
         import httpx
+
         async with httpx.AsyncClient() as client:
             resp = await client.get(
                 f"{self.base_url}/api/invoice/v1/{invoice_number}/status",
@@ -112,6 +119,7 @@ class ViettelClient:
         if not self._token:
             await self._login()
         import httpx
+
         async with httpx.AsyncClient() as client:
             resp = await client.post(
                 f"{self.base_url}/api/invoice/v1/cancel",
@@ -125,17 +133,19 @@ class ViettelClient:
         """Build Viettel API request body from InvoiceData."""
         lines = []
         for i, line in enumerate(inv.lines, 1):
-            lines.append({
-                "lineNumber": i,
-                "productCode": line.product_code,
-                "productName": line.product_name,
-                "unit": line.unit,
-                "quantity": line.quantity,
-                "unitPrice": line.unit_price,
-                "total": line.total,
-                "vatRate": line.vat_rate,
-                "vatAmount": line.vat_amount,
-            })
+            lines.append(
+                {
+                    "lineNumber": i,
+                    "productCode": line.product_code,
+                    "productName": line.product_name,
+                    "unit": line.unit,
+                    "quantity": line.quantity,
+                    "unitPrice": line.unit_price,
+                    "total": line.total,
+                    "vatRate": line.vat_rate,
+                    "vatAmount": line.vat_amount,
+                }
+            )
         return {
             "supplierTaxCode": self.supplier_tax_code,
             "invoiceTemplate": "01GTKT0/001",  # standard VAT invoice
@@ -156,7 +166,7 @@ class ViettelClient:
 
 class VNPTClient:
     """VNPT E-invoice client stub."""
-    
+
     def __init__(self, username: str, password: str, base_url: str = "https://einvoice.vnpt.vn"):
         self.username = username
         self.password = password
@@ -168,7 +178,7 @@ class VNPTClient:
 
 class MISAClient:
     """MISA e-invoice client stub."""
-    
+
     def __init__(self, api_key: str, base_url: str = "https://api.misa.com"):
         self.api_key = api_key
         self.base_url = base_url

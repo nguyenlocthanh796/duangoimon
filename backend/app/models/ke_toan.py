@@ -1,5 +1,5 @@
-import uuid
 import secrets
+import uuid
 from datetime import datetime, timezone
 from decimal import Decimal
 
@@ -22,7 +22,9 @@ class Transaction(Base):
     ref_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
     note: Mapped[str | None] = mapped_column(Text)
     created_by: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
 
 
 class Invoice(Base):
@@ -33,7 +35,13 @@ class Invoice(Base):
     order_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True))
     branch_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
     invoice_number: Mapped[str] = mapped_column(String(20), unique=True)
-    token: Mapped[str] = mapped_column(String(24), unique=True, nullable=False, index=True, default=lambda: "inv_" + secrets.token_urlsafe(12))
+    token: Mapped[str] = mapped_column(
+        String(24),
+        unique=True,
+        nullable=False,
+        index=True,
+        default=lambda: "inv_" + secrets.token_urlsafe(12),
+    )
     buyer_name: Mapped[str | None] = mapped_column(String(200))
     buyer_tax_code: Mapped[str | None] = mapped_column(String(20))
     total_amount: Mapped[float] = mapped_column(Numeric(14, 2))
@@ -41,7 +49,9 @@ class Invoice(Base):
     vat_amount: Mapped[float | None] = mapped_column(Numeric(14, 2))
     status: Mapped[str] = mapped_column(String(20), default="moi")
     exported_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
 
 
 class SoS1a(Base):
@@ -148,10 +158,14 @@ class CashRegisterInvoice(Base):
     branch_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
     order_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True))
     invoice_code: Mapped[str] = mapped_column(
-        String(23), unique=True, index=True,
+        String(23),
+        unique=True,
+        index=True,
         default=lambda: "M" + secrets.token_hex(11).upper()[:22],
     )
-    issued_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    issued_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
     buyer_name: Mapped[str | None] = mapped_column(String(200))
     buyer_tax_code: Mapped[str | None] = mapped_column(String(20))
     buyer_personal_id: Mapped[str | None] = mapped_column(String(20))
@@ -162,4 +176,6 @@ class CashRegisterInvoice(Base):
     tax_auth_status: Mapped[str | None] = mapped_column(String(20))
     qr_data: Mapped[str | None] = mapped_column(Text)
     delivery_channels: Mapped[dict | None] = mapped_column(JSONB)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )

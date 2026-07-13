@@ -151,6 +151,9 @@ export interface Dashboard {
   orders_growth?: number;
   table_stats: { trong: number; co_khach: number; da_dat: number };
   top_products: { name: string; quantity: number }[];
+  revenue_by_hour?: { hour: number; value: number }[];
+  low_stock_items?: { name: string; unit: string; current: number; min: number }[];
+  recent_activities?: { icon: string; text: string; time: string; color: string }[];
 }
 
 export interface SalesReport {

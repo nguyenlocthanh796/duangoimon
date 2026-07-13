@@ -5,8 +5,10 @@ Usage:
         __tablename__ = "my_model"
         ...
 """
+
 from datetime import datetime, timezone
 from typing import Optional
+
 from sqlalchemy import DateTime
 from sqlalchemy.orm import Mapped, mapped_column
 

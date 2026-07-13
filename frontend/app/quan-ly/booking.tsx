@@ -1,7 +1,5 @@
-"use client";
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSidebar } from '../../lib/context/SidebarContext';
@@ -11,6 +9,7 @@ import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import type { Booking } from '../../lib/api/client';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
+import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import FormModal from '../../lib/components/ui/FormModal';
 import FAB from '../../lib/components/ui/FAB';
 import EmptyState from '../../lib/components/ui/EmptyState';
@@ -185,7 +184,7 @@ export default function BookingScreen() {
   };
 
   return (
-    <SafeAreaView style={s.container}>
+    <ScreenContainer compact>
       <ScreenHeader title="Đặt bàn" subtitle={`${items.length} lượt đặt`}
         showBack onMenuPress={openSidebar} onBackPress={() => router.back()}
         right={isWide ? undefined : <TouchableOpacity onPress={openNew} style={s.addBtn}><Icon name="plus" size={18} color="#fff" /><Text style={s.addBtnText}>Thêm</Text></TouchableOpacity>}
@@ -213,7 +212,7 @@ export default function BookingScreen() {
         <View style={{ flex: 1, flexDirection: 'row' }}>
           <View style={{ flex: 0.6 }}>{renderList()}</View>
           <View style={s.separator} />
-          <View style={{ flex: 0.4, backgroundColor: colors.surface.app, paddingTop: 12 }}>{renderPanel()}</View>
+          <View style={{ flex: 0.4, backgroundColor: colors.surface.app, paddingTop: 8 }}>{renderPanel()}</View>
         </View>
       ) : renderList()}
       {!isWide && <FAB onPress={openNew} />}
@@ -233,7 +232,7 @@ export default function BookingScreen() {
           <TextInput value={form.note} onChangeText={v => setForm(p => ({ ...p, note: v }))} style={[s.fieldInput, { minHeight: 80 }]} multiline placeholder="Ghi chú..." />
         </View>
       </FormModal>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 
@@ -267,7 +266,7 @@ const s = StyleSheet.create({
   panelRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 6 },
   panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 8, paddingHorizontal: 12, borderRadius: shape.radius.md },
   panelBtnText: { ...font.buttonSmall, fontWeight: '700', color: '#fff' },
-  panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, paddingVertical: 12, minHeight: 44 },
+  panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, paddingVertical: 8, minHeight: 44 },
   panelCtaText: { ...font.button, color: '#fff' },
 
   fieldLabel: { ...font.label, color: colors.text.secondary, marginBottom: 6 },
@@ -275,3 +274,4 @@ const s = StyleSheet.create({
 
   separator: { width: 1, backgroundColor: colors.border.light },
 });
+

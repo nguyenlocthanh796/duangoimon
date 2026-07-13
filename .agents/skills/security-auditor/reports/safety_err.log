@@ -1,0 +1,3 @@
+C:\Users\locthanhit\AppData\Roaming\Python\Python314\site-packages\safety\auth\main.py:5: AuthlibDeprecationWarning: authlib.jose module is deprecated, please use joserfc instead.
+It will be compatible before version 2.0.0.
+  from authlib.jose.errors import ExpiredTokenError

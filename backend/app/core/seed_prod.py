@@ -1,9 +1,10 @@
 """Seed data for production — branches, categories, default users."""
+
 import asyncio
 import uuid
 
 from sqlalchemy import select, text
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from app.core.config import settings
 from app.models.all_models import *  # noqa
@@ -14,8 +15,18 @@ from app.models.user import User
 # For now: we append to seed.py
 
 SEED_BRANCHES = [
-    {"name": "Chi nhánh chính", "code": "CN01", "address": "123 Nguyễn Huệ, Q1, HCM", "phone": "0909123456"},
-    {"name": "Chi nhánh 2", "code": "CN02", "address": "456 Lê Lợi, Q1, HCM", "phone": "0909123457"},
+    {
+        "name": "Chi nhánh chính",
+        "code": "CN01",
+        "address": "123 Nguyễn Huệ, Q1, HCM",
+        "phone": "0909123456",
+    },
+    {
+        "name": "Chi nhánh 2",
+        "code": "CN02",
+        "address": "456 Lê Lợi, Q1, HCM",
+        "phone": "0909123457",
+    },
 ]
 
 SEED_USERS = [

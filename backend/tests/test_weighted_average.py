@@ -33,3 +33,22 @@ def test_weighted_avg_no_fifo_like():
 ])
 def test_weighted_avg_parametrized(oq, ov, iq, iv, expected):
     assert weighted_avg(oq, ov, iq, iv) == expected
+
+
+def test_prev_period_mid_year():
+    from app.core.thue.weighted_average import _prev_period
+    assert _prev_period("2024-06") == "2024-05"
+
+
+def test_prev_period_year_boundary():
+    from app.core.thue.weighted_average import _prev_period
+    # January rolls back to December of previous year
+    assert _prev_period("2024-01") == "2023-12"
+
+
+def test_current_period_format():
+    from app.core.thue.weighted_average import current_period
+    import re
+    p = current_period()
+    # Must be YYYY-MM
+    assert re.match(r"^\d{4}-\d{2}$", p)

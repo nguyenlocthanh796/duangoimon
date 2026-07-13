@@ -28,3 +28,66 @@ class TestRequireRole:
         result = require_role(endpoint_path="ban-hang")
         # FastAPI Depends has a .dependency attribute
         assert hasattr(result, "dependency")
+
+
+class TestResolvePrefix:
+    """_resolve_prefix picks the longest matching allowed-role prefix."""
+
+    def test_resolve_longest_prefix(self):
+        from app.core.rbac import _resolve_prefix
+
+        # /quan-ly/users must resolve to the more specific 'quan-ly/users'
+        assert _resolve_prefix("/quan-ly/users") == "quan-ly/users"
+
+    def test_resolve_base_prefix(self):
+        from app.core.rbac import _resolve_prefix
+
+        assert _resolve_prefix("/ban-hang/orders") == "ban-hang"
+
+    def test_resolve_no_match(self):
+        from app.core.rbac import _resolve_prefix
+
+        assert _resolve_prefix("/unknown/route") == ""
+
+    def test_resolve_handles_missing_leading_slash(self):
+        from app.core.rbac import _resolve_prefix
+
+        assert _resolve_prefix("ke-toan/invoices") == "ke-toan"
+
+
+class TestRoleChecker:
+    """RoleChecker enforces role membership per endpoint path."""
+
+    async def test_allowed_role_passes(self):
+        from app.core.rbac import RoleChecker
+
+        checker = RoleChecker(endpoint_path="ban-hang")
+        user = {"role": "cashier"}
+        result = await checker(current_user=user)
+        assert result == user
+
+    async def test_disallowed_role_403(self):
+        import pytest
+        from fastapi import HTTPException
+
+        from app.core.rbac import RoleChecker
+
+        checker = RoleChecker(endpoint_path="quan-ly/users")
+        # cashier cannot access user management (admin only)
+        with pytest.raises(HTTPException) as exc:
+            await checker(current_user={"role": "cashier"})
+        assert exc.value.status_code == 403
+
+    async def test_empty_path_is_noop(self):
+        from app.core.rbac import RoleChecker
+
+        checker = RoleChecker(endpoint_path="")
+        user = {"role": "kitchen"}
+        assert await checker(current_user=user) == user
+
+    async def test_admin_accesses_user_management(self):
+        from app.core.rbac import RoleChecker
+
+        checker = RoleChecker(endpoint_path="quan-ly/users")
+        user = {"role": "admin"}
+        assert await checker(current_user=user) == user

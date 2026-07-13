@@ -6,6 +6,7 @@ Endpoints:
   GET  /thue/cash-invoices/{id}      retrieve + tax-authority status
   POST /thue/cash-invoices/{id}/deliver  push via QR/Zalo/Email channels
 """
+
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -13,12 +14,12 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.database import get_db
 from app.core.auth import get_current_user
+from app.core.database import get_db
 from app.core.thue.cash_invoice_service import issue_for_order
 from app.integrations.einvoice import CashRegisterInvoiceClient
-from app.models.ke_toan import CashRegisterInvoice
 from app.models.ban_hang import Order
+from app.models.ke_toan import CashRegisterInvoice
 
 router = APIRouter(prefix="/thue/cash-invoices", tags=["thue"])
 
@@ -58,11 +59,18 @@ async def issue_invoice(
         )
     ).scalar_one_or_none()
     if existing:
-        return {"id": str(existing.id), "invoice_code": existing.invoice_code, "status": existing.status}
+        return {
+            "id": str(existing.id),
+            "invoice_code": existing.invoice_code,
+            "status": existing.status,
+        }
 
     inv = await issue_for_order(
-        db, order, buyer_name=buyer_name,
-        buyer_tax_code=buyer_tax_code, buyer_personal_id=buyer_personal_id,
+        db,
+        order,
+        buyer_name=buyer_name,
+        buyer_tax_code=buyer_tax_code,
+        buyer_personal_id=buyer_personal_id,
     )
     await db.commit()
     return {"id": str(inv.id), "invoice_code": inv.invoice_code, "status": inv.status}
@@ -99,16 +107,18 @@ async def adjust_invoice(
     await db.commit()
     await db.refresh(new_inv)
 
-    result = await _crp.adjust(
-        new_inv.invoice_code, original.invoice_code, {}
-    )
+    result = await _crp.adjust(new_inv.invoice_code, original.invoice_code, {})
     new_inv.tax_auth_status = result.get("tax_auth_status")
     new_inv.status = "da_phat_hanh"
     new_inv.qr_data = f"https://cashregister.gov.vn/lookup?c={new_inv.invoice_code}"
     # NĐ70: original stays valid — NEVER cancel it.
     await db.commit()
     await db.refresh(new_inv)
-    return {"id": str(new_inv.id), "invoice_code": new_inv.invoice_code, "adjustment_of": str(original.id)}
+    return {
+        "id": str(new_inv.id),
+        "invoice_code": new_inv.invoice_code,
+        "adjustment_of": str(original.id),
+    }
 
 
 @router.get("/{invoice_id}")

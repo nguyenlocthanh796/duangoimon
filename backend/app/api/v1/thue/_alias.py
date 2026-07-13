@@ -5,13 +5,14 @@ frontend (lib/api/thue.ts) calls /thue/deadlines/{branch_id} and a future
 /thue/deadlines/{id}/submit. These simply re-dispatch to the canonical
 handlers in app.api.v1.thue.declaration.
 """
+
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.database import get_db
-from app.core.auth import get_current_user
 from app.api.v1.thue import declaration
+from app.core.auth import ensure_branch_access, get_current_user
+from app.core.database import get_db
 
 router = APIRouter(prefix="/thue/deadlines", tags=["thue"])
 
@@ -25,7 +26,7 @@ class SubmitBody(BaseModel):
 async def list_deadlines_alias(
     branch_id: str,
     db: AsyncSession = Depends(get_db),
-    _user: dict = Depends(get_current_user),
+    _user: dict = Depends(ensure_branch_access),
 ):
     return await declaration.list_deadlines(branch_id=branch_id, db=db, _user=_user)
 
@@ -42,7 +43,9 @@ async def bulk_submit_deadlines_alias(
     submitted = 0
     for dl_id in ids:
         try:
-            res = await declaration.submit(deadline_id=dl_id, body=declaration.SubmitBody(note=body.note), db=db, _user=_user)
+            res = await declaration.submit(
+                deadline_id=dl_id, body=declaration.SubmitBody(note=body.note), db=db, _user=_user
+            )
             if res.get("submitted"):
                 submitted += 1
         except Exception:

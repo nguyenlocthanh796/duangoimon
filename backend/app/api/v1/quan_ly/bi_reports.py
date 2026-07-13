@@ -1,11 +1,14 @@
 """BI Reports API - revenue, food cost, labor cost, profit."""
+
 import uuid
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
+
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.database import get_db
+
 from app.core.auth import get_current_user
+from app.core.database import get_db
 from app.models.ban_hang import Order, OrderItem
 from app.models.ke_toan import Transaction
 
@@ -39,16 +42,21 @@ async def revenue_report(
     total_rev = 0
     total_orders = 0
     for r in result.all():
-        rows.append({
-            "date": str(r.day),
-            "orders": r.order_count,
-            "revenue": float(r.total or 0),
-            "discount": float(r.discount or 0),
-        })
+        rows.append(
+            {
+                "date": str(r.day),
+                "orders": r.order_count,
+                "revenue": float(r.total or 0),
+                "discount": float(r.discount or 0),
+            }
+        )
         total_rev += float(r.total or 0)
         total_orders += r.order_count
 
-    return {"rows": rows, "summary": {"total_revenue": round(total_rev, 2), "total_orders": total_orders}}
+    return {
+        "rows": rows,
+        "summary": {"total_revenue": round(total_rev, 2), "total_orders": total_orders},
+    }
 
 
 @router.get("/food-cost")
@@ -60,20 +68,18 @@ async def food_cost_report(
 ):
     """Food cost = total cost of ingredients vs revenue."""
     rev = await db.execute(
-        select(func.sum(Order.total_amount))
-        .where(Order.status == "da_thanh_toan")
+        select(func.sum(Order.total_amount)).where(Order.status == "da_thanh_toan")
     )
     total_rev = float(rev.scalar() or 1)  # avoid div by zero
 
     # Total cost from recipe costs
-    from app.models.recipe import Recipe
-    from app.models.recipe import RecipeItem
-    from app.models.recipe import RawMaterial
+    from app.models.recipe import RawMaterial, Recipe, RecipeItem
 
     # Simple approach: sum cost_price from products that were sold
     cost_result = await db.execute(
-        select(func.sum(OrderItem.quantity * Product.cost_price))
-        .join(Product, OrderItem.product_id == Product.id)
+        select(func.sum(OrderItem.quantity * Product.cost_price)).join(
+            Product, OrderItem.product_id == Product.id
+        )
     )
     # ponytail: uses basic product cost_price, not exact BOM cost - upgrade when BOM is complete
     total_cost = float(cost_result.scalar() or 0)

@@ -1,12 +1,29 @@
 from fastapi import APIRouter
 
-from . import dashboard, products, tables, users, reports
-from . import branches
-from . import crm, membership
-from . import promo, booking, menu_eng, bi_reports, export
-from . import exec_dashboard
-from . import forecast, marketing, supplier_portal
-from . import recipes, audit, suppliers, shifts, stations
+from . import (
+    audit,
+    bi_reports,
+    booking,
+    branches,
+    crm,
+    dashboard,
+    exec_dashboard,
+    export,
+    forecast,
+    marketing,
+    membership,
+    menu_eng,
+    products,
+    promo,
+    recipes,
+    reports,
+    shifts,
+    stations,
+    supplier_portal,
+    suppliers,
+    tables,
+    users,
+)
 
 # Consolidated router — single prefix + dependency in main.py
 router = APIRouter()

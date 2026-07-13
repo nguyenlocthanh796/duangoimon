@@ -1,7 +1,5 @@
-"use client";
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
@@ -9,6 +7,7 @@ import { colors, font } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
+import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import FormModal from '../../lib/components/ui/FormModal';
 import FAB from '../../lib/components/ui/FAB';
 import EmptyState from '../../lib/components/ui/EmptyState';
@@ -170,9 +169,9 @@ export default function ShiftsScreen() {
   };
 
   return (
-    <SafeAreaView style={s.container}>
+    <ScreenContainer compact>
       <ScreenHeader title="Ca làm việc" subtitle={active && active.id ? 'Đang mở' : 'Chưa mở ca'}
-        onMenuPress={openSidebar} />
+        onMenuPress={openSidebar} compact />
       <View style={s.statsBar}>
         <StatItem icon="timer-check" value={totalClosed} label="Đã đóng" />
         <View style={s.barDivider} />
@@ -184,7 +183,7 @@ export default function ShiftsScreen() {
         <View style={{ flex: 1, flexDirection: 'row' }}>
           <View style={{ flex: 0.6 }}>{renderList()}</View>
           <View style={s.separator} />
-          <View style={{ flex: 0.4, backgroundColor: colors.surface.app, paddingTop: 12 }}>{renderPanel()}</View>
+          <View style={{ flex: 0.4, backgroundColor: colors.surface.app, paddingTop: 8 }}>{renderPanel()}</View>
         </View>
       ) : (
         <View style={{ flex: 1 }}>
@@ -207,13 +206,13 @@ export default function ShiftsScreen() {
       )}
 
       <FormModal visible={showStart} title="Mở ca" onClose={() => setShowStart(false)} onSave={startShift} saveLabel="Mở ca">
-        <View style={{ gap: 12, paddingTop: 4 }}>
+        <View style={{ gap: 10, paddingTop: 4 }}>
           <Text style={s.fieldLabel}>Tiền đầu ca</Text>
           <TextInput value={openingBalance} onChangeText={setOpeningBalance} keyboardType="decimal-pad" style={s.fieldInput} placeholder="0" />
         </View>
       </FormModal>
       <FormModal visible={showEnd} title="Đóng ca" onClose={() => setShowEnd(false)} onSave={endShift} saveLabel="Đóng ca">
-        <View style={{ gap: 12, paddingTop: 4 }}>
+        <View style={{ gap: 10, paddingTop: 4 }}>
           <Text style={s.fieldLabel}>Tiền cuối ca</Text>
           <TextInput value={cashEnd} onChangeText={setCashEnd} keyboardType="decimal-pad" style={s.fieldInput} placeholder="0" />
           <Text style={s.fieldLabel}>Tổng chi</Text>
@@ -222,7 +221,7 @@ export default function ShiftsScreen() {
           <TextInput value={endNote} onChangeText={setEndNote} style={[s.fieldInput, { minHeight: 60 }]} multiline placeholder="Ghi chú đóng ca" />
         </View>
       </FormModal>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 

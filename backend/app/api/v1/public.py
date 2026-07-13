@@ -1,13 +1,16 @@
 """Customer self-order API — called by QR app."""
+
 import uuid
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from datetime import datetime, timezone
+
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import Depends
+
 from app.core.database import get_db
 from app.core.ws_manager import ws_manager
-from app.models.ban_hang import Product, Table, Order, OrderItem
+from app.models.ban_hang import Order, OrderItem, Product, Table
 
 router = APIRouter(prefix="/public", tags=["public"])
 
@@ -49,8 +52,20 @@ async def get_table(table_code: str, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("/orders", status_code=201)
-async def create_self_order(body: SelfOrderCreate, db: AsyncSession = Depends(get_db)):
+async def create_self_order(
+    body: SelfOrderCreate,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+):
     """Create order from QR self-order. No auth — source tracked via table."""
+    # Anti-spam: max 10 items per order
+    if len(body.items) > 10:
+        raise HTTPException(status_code=400, detail="Tối đa 10 món/đơn hàng")
+    # Anti-spam: max quantity per item
+    for item in body.items:
+        if item.quantity > 20:
+            raise HTTPException(status_code=400, detail="Số lượng mỗi món tối đa 20")
+
     table_id = uuid.UUID(body.table_id)
     # Verify table exists
     t_result = await db.execute(select(Table).where(Table.id == table_id))
@@ -66,7 +81,10 @@ async def create_self_order(body: SelfOrderCreate, db: AsyncSession = Depends(ge
         p_result = await db.execute(select(Product).where(Product.id == uuid.UUID(item.product_id)))
         p = p_result.scalar_one_or_none()
         if not p:
-            continue
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Sản phẩm '{item.product_id}' không tồn tại",
+            )
         line_total = float(p.price) * item.quantity
         total += line_total
         oi = OrderItem(

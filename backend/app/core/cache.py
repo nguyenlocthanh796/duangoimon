@@ -2,9 +2,11 @@
 
 ponytail: stub using in-memory dict. Replace with aioredis when Redis is provisioned.
 """
+
 from __future__ import annotations
+
 import time
-from typing import Any, Callable, Awaitable
+from typing import Any, Awaitable, Callable
 
 _cache: dict[str, tuple[Any, float]] = {}
 DEFAULT_TTL = 300  # 5 minutes

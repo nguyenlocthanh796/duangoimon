@@ -30,17 +30,19 @@ export default function StatCard({
   compact,
 }: StatCardProps) {
   const s = compact ? stylesCompact : stylesNormal;
-  const showTrend = !hideTrend && growth !== undefined;
+  const showTrend = !hideTrend && growth !== undefined && !compact;
+  // Estimated badge width: icon(~13) + gap(2) + padding(4) + text(~8px per char)
+  const badgeWidth = compact ? 0 : 82;
 
   return (
-    <View style={[s.card, cardStyle]}>
-      {/* Trend Badge - positioned absolutely */}
+    <View style={[s.card, cardStyle, showTrend && { paddingRight: 16 + badgeWidth }]}>
+      {/* Trend Badge - absolute top-right */}
       {showTrend && (
         <View style={s.trendBadge}>
           <Icon
-            name={growth >= 0 ? 'arrow-top-right' : 'arrow-bottom-right'}
-            size={compact ? 10 : 12}
-            color={colors.text.secondary}
+            name={growth! >= 0 ? 'arrow-top-right' : 'arrow-bottom-right'}
+            size={compact ? 7 : 12}
+            color={growth! >= 0 ? colors.status.success : colors.status.danger}
           />
           <Text style={s.trendBadgeText}>
             {growth! >= 0 ? '+' : ''}
@@ -49,7 +51,7 @@ export default function StatCard({
         </View>
       )}
 
-      {/* Row 1: Icon and Value */}
+      {/* Row 1: Icon + Value */}
       <View style={s.row1}>
         <View style={[s.iconBg, { backgroundColor: bgColor }]}>
           <Icon name={icon as any} size={compact ? 18 : 20} color={color} />
@@ -57,7 +59,14 @@ export default function StatCard({
         {loading ? (
           <SkeletonBox w={'60%'} h={compact ? 24 : 32} />
         ) : (
-          <Text style={s.value}>{value}</Text>
+          <Text
+            style={s.value}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.55}
+          >
+            {value}
+          </Text>
         )}
       </View>
 
@@ -89,8 +98,9 @@ const stylesNormal = {
     paddingVertical: 4,
     borderRadius: shape.radius.sm,
     backgroundColor: colors.surface.disabled,
+    flexShrink: 0,
   },
-  trendBadgeText: { ...font.micro, fontWeight: '600' as const, color: colors.text.secondary },
+  trendBadgeText: { ...font.micro, fontWeight: '600' as const },
   row1: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: 12 },
   iconBg: {
     width: 40,
@@ -105,6 +115,7 @@ const stylesNormal = {
     fontWeight: '700' as const,
     color: colors.text.primary,
     flex: 1,
+    flexShrink: 1,
   },
   label: { ...font.body, color: colors.text.secondary, fontWeight: '500' as const, marginTop: 4 },
 } as const;
@@ -113,43 +124,45 @@ const stylesCompact = {
   card: {
     backgroundColor: colors.surface.card,
     borderRadius: shape.radius.md,
-    padding: 12,
+    padding: 4,
     borderWidth: 1,
     borderColor: colors.border.light,
     justifyContent: 'center' as const,
   },
   trendBadge: {
     position: 'absolute' as const,
-    top: 8,
-    right: 8,
+    top: 5,
+    right: 5,
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
     gap: 2,
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    borderRadius: shape.radius.sm,
+    paddingHorizontal: 3,
+    paddingVertical: 2,
+    borderRadius: 3,
     backgroundColor: colors.surface.disabled,
+    flexShrink: 0,
   },
-  trendBadgeText: { ...font.micro, fontWeight: '600' as const, color: colors.text.secondary },
-  row1: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: 8 },
+  trendBadgeText: { ...font.micro, fontSize: 8, fontWeight: '600' as const },
+  row1: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: 6 },
   iconBg: {
-    width: 34,
-    height: 34,
+    width: 30,
+    height: 30,
     borderRadius: shape.radius.sm,
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
   },
   value: {
     ...font.h2,
-    fontSize: 20,
+    fontSize: 17,
     fontWeight: '700' as const,
     color: colors.text.primary,
     flex: 1,
+    flexShrink: 1,
   },
   label: {
     ...font.caption,
     color: colors.text.secondary,
     fontWeight: '500' as const,
-    marginTop: 2,
+    marginTop: 1,
   },
 } as const;

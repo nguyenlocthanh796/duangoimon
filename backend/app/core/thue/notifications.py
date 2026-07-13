@@ -5,6 +5,7 @@ delivery via the configured gateway. Without gateway credentials the
 record is still stored with ``delivered=False`` + a log warning (graceful
 fallback), so the escalation engine never loses an alert.
 """
+
 import logging
 from datetime import datetime, timezone
 from typing import Iterable
@@ -92,7 +93,9 @@ async def _deliver(row: NotificationLog) -> bool:
     # SMS / Zalo / Email require gateway creds (P3.4+ integration).
     logger.warning(
         "[notify:%s] channel=%s not configured — alert stored (delivered=False). subject=%s",
-        row.category, row.channel, row.subject,
+        row.category,
+        row.channel,
+        row.subject,
     )
     return False
 

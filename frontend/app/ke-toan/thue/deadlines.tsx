@@ -8,7 +8,6 @@ import {
   RefreshControl,
   StyleSheet,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api } from '../../../lib/api';
 import { colors, font, shape } from '../../../lib/theme';
@@ -16,6 +15,7 @@ import { useSidebar } from '../../../lib/context/SidebarContext';
 import { useRouter } from 'expo-router';
 import { useResponsive } from '../../../lib/hooks/useResponsive';
 import UnifiedHeader from '../../../lib/components/ui/UnifiedHeader';
+import ScreenContainer from '../../../lib/components/ui/ScreenContainer';
 import BranchPeriodFilter from '../../../lib/components/ke-toan/BranchPeriodFilter';
 import DataTable, { Column } from '../../../lib/components/ui/DataTable';
 import { useSortState } from '../../../lib/components/ui/tableUtils';
@@ -237,7 +237,7 @@ export default function DeadlineScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
+    <ScreenContainer compact>
       <UnifiedHeader icon="calendar-alert"
         title="Hạn Nộp & Cảnh Báo"
         subtitle="Lịch nộp thuế & leo thang (TT18 §5)"
@@ -281,7 +281,7 @@ export default function DeadlineScreen() {
           />
         </View>
       )}
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 
@@ -321,3 +321,5 @@ const styles = StyleSheet.create({
   deadForm: { ...font.bodyBold, color: colors.text.primary },
   deadMeta: { ...font.bodySmall, color: colors.text.muted, marginTop: 2 },
 });
+
+

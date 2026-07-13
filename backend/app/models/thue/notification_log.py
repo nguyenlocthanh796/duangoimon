@@ -4,10 +4,11 @@ Records every tax-related alert (threshold breach, deadline escalation,
 EOM close) so the system has a real, auditable trail instead of only
 console logs. Persisted to the `thue` schema.
 """
+
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, String, Text, Boolean
+from sqlalchemy import Boolean, DateTime, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -18,12 +19,8 @@ class NotificationLog(Base):
     __tablename__ = "notification_logs"
     __table_args__ = ({"schema": "thue"},)
 
-    id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
-    )
-    branch_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True), nullable=True
-    )
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    branch_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
     category: Mapped[str] = mapped_column(String(30))  # threshold | deadline | eom
     channel: Mapped[str] = mapped_column(String(20), default="in_app")  # in_app|email|sms|zalo
     recipient: Mapped[str | None] = mapped_column(String(120), nullable=True)

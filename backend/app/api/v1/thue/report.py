@@ -9,19 +9,20 @@ GET /thue/report/{branch_id}?year=2026
 GET /thue/report/{branch_id}/export?year=2026&fmt=csv|pdf
   Export the 12-month tax report as CSV or PDF (P4.1).
 """
+
 from datetime import date
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import Response
 from pydantic import BaseModel
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.auth import ensure_branch_access, get_current_user
 from app.core.database import get_db
-from app.core.auth import get_current_user
-from app.core.thue.report_export import build_report, RevenueRow
 from app.core.thue import report_export as exporter
-from app.core.thue.tier import classify_tier, TIER_META
+from app.core.thue.report_export import RevenueRow, build_report
+from app.core.thue.tier import TIER_META, classify_tier
 from app.models.ban_hang import Order
 from app.models.thue.hkd_profile import HKDProfile
 
@@ -67,6 +68,7 @@ async def _build_rows(db: AsyncSession, b_uuid, y: int):
         .where(
             Order.branch_id == b_uuid,
             Order.status.in_(["da_thanh_toan", "paid"]),
+            Order.total_amount > 0,
             func.extract("year", Order.paid_at) == y,
         )
         .group_by(month_expr)
@@ -88,7 +90,7 @@ async def get_report(
     branch_id: str,
     year: int | None = None,
     db: AsyncSession = Depends(get_db),
-    _user: dict = Depends(get_current_user),
+    _user: dict = Depends(ensure_branch_access),
 ):
     y = year or date.today().year
     b_uuid = _to_uuid(branch_id)
@@ -96,8 +98,13 @@ async def get_report(
     built = build_report(hkd_name, tax_code, revenue_rows)
     out_rows = [
         ReportRowModel(
-            period_month=r.month, revenue=r.revenue, cost=r.cost,
-            vat=r.vat, tncn=r.pit, total=r.total, group=r.group,
+            period_month=r.month,
+            revenue=r.revenue,
+            cost=r.cost,
+            vat=r.vat,
+            tncn=r.pit,
+            total=r.total,
+            group=r.group,
         )
         for r in built.rows
     ]
@@ -117,7 +124,7 @@ async def export_report(
     year: int | None = None,
     fmt: str = "csv",
     db: AsyncSession = Depends(get_db),
-    _user: dict = Depends(get_current_user),
+    _user: dict = Depends(ensure_branch_access),
 ):
     """Export the 12-month tax report as CSV or PDF (P4.1)."""
     y = year or date.today().year
@@ -130,11 +137,15 @@ async def export_report(
         return Response(
             content=pdf_bytes,
             media_type="application/pdf",
-            headers={"Content-Disposition": f'attachment; filename="BaoCaoThue_{branch_id[:8]}_{y}.pdf"'},
+            headers={
+                "Content-Disposition": f'attachment; filename="BaoCaoThue_{branch_id[:8]}_{y}.pdf"'
+            },
         )
     csv_text = exporter.build_report_csv(built, hkd_name, tax_code, tier)
     return Response(
         content=csv_text,
         media_type="text/csv; charset=utf-8",
-        headers={"Content-Disposition": f'attachment; filename="BaoCaoThue_{branch_id[:8]}_{y}.csv"'},
+        headers={
+            "Content-Disposition": f'attachment; filename="BaoCaoThue_{branch_id[:8]}_{y}.csv"'
+        },
     )

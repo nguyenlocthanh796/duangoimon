@@ -10,6 +10,7 @@ Implements the 2026 regime for Hộ Kinh Doanh / Cá nhân kinh doanh:
 - Tax = GTGT (VAT) + TNCN (PIT) computed on declared revenue for N2/N3.
 - Weighted-average cost tracking (TT152 §3) — no FIFO/LIFO.
 """
+
 from dataclasses import dataclass
 from decimal import Decimal
 from enum import Enum
@@ -25,10 +26,10 @@ FIFTY_TY = Decimal("50_000_000_000")
 # Nhóm 1 (doanh thu <= 1 tỷ): MIỄN thuế (0% / 0%).
 # Nhóm 4 chuyển sang biểu thuế lợi nhuận (0% tỷ lệ đơn giản).
 GROUP_RATES: dict[int, tuple[Decimal, Decimal]] = {
-    1: (Decimal("0.0"), Decimal("0.0")),   # N1 miễn thuế
-    2: (Decimal("1.0"), Decimal("0.5")),   # N2 tỷ lệ ngành
-    3: (Decimal("0.5"), Decimal("0.5")),   # N3 tỷ lệ ngành (minh họa)
-    4: (Decimal("0.0"), Decimal("0.0")),   # N4 (biểu thuế lợi nhuận)
+    1: (Decimal("0.0"), Decimal("0.0")),  # N1 miễn thuế
+    2: (Decimal("1.0"), Decimal("0.5")),  # N2 tỷ lệ ngành
+    3: (Decimal("0.5"), Decimal("0.5")),  # N3 tỷ lệ ngành (minh họa)
+    4: (Decimal("0.0"), Decimal("0.0")),  # N4 (biểu thuế lợi nhuận)
 }
 
 

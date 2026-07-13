@@ -9,20 +9,21 @@ Deadlines (kể từ ngày kết thúc kỳ):
 Escalation: when N days remain (14/7/3/1), push a multi-channel reminder
 via the notification service; if overdue, raise a flag for the owner.
 """
+
 from datetime import date, timedelta
 from typing import Literal
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.thue.hkd_profile import HKDProfile
-from app.models.thue.declaration_deadline import DeclarationDeadline
 from app.core.thue import notifications
+from app.models.thue.declaration_deadline import DeclarationDeadline
+from app.models.thue.hkd_profile import HKDProfile
 
 # Default periods per form (days after period end).
 DEADLINE_RULES: dict[str, int] = {
-    "01_CNKD": 30,        # quarterly kê khai thuế (30 ngày sau kết thúc quý)
-    "01_TKN_CNKD": 90,    # annual tax-exemption declaration
+    "01_CNKD": 30,  # quarterly kê khai thuế (30 ngày sau kết thúc quý)
+    "01_TKN_CNKD": 90,  # annual tax-exemption declaration
     "SoS1a": 30,
     "SoS2a": 30,
 }
@@ -50,9 +51,7 @@ def compute_due_date(
         end = quarter_end(period_end)
         return end + timedelta(days=DEADLINE_RULES.get(form, 30))
     if period_type == "nam":
-        return date(period_end.year, 12, 31) + timedelta(
-            days=DEADLINE_RULES.get(form, 90)
-        )
+        return date(period_end.year, 12, 31) + timedelta(days=DEADLINE_RULES.get(form, 90))
     # tháng
     return period_end + timedelta(days=DEADLINE_RULES.get(form, 20))
 
@@ -75,21 +74,35 @@ async def ensure_deadlines(db: AsyncSession, profile: HKDProfile) -> None:
             )
         )
         if not existing.scalar_one_or_none():
-            db.add(DeclarationDeadline(
-                branch_id=profile.branch_id,
-                form=form,
-                period_type=ptype,
-                due_date=due,
-            ))
+            db.add(
+                DeclarationDeadline(
+                    branch_id=profile.branch_id,
+                    form=form,
+                    period_type=ptype,
+                    due_date=due,
+                )
+            )
     await db.commit()
 
 
 def _due_reminder_level(days_left: int) -> int | None:
-    """Return the highest escalation ladder level that applies (or None)."""
-    for lvl in ESCALATION_LADDER:
-        if days_left <= lvl:
-            return lvl
-    return None
+    """Return the tightest escalation ladder level that applies (or None).
+
+    The ladder [14, 7, 3, 1] represents reminder milestones. For a given
+    days_left we want the SMALLEST level whose window still contains it, so
+    reminders escalate 14 -> 7 -> 3 -> 1 as the deadline approaches. Each
+    level fires once (tracked by the reminded_* flags in escalate()).
+
+    Examples:
+        days_left=10 -> 14 (only the 14-day window contains 10)
+        days_left=7  -> 7
+        days_left=5  -> 7  (5 falls inside the 7-day window)
+        days_left=3  -> 3
+        days_left=1  -> 1
+        days_left=20 -> None (beyond every window)
+    """
+    applicable = [lvl for lvl in ESCALATION_LADDER if days_left <= lvl]
+    return min(applicable) if applicable else None
 
 
 async def escalate(db: AsyncSession, lead_days: int = 14) -> dict:
@@ -105,7 +118,10 @@ async def escalate(db: AsyncSession, lead_days: int = 14) -> dict:
             # Overdue — escalate once more if not yet notified.
             if not dl.notified:
                 await notifications.notify(
-                    db, category="deadline", ref_type="deadline", ref_id=dl.id,
+                    db,
+                    category="deadline",
+                    ref_type="deadline",
+                    ref_id=dl.id,
                     branch_id=dl.branch_id,
                     subject=f"QUÁ HẠN nộp {dl.form}",
                     message=f"Hạn nộp {dl.form} ({dl.period_type}) đã quá hạn. Cần nộp ngay để tránh phạt.",
@@ -117,17 +133,26 @@ async def escalate(db: AsyncSession, lead_days: int = 14) -> dict:
         if days_left > lead_days:
             continue
         lvl = _due_reminder_level(days_left)
-        flag = {"14": dl.reminded_14, "7": dl.reminded_7, "3": dl.reminded_3, "1": dl.reminded_1}[str(lvl)]
+        flag = {"14": dl.reminded_14, "7": dl.reminded_7, "3": dl.reminded_3, "1": dl.reminded_1}[
+            str(lvl)
+        ]
         if flag:
             continue
         # Mark the matching ladder flag.
-        if lvl == 14: dl.reminded_14 = True
-        elif lvl == 7: dl.reminded_7 = True
-        elif lvl == 3: dl.reminded_3 = True
-        elif lvl == 1: dl.reminded_1 = True
+        if lvl == 14:
+            dl.reminded_14 = True
+        elif lvl == 7:
+            dl.reminded_7 = True
+        elif lvl == 3:
+            dl.reminded_3 = True
+        elif lvl == 1:
+            dl.reminded_1 = True
         dl.notified = True
         await notifications.notify(
-            db, category="deadline", ref_type="deadline", ref_id=dl.id,
+            db,
+            category="deadline",
+            ref_type="deadline",
+            ref_id=dl.id,
             branch_id=dl.branch_id,
             subject=f"Còn {days_left} ngày nộp {dl.form}",
             message=f"Hạn nộp {dl.form} ({dl.period_type}) vào {dl.due_date.isoformat()}. Cấp nhắc nhở {lvl} ngày.",

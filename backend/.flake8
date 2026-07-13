@@ -1,5 +1,6 @@
 [flake8]
 max-line-length = 100
+max-complexity = 12
 extend-ignore = E501,E203,W503,E704,E302,E402,W293
 exclude =
     .git,

@@ -1,4 +1,5 @@
 """Thue (tax) API router — HKD profile + tier dashboard."""
+
 import uuid
 from decimal import Decimal
 
@@ -7,9 +8,9 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.auth import ensure_branch_access, get_current_user
 from app.core.database import get_db
-from app.core.auth import get_current_user
-from app.core.thue.tier import classify_tier, TIER_META
+from app.core.thue.tier import TIER_META, classify_tier
 from app.models.thue.hkd_profile import HKDProfile
 
 router = APIRouter(prefix="/thue/profiles", tags=["thue"])
@@ -31,9 +32,7 @@ class ProfilePatch(BaseModel):
 def _profile_dict(p: HKDProfile) -> dict:
     tier = classify_tier(p.revenue_ytd)
     ytd = Decimal(str(p.revenue_ytd))
-    pct = (ytd / Decimal("1000000000") * Decimal("100")).quantize(
-        Decimal("0.1")
-    )
+    pct = (ytd / Decimal("1000000000") * Decimal("100")).quantize(Decimal("0.1"))
     return {
         "id": str(p.id),
         "branch_id": str(p.branch_id) if p.branch_id else None,
@@ -55,9 +54,7 @@ async def create_profile(
     db: AsyncSession = Depends(get_db),
     _user: dict = Depends(get_current_user),
 ):
-    existing = await db.execute(
-        select(HKDProfile).where(HKDProfile.tax_code == body.tax_code)
-    )
+    existing = await db.execute(select(HKDProfile).where(HKDProfile.tax_code == body.tax_code))
     if existing.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Tax code already registered")
     profile = HKDProfile(
@@ -77,8 +74,9 @@ async def create_profile(
 async def get_profile(
     branch_id: str,
     db: AsyncSession = Depends(get_db),
-    _user: dict = Depends(get_current_user),
+    _user: dict = Depends(ensure_branch_access),
 ):
+    """Get tax profile for a branch (protected by branch access check)."""
     result = await db.execute(
         select(HKDProfile).where(HKDProfile.branch_id == uuid.UUID(branch_id))
     )
@@ -97,9 +95,7 @@ async def patch_profile(
 ):
     from datetime import datetime, timezone
 
-    result = await db.execute(
-        select(HKDProfile).where(HKDProfile.id == uuid.UUID(profile_id))
-    )
+    result = await db.execute(select(HKDProfile).where(HKDProfile.id == uuid.UUID(profile_id)))
     profile = result.scalar_one_or_none()
     if not profile:
         raise HTTPException(status_code=404, detail="Profile not found")
@@ -117,7 +113,7 @@ async def patch_profile(
 async def profile_status(
     branch_id: str,
     db: AsyncSession = Depends(get_db),
-    _user: dict = Depends(get_current_user),
+    _user: dict = Depends(ensure_branch_access),
 ):
     result = await db.execute(
         select(HKDProfile).where(HKDProfile.branch_id == uuid.UUID(branch_id))

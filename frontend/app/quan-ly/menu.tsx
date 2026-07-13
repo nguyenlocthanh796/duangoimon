@@ -3,7 +3,6 @@ import {
   View, Text, FlatList, TouchableOpacity, StyleSheet,
   Alert, ActivityIndicator, TextInput, ScrollView,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api } from '../../lib/api';
@@ -12,6 +11,7 @@ import { useResponsive } from '../../lib/hooks/useResponsive';
 import { colors, font } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
+import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import FormModal from '../../lib/components/ui/FormModal';
 import FAB from '../../lib/components/ui/FAB';
 import EmptyState from '../../lib/components/ui/EmptyState';
@@ -214,27 +214,23 @@ export default function MenuScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <ScreenContainer compact>
       <ScreenHeader
         title="Quản lý món"
         subtitle={`${products.length} món`}
         showBack
         onMenuPress={openSidebar}
         onBackPress={() => router.back()}
-        right={isWide ? (
+        compact
+        right={
           <TouchableOpacity onPress={openAdd} style={styles.addBtn}>
             <Icon name="plus" size={18} color={colors.text.inverse} />
             <Text style={styles.addBtnText}>Thêm</Text>
           </TouchableOpacity>
-        ) : (
-          <TouchableOpacity onPress={openAdd} style={styles.addBtn}>
-            <Icon name="plus" size={18} color={colors.text.inverse} />
-            <Text style={styles.addBtnText}>Thêm</Text>
-          </TouchableOpacity>
-        )}
+        }
       />
       {isWide ? (
-        <View style={{ flex: 1, flexDirection: 'row', paddingVertical: 12 }}>
+        <View style={{ flex: 1, flexDirection: 'row' }}>
           <View style={{ flex: 0.55 }}>{renderList()}</View>
           <View style={styles.separator} />
           <View style={{ flex: 0.45 }}>
@@ -250,7 +246,7 @@ export default function MenuScreen() {
           <MenuFormContent form={form} onChange={(updates) => setForm(f => ({ ...f, ...updates }))} />
         </FormModal>
       )}
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 

@@ -1,1 +1,1 @@
-from . import tables, products, orders, payments
+from . import orders, payments, products, tables

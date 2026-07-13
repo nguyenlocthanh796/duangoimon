@@ -147,7 +147,7 @@ export async function getDeclarationXml(
   period: string
 ): Promise<string> {
   return request<string>(
-    `${BASE}/declaration/${form}/${branchId}?period=${encodeURIComponent(period)}`
+    `${BASE}/declarations/declaration/${form}/${branchId}?period=${encodeURIComponent(period)}`
   );
 }
 

@@ -1,17 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, TouchableOpacity,
-  Alert, RefreshControl, useWindowDimensions,
+  RefreshControl, useWindowDimensions,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { request } from '../../lib/api/client';
-import type { Dashboard } from '../../lib/api/client';
-import { useSidebar } from '../../lib/context/SidebarContext';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
+import { useSidebar } from '../../lib/context/SidebarContext';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
 import StatCard from '../../lib/components/management/StatCard';
 import OccupancyProgress from '../../lib/components/management/OccupancyProgress';
@@ -22,9 +20,11 @@ import {
   RecentActivitiesList,
   RevenueChart,
 } from '../../lib/components/management/DashboardWidgets';
+import { api } from '../../lib/api';
+import type { Dashboard } from '../../lib/api';
 
 function formatVND(v: number): string {
-  return v.toLocaleString('vi-VN') + 'đ';
+  return (v || 0).toLocaleString('vi-VN') + 'đ';
 }
 
 export default function QuanLyDashboard() {
@@ -39,10 +39,10 @@ export default function QuanLyDashboard() {
 
   const load = useCallback(async () => {
     try {
-      const d = await request<Dashboard>('/api/v1/quan-ly/dashboard');
+      const d = await api.getDashboard();
       setData(d);
     } catch (e: any) {
-      Alert.alert('Lỗi', e.message || 'Không thể tải dữ liệu');
+      // silent
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -71,7 +71,7 @@ export default function QuanLyDashboard() {
       icon: 'currency-usd',
       color: '#059669',
       bgColor: '#ECFDF5',
-      growth: data?.revenue_growth,
+      growth: data?.revenue_growth ?? undefined,
     },
     {
       label: 'Số đơn hàng',
@@ -79,7 +79,7 @@ export default function QuanLyDashboard() {
       icon: 'receipt',
       color: '#4F46E5',
       bgColor: '#EEF2FF',
-      growth: data?.orders_growth,
+      growth: data?.orders_growth ?? undefined,
     },
     {
       label: 'Bàn có khách',
@@ -97,53 +97,37 @@ export default function QuanLyDashboard() {
     },
   ];
 
-  const renderHeader = () => (
-    <ScreenHeader
-      title="Quản Lý"
-      subtitle="Tổng quan"
-      onMenuPress={openSidebar}
-      right={
-        <View style={{ flexDirection: 'row', gap: 8 }}>
-          <TouchableOpacity onPress={onRefresh} style={styles.refreshBtn}>
-            <Icon name="refresh" size={20} color={colors.brand.primary} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push('/ban-hang')} activeOpacity={0.9}>
-            <LinearGradient
-              colors={[colors.brand.primary, colors.brand.primaryHover]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.pillBtn}
-            >
-              <Icon name="cash-register" size={14} color="#fff" />
-              <Text style={styles.pillText}>Bán hàng</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
-      }
-    />
-  );
-
   const renderStatRow = (isHorizontal: boolean) => {
     if (isHorizontal) {
-      // iPad: 4 cards flat, no scroll
       return (
         <View style={{ flexDirection: 'row', gap: 10 }}>
           {stats.map((s, i) => (
             <View key={i} style={{ flex: 1 }}>
-              <StatCard {...s} loading={loading} hideTrend={!s.growth} compact={false} />
+              <StatCard {...s} loading={loading} hideTrend compact={false} />
             </View>
           ))}
         </View>
       );
     }
-    // iPhone: 2x2 grid
+    // Mobile: 2x2 grid using explicit rows to avoid overflow
     return (
-      <View style={styles.statsGrid}>
-        {stats.map((s, i) => (
-          <View key={i} style={{ width: '48%' }}>
-            <StatCard {...s} loading={loading} hideTrend={!s.growth} compact />
+      <View style={{ gap: 8 }}>
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          <View style={{ flex: 1 }}>
+            <StatCard {...stats[0]} loading={loading} hideTrend={!stats[0].growth} compact />
           </View>
-        ))}
+          <View style={{ flex: 1 }}>
+            <StatCard {...stats[1]} loading={loading} hideTrend={!stats[1].growth} compact />
+          </View>
+        </View>
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          <View style={{ flex: 1 }}>
+            <StatCard {...stats[2]} loading={loading} hideTrend compact />
+          </View>
+          <View style={{ flex: 1 }}>
+            <StatCard {...stats[3]} loading={loading} hideTrend compact />
+          </View>
+        </View>
       </View>
     );
   };
@@ -151,18 +135,40 @@ export default function QuanLyDashboard() {
   if (isWide) {
     return (
       <SafeAreaView style={styles.container}>
-        {renderHeader()}
+        <ScreenHeader
+          title="Quản Lý"
+          subtitle="Trung tâm quản lý vận hành"
+          onMenuPress={openSidebar}
+          right={
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <TouchableOpacity onPress={onRefresh} style={styles.refreshBtn}>
+                <Icon name="refresh" size={20} color={colors.brand.primary} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push('/ban-hang')} activeOpacity={0.9}>
+                <LinearGradient
+                  colors={[colors.brand.primary, colors.brand.primaryHover]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.pillBtn}
+                >
+                  <Icon name="cash-register" size={16} color="#fff" />
+                  <Text style={styles.pillText}>Bán hàng</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+          }
+        />
         <ScrollView
           showsVerticalScrollIndicator={false}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand.primary} />}
-          contentContainerStyle={{ padding: 8, gap: 12 }}
+          contentContainerStyle={{ paddingHorizontal: 8, paddingBottom: 40, gap: 12 }}
         >
           {renderStatRow(true)}
 
           <View style={{ flexDirection: 'row', gap: 12 }}>
-            {/* Left */}
+            {/* Left column */}
             <View style={{ flex: 1.5, gap: 12 }}>
-              <RevenueChart />
+              <RevenueChart data={data?.revenue_by_hour} loading={loading} />
               {!loading && data?.table_stats && (
                 <View style={styles.cardBox}>
                   <OccupancyProgress
@@ -173,11 +179,11 @@ export default function QuanLyDashboard() {
                 </View>
               )}
             </View>
-            {/* Right */}
+            {/* Right column */}
             <View style={{ flex: 1, gap: 12 }}>
               <TopProductsList data={data?.top_products} loading={loading} />
-              <LowStockList loading={loading} />
-              <RecentActivitiesList loading={loading} />
+              <LowStockList items={data?.low_stock_items} loading={loading} />
+              <RecentActivitiesList activities={data?.recent_activities} loading={loading} />
             </View>
           </View>
 
@@ -191,11 +197,34 @@ export default function QuanLyDashboard() {
   // Mobile
   return (
     <SafeAreaView style={styles.container}>
-      {renderHeader()}
+      <ScreenHeader
+        title="Quản Lý"
+        subtitle="Trung tâm"
+        onMenuPress={openSidebar}
+        compact
+        right={
+          <View style={{ flexDirection: 'row', gap: 4 }}>
+            <TouchableOpacity onPress={onRefresh} style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name="refresh" size={16} color={colors.brand.primary} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push('/ban-hang')} activeOpacity={0.9}>
+              <LinearGradient
+                colors={[colors.brand.primary, colors.brand.primaryHover]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 8, borderRadius: 8 }}
+              >
+                <Icon name="cash-register" size={14} color="#fff" />
+                <Text style={{ ...font.caption, color: '#fff', fontWeight: '600' }}>Bán hàng</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        }
+      />
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand.primary} />}
-        contentContainerStyle={{ paddingHorizontal: 4, paddingBottom: 40, gap: 10 }}
+        contentContainerStyle={{ paddingHorizontal: 4, paddingBottom: 40, gap: 6 }}
       >
         {renderStatRow(false)}
 
@@ -208,8 +237,8 @@ export default function QuanLyDashboard() {
         </View>
 
         <TopProductsList data={data?.top_products} loading={loading} />
-        <LowStockList loading={loading} />
-        <RecentActivitiesList loading={loading} />
+        <LowStockList items={data?.low_stock_items} loading={loading} />
+        <RecentActivitiesList activities={data?.recent_activities} loading={loading} />
         <NavigationGrid compact />
       </ScrollView>
     </SafeAreaView>
@@ -217,26 +246,24 @@ export default function QuanLyDashboard() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface.app },
+  container: { flex: 1, backgroundColor: '#F8FAFC' },
 
   pillBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
-    paddingHorizontal: 12, paddingVertical: 8,
+    paddingHorizontal: 14, paddingVertical: 10,
     borderRadius: shape.radius.md,
   },
-  pillText: { color: colors.text.inverse, ...font.buttonSmall },
+  pillText: { color: '#FFFFFF', ...font.buttonSmall },
   refreshBtn: {
     width: 44, height: 44, borderRadius: shape.radius.md,
     backgroundColor: colors.brand.primaryBg,
     alignItems: 'center', justifyContent: 'center',
   },
 
-  statsGrid: { flexDirection: 'row', flexWrap: 'wrap', paddingTop: 8, gap: 8 },
-
   cardBox: {
     backgroundColor: colors.surface.card,
     borderRadius: shape.radius.lg,
-    padding: 14,
+    padding: 10,
     borderWidth: 1,
     borderColor: colors.border.light,
     boxShadow: "0px 2px 8px rgba(0,0,0,0.06)",

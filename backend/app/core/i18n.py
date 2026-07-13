@@ -4,7 +4,7 @@ Usage:
     from app.core.i18n import t, set_language
     set_language("vi")
     msg = t("order.created")  # "Đơn hàng đã tạo"
-    
+
 Add translations to TRANSLATIONS dict.
 Defaults to Vietnamese. Falls back to English key if missing.
 """

@@ -1,4 +1,5 @@
 """Membership + Loyalty models."""
+
 import uuid
 from datetime import datetime, timezone
 
@@ -19,7 +20,9 @@ class MembershipTier(Base):
     discount_rate: Mapped[float] = mapped_column(Numeric(4, 2), default=0)  # %
     multiplier: Mapped[float] = mapped_column(Float, default=1.0)  # điểm × multiplier
     color: Mapped[str | None] = mapped_column(String(20))  # hex color
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
 
 
 class LoyaltyPoint(Base):
@@ -32,4 +35,6 @@ class LoyaltyPoint(Base):
     points: Mapped[int] = mapped_column(Integer, default=0)
     type: Mapped[str] = mapped_column(String(10))  # earn / redeem
     note: Mapped[str | None] = mapped_column(Text)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )

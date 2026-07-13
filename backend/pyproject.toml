@@ -1,6 +1,7 @@
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-asyncio_default_fixture_loop_scope = "function"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
 testpaths = ["tests"]
 
 [tool.coverage.run]
@@ -8,6 +9,7 @@ source = ["app"]
 omit = ["*/tests/*", "*/.venv/*"]
 
 [tool.coverage.report]
+fail_under = 55
 exclude_lines = [
     "pragma: no cover",
     "def __repr__",
@@ -15,3 +17,12 @@ exclude_lines = [
     "raise AssertionError",
     "if __name__ == .__main__.:",
 ]
+
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+known_first_party = ["app", "tests"]

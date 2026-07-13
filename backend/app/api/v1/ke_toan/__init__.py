@@ -1,1 +1,1 @@
-from . import transactions, invoices
+from . import dashboard, invoices, transactions

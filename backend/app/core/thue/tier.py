@@ -9,6 +9,7 @@ Revenue thresholds (VND/year):
 All comparisons are done with Decimal to avoid float rounding errors at the
 1 ty / 3 ty / 50 ty boundaries.
 """
+
 from decimal import Decimal
 from typing import Literal
 

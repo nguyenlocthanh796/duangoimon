@@ -1,5 +1,7 @@
 """Role-based access control + branch scoping dependency injection."""
+
 import re
+
 from fastapi import Depends, HTTPException, Request, status
 
 from app.core.auth import get_current_user
@@ -13,8 +15,9 @@ ALLOWED_ROLES = {
     "thue": {"admin", "accountant"},
 }
 
-_UUID_RE = re.compile(
-    r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+# Match /api/v1/{module}/.../{branch_id} (works for thue, ban_hang, quan_ly, ke_toan)
+_BRANCH_ID_RE = re.compile(
+    r"^/api/v1/(?:quan-ly|ban-hang|ke-toan|thue)/[^/]+/([0-9a-fA-F\-]{36})"
 )
 
 
@@ -53,13 +56,13 @@ def require_role(*, endpoint_path: str = ""):
 
 
 def require_branch_access():
-    """Dependency: scope a thue route to the caller's branch.
+    """Dependency: scope a route to the caller's branch.
 
-    Admins and managers see all branches. Accountants are limited to the
+    Admins see all branches. All other roles are limited to the
     branch encoded in their JWT (``branch_id``). The branch is inferred from
-    the request path (the ``/thue/.../{branch_id}/...`` segment). If no
+    the request path (the ``/{module}/.../{branch_id}/...`` segment). If no
     branch segment is present, the dependency is a no-op (route is not
-    branch-scoped). If a scoped accountant requests a different branch, 403.
+    branch-scoped). If a scoped user requests a different branch, 403.
     """
 
     async def _dep(
@@ -72,11 +75,10 @@ def require_branch_access():
         scoped = current_user.get("branch_id")
         if not scoped:
             return current_user
-        # Find a UUID path segment; the first one is treated as branch.
-        segments = [s for s in request.url.path.split("/") if _UUID_RE.fullmatch(s)]
-        if not segments:
+        match = _BRANCH_ID_RE.search(request.url.path)
+        if not match:
             return current_user
-        branch_id = segments[0]
+        branch_id = match.group(1)
         if str(scoped) != str(branch_id):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,

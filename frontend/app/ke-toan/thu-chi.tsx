@@ -8,7 +8,6 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api, Transaction } from '../../lib/api';
 import { colors, font } from '../../lib/theme';
@@ -21,6 +20,7 @@ import RowCard from '../../lib/components/ke-toan/RowCard';
 import EmptyState from '../../lib/components/ui/EmptyState';
 import FormModal from '../../lib/components/ui/FormModal';
 import FAB from '../../lib/components/ui/FAB';
+import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import TransactionFormContent, {
   TransactionFormValues,
 } from '../../lib/components/ke-toan/TransactionFormContent';
@@ -36,6 +36,7 @@ export default function ThuChiScreen() {
   const { openSidebar } = useSidebar();
   const router = useRouter();
   const { isWide } = useResponsive();
+  const hPad = isWide ? 16 : 4; // mobile: minimal padding for max space
   const [txs, setTxs] = useState<Transaction[]>([]);
   const [filter, setFilter] = useState<FilterType>(null);
   const [loading, setLoading] = useState(false);
@@ -376,7 +377,7 @@ export default function ThuChiScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
+    <ScreenContainer compact>
       <UnifiedHeader icon="swap-vertical" 
         title="Thu Chi"
         subtitle="Quản lý thu chi kế toán"
@@ -402,7 +403,7 @@ export default function ThuChiScreen() {
           </View>
         }
       />
-      <View style={styles.filterRow}>
+      <View style={[styles.filterRow, { paddingHorizontal: hPad }]}>
         {([null, 'thu', 'chi'] as FilterType[]).map((f) => (
           <TouchableOpacity
             key={f ?? 'all'}
@@ -431,7 +432,7 @@ export default function ThuChiScreen() {
       </View>
 
       {/* KPI strip */}
-      <View style={styles.kpiStrip}>
+      <View style={[styles.kpiStrip, { marginHorizontal: hPad }]}>
         <View style={styles.kpiBox}>
           <Text style={styles.kpiLabel}>Tổng Thu</Text>
           <Text style={[styles.kpiValue, { color: colors.status.success }]}>
@@ -501,7 +502,7 @@ export default function ThuChiScreen() {
       >
         <TransactionFormContent initial={form} onChange={(v) => setForm(v)} />
       </FormModal>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 
@@ -527,7 +528,7 @@ const styles = StyleSheet.create({
   filterRow: {
     flexDirection: 'row',
     gap: 8,
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
     paddingVertical: 12,
     backgroundColor: colors.surface.app,
   },
@@ -549,7 +550,7 @@ const styles = StyleSheet.create({
   kpiStrip: {
     flexDirection: 'row',
     backgroundColor: colors.surface.card,
-    marginHorizontal: 16,
+    marginHorizontal: 8,
     borderRadius: shape.radius.lg,
     paddingVertical: 14,
     borderWidth: 1,
@@ -602,3 +603,5 @@ const styles = StyleSheet.create({
   tcActionDanger: { backgroundColor: '#fef2f2', borderColor: '#fee2e2' },
   tcActionText: { ...font.caption, color: colors.brand.primary, fontWeight: '700' },
 });
+
+

@@ -16,6 +16,7 @@ interface ScreenHeaderProps {
   right?: React.ReactNode;
   /** Hide menu button (e.g. when sidebar is persistent/docked on wide screens) */
   hideMenu?: boolean;
+  compact?: boolean;
 }
 
 /**
@@ -31,6 +32,7 @@ export default function ScreenHeader({
   onBackPress,
   right,
   hideMenu = false,
+  compact = false,
 }: ScreenHeaderProps) {
   return (
     <UnifiedHeader
@@ -40,6 +42,7 @@ export default function ScreenHeader({
       onBackPress={showBack ? onBackPress : undefined}
       right={right}
       hideMenu={hideMenu}
+      compact={compact}
     />
   );
 }

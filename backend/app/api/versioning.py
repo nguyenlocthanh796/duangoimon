@@ -18,16 +18,20 @@ Register in main.py:
 
 ## Helper
 """
-from fastapi.responses import Response
+
 from typing import Callable
+
+from fastapi.responses import Response
 
 
 def deprecation_header(route: Callable, sunset_date: str = "2026-12-31"):
     """Decorator that adds deprecation warning to v1 routes."""
+
     async def wrapper(*args, **kwargs):
         resp = await route(*args, **kwargs)
         if isinstance(resp, Response):
             resp.headers["X-API-Deprecated"] = "true"
             resp.headers["X-API-Sunset"] = sunset_date
         return resp
+
     return wrapper

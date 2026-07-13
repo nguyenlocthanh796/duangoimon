@@ -70,3 +70,28 @@ def test_weighted_average_cost():
     # 2 batches: 10 units @100, 10 units @200 -> 150/unit.
     assert weighted_average_cost(Decimal("3000"), Decimal("20")) == Decimal("150.0000")
     assert weighted_average_cost(Decimal("100"), Decimal("0")) == Decimal("0")
+
+
+def test_classify_group_nhom3_nhom4():
+    # 3-50 ty -> Nhóm 3; > 50 ty -> Nhóm 4
+    assert classify_group(Decimal("10_000_000_000")) == 3
+    assert classify_group(Decimal("50_000_000_001")) == 4
+    assert classify_group(Decimal("100_000_000_000")) == 4
+
+
+def test_tax_result_as_dict():
+    r = compute_tax(Decimal("2_000_000_000"))
+    d = r.as_dict()
+    assert d["group"] == 2
+    assert d["vat"] == "20000000.00"
+    assert d["pit"] == "10000000.00"
+    assert d["total"] == "30000000.00"
+    # All values serialized as strings for JSON safety
+    assert all(isinstance(v, str) for k, v in d.items() if k != "group")
+
+
+def test_tax_group_enum():
+    from app.core.thue.tax_calc import TaxGroup
+
+    assert TaxGroup.N1.value == "N1"
+    assert TaxGroup.N4.value == "N4"

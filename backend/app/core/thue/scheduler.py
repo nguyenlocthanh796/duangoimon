@@ -12,6 +12,7 @@ dependency. Three jobs:
 Started from the app lifespan. The 60s tick keeps the near-real-time
 threshold scan responsive; the cron jobs add deterministic daily/EOM runs.
 """
+
 import asyncio
 import logging
 from datetime import datetime, timedelta
@@ -49,8 +50,8 @@ async def run_eom_weighted_average() -> None:
     """Month-end inventory cost close + ledger lock (TT152 §3)."""
     from sqlalchemy import select
 
-    from app.core.thue.weighted_average import close_period, current_period
     from app.core.thue.data_lock import lock_period
+    from app.core.thue.weighted_average import close_period, current_period
     from app.models.branch import Branch
 
     period = current_period()
@@ -81,7 +82,7 @@ async def run_eom_close() -> None:
 
 async def _loop() -> None:
     # Schedule the cron jobs: compute delays, then re-arm after each fire.
-    daily_due = _next_run(2, 0)       # 02:00 daily
+    daily_due = _next_run(2, 0)  # 02:00 daily
     eom_ran_this_month = False
 
     while True:

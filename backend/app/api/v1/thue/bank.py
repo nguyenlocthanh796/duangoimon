@@ -4,6 +4,7 @@ When an HKD opens a settlement account at a NHTM or uses an e-wallet to
 receive customer payments, it must declare that account (Mẫu 01/BK-STK)
 so the tax authority can reconcile via Open Banking.
 """
+
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -11,8 +12,8 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.auth import ensure_branch_access, get_current_user
 from app.core.database import get_db
-from app.core.auth import get_current_user
 from app.models.thue.bank_account import NotifiedBankAccount
 from app.models.thue.hkd_profile import HKDProfile
 
@@ -87,10 +88,14 @@ async def list_by_tax_code(
     _user: dict = Depends(get_current_user),
 ):
     rows = (
-        await db.execute(
-            select(NotifiedBankAccount).where(NotifiedBankAccount.tax_code == tax_code)
+        (
+            await db.execute(
+                select(NotifiedBankAccount).where(NotifiedBankAccount.tax_code == tax_code)
+            )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
     return [_as_dict(b) for b in rows]
 
 
@@ -98,7 +103,7 @@ async def list_by_tax_code(
 async def list_by_branch(
     branch_id: str,
     db: AsyncSession = Depends(get_db),
-    _user: dict = Depends(get_current_user),
+    _user: dict = Depends(ensure_branch_access),
 ):
     """List notified accounts for a branch (resolves tax_code via HKD profile)."""
     try:
@@ -122,9 +127,7 @@ async def patch_bank_account(
 ):
     ba = (
         await db.execute(
-            select(NotifiedBankAccount).where(
-                NotifiedBankAccount.id == uuid.UUID(account_id)
-            )
+            select(NotifiedBankAccount).where(NotifiedBankAccount.id == uuid.UUID(account_id))
         )
     ).scalar_one_or_none()
     if not ba:
@@ -149,14 +152,13 @@ async def notify_tax(
     """Mark Mẫu 01/BK-STK as notified to tax authority (stub — A2 no creds)."""
     ba = (
         await db.execute(
-            select(NotifiedBankAccount).where(
-                NotifiedBankAccount.id == uuid.UUID(account_id)
-            )
+            select(NotifiedBankAccount).where(NotifiedBankAccount.id == uuid.UUID(account_id))
         )
     ).scalar_one_or_none()
     if not ba:
         raise HTTPException(status_code=404, detail="Account not found")
     from datetime import datetime, timezone
+
     ba.form_status = "da_thong_bao"
     ba.notified_at = datetime.now(timezone.utc)
     await db.commit()

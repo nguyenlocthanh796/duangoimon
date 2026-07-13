@@ -7,6 +7,7 @@ Usage:
 Requires: pip install sentry-sdk
 And SENTRY_DSN set in .env
 """
+
 import os
 
 
@@ -18,6 +19,7 @@ def init_sentry():
 
     try:
         import sentry_sdk
+
         sentry_sdk.init(
             dsn=dsn,
             traces_sample_rate=0.2,  # 20% for perf tracing

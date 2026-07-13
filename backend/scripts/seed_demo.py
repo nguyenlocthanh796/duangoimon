@@ -4,6 +4,7 @@ Creates a fixed-UUID demo branch and an HKD profile so the ke-toan
 module has data to display (the frontend default branch is the same UUID).
 Run:  python -m scripts.seed_demo
 """
+
 import asyncio
 import uuid
 
@@ -12,6 +13,7 @@ if hasattr(asyncio, "WindowsSelectorEventLoopPolicy"):
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 from sqlalchemy import select
+
 from app.core.database import AsyncSessionLocal
 from app.models.branch import Branch
 from app.models.thue.hkd_profile import HKDProfile
@@ -40,9 +42,7 @@ async def main():
             print(f"Branch already exists {branch.id}")
 
         prof = (
-            await db.execute(
-                select(HKDProfile).where(HKDProfile.branch_id == DEMO_BRANCH_ID)
-            )
+            await db.execute(select(HKDProfile).where(HKDProfile.branch_id == DEMO_BRANCH_ID))
         ).scalar_one_or_none()
         if not prof:
             prof = HKDProfile(

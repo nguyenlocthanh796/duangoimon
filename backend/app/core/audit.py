@@ -1,4 +1,5 @@
 """Audit logging utility - log all mutations to audit_logs table."""
+
 from datetime import datetime, timezone
 
 from fastapi import Request

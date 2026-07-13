@@ -9,7 +9,6 @@ import {
   RefreshControl,
   TextInput,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api, Invoice } from '../../lib/api';
@@ -20,6 +19,7 @@ import { useResponsive } from '../../lib/hooks/useResponsive';
 import UnifiedHeader from '../../lib/components/ui/UnifiedHeader';
 import FormModal from '../../lib/components/ui/FormModal';
 import FAB from '../../lib/components/ui/FAB';
+import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import EmptyState from '../../lib/components/ui/EmptyState';
 import SwipeableRow, { type SwipeAction } from '../../lib/components/ui/SwipeableRow';
 import InvoiceFormContent from '../../lib/components/ke-toan/InvoiceFormContent';
@@ -55,6 +55,7 @@ export default function InvoicesScreen() {
   const { openSidebar } = useSidebar();
   const { branchId } = useAuth();
   const { isWide } = useResponsive();
+  const hPad = isWide ? 16 : 4;
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -290,12 +291,12 @@ export default function InvoicesScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
+    <ScreenContainer compact>
       <UnifiedHeader
         icon="receipt"
         title="Hóa đơn VAT"
         subtitle="Quản lý phát hành hóa đơn"
-        onMenuPress={openSidebar}
+        onMenuPress={openSidebar} compact
         onBackPress={() => router.push('/ke-toan')}
         right={
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
@@ -321,7 +322,7 @@ export default function InvoicesScreen() {
           </View>
         }
       />
-      <View style={{ paddingHorizontal: 16, paddingTop: 12 }}>
+      <View style={{ paddingHorizontal: hPad, paddingTop: 12 }}>
         <View style={styles.searchWrap}>
           <Icon name="magnify" size={18} color={colors.text.muted} />
           <TextInput
@@ -350,7 +351,7 @@ export default function InvoicesScreen() {
           </View>
         </View>
       </View>
-      <View style={{ flex: 1, paddingHorizontal: 16, paddingTop: 8 }}>
+      <View style={{ flex: 1, paddingHorizontal: hPad, paddingTop: 8 }}>
         <DataTable
           columns={columns}
           data={filtered}
@@ -389,7 +390,7 @@ export default function InvoicesScreen() {
         orderId={selectedOrderId}
         onClose={() => setSelectedOrderId(null)}
       />
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 
@@ -484,3 +485,5 @@ const styles = StyleSheet.create({
     borderColor: colors.border.light,
   },
 });
+
+

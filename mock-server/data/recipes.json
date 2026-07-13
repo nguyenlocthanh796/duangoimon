@@ -1,0 +1,182 @@
+[
+  {
+    "id": "rc_01",
+    "product_id": "pr_01",
+    "name": "Phở Bò Đặc Biệt",
+    "yield_qty": 1,
+    "yield_unit": "tô",
+    "cost_price": 22000,
+    "instructions": "Luộc bánh phở, xếp thịt bò tái, chan nước dùng nóng",
+    "wastage_percent": 3,
+    "items": [
+      {
+        "id": "ri_01_1",
+        "recipe_id": "rc_01",
+        "raw_material_id": "rm_01",
+        "quantity": 0.2,
+        "unit": "kg",
+        "cost": 36000,
+        "note": null
+      },
+      {
+        "id": "ri_01_2",
+        "recipe_id": "rc_01",
+        "raw_material_id": "rm_02",
+        "quantity": 0.3,
+        "unit": "kg",
+        "cost": 7500,
+        "note": null
+      }
+    ],
+    "branch_id": "br_01",
+    "is_active": true,
+    "created_at": "2025-12-29T10:06:38.355Z"
+  },
+  {
+    "id": "rc_02",
+    "product_id": "pr_02",
+    "name": "Bún Chả Hà Nội",
+    "yield_qty": 1,
+    "yield_unit": "tô",
+    "cost_price": 18000,
+    "instructions": "Nướng thịt heo trên than hoa, pha nước mắm chua ngọt",
+    "wastage_percent": 5,
+    "items": [
+      {
+        "id": "ri_02_1",
+        "recipe_id": "rc_02",
+        "raw_material_id": "rm_07",
+        "quantity": 0.15,
+        "unit": "kg",
+        "cost": 12750,
+        "note": null
+      }
+    ],
+    "branch_id": "br_01",
+    "is_active": true,
+    "created_at": "2026-01-03T10:06:38.355Z"
+  },
+  {
+    "id": "rc_03",
+    "product_id": "pr_03",
+    "name": "Cà Phê Sữa Đá",
+    "yield_qty": 1,
+    "yield_unit": "ly",
+    "cost_price": 6000,
+    "instructions": "Pha cà phê phin 5 phút, thêm sữa đặc và đá",
+    "wastage_percent": 2,
+    "items": [
+      {
+        "id": "ri_03_1",
+        "recipe_id": "rc_03",
+        "raw_material_id": "rm_04",
+        "quantity": 0.03,
+        "unit": "kg",
+        "cost": 2850,
+        "note": null
+      },
+      {
+        "id": "ri_03_2",
+        "recipe_id": "rc_03",
+        "raw_material_id": "rm_05",
+        "quantity": 0.5,
+        "unit": "lon",
+        "cost": 7500,
+        "note": null
+      }
+    ],
+    "branch_id": "br_01",
+    "is_active": true,
+    "created_at": "2026-01-08T10:06:38.355Z"
+  },
+  {
+    "id": "rc_04",
+    "product_id": "pr_04",
+    "name": "Nước Ép Cam",
+    "yield_qty": 1,
+    "yield_unit": "ly",
+    "cost_price": 8000,
+    "instructions": "Ép cam tươi, thêm đường và đá",
+    "wastage_percent": 10,
+    "items": [
+      {
+        "id": "ri_04_1",
+        "recipe_id": "rc_04",
+        "raw_material_id": "rm_09",
+        "quantity": 0.4,
+        "unit": "kg",
+        "cost": 8000,
+        "note": null
+      }
+    ],
+    "branch_id": "br_01",
+    "is_active": true,
+    "created_at": "2026-01-13T10:06:38.355Z"
+  },
+  {
+    "id": "rc_05",
+    "product_id": "pr_05",
+    "name": "Bánh Mì Ốp La",
+    "yield_qty": 1,
+    "yield_unit": "cái",
+    "cost_price": 5000,
+    "instructions": "Nướng bánh mì, ốp la trứng, thêm pate, rau thơm",
+    "wastage_percent": 2,
+    "items": [
+      {
+        "id": "ri_05_1",
+        "recipe_id": "rc_05",
+        "raw_material_id": "rm_06",
+        "quantity": 1,
+        "unit": "cái",
+        "cost": 5000,
+        "note": null
+      }
+    ],
+    "branch_id": "br_01",
+    "is_active": true,
+    "created_at": "2026-01-18T10:06:38.355Z"
+  },
+  {
+    "id": "rc_06",
+    "product_id": "pr_07",
+    "name": "Lẩu Thái Hải Sản",
+    "yield_qty": 1,
+    "yield_unit": "bếp",
+    "cost_price": 75000,
+    "instructions": "Nấu nước lẩu Thái, cho hải sản và rau vào",
+    "wastage_percent": 8,
+    "items": [
+      {
+        "id": "ri_06_1",
+        "recipe_id": "rc_06",
+        "raw_material_id": "rm_03",
+        "quantity": 0.5,
+        "unit": "kg",
+        "cost": 110000,
+        "note": null
+      },
+      {
+        "id": "ri_06_2",
+        "recipe_id": "rc_06",
+        "raw_material_id": "rm_10",
+        "quantity": 0.1,
+        "unit": "lít",
+        "cost": 3500,
+        "note": null
+      },
+      {
+        "id": "ri_06_3",
+        "recipe_id": "rc_06",
+        "raw_material_id": "rm_11",
+        "quantity": 0.05,
+        "unit": "chai",
+        "cost": 1100,
+        "note": null
+      }
+    ],
+    "branch_id": "br_01",
+    "is_active": true,
+    "created_at": "2026-01-23T10:06:38.355Z"
+  }
+]

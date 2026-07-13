@@ -2,30 +2,32 @@ import uuid
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from decimal import Decimal
+from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.core.database import get_db
 from app.core.auth import get_current_user
+from app.core.database import get_db
 from app.core.pagination import PageParams, paginate
-from app.models.recipe import RawMaterial, Recipe, RecipeItem, RecipeVersion
 from app.models.ban_hang import Product
+from app.models.recipe import RawMaterial, Recipe, RecipeItem, RecipeVersion
 
 router = APIRouter(prefix="/quan-ly", tags=["quan-ly"])
 
 
 # ── Schemas ──
 
+
 class RawMaterialCreate(BaseModel):
-    code: str
-    name: str
-    category: str | None = None
-    unit: str = "kg"
-    default_cost: float = 0
-    current_stock: float = 0
-    min_stock: float = 0
+    code: str = Field(..., max_length=50, pattern="^[A-Z0-9]+$")
+    name: str = Field(..., max_length=200)
+    category: str | None = Field(None, max_length=100)
+    unit: str = Field(default="kg", max_length=20)
+    default_cost: Decimal = Field(default=Decimal(0), max_digits=14, decimal_places=2)
+    current_stock: Decimal = Field(default=Decimal(0), max_digits=14, decimal_places=4)
+    min_stock: Decimal = Field(default=Decimal(0), max_digits=14, decimal_places=4)
     is_active: bool = True
 
 
@@ -40,11 +42,11 @@ class RawMaterialUpdate(BaseModel):
 
 
 class RecipeItemCreate(BaseModel):
-    raw_material_id: str
-    quantity: float
-    unit: str = "kg"
-    cost: float = 0
-    note: str | None = None
+    raw_material_id: str = Field(..., pattern="^[a-f0-9-]{36}$")
+    quantity: Decimal = Field(..., gt=Decimal(0), max_digits=14, decimal_places=4)
+    unit: str = Field(default="kg", max_length=20)
+    cost: Decimal = Field(default=Decimal(0), max_digits=14, decimal_places=2)
+    note: str | None = Field(None, max_length=500)
 
 
 class RecipeCreate(BaseModel):
@@ -68,10 +70,14 @@ class RecipeUpdate(BaseModel):
 
 # ── Helpers ──
 
+
 def _rm_to_dict(rm: RawMaterial) -> dict:
     return {
-        "id": str(rm.id), "code": rm.code, "name": rm.name,
-        "category": rm.category, "unit": rm.unit,
+        "id": str(rm.id),
+        "code": rm.code,
+        "name": rm.name,
+        "category": rm.category,
+        "unit": rm.unit,
         "default_cost": float(rm.default_cost),
         "current_stock": float(rm.current_stock),
         "min_stock": float(rm.min_stock),
@@ -82,7 +88,7 @@ def _rm_to_dict(rm: RawMaterial) -> dict:
 
 def _calc_food_cost(cost_price: float, product_price: float) -> float:
     if not product_price:
-        return 0
+        return 0.0
     return round((cost_price / product_price) * 100, 2)
 
 
@@ -94,21 +100,29 @@ async def _enrich_recipe(r: Recipe, db: AsyncSession) -> dict:
     product_name = product.name if product else ""
 
     return {
-        "id": str(r.id), "product_id": str(r.product_id),
-        "product_name": product_name, "product_price": product_price,
-        "recipe_name": r.name, "name": r.name,
-        "yield_qty": float(r.yield_qty), "yield_unit": r.yield_unit,
+        "id": str(r.id),
+        "product_id": str(r.product_id),
+        "product_name": product_name,
+        "product_price": product_price,
+        "recipe_name": r.name,
+        "name": r.name,
+        "yield_qty": float(r.yield_qty),
+        "yield_unit": r.yield_unit,
         "cost_price": float(r.cost_price),
         "food_cost_pct": _calc_food_cost(float(r.cost_price), product_price),
         "ingredient_count": len(r.items or []),
         "instructions": r.instructions,
-        "wastage_percent": float(r.wastage_percent), "is_active": r.is_active,
+        "wastage_percent": float(r.wastage_percent),
+        "is_active": r.is_active,
         "created_at": r.created_at.isoformat() if r.created_at else None,
         "items": [
             {
-                "id": str(i.id), "raw_material_id": str(i.raw_material_id),
-                "quantity": float(i.quantity), "unit": i.unit,
-                "cost": float(i.cost), "note": i.note,
+                "id": str(i.id),
+                "raw_material_id": str(i.raw_material_id),
+                "quantity": float(i.quantity),
+                "unit": i.unit,
+                "cost": float(i.cost),
+                "note": i.note,
             }
             for i in (r.items or [])
         ],
@@ -117,14 +131,21 @@ async def _enrich_recipe(r: Recipe, db: AsyncSession) -> dict:
 
 # ── Raw Materials CRUD ──
 
+
 @router.get("/raw-materials")
-async def list_raw_materials(db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)):
+async def list_raw_materials(
+    db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)
+):
     result = await db.execute(select(RawMaterial).order_by(RawMaterial.name))
     return [_rm_to_dict(rm) for rm in result.scalars()]
 
 
 @router.post("/raw-materials", status_code=201)
-async def create_raw_material(body: RawMaterialCreate, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)):
+async def create_raw_material(
+    body: RawMaterialCreate,
+    db: AsyncSession = Depends(get_db),
+    _user: dict = Depends(get_current_user),
+):
     rm = RawMaterial(**body.model_dump())
     db.add(rm)
     await db.commit()
@@ -133,7 +154,12 @@ async def create_raw_material(body: RawMaterialCreate, db: AsyncSession = Depend
 
 
 @router.put("/raw-materials/{rm_id}")
-async def update_raw_material(rm_id: str, body: RawMaterialUpdate, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)):
+async def update_raw_material(
+    rm_id: str,
+    body: RawMaterialUpdate,
+    db: AsyncSession = Depends(get_db),
+    _user: dict = Depends(get_current_user),
+):
     result = await db.execute(select(RawMaterial).where(RawMaterial.id == uuid.UUID(rm_id)))
     rm = result.scalar_one_or_none()
     if not rm:
@@ -148,12 +174,13 @@ async def update_raw_material(rm_id: str, body: RawMaterialUpdate, db: AsyncSess
 
 # ── Recipes CRUD ──
 
+
 @router.get("/recipes")
 async def list_recipes(
-        page: PageParams = Depends(),
-        db: AsyncSession = Depends(get_db),
-        _user: dict = Depends(get_current_user),
-    ):
+    page: PageParams = Depends(),
+    db: AsyncSession = Depends(get_db),
+    _user: dict = Depends(get_current_user),
+):
     query = select(Recipe).options(selectinload(Recipe.items)).order_by(Recipe.name)
     page_result = await paginate(db, query, page.page, page.page_size)
     enriched = []
@@ -164,7 +191,9 @@ async def list_recipes(
 
 
 @router.post("/recipes", status_code=201)
-async def create_recipe(body: RecipeCreate, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)):
+async def create_recipe(
+    body: RecipeCreate, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)
+):
     prod_result = await db.execute(select(Product).where(Product.id == uuid.UUID(body.product_id)))
     product = prod_result.scalar_one_or_none()
     if not product:
@@ -181,17 +210,25 @@ async def create_recipe(body: RecipeCreate, db: AsyncSession = Depends(get_db), 
 
     total_cost = 0
     for item_data in body.items:
-        rm_result = await db.execute(select(RawMaterial).where(RawMaterial.id == uuid.UUID(item_data.raw_material_id)))
+        rm_result = await db.execute(
+            select(RawMaterial).where(RawMaterial.id == uuid.UUID(item_data.raw_material_id))
+        )
         rm = rm_result.scalar_one_or_none()
-        item_cost = item_data.cost if item_data.cost else (rm.default_cost * item_data.quantity if rm else 0)
+        item_cost = (
+            item_data.cost
+            if item_data.cost
+            else (rm.default_cost * item_data.quantity if rm else 0)
+        )
         total_cost += item_cost
-        recipe.items.append(RecipeItem(
-            raw_material_id=uuid.UUID(item_data.raw_material_id),
-            quantity=item_data.quantity,
-            unit=item_data.unit,
-            cost=item_cost,
-            note=item_data.note,
-        ))
+        recipe.items.append(
+            RecipeItem(
+                raw_material_id=uuid.UUID(item_data.raw_material_id),
+                quantity=item_data.quantity,
+                unit=item_data.unit,
+                cost=item_cost,
+                note=item_data.note,
+            )
+        )
 
     recipe.cost_price = total_cost
     db.add(recipe)
@@ -200,10 +237,18 @@ async def create_recipe(body: RecipeCreate, db: AsyncSession = Depends(get_db), 
 
     # Save version 1
     version = RecipeVersion(
-        recipe_id=recipe.id, version_number=1, name=recipe.name,
-        cost_price=total_cost, items_json=[
-            {"raw_material_id": str(i.raw_material_id), "quantity": float(i.quantity),
-             "unit": i.unit, "cost": float(i.cost), "note": i.note}
+        recipe_id=recipe.id,
+        version_number=1,
+        name=recipe.name,
+        cost_price=total_cost,
+        items_json=[
+            {
+                "raw_material_id": str(i.raw_material_id),
+                "quantity": float(i.quantity),
+                "unit": i.unit,
+                "cost": float(i.cost),
+                "note": i.note,
+            }
             for i in recipe.items
         ],
     )
@@ -214,7 +259,12 @@ async def create_recipe(body: RecipeCreate, db: AsyncSession = Depends(get_db), 
 
 
 @router.put("/recipes/{recipe_id}")
-async def update_recipe(recipe_id: str, body: RecipeUpdate, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)):
+async def update_recipe(
+    recipe_id: str,
+    body: RecipeUpdate,
+    db: AsyncSession = Depends(get_db),
+    _user: dict = Depends(get_current_user),
+):
     result = await db.execute(
         select(Recipe).options(selectinload(Recipe.items)).where(Recipe.id == uuid.UUID(recipe_id))
     )
@@ -234,17 +284,23 @@ async def update_recipe(recipe_id: str, body: RecipeUpdate, db: AsyncSession = D
         r.items.clear()
         total_cost = 0
         for item_data in items_data:
-            rm_result = await db.execute(select(RawMaterial).where(RawMaterial.id == uuid.UUID(item_data["raw_material_id"])))
+            rm_result = await db.execute(
+                select(RawMaterial).where(RawMaterial.id == uuid.UUID(item_data["raw_material_id"]))
+            )
             rm = rm_result.scalar_one_or_none()
-            item_cost = item_data.get("cost", 0) or (rm.default_cost * item_data["quantity"] if rm else 0)
+            item_cost = item_data.get("cost", 0) or (
+                rm.default_cost * item_data["quantity"] if rm else 0
+            )
             total_cost += item_cost
-            r.items.append(RecipeItem(
-                raw_material_id=uuid.UUID(item_data["raw_material_id"]),
-                quantity=item_data["quantity"],
-                unit=item_data.get("unit", "kg"),
-                cost=item_cost,
-                note=item_data.get("note"),
-            ))
+            r.items.append(
+                RecipeItem(
+                    raw_material_id=uuid.UUID(item_data["raw_material_id"]),
+                    quantity=item_data["quantity"],
+                    unit=item_data.get("unit", "kg"),
+                    cost=item_cost,
+                    note=item_data.get("note"),
+                )
+            )
         r.cost_price = total_cost
 
     await db.commit()
@@ -252,16 +308,26 @@ async def update_recipe(recipe_id: str, body: RecipeUpdate, db: AsyncSession = D
 
     # Save new version
     version_count = await db.scalar(
-        select(RecipeVersion).where(RecipeVersion.recipe_id == r.id).order_by(RecipeVersion.version_number.desc())
+        select(RecipeVersion)
+        .where(RecipeVersion.recipe_id == r.id)
+        .order_by(RecipeVersion.version_number.desc())
     )
     prev_ver = version_count or 0
     if isinstance(prev_ver, RecipeVersion):
         prev_ver = prev_ver.version_number
     version = RecipeVersion(
-        recipe_id=r.id, version_number=prev_ver + 1, name=r.name,
-        cost_price=float(r.cost_price), items_json=[
-            {"raw_material_id": str(i.raw_material_id), "quantity": float(i.quantity),
-             "unit": i.unit, "cost": float(i.cost), "note": i.note}
+        recipe_id=r.id,
+        version_number=prev_ver + 1,
+        name=r.name,
+        cost_price=float(r.cost_price),
+        items_json=[
+            {
+                "raw_material_id": str(i.raw_material_id),
+                "quantity": float(i.quantity),
+                "unit": i.unit,
+                "cost": float(i.cost),
+                "note": i.note,
+            }
             for i in r.items
         ],
     )
@@ -272,7 +338,9 @@ async def update_recipe(recipe_id: str, body: RecipeUpdate, db: AsyncSession = D
 
 
 @router.get("/recipes/{recipe_id}")
-async def get_recipe(recipe_id: str, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)):
+async def get_recipe(
+    recipe_id: str, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)
+):
     result = await db.execute(
         select(Recipe).options(selectinload(Recipe.items)).where(Recipe.id == uuid.UUID(recipe_id))
     )
@@ -283,23 +351,32 @@ async def get_recipe(recipe_id: str, db: AsyncSession = Depends(get_db), _user: 
 
 
 @router.get("/recipes/{recipe_id}/versions")
-async def list_recipe_versions(recipe_id: str, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)):
+async def list_recipe_versions(
+    recipe_id: str, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)
+):
     result = await db.execute(
-        select(RecipeVersion).where(RecipeVersion.recipe_id == uuid.UUID(recipe_id)).order_by(RecipeVersion.version_number.desc())
+        select(RecipeVersion)
+        .where(RecipeVersion.recipe_id == uuid.UUID(recipe_id))
+        .order_by(RecipeVersion.version_number.desc())
     )
     versions = result.scalars().all()
     return [
         {
-            "id": str(v.id), "version_number": v.version_number,
-            "name": v.name, "cost_price": float(v.cost_price),
-            "items": v.items_json, "created_at": v.created_at.isoformat() if v.created_at else None,
+            "id": str(v.id),
+            "version_number": v.version_number,
+            "name": v.name,
+            "cost_price": float(v.cost_price),
+            "items": v.items_json,
+            "created_at": v.created_at.isoformat() if v.created_at else None,
         }
         for v in versions
     ]
 
 
 @router.delete("/recipes/{recipe_id}")
-async def delete_recipe(recipe_id: str, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)):
+async def delete_recipe(
+    recipe_id: str, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)
+):
     result = await db.execute(select(Recipe).where(Recipe.id == uuid.UUID(recipe_id)))
     r = result.scalar_one_or_none()
     if not r:
@@ -311,8 +388,11 @@ async def delete_recipe(recipe_id: str, db: AsyncSession = Depends(get_db), _use
 
 # ── Food Cost Report ──
 
+
 @router.get("/food-cost")
-async def food_cost_report(db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)):
+async def food_cost_report(
+    db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)
+):
     products_result = await db.execute(select(Product).where(Product.is_active == True))
     products = {str(p.id): p for p in products_result.scalars()}
 
@@ -324,13 +404,15 @@ async def food_cost_report(db: AsyncSession = Depends(get_db), _user: dict = Dep
         prod = products.get(str(r.product_id))
         if not prod:
             continue
-        report.append({
-            "product_id": str(r.product_id),
-            "product_name": prod.name,
-            "product_price": float(prod.price),
-            "recipe_name": r.name,
-            "cost_price": float(r.cost_price),
-            "food_cost_pct": _calc_food_cost(float(r.cost_price), float(prod.price)),
-            "ingredient_count": len(r.items or []),
-        })
+        report.append(
+            {
+                "product_id": str(r.product_id),
+                "product_name": prod.name,
+                "product_price": float(prod.price),
+                "recipe_name": r.name,
+                "cost_price": float(r.cost_price),
+                "food_cost_pct": _calc_food_cost(float(r.cost_price), float(prod.price)),
+                "ingredient_count": len(r.items or []),
+            }
+        )
     return sorted(report, key=lambda x: x["food_cost_pct"], reverse=True)

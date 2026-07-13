@@ -9,7 +9,6 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { api, SalesReport } from '../../lib/api';
 import { useSidebar } from '../../lib/context/SidebarContext';
@@ -18,6 +17,7 @@ import { colors, font } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
+import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import BarChart from '../../lib/components/management/BarChart';
 import { DailyReportTable, TopProductsTable } from '../../lib/components/management/ReportTables';
 
@@ -136,7 +136,7 @@ export default function ReportsScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <ScreenContainer compact>
       <ScreenHeader
         title="Báo cáo"
         subtitle={subtitleText}
@@ -230,7 +230,7 @@ export default function ReportsScreen() {
             </ScrollView>
           </View>
           <View style={styles.separator} />
-          <View style={{ flex: 0.4, backgroundColor: colors.surface.app, paddingTop: 12 }}>{renderKpiPanel()}</View>
+          <View style={{ flex: 0.4, backgroundColor: colors.surface.app, paddingTop: 8 }}>{renderKpiPanel()}</View>
         </View>
       ) : (
         <ScrollView
@@ -287,7 +287,7 @@ export default function ReportsScreen() {
           <View style={{ height: 32 }} />
         </ScrollView>
       )}
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 
@@ -344,4 +344,5 @@ const styles = StyleSheet.create({
 
   separator: { width: 1, backgroundColor: colors.border.light },
 });
+
 

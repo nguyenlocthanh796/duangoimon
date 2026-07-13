@@ -1,6 +1,8 @@
 """Pagination utilities for list endpoints."""
+
 from math import ceil
-from typing import Any, TypeVar, Generic
+from typing import Any, Generic, TypeVar
+
 from fastapi import Query
 from pydantic import BaseModel
 from sqlalchemy import func, select
@@ -46,7 +48,7 @@ async def paginate(
     max_page_size: int = 100,
 ) -> dict:
     """Paginate a SQLAlchemy select query.
-    
+
     Returns dict with items, total, page, page_size, total_pages.
     Items are raw ORM objects — caller must serialize.
     """

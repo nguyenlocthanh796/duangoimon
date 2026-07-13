@@ -1,8 +1,10 @@
 """Forecast API endpoint."""
+
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.database import get_db
+
 from app.core.auth import get_current_user
+from app.core.database import get_db
 from app.core.forecast import predict_demand
 
 router = APIRouter(prefix="/quan-ly/forecast", tags=["quan-ly"])

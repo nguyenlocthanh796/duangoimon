@@ -80,84 +80,132 @@ class TestJWT:
 class TestRateLimiter:
     def test_check_rate_limit_under(self):
         """Test the rate limiter logic directly."""
-        from app.api.v1.auth import _check_login_rate, LOGIN_LIMIT, _login_attempts
-        _login_attempts.clear()
+        from app.core.rate_limiter import check_rate_limit, clear_requests
 
-        # Create a mock request object
-        class MockRequest:
-            class Client:
-                host = "192.168.1.1"
-            client = Client()
+        clear_requests()
 
-        # Should not raise for first LOGIN_LIMIT - 1 attempts
-        for _ in range(LOGIN_LIMIT - 1):
-            try:
-                _check_login_rate(MockRequest())
-            except Exception:
-                assert False, f"Should not raise at {LOGIN_LIMIT - 1} attempts"
+        # Should allow first LIMIT - 1 requests
+        for _ in range(4):
+            assert check_rate_limit("1.1.1.1", 5), "Should allow up to limit-1"
 
     def test_check_rate_limit_at_limit(self):
-        from app.api.v1.auth import _check_login_rate, LOGIN_LIMIT, _login_attempts
-        _login_attempts.clear()
+        from app.core.rate_limiter import check_rate_limit, clear_requests
 
-        class MockRequest:
-            class Client:
-                host = "192.168.1.2"
-            client = Client()
+        clear_requests()
 
         # Reach limit
-        for _ in range(LOGIN_LIMIT):
-            _check_login_rate(MockRequest())
+        for _ in range(5):
+            check_rate_limit("1.1.1.2", 5)
 
-        # Next should raise
-        from fastapi import HTTPException
-        try:
-            _check_login_rate(MockRequest())
-        except HTTPException as e:
-            assert e.status_code == 429
-            return
-        assert False, "Should have raised HTTPException(429)"
+        # Next should be denied
+        assert not check_rate_limit("1.1.1.2", 5), "Should deny after limit"
 
     def test_rate_limit_resets_after_window(self):
-        from app.api.v1.auth import _check_login_rate, LOGIN_LIMIT, LOGIN_WINDOW, _login_attempts
-        _login_attempts.clear()
+        from app.core.rate_limiter import check_rate_limit, clear_requests
+        import time
 
-        class MockRequest:
-            class Client:
-                host = "test-reset"
-            client = Client()
+        clear_requests()
 
         # Exhaust limit
-        for _ in range(LOGIN_LIMIT):
-            _check_login_rate(MockRequest())
+        for _ in range(5):
+            check_rate_limit("test-reset", 5)
 
         # Manually move timestamps back past window
-        import copy
-        now = time.time()
-        _login_attempts["test-reset"] = [now - LOGIN_WINDOW - 1]
+        from app.core.rate_limiter import _requests as rl_requests
+        old = time.time() - 120  # 2 min ago (past 60s window)
+        rl_requests["test-reset"] = [old]
 
-        # Should not raise now (old entries cleaned)
-        from fastapi import HTTPException
-        try:
-            _check_login_rate(MockRequest())
-        except HTTPException:
-            assert False, "Should not raise after window reset"
+        # Should allow again (old entries cleaned)
+        assert check_rate_limit("test-reset", 5), "Should allow after window reset"
 
     def test_rate_limit_unknown_ip(self):
-        from app.api.v1.auth import _check_login_rate, LOGIN_LIMIT, _login_attempts
-        _login_attempts.clear()
+        from app.core.rate_limiter import check_rate_limit, clear_requests
 
-        class MockRequest:
-            client = None  # Simulate behind proxy without IP
+        clear_requests()
 
         # "unknown" IP should still be rate limited
-        for _ in range(LOGIN_LIMIT):
-            _check_login_rate(MockRequest())
+        for _ in range(5):
+            check_rate_limit("unknown", 5)
 
+        assert not check_rate_limit("unknown", 5), "Should deny unknown IP after limit"
+
+
+class TestJWTBlacklist:
+    """JWT blacklist rejects tokens even before their natural expiry."""
+
+    def test_blacklist_and_check(self):
+        from app.core.auth import (
+            BLACKLISTED_EXP,
+            blacklist_token,
+            create_token,
+            is_token_blacklisted,
+        )
+        import jwt as _jwt
+        from app.core.config import settings
+
+        BLACKLISTED_EXP.clear()
+        token = create_token("user-1", role="admin")
+        exp = _jwt.decode(
+            token, settings.secret_key, algorithms=["HS256"], options={"verify_exp": False}
+        )["exp"]
+
+        # Not blacklisted initially
+        assert not is_token_blacklisted(exp)
+        # After blacklisting, it's rejected
+        blacklist_token(token)
+        assert is_token_blacklisted(exp)
+        BLACKLISTED_EXP.clear()
+
+    def test_blacklist_invalid_token_noop(self):
+        from app.core.auth import blacklist_token
+
+        # Should not raise on garbage token
+        blacklist_token("not-a-jwt")
+
+    def test_decode_rejects_blacklisted(self):
+        import pytest
         from fastapi import HTTPException
-        try:
-            _check_login_rate(MockRequest())
-        except HTTPException as e:
-            assert e.status_code == 429
-            return
-        assert False, "Should have raised HTTPException(429)"
+
+        from app.core.auth import (
+            BLACKLISTED_EXP,
+            blacklist_token,
+            create_token,
+            decode_token,
+        )
+
+        BLACKLISTED_EXP.clear()
+        token = create_token("user-2", role="cashier")
+        # Valid before blacklist
+        decode_token(token)
+        # Rejected after blacklist
+        blacklist_token(token)
+        with pytest.raises(HTTPException):
+            decode_token(token)
+        BLACKLISTED_EXP.clear()
+
+
+class TestTrustedProxy:
+    """rate_limiter._is_trusted only trusts private/loopback proxy IPs."""
+
+    def test_loopback_trusted(self):
+        from app.core.rate_limiter import _is_trusted
+
+        assert _is_trusted("127.0.0.1") is True
+
+    def test_private_ranges_trusted(self):
+        from app.core.rate_limiter import _is_trusted
+
+        assert _is_trusted("10.1.2.3") is True
+        assert _is_trusted("172.16.5.5") is True
+        assert _is_trusted("192.168.1.1") is True
+
+    def test_public_ip_not_trusted(self):
+        from app.core.rate_limiter import _is_trusted
+
+        # A public IP must NOT be trusted (prevents X-Forwarded-For spoofing)
+        assert _is_trusted("8.8.8.8") is False
+
+    def test_garbage_not_trusted(self):
+        from app.core.rate_limiter import _is_trusted
+
+        assert _is_trusted("not-an-ip") is False

@@ -9,7 +9,6 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api } from '../../../lib/api';
 import { colors, font, shape } from '../../../lib/theme';
@@ -17,6 +16,7 @@ import { useSidebar } from '../../../lib/context/SidebarContext';
 import { useRouter } from 'expo-router';
 import { useResponsive } from '../../../lib/hooks/useResponsive';
 import UnifiedHeader from '../../../lib/components/ui/UnifiedHeader';
+import ScreenContainer from '../../../lib/components/ui/ScreenContainer';
 import BranchPeriodFilter from '../../../lib/components/ke-toan/BranchPeriodFilter';
 import { useAuth } from '../../../lib/context/AuthContext';
 import FAB from '../../../lib/components/ui/FAB';
@@ -46,7 +46,8 @@ export default function DeclarationScreen() {
       if (isRefresh) setRefreshing(true);
       else setLoading(true);
       try {
-        const data = await api.getTaxDeclarationXml(form, branchId ?? '', period);
+        if (!branchId) return;
+        const data = await api.getTaxDeclarationXml(form, branchId, period);
         setXml(data);
       } catch (e: any) {
         Alert.alert('Lỗi', e?.message || 'Không xuất được tờ khai');
@@ -65,7 +66,8 @@ export default function DeclarationScreen() {
   const submit = async () => {
     setSubmitting(true);
     try {
-      await api.post('/thue/declaration/submit', { form, branch_id: branchId, period });
+      if (!branchId) return;
+      await api.post('/thue/declarations/declaration/submit', { form, branch_id: branchId, period });
       Alert.alert('Thành công', 'Đã gửi tờ khai (stub T-VAN).');
     } catch (e: any) {
       Alert.alert('Lỗi', e?.message || 'Gửi thất bại');
@@ -75,7 +77,7 @@ export default function DeclarationScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
+    <ScreenContainer compact>
       <UnifiedHeader icon="file-document-edit" 
         title="Kê Khai Thuế"
         subtitle="Xuất XML chuẩn Tổng cục Thuế"
@@ -126,7 +128,7 @@ export default function DeclarationScreen() {
           )}
         </ScrollView>
       )}
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 
@@ -154,3 +156,5 @@ const styles = StyleSheet.create({
   submitText: { ...font.buttonSmall, color: colors.text.inverse, fontWeight: '600' },
   mobileSpacer: { height: 80 },
 });
+
+

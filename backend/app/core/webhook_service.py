@@ -3,8 +3,9 @@
 Supports GrabFood, Momo, and generic webhook patterns.
 Secret configured via env: WEBHOOK_SECRET (default empty → skip verify).
 """
-import hmac
+
 import hashlib
+import hmac
 import os
 
 _SECRET = os.getenv("WEBHOOK_SECRET", "")

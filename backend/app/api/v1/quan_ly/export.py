@@ -1,16 +1,26 @@
 """Export API — Excel/PDF reports."""
+
 import csv
 import io
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta, timezone
+
 from fastapi import APIRouter, Depends, Query
 from fastapi.responses import StreamingResponse
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.database import get_db
+
 from app.core.auth import get_current_user
+from app.core.database import get_db
 from app.models.ban_hang import Order
 
 router = APIRouter(prefix="/quan-ly/export", tags=["quan-ly"])
+
+
+def _sanitize_csv(val: str) -> str:
+    """Prevent CSV formula injection by prefixing dangerous leading characters."""
+    if val and val[0] in ("=", "+", "-", "@", "\t", "\r"):
+        return "'" + val
+    return val
 
 
 @router.get("/revenue-csv")
@@ -40,7 +50,12 @@ async def export_revenue_csv(
     w = csv.writer(output)
     w.writerow(["Date", "Orders", "Revenue", "Discount"])
     for r in result.all():
-        w.writerow([str(r.day), r.order_count, float(r.total or 0), float(r.discount or 0)])
+        w.writerow([
+            _sanitize_csv(str(r.day)),
+            _sanitize_csv(str(r.order_count)),
+            _sanitize_csv(str(float(r.total or 0))),
+            _sanitize_csv(str(float(r.discount or 0))),
+        ])
 
     output.seek(0)
     return StreamingResponse(

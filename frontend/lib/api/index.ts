@@ -66,6 +66,9 @@ export const api = {
   bulkDeleteTransactions: paymentsFns.bulkDeleteTransactions,
   bulkExportInvoices: paymentsFns.bulkExportInvoices,
 
+  // ── Ke-Toan Dashboard ──
+  getKeToanDashboard: paymentsFns.getKeToanDashboard,
+
   // ── Products ──
   getProducts: productsFns.getProducts,
   getQuanLyProducts: productsFns.getQuanLyProducts,

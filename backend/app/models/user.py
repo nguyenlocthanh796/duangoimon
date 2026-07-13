@@ -11,7 +11,9 @@ from app.models import Base
 class User(Base):
     __tablename__ = "users"
     __table_args__ = (
-        CheckConstraint("role IN ('admin','manager','cashier','kitchen','accountant')", name="ck_user_role"),
+        CheckConstraint(
+            "role IN ('admin','manager','cashier','kitchen','accountant')", name="ck_user_role"
+        ),
         {"schema": "public"},
     )
 
@@ -23,5 +25,6 @@ class User(Base):
     role: Mapped[str | None] = mapped_column(String(20))
     avatar_url: Mapped[str | None] = mapped_column(Text)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
-
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )

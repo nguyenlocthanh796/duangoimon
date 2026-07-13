@@ -69,6 +69,26 @@ export const font = {
     lineHeight: getLineHeight(scale(24)),
   },
 
+  display: {
+    fontFamily: `${FONT}_800ExtraBold`,
+    fontSize: scale(28),
+    fontWeight: '800' as const,
+    lineHeight: getLineHeight(scale(28)),
+  },
+  statNumber: {
+    fontFamily: `${FONT}_700Bold`,
+    fontSize: scale(22),
+    fontWeight: '700' as const,
+    lineHeight: getLineHeight(scale(22)),
+  },
+  statLabel: {
+    fontFamily: `${FONT}_400Regular`,
+    fontSize: scale(13),
+    fontWeight: '400' as const,
+    lineHeight: getLineHeight(scale(13)),
+    color: '#64748B',
+  },
+
   button: {
     fontFamily: `${FONT}_600SemiBold`,
     fontSize: scale(16),

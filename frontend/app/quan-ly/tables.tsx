@@ -3,7 +3,6 @@ import {
   View, Text, TouchableOpacity, ScrollView, TextInput,
   ActivityIndicator, Alert, StyleSheet,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font, palette } from '../../lib/theme';
@@ -13,6 +12,7 @@ import { useResponsive } from '../../lib/hooks/useResponsive';
 import { api } from '../../lib/api';
 import type { Table } from '../../lib/types';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
+import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import FormModal from '../../lib/components/ui/FormModal';
 import FAB from '../../lib/components/ui/FAB';
 
@@ -210,30 +210,25 @@ export default function TablesScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <ScreenContainer compact>
       <ScreenHeader
         title="Sơ đồ bàn"
         subtitle={`${tables.length} bàn`}
         showBack
         onMenuPress={openSidebar}
         onBackPress={() => router.back()}
-        right={isWide ? (
+        compact
+        right={
           <TouchableOpacity onPress={openAdd} style={styles.addBtn}>
             <Icon name="plus" size={18} color={colors.text.inverse} />
             <Text style={styles.addBtnText}>Thêm bàn</Text>
           </TouchableOpacity>
-        ) : (
-          <TouchableOpacity onPress={openAdd} style={styles.addBtn}>
-            <Icon name="plus" size={18} color={colors.text.inverse} />
-            <Text style={styles.addBtnText}>Thêm bàn</Text>
-          </TouchableOpacity>
-        )}
+        }
       />
 
       {isWide ? (
-        <View style={{ flex: 1, flexDirection: 'row', paddingVertical: 12 }}>
+        <View style={{ flex: 1, flexDirection: 'row' }}>
           <View style={{ flex: 0.55 }}>
-            {/* Area Tabs */}
             <ScrollView horizontal showsHorizontalScrollIndicator={false}
               style={{ backgroundColor: colors.surface.card, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border.strong, flexGrow: 0 }}
               contentContainerStyle={{ paddingHorizontal: shape.spacing.lg, paddingVertical: shape.spacing.sm, gap: shape.spacing.sm, alignItems: 'center' }}>
@@ -425,7 +420,7 @@ export default function TablesScreen() {
         </FormModal>
       )}
 
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 

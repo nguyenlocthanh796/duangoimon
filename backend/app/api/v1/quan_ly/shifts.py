@@ -1,14 +1,16 @@
 """Shift management API - start/end shift, get active shift, history."""
+
 import uuid
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
+from decimal import Decimal
+from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.database import get_db
 from app.core.auth import get_current_user
+from app.core.database import get_db
 from app.core.pagination import PageParams, paginate
 from app.models.quan_ly import ShiftLog
 
@@ -16,13 +18,13 @@ router = APIRouter(prefix="/quan-ly/shifts", tags=["quan-ly"])
 
 
 class ShiftStart(BaseModel):
-    opening_balance: float = 0
+    opening_balance: Decimal = Field(default=Decimal(0), max_digits=14, decimal_places=2)
 
 
 class ShiftEnd(BaseModel):
-    cash_end: float
-    expense_total: float = 0
-    note: str | None = None
+    cash_end: Decimal = Field(..., max_digits=14, decimal_places=2)
+    expense_total: Decimal = Field(default=Decimal(0), max_digits=14, decimal_places=2)
+    note: str | None = Field(None, max_length=500)
 
 
 def _shift_dict(s: ShiftLog) -> dict:
@@ -46,13 +48,18 @@ def _shift_dict(s: ShiftLog) -> dict:
 
 
 @router.get("/active")
-async def get_active_shift(db: AsyncSession = Depends(get_db), user: dict = Depends(get_current_user)):
+async def get_active_shift(
+    db: AsyncSession = Depends(get_db), user: dict = Depends(get_current_user)
+):
     """Get current active shift for this user."""
     result = await db.execute(
-        select(ShiftLog).where(
+        select(ShiftLog)
+        .where(
             ShiftLog.user_id == uuid.UUID(user["sub"]),
             ShiftLog.status == "dang_lam",
-        ).order_by(ShiftLog.start_at.desc()).limit(1)
+        )
+        .order_by(ShiftLog.start_at.desc())
+        .limit(1)
     )
     shift = result.scalar_one_or_none()
     if not shift:
@@ -61,15 +68,19 @@ async def get_active_shift(db: AsyncSession = Depends(get_db), user: dict = Depe
 
 
 @router.post("/start")
-async def start_shift(body: ShiftStart, db: AsyncSession = Depends(get_db), user: dict = Depends(get_current_user)):
+async def start_shift(
+    body: ShiftStart, db: AsyncSession = Depends(get_db), user: dict = Depends(get_current_user)
+):
     """Start a new shift."""
     uid = uuid.UUID(user["sub"])
     # Check no active shift
     result = await db.execute(
-        select(ShiftLog).where(
+        select(ShiftLog)
+        .where(
             ShiftLog.user_id == uid,
             ShiftLog.status == "dang_lam",
-        ).limit(1)
+        )
+        .limit(1)
     )
     if result.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Already have an active shift")
@@ -87,7 +98,12 @@ async def start_shift(body: ShiftStart, db: AsyncSession = Depends(get_db), user
 
 
 @router.post("/{shift_id}/end")
-async def end_shift(shift_id: str, body: ShiftEnd, db: AsyncSession = Depends(get_db), user: dict = Depends(get_current_user)):
+async def end_shift(
+    shift_id: str,
+    body: ShiftEnd,
+    db: AsyncSession = Depends(get_db),
+    user: dict = Depends(get_current_user),
+):
     """End shift, calculate summary."""
     result = await db.execute(select(ShiftLog).where(ShiftLog.id == uuid.UUID(shift_id)))
     shift = result.scalar_one_or_none()
@@ -99,6 +115,7 @@ async def end_shift(shift_id: str, body: ShiftEnd, db: AsyncSession = Depends(ge
     uid = uuid.UUID(user["sub"])
     # Calculate totals from paid orders in this shift
     from app.models.ban_hang import Order
+
     orders_result = await db.execute(
         select(Order).where(
             Order.cashier_id == uid,
@@ -110,7 +127,11 @@ async def end_shift(shift_id: str, body: ShiftEnd, db: AsyncSession = Depends(ge
     total_revenue = sum(float(o.total_amount or 0) for o in orders)
     cash_total = sum(float(o.total_amount or 0) for o in orders if o.payment_method == "tien_mat")
     card_total = sum(float(o.total_amount or 0) for o in orders if o.payment_method == "card")
-    transfer_total = sum(float(o.total_amount or 0) for o in orders if o.payment_method in ("chuyen_khoan", "momo", "zalopay"))
+    transfer_total = sum(
+        float(o.total_amount or 0)
+        for o in orders
+        if o.payment_method in ("chuyen_khoan", "momo", "zalopay")
+    )
 
     shift.end_at = datetime.now(timezone.utc)
     shift.cash_end = body.cash_end
@@ -137,8 +158,10 @@ async def list_shifts(
 ):
     offset = (page - 1) * limit
     result = await db.execute(
-        select(ShiftLog).where(ShiftLog.user_id == uuid.UUID(user["sub"]))
-        .order_by(ShiftLog.start_at.desc()).offset(offset).limit(limit)
+        select(ShiftLog)
+        .where(ShiftLog.user_id == uuid.UUID(user["sub"]))
+        .order_by(ShiftLog.start_at.desc())
+        .offset(offset)
+        .limit(limit)
     )
     return [_shift_dict(s) for s in result.scalars()]
-

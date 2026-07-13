@@ -1,0 +1,62 @@
+[
+  {
+    "id": "dl_01",
+    "branch_id": "br_01",
+    "form": "01/CNKD",
+    "period_type": "year",
+    "due_date": "2026-03-31",
+    "reminded_14": true,
+    "reminded_7": true,
+    "reminded_3": false,
+    "reminded_1": false,
+    "submitted": true
+  },
+  {
+    "id": "dl_02",
+    "branch_id": "br_01",
+    "form": "01/KHCN",
+    "period_type": "year",
+    "due_date": "2026-04-30",
+    "reminded_14": true,
+    "reminded_7": false,
+    "reminded_3": false,
+    "reminded_1": false,
+    "submitted": false
+  },
+  {
+    "id": "dl_03",
+    "branch_id": "br_01",
+    "form": "04/CNKD",
+    "period_type": "month",
+    "due_date": "2026-02-20",
+    "reminded_14": true,
+    "reminded_7": true,
+    "reminded_3": true,
+    "reminded_1": true,
+    "submitted": true
+  },
+  {
+    "id": "dl_04",
+    "branch_id": "br_01",
+    "form": "04/CNKD",
+    "period_type": "month",
+    "due_date": "2026-03-20",
+    "reminded_14": true,
+    "reminded_7": false,
+    "reminded_3": false,
+    "reminded_1": false,
+    "submitted": false
+  },
+  {
+    "id": "dl_05",
+    "branch_id": "br_01",
+    "form": "01/KHCN",
+    "period_type": "year",
+    "due_date": "2026-07-31",
+    "reminded_14": false,
+    "reminded_7": false,
+    "reminded_3": false,
+    "reminded_1": false,
+    "submitted": false
+  }
+]

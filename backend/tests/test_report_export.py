@@ -28,3 +28,33 @@ def test_report_csv_contains_header_and_totals():
     assert "MST" in csv_text
     assert "TONG" in csv_text
     assert "1500000000.00" in csv_text
+
+
+def test_build_report_empty_rows():
+    rep = build_report("HKD Rong", "0000000000", [])
+    assert rep.rows == []
+    assert rep.totals["revenue"] == "0.00"
+    assert rep.totals["total"] == "0.00"
+
+
+def test_build_report_csv_module_fn():
+    from app.core.thue.report_export import build_report_csv
+
+    rows = [RevenueRow(month="2026-01", revenue=Decimal("500000000"))]
+    rep = build_report("HKD", "MST", rows)
+    csv_text = build_report_csv(rep, "HKD", "MST", "N1")
+    assert "HKD" in csv_text
+    # 500tr -> Nhóm 1 miễn thuế -> VAT 0
+    assert "0.00" in csv_text
+
+
+def test_build_report_pdf_returns_bytes():
+    from app.core.thue.report_export import build_report_pdf
+
+    rows = [RevenueRow(month="2026-01", revenue=Decimal("2000000000"))]
+    rep = build_report("HKD", "MST", rows)
+    pdf = build_report_pdf(rep, "HKD", "MST", "N2")
+    # PDF must be non-empty bytes with a PDF signature
+    assert isinstance(pdf, bytes)
+    assert len(pdf) > 0
+    assert pdf[:4] == b"%PDF"

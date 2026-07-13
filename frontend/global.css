@@ -68,6 +68,21 @@
     background: var(--color-ink-muted);
   }
 
+  /* Firefox: thin scrollbar to match our design system (default FF scrollbar = ~17px) */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line) transparent;
+  }
+
+  /* Hide scrollbar for Firefox when showsVerticalScrollIndicator={false} in RNW */
+  .hide-scrollbar {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none !important;
+  }
+
   /* Prevent text selection on touch */
   .no-select {
     -webkit-user-select: none;

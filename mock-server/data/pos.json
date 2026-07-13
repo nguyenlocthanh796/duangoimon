@@ -1,0 +1,129 @@
+[
+  {
+    "id": "po_01",
+    "branch_id": "br_01",
+    "po_number": "PO-2026-001",
+    "supplier_id": "sp_01",
+    "status": "received",
+    "total_amount": 8500000,
+    "note": "Đơn hàng định kỳ tháng 3",
+    "expected_date": "2026-07-02T10:06:38.361Z",
+    "received_date": "2026-07-04T10:06:38.361Z",
+    "created_at": "2026-06-30T10:06:38.361Z",
+    "items": [
+      {
+        "id": "poi_01",
+        "po_id": "po_01",
+        "raw_material_id": "rm_01",
+        "raw_material_name": "Thịt bò Mỹ",
+        "quantity": 30,
+        "unit_price": 175000,
+        "received_quantity": 30,
+        "total": 5250000
+      },
+      {
+        "id": "poi_02",
+        "po_id": "po_01",
+        "raw_material_id": "rm_02",
+        "raw_material_name": "Phở gạo",
+        "quantity": 50,
+        "unit_price": 24000,
+        "received_quantity": 50,
+        "total": 1200000
+      }
+    ],
+    "supplier": {
+      "id": "sp_01",
+      "code": "NCC001",
+      "name": "Công ty TNHH Thực Phẩm Xanh",
+      "phone": "0912345671"
+    }
+  },
+  {
+    "id": "po_02",
+    "branch_id": "br_01",
+    "po_number": "PO-2026-002",
+    "supplier_id": "sp_02",
+    "status": "pending",
+    "total_amount": 3200000,
+    "note": "Giao giờ hành chính",
+    "expected_date": "2026-07-15T10:06:38.361Z",
+    "received_date": null,
+    "created_at": "2026-07-10T10:06:38.361Z",
+    "items": [
+      {
+        "id": "poi_03",
+        "po_id": "po_02",
+        "raw_material_id": "rm_06",
+        "raw_material_name": "Bánh mì ổ",
+        "quantity": 200,
+        "unit_price": 4800,
+        "received_quantity": 0,
+        "total": 960000
+      },
+      {
+        "id": "poi_04",
+        "po_id": "po_02",
+        "raw_material_id": "rm_08",
+        "raw_material_name": "Rau muống",
+        "quantity": 40,
+        "unit_price": 7500,
+        "received_quantity": 0,
+        "total": 300000
+      }
+    ]
+  },
+  {
+    "id": "po_03",
+    "branch_id": "br_01",
+    "po_number": "PO-2026-003",
+    "supplier_id": "sp_03",
+    "status": "draft",
+    "total_amount": 0,
+    "note": null,
+    "expected_date": null,
+    "received_date": null,
+    "created_at": "2026-07-12T10:06:38.361Z",
+    "items": [],
+    "supplier": {
+      "id": "sp_03",
+      "code": "NCC003",
+      "name": "Công ty CP Đồ Uống Việt",
+      "phone": "0912345673"
+    }
+  },
+  {
+    "id": "po_04",
+    "branch_id": "br_01",
+    "po_number": "PO-2026-004",
+    "supplier_id": "sp_01",
+    "status": "received",
+    "total_amount": 12500000,
+    "note": "Bổ sung thịt bò và tôm",
+    "expected_date": "2026-07-07T10:06:38.361Z",
+    "received_date": "2026-07-09T10:06:38.361Z",
+    "created_at": "2026-07-05T10:06:38.361Z",
+    "items": [
+      {
+        "id": "poi_05",
+        "po_id": "po_04",
+        "raw_material_id": "rm_01",
+        "raw_material_name": "Thịt bò Mỹ",
+        "quantity": 50,
+        "unit_price": 178000,
+        "received_quantity": 50,
+        "total": 8900000
+      },
+      {
+        "id": "poi_06",
+        "po_id": "po_04",
+        "raw_material_id": "rm_03",
+        "raw_material_name": "Tôm sú",
+        "quantity": 15,
+        "unit_price": 210000,
+        "received_quantity": 15,
+        "total": 3150000
+      }
+    ]
+  }
+]

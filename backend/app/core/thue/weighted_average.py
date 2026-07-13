@@ -13,14 +13,15 @@ For each (branch, product, period):
 
 Cost is computed ONLY at period close, never in realtime.
 """
+
 from datetime import date
 from decimal import Decimal
 
-from sqlalchemy import select, func, and_
+from sqlalchemy import and_, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.quan_ly import Inventory, InventoryTransaction
 from app.models.ke_toan import SoS2c, SoS2d
+from app.models.quan_ly import Inventory, InventoryTransaction
 
 
 def _prev_period(period: str) -> str:
@@ -33,7 +34,10 @@ def _prev_period(period: str) -> str:
 
 
 def weighted_avg(
-    opening_qty, opening_value, inbound_qty, inbound_value,
+    opening_qty,
+    opening_value,
+    inbound_qty,
+    inbound_value,
 ) -> Decimal:
     """Pure weighted-average at period end (TT152 §3).
 
@@ -64,12 +68,23 @@ async def compute_period(
     rows = await db.execute(
         select(
             InventoryTransaction.product_id,
-            func.coalesce(func.sum(
-                func.case((InventoryTransaction.type == "nhap", InventoryTransaction.amount), else_=0)
-            ), 0).label("inbound_value"),
-            func.coalesce(func.sum(
-                func.case((InventoryTransaction.type == "nhap", InventoryTransaction.quantity), else_=0)
-            ), 0).label("inbound_qty"),
+            func.coalesce(
+                func.sum(
+                    func.case(
+                        (InventoryTransaction.type == "nhap", InventoryTransaction.amount), else_=0
+                    )
+                ),
+                0,
+            ).label("inbound_value"),
+            func.coalesce(
+                func.sum(
+                    func.case(
+                        (InventoryTransaction.type == "nhap", InventoryTransaction.quantity),
+                        else_=0,
+                    )
+                ),
+                0,
+            ).label("inbound_qty"),
         )
         .where(
             and_(
@@ -103,8 +118,7 @@ async def compute_period(
         else:
             # Fallback: opening inventory on-hand.
             inv = await db.execute(
-                select(Inventory.quantity)
-                .where(
+                select(Inventory.quantity).where(
                     and_(Inventory.branch_id == branch_id, Inventory.product_id == product_id)
                 )
             )
@@ -144,12 +158,24 @@ async def close_period(db: AsyncSession, branch_id, period: str) -> dict:
     rows = await db.execute(
         select(
             InventoryTransaction.product_id,
-            func.coalesce(func.sum(
-                func.case((InventoryTransaction.type == "nhap", InventoryTransaction.quantity), else_=0)
-            ), 0).label("inqty"),
-            func.coalesce(func.sum(
-                func.case((InventoryTransaction.type == "xuat", InventoryTransaction.quantity), else_=0)
-            ), 0).label("outqty"),
+            func.coalesce(
+                func.sum(
+                    func.case(
+                        (InventoryTransaction.type == "nhap", InventoryTransaction.quantity),
+                        else_=0,
+                    )
+                ),
+                0,
+            ).label("inqty"),
+            func.coalesce(
+                func.sum(
+                    func.case(
+                        (InventoryTransaction.type == "xuat", InventoryTransaction.quantity),
+                        else_=0,
+                    )
+                ),
+                0,
+            ).label("outqty"),
         )
         .where(
             and_(
@@ -164,8 +190,9 @@ async def close_period(db: AsyncSession, branch_id, period: str) -> dict:
         avg = avg_by_product.get(product_id, Decimal("0"))
         # closing qty = current on-hand (from Inventory) as of close.
         inv = await db.execute(
-            select(Inventory.quantity)
-            .where(and_(Inventory.branch_id == branch_id, Inventory.product_id == product_id))
+            select(Inventory.quantity).where(
+                and_(Inventory.branch_id == branch_id, Inventory.product_id == product_id)
+            )
         )
         closing_qty = Decimal(str(inv.scalar() or 0))
         closing_value = closing_qty * avg
@@ -194,7 +221,11 @@ async def close_period(db: AsyncSession, branch_id, period: str) -> dict:
     )
     db.add(s2c)
     await db.commit()
-    return {"period": period, "products": len(avg_by_product), "cost_of_goods": float(total_cost_of_goods)}
+    return {
+        "period": period,
+        "products": len(avg_by_product),
+        "cost_of_goods": float(total_cost_of_goods),
+    }
 
 
 def current_period() -> str:

@@ -2,30 +2,31 @@ import uuid
 from datetime import date, datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel
-from sqlalchemy import select, func
+from decimal import Decimal
+from pydantic import BaseModel, Field, EmailStr
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.core.database import get_db
 from app.core.auth import get_current_user
+from app.core.database import get_db
 from app.core.pagination import PageParams, paginate
-from app.models.supplier import Supplier, PurchaseOrder, PurchaseOrderItem
 from app.models.recipe import RawMaterial
+from app.models.supplier import PurchaseOrder, PurchaseOrderItem, Supplier
 
 router = APIRouter(prefix="/quan-ly", tags=["quan-ly"])
 
 
 # ── Schemas ──
 class SupplierCreate(BaseModel):
-    code: str
-    name: str
-    contact_person: str | None = None
-    phone: str | None = None
-    email: str | None = None
-    address: str | None = None
-    tax_code: str | None = None
-    payment_terms: str | None = None
+    code: str = Field(..., max_length=20, pattern="^[A-Z0-9]+$")
+    name: str = Field(..., max_length=200)
+    contact_person: str | None = Field(None, max_length=100)
+    phone: str | None = Field(None, max_length=20, pattern="^[0-9\\-\\+]+$")
+    email: str | None = Field(None, max_length=100)
+    address: str | None = Field(None, max_length=500)
+    tax_code: str | None = Field(None, max_length=50, pattern="^[0-9]{10}[A-Z]{3}$")
+    payment_terms: str | None = Field(None, max_length=200)
 
 
 class SupplierUpdate(BaseModel):
@@ -40,10 +41,10 @@ class SupplierUpdate(BaseModel):
 
 
 class POItemCreate(BaseModel):
-    raw_material_id: str
-    raw_material_name: str | None = None
-    quantity: float
-    unit_price: float = 0
+    raw_material_id: str = Field(..., pattern="^[a-f0-9-]{36}$")
+    raw_material_name: str | None = Field(None, max_length=200)
+    quantity: Decimal = Field(..., gt=Decimal(0), max_digits=14, decimal_places=4)
+    unit_price: Decimal = Field(default=Decimal(0), max_digits=14, decimal_places=2)
 
 
 class POCreate(BaseModel):
@@ -60,20 +61,28 @@ class POReceiveBody(BaseModel):
 # ── Helpers ──
 def _supplier_dict(s: Supplier) -> dict:
     return {
-        "id": str(s.id), "code": s.code, "name": s.name,
-        "contact_person": s.contact_person, "phone": s.phone,
-        "email": s.email, "address": s.address, "tax_code": s.tax_code,
-        "payment_terms": s.payment_terms, "is_active": s.is_active,
+        "id": str(s.id),
+        "code": s.code,
+        "name": s.name,
+        "contact_person": s.contact_person,
+        "phone": s.phone,
+        "email": s.email,
+        "address": s.address,
+        "tax_code": s.tax_code,
+        "payment_terms": s.payment_terms,
+        "is_active": s.is_active,
         "created_at": s.created_at.isoformat() if s.created_at else None,
     }
 
 
 def _po_dict(po: PurchaseOrder) -> dict:
     return {
-        "id": str(po.id), "po_number": po.po_number,
+        "id": str(po.id),
+        "po_number": po.po_number,
         "supplier_id": str(po.supplier_id) if po.supplier_id else None,
         "supplier_name": po.supplier.name if po.supplier else None,
-        "status": po.status, "total_amount": float(po.total_amount),
+        "status": po.status,
+        "total_amount": float(po.total_amount),
         "note": po.note,
         "expected_date": po.expected_date.isoformat() if po.expected_date else None,
         "received_date": po.received_date.isoformat() if po.received_date else None,
@@ -81,10 +90,13 @@ def _po_dict(po: PurchaseOrder) -> dict:
         "created_at": po.created_at.isoformat() if po.created_at else None,
         "items": [
             {
-                "id": str(i.id), "raw_material_id": str(i.raw_material_id) if i.raw_material_id else None,
+                "id": str(i.id),
+                "raw_material_id": str(i.raw_material_id) if i.raw_material_id else None,
                 "raw_material_name": i.raw_material_name,
-                "quantity": float(i.quantity), "unit_price": float(i.unit_price),
-                "received_quantity": float(i.received_quantity), "total": float(i.total),
+                "quantity": float(i.quantity),
+                "unit_price": float(i.unit_price),
+                "received_quantity": float(i.received_quantity),
+                "total": float(i.total),
             }
             for i in (po.items or [])
         ],
@@ -110,7 +122,11 @@ async def list_suppliers(
 
 
 @router.post("/suppliers", status_code=201)
-async def create_supplier(body: SupplierCreate, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)):
+async def create_supplier(
+    body: SupplierCreate,
+    db: AsyncSession = Depends(get_db),
+    _user: dict = Depends(get_current_user),
+):
     s = Supplier(**body.model_dump())
     db.add(s)
     await db.commit()
@@ -119,7 +135,12 @@ async def create_supplier(body: SupplierCreate, db: AsyncSession = Depends(get_d
 
 
 @router.put("/suppliers/{s_id}")
-async def update_supplier(s_id: str, body: SupplierUpdate, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)):
+async def update_supplier(
+    s_id: str,
+    body: SupplierUpdate,
+    db: AsyncSession = Depends(get_db),
+    _user: dict = Depends(get_current_user),
+):
     result = await db.execute(select(Supplier).where(Supplier.id == uuid.UUID(s_id)))
     s = result.scalar_one_or_none()
     if not s:
@@ -149,7 +170,9 @@ async def list_pos(
 
 
 @router.post("/purchase-orders", status_code=201)
-async def create_po(body: POCreate, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)):
+async def create_po(
+    body: POCreate, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)
+):
     total = 0
     po = PurchaseOrder(
         po_number=_generate_po_number(),
@@ -162,16 +185,20 @@ async def create_po(body: POCreate, db: AsyncSession = Depends(get_db), _user: d
         total += line_total
         rm_name = item.raw_material_name
         if not rm_name:
-            rm_result = await db.execute(select(RawMaterial).where(RawMaterial.id == uuid.UUID(item.raw_material_id)))
+            rm_result = await db.execute(
+                select(RawMaterial).where(RawMaterial.id == uuid.UUID(item.raw_material_id))
+            )
             rm = rm_result.scalar_one_or_none()
             rm_name = rm.name if rm else "Unknown"
-        po.items.append(PurchaseOrderItem(
-            raw_material_id=uuid.UUID(item.raw_material_id),
-            raw_material_name=rm_name,
-            quantity=item.quantity,
-            unit_price=item.unit_price,
-            total=line_total,
-        ))
+        po.items.append(
+            PurchaseOrderItem(
+                raw_material_id=uuid.UUID(item.raw_material_id),
+                raw_material_name=rm_name,
+                quantity=item.quantity,
+                unit_price=item.unit_price,
+                total=line_total,
+            )
+        )
     po.total_amount = total
     db.add(po)
     await db.commit()
@@ -180,10 +207,17 @@ async def create_po(body: POCreate, db: AsyncSession = Depends(get_db), _user: d
 
 
 @router.post("/purchase-orders/{po_id}/receive")
-async def receive_po(po_id: str, body: POReceiveBody, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)):
+async def receive_po(
+    po_id: str,
+    body: POReceiveBody,
+    db: AsyncSession = Depends(get_db),
+    _user: dict = Depends(get_current_user),
+):
     """Receive goods: update stock + mark PO as received."""
     result = await db.execute(
-        select(PurchaseOrder).options(selectinload(PurchaseOrder.items)).where(PurchaseOrder.id == uuid.UUID(po_id))
+        select(PurchaseOrder)
+        .options(selectinload(PurchaseOrder.items))
+        .where(PurchaseOrder.id == uuid.UUID(po_id))
     )
     po = result.scalar_one_or_none()
     if not po:

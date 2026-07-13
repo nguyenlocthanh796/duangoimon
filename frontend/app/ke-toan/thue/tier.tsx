@@ -9,7 +9,6 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api } from '../../../lib/api';
 import { colors, font, shape } from '../../../lib/theme';
@@ -17,6 +16,7 @@ import { useSidebar } from '../../../lib/context/SidebarContext';
 import { useRouter } from 'expo-router';
 import { useResponsive } from '../../../lib/hooks/useResponsive';
 import UnifiedHeader from '../../../lib/components/ui/UnifiedHeader';
+import ScreenContainer from '../../../lib/components/ui/ScreenContainer';
 import BranchPeriodFilter from '../../../lib/components/ke-toan/BranchPeriodFilter';
 import EmptyState from '../../../lib/components/ui/EmptyState';
 import { useAuth } from '../../../lib/context/AuthContext';
@@ -115,7 +115,7 @@ export default function TierDashboard() {
   const nearThreshold = status && status.pct_of_1ty >= 80;
 
   return (
-    <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
+    <ScreenContainer compact>
       <UnifiedHeader icon="chart-bell-curve" 
         title="Phân Tầng HKD"
         subtitle="Nhóm 1–4 & cảnh báo doanh thu"
@@ -221,7 +221,7 @@ export default function TierDashboard() {
           />
         </View>
       )}
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 
@@ -330,3 +330,5 @@ const styles = StyleSheet.create({
   kvLabel: { ...font.caption, color: colors.text.muted, fontWeight: '400' },
   kvValue: { ...font.body, color: colors.text.primary, marginTop: 4, fontWeight: '400' },
 });
+
+

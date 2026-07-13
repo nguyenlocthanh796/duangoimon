@@ -25,18 +25,20 @@ class Product(Base):
     __table_args__ = {"schema": "ban_hang"}
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    branch_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
+    branch_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True, index=True)
     code: Mapped[str] = mapped_column(String(20), unique=True)
     name: Mapped[str] = mapped_column(String(200))
-    category: Mapped[str | None] = mapped_column(String(50))
-    price: Mapped[float] = mapped_column(Numeric(12, 2))
-    cost_price: Mapped[float] = mapped_column(Numeric(12, 2), default=0)
+    category: Mapped[str | None] = mapped_column(String(100))
+    price: Mapped[float] = mapped_column(Numeric(14, 2), default=0)
+    cost_price: Mapped[float] = mapped_column(Numeric(14, 2), default=0)
     unit: Mapped[str] = mapped_column(String(20), default="phần")
     image_url: Mapped[str | None] = mapped_column(Text)
-    is_active: Mapped[bool] = mapped_column(default=True)
-    options: Mapped[dict] = mapped_column(JSONB, default=list)
-    vat_rate: Mapped[float] = mapped_column(Numeric(4, 2), default=8)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    is_active: Mapped[bool] = mapped_column(default=True, index=True)
+    options: Mapped[list | dict] = mapped_column(JSONB, default=list)
+    vat_rate: Mapped[float] = mapped_column(Numeric(5, 4), default=0)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), index=True
+    )
 
 
 class Order(Base):
@@ -44,16 +46,18 @@ class Order(Base):
     __table_args__ = {"schema": "ban_hang"}
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    table_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
-    branch_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
-    cashier_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
-    status: Mapped[str] = mapped_column(String(20), default="moi")
+    table_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), index=True)
+    branch_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True, index=True)
+    cashier_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), index=True)
+    status: Mapped[str] = mapped_column(String(20), default="moi", index=True)
     note: Mapped[str | None] = mapped_column(Text)
     total_amount: Mapped[float] = mapped_column(Numeric(14, 2), default=0)
     discount: Mapped[float] = mapped_column(Numeric(12, 2), default=0)
     tax_amount: Mapped[float] = mapped_column(Numeric(12, 2), default=0)
     payment_method: Mapped[str | None] = mapped_column(String(20))
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
     paid_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     items: Mapped[list["OrderItem"]] = relationship(backref="order", lazy="selectin")
@@ -65,7 +69,9 @@ class OrderItem(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     branch_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
-    order_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("ban_hang.orders.id"))
+    order_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("ban_hang.orders.id", ondelete="CASCADE")
+    )
     product_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True))
     product_name: Mapped[str] = mapped_column(String(200))
     quantity: Mapped[int] = mapped_column(Integer, default=1)

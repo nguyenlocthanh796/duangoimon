@@ -10,7 +10,8 @@ Configuration:
 Schedule via cron/Scheduler:
     python -c "from app.core.retention import run_cleanup; import asyncio; asyncio.run(run_cleanup())"
 """
-from datetime import datetime, timezone, timedelta
+
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -25,11 +26,18 @@ RETENTION_DAYS = {
 
 # Tables under the 5-year rule — NEVER hard-deleted.
 FIVE_YEAR_TABLES = [
-    "ke_toan.so_s1a", "ke_toan.so_s2a", "ke_toan.so_s2b",
-    "ke_toan.so_s2c", "ke_toan.so_s2d", "ke_toan.so_s2e",
-    "ke_toan.so_s3a", "ke_toan.cash_register_invoices",
-    "quan_ly.inventory_transactions", "thue.hkd_profiles",
-    "thue.notified_bank_accounts", "thue.declaration_deadlines",
+    "ke_toan.so_s1a",
+    "ke_toan.so_s2a",
+    "ke_toan.so_s2b",
+    "ke_toan.so_s2c",
+    "ke_toan.so_s2d",
+    "ke_toan.so_s2e",
+    "ke_toan.so_s3a",
+    "ke_toan.cash_register_invoices",
+    "quan_ly.inventory_transactions",
+    "thue.hkd_profiles",
+    "thue.notified_bank_accounts",
+    "thue.declaration_deadlines",
 ]
 
 

@@ -1,6 +1,9 @@
 """WebSocket connection manager with token auth."""
+
 from typing import Any
+
 from fastapi import WebSocket
+
 from app.core.auth import decode_token
 
 

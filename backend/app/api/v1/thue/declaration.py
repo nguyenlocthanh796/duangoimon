@@ -1,14 +1,15 @@
 """Declaration deadline API (kê khai thuế HKD)."""
+
 import uuid
-from datetime import datetime, date, timezone
+from datetime import date, datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.auth import ensure_branch_access, get_current_user
 from app.core.database import get_db
-from app.core.auth import get_current_user
 from app.core.thue.escalation import ensure_deadlines, escalate
 from app.models.thue.declaration_deadline import DeclarationDeadline
 from app.models.thue.hkd_profile import HKDProfile
@@ -32,12 +33,12 @@ def _build_xml(form: str, branch_id: str, period: str, tax_code: str, legal_name
     return (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         f'<TKhai xmlns="http://kekhaithue.gdt.gov.vn/2026" maTKhai="{safe(form)}">\n'
-        f'  <KyKhai>{safe(period)}</KyKhai>\n'
-        f'  <MST>{safe(tax_code)}</MST>\n'
-        f'  <TenNNT>{safe(legal_name)}</TenNNT>\n'
-        f'  <BranchId>{safe(branch_id)}</BranchId>\n'
+        f"  <KyKhai>{safe(period)}</KyKhai>\n"
+        f"  <MST>{safe(tax_code)}</MST>\n"
+        f"  <TenNNT>{safe(legal_name)}</TenNNT>\n"
+        f"  <BranchId>{safe(branch_id)}</BranchId>\n"
         f'  <NgayTao>{__import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat()}</NgayTao>\n'
-        '</TKhai>'
+        "</TKhai>"
     )
 
 
@@ -45,15 +46,19 @@ def _build_xml(form: str, branch_id: str, period: str, tax_code: str, legal_name
 async def list_deadlines(
     branch_id: str,
     db: AsyncSession = Depends(get_db),
-    _user: dict = Depends(get_current_user),
+    _user: dict = Depends(ensure_branch_access),
 ):
     rows = (
-        await db.execute(
-            select(DeclarationDeadline)
-            .where(DeclarationDeadline.branch_id == uuid.UUID(branch_id))
-            .order_by(DeclarationDeadline.due_date)
+        (
+            await db.execute(
+                select(DeclarationDeadline)
+                .where(DeclarationDeadline.branch_id == uuid.UUID(branch_id))
+                .order_by(DeclarationDeadline.due_date)
+            )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
     return [
         {
             "id": str(d.id),
@@ -76,14 +81,12 @@ async def list_deadlines(
 async def ensure(
     branch_id: str,
     db: AsyncSession = Depends(get_db),
-    _user: dict = Depends(get_current_user),
+    _user: dict = Depends(ensure_branch_access),
 ):
     from app.models.thue.hkd_profile import HKDProfile
 
     prof = (
-        await db.execute(
-            select(HKDProfile).where(HKDProfile.branch_id == uuid.UUID(branch_id))
-        )
+        await db.execute(select(HKDProfile).where(HKDProfile.branch_id == uuid.UUID(branch_id)))
     ).scalar_one_or_none()
     if not prof:
         raise HTTPException(status_code=404, detail="Profile not found")
@@ -100,14 +103,13 @@ async def submit(
 ):
     dl = (
         await db.execute(
-            select(DeclarationDeadline).where(
-                DeclarationDeadline.id == uuid.UUID(deadline_id)
-            )
+            select(DeclarationDeadline).where(DeclarationDeadline.id == uuid.UUID(deadline_id))
         )
     ).scalar_one_or_none()
     if not dl:
         raise HTTPException(status_code=404, detail="Deadline not found")
     from datetime import datetime, timezone
+
     dl.submitted = True
     dl.submitted_at = datetime.now(timezone.utc)
     await db.commit()
@@ -129,9 +131,14 @@ async def get_declaration_xml(
     branch_id: str,
     period: str | None = None,
     db: AsyncSession = Depends(get_db),
-    _user: dict = Depends(get_current_user),
+    _user: dict = Depends(ensure_branch_access),
 ):
     """Return a T-VAN-ready XML declaration for the given form/branch/period."""
+    import re
+
+    period_str = period or str(date.today().year)
+    if period and not re.match(r"^\d{4}-(0[1-9]|1[0-2])$", period):
+        raise HTTPException(status_code=400, detail="Invalid period format, expected YYYY-MM")
     try:
         b_uuid = uuid.UUID(branch_id)
     except ValueError:
@@ -141,7 +148,7 @@ async def get_declaration_xml(
     ).scalar_one_or_none()
     tax_code = prof.tax_code if prof else ""
     legal_name = prof.legal_name if prof else "Chi nhánh"
-    return _build_xml(form, branch_id, period or str(date.today().year), tax_code, legal_name)
+    return _build_xml(form, branch_id, period_str, tax_code, legal_name)
 
 
 @router.post("/declaration/submit")

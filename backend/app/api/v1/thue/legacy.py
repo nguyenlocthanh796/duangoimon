@@ -5,16 +5,17 @@ POST /thue/legacy-inventory/checklist/{branch_id}
   from the branch's Products using weighted-average cost (cost_price).
   Response matches frontend lib/api/thue.ts::LegacyChecklist.
 """
+
 import uuid
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from sqlalchemy import select, func
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.auth import ensure_branch_access, get_current_user
 from app.core.database import get_db
-from app.core.auth import get_current_user
 from app.models.ban_hang import Product
 from app.models.quan_ly import Inventory
 
@@ -38,7 +39,7 @@ class LegacyChecklist(BaseModel):
 async def get_checklist(
     branch_id: str,
     db: AsyncSession = Depends(get_db),
-    _user: dict = Depends(get_current_user),
+    _user: dict = Depends(ensure_branch_access),
 ):
     try:
         b_uuid = uuid.UUID(branch_id)
@@ -48,27 +49,29 @@ async def get_checklist(
     # Opening qty from inventory (fallback 0); avg_cost from product.cost_price.
     inv_qty = (
         await db.execute(
-            select(Inventory.product_id, func.coalesce(func.sum(Inventory.quantity), 0)).where(
-                Inventory.branch_id == b_uuid
-            ).group_by(Inventory.product_id)
+            select(Inventory.product_id, func.coalesce(func.sum(Inventory.quantity), 0))
+            .where(Inventory.branch_id == b_uuid)
+            .group_by(Inventory.product_id)
         )
     ).all()
     qty_map = {row.product_id: float(row[1]) for row in inv_qty}
 
     products = (
-        await db.execute(select(Product).where(Product.branch_id == b_uuid))
-    ).scalars().all()
+        (await db.execute(select(Product).where(Product.branch_id == b_uuid))).scalars().all()
+    )
 
     items: list[LegacyItem] = []
     for p in products:
         qty = qty_map.get(p.id, 0.0)
         avg = float(p.cost_price or 0)
-        items.append(LegacyItem(
-            product=p.name,
-            opening_qty=qty,
-            avg_cost=avg,
-            value=round(qty * avg, 2),
-        ))
+        items.append(
+            LegacyItem(
+                product=p.name,
+                opening_qty=qty,
+                avg_cost=avg,
+                value=round(qty * avg, 2),
+            )
+        )
 
     return LegacyChecklist(
         branch_id=branch_id,

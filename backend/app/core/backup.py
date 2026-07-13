@@ -21,9 +21,9 @@ PGPASSWORD=$PASSWORD psql -h localhost -U postgres -d pos_db < backup.sql
 
 ponytail: command-only. Automate with pgAgent or Windows Task Scheduler.
 """
-import subprocess
-import datetime
 
+import datetime
+import subprocess
 
 BACKUP_DIR = "backups"
 DB_NAME = "pos_db"
@@ -34,8 +34,11 @@ DB_HOST = "localhost"
 def run_backup():
     """Run pg_dump to backup database."""
     import os
+
     os.makedirs(BACKUP_DIR, exist_ok=True)
     filename = f"{BACKUP_DIR}/backup_{datetime.date.today().isoformat()}.sql"
-    cmd = f"pg_dump -h {DB_HOST} -U {DB_USER} -d {DB_NAME} --no-owner > {filename}"
-    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    # Use argument list instead of shell=True to prevent command injection
+    cmd = ["pg_dump", "-h", DB_HOST, "-U", DB_USER, "-d", DB_NAME, "--no-owner"]
+    with open(filename, "w") as f:
+        result = subprocess.run(cmd, stdout=f, stderr=subprocess.PIPE, text=True)
     return {"success": result.returncode == 0, "file": filename, "error": result.stderr}

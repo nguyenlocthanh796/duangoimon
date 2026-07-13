@@ -15,8 +15,11 @@ _crp = CashRegisterInvoiceClient()
 
 
 async def issue_for_order(
-    db: AsyncSession, order: Order, buyer_name: str | None = None,
-    buyer_tax_code: str | None = None, buyer_personal_id: str | None = None,
+    db: AsyncSession,
+    order: Order,
+    buyer_name: str | None = None,
+    buyer_tax_code: str | None = None,
+    buyer_personal_id: str | None = None,
 ) -> CashRegisterInvoice | None:
     """Issue an M-invoice for a paid order. Idempotent. Returns invoice."""
     if order.status not in ("da_thanh_toan", "paid"):

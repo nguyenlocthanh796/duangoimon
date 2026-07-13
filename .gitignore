@@ -43,8 +43,16 @@ posa-backup.zip
 
 # Project
 backend/alembic/versions/*.pyc
+backend/.coverage
+backend/bandit_report.json
+backend/pytest_output.txt
 frontend/.expo/
 
 # Agent workspace
 .agents/teamwork_debug.log
 .agents/teamwork_state.json
+.agentic/
+.agents/skills/security-auditor/reports/
+
+# Mock server
+mock-server/node_modules/

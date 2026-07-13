@@ -107,6 +107,21 @@ export const colors = {
     warningBg: '#FFFBEB',
     info: palette.blue[600],
   },
+  badge: {
+    success: { bg: '#E8F5E9', text: '#2E7D32' },
+    warning: { bg: '#FFF8E1', text: '#F57F17' },
+    danger: { bg: '#FFEBEE', text: '#C62828' },
+    info: { bg: '#E3F2FD', text: '#1565C0' },
+    neutral: { bg: '#F3F4F6', text: '#64748B' },
+  },
+  chart: {
+    line: '#F97316',
+    lineAlt: '#3B82F6',
+    revenue: '#16A34A',
+    cost: '#DC2626',
+    profit: '#2563EB',
+    bar: ['#F97316', '#3B82F6', '#16A34A', '#F59E0B', '#8B5CF6', '#EC4899'],
+  },
   severity: {
     critical: '#DC2626',
     danger: '#EF4444',

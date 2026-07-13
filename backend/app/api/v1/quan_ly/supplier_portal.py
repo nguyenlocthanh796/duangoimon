@@ -1,12 +1,15 @@
 """Supplier portal API endpoints."""
+
 import uuid
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.database import get_db
+
 from app.core.auth import get_current_user
+from app.core.database import get_db
 from app.core.rbac import require_role
-from app.models.supplier import Supplier, PurchaseOrder, PurchaseOrderItem
+from app.models.supplier import PurchaseOrder, PurchaseOrderItem, Supplier
 
 router = APIRouter(prefix="/quan-ly/suppliers", tags=["quan-ly"])
 
@@ -38,11 +41,18 @@ async def portal_pos(
     if not s:
         return []
     result = await db.execute(
-        select(PurchaseOrder).where(PurchaseOrder.supplier_id == s.id).order_by(PurchaseOrder.created_at.desc())
+        select(PurchaseOrder)
+        .where(PurchaseOrder.supplier_id == s.id)
+        .order_by(PurchaseOrder.created_at.desc())
     )
     return [
-        {"id": str(po.id), "po_number": po.po_number, "status": po.status,
-         "total_amount": float(po.total_amount), "created_at": po.created_at.isoformat() if po.created_at else None}
+        {
+            "id": str(po.id),
+            "po_number": po.po_number,
+            "status": po.status,
+            "total_amount": float(po.total_amount),
+            "created_at": po.created_at.isoformat() if po.created_at else None,
+        }
         for po in result.scalars().all()
     ]
 

@@ -11,7 +11,6 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api as taxApi } from '../../../lib/api';
 import { toCsv, downloadText } from '../../../lib/api/csvExport';
@@ -20,6 +19,7 @@ import { useSidebar } from '../../../lib/context/SidebarContext';
 import { useRouter } from 'expo-router';
 import { useResponsive } from '../../../lib/hooks/useResponsive';
 import UnifiedHeader from '../../../lib/components/ui/UnifiedHeader';
+import ScreenContainer from '../../../lib/components/ui/ScreenContainer';
 import BranchPeriodFilter from '../../../lib/components/ke-toan/BranchPeriodFilter';
 import RowCard from '../../../lib/components/ke-toan/RowCard';
 import StatusBadge from '../../../lib/components/ke-toan/StatusBadge';
@@ -32,6 +32,7 @@ export default function BankAccountsScreen() {
   const { openSidebar } = useSidebar();
   const router = useRouter();
   const { isWide } = useResponsive();
+  const hPad = isWide ? 16 : 4;
   const { branchId } = useAuth();
   const [accounts, setAccounts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -103,7 +104,7 @@ export default function BankAccountsScreen() {
     s === 'da_thong_bao' ? 'Đã thông báo' : s === 'tu_choi' ? 'Từ chối' : 'Chờ';
 
   return (
-    <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
+    <ScreenContainer compact>
       <UnifiedHeader icon="bank" 
         title="TK Ngân Hàng"
         subtitle="01/BK-STK — Thông báo tài khoản (TT18 §5)"
@@ -139,7 +140,7 @@ export default function BankAccountsScreen() {
           keyExtractor={(i) => i.id}
           numColumns={isWide ? 2 : 1}
           key={isWide ? 'w' : 'n'}
-          contentContainerStyle={[styles.list, isWide && { paddingHorizontal: 16 }]}
+          contentContainerStyle={[styles.list, { paddingHorizontal: hPad }]}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -213,7 +214,7 @@ export default function BankAccountsScreen() {
           </View>
         </View>
       )}
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 
@@ -302,3 +303,5 @@ const styles = StyleSheet.create({
   },
   saveText: { ...font.buttonSmall, color: colors.text.inverse, fontWeight: '600' },
 });
+
+

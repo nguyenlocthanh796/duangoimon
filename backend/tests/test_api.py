@@ -6,13 +6,11 @@ from httpx import ASGITransport, AsyncClient
 
 from app.main import app
 
-pytestmark = pytest.mark.anyio
+pytestmark = pytest.mark.asyncio
 
 
 @pytest.fixture(autouse=True)
 def _reset_rate_limiters():
-    from app.api.v1.auth import _login_attempts
-    _login_attempts.clear()
     from app.core.rate_limiter import _requests
     _requests.clear()
 

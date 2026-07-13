@@ -25,3 +25,25 @@ def test_classify_tier_accepts_float():
     # float must be converted safely (no rounding error at boundary)
     assert classify_tier(1_000_000_000) == "N1"
     assert classify_tier(1_000_000_001) == "N2"
+
+
+def test_classify_tier_accepts_string():
+    assert classify_tier("500000000") == "N1"
+    assert classify_tier("2000000000") == "N2"
+
+
+def test_tier_meta_structure():
+    from decimal import Decimal
+
+    from app.core.thue.tier import TIER_META
+
+    # All 4 tiers present with required keys
+    for tier in ("N1", "N2", "N3", "N4"):
+        assert tier in TIER_META
+        assert "label" in TIER_META[tier]
+        assert "tax_method" in TIER_META[tier]
+        assert "thue_suat" in TIER_META[tier]
+
+    # N1 is tax-exempt; N4 has the highest rate
+    assert TIER_META["N1"]["thue_suat"] == Decimal("0")
+    assert TIER_META["N4"]["thue_suat"] == Decimal("20")

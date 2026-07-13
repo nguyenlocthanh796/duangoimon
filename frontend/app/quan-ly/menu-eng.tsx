@@ -1,7 +1,5 @@
-"use client";
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
@@ -9,6 +7,7 @@ import { colors, font } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
+import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import FormModal from '../../lib/components/ui/FormModal';
 import EmptyState from '../../lib/components/ui/EmptyState';
 
@@ -195,7 +194,7 @@ export default function MenuEngScreen() {
 
   const sm = matrix?.summary;
   return (
-    <SafeAreaView style={s.container}>
+    <ScreenContainer compact>
       <ScreenHeader title="Menu Engineering" subtitle={`${days} ngày`} onMenuPress={openSidebar} />
       <View style={s.statsBar}>
         <StatItem icon="food" value={sm?.total_items || '-'} label="Món" />
@@ -223,7 +222,7 @@ export default function MenuEngScreen() {
         <View style={{ flex: 1, flexDirection: 'row' }}>
           <View style={{ flex: 0.6 }}>{renderList()}</View>
           <View style={s.separator} />
-          <View style={{ flex: 0.4, backgroundColor: colors.surface.app, paddingTop: 12 }}>{renderPanel()}</View>
+          <View style={{ flex: 0.4, backgroundColor: colors.surface.app, paddingTop: 8 }}>{renderPanel()}</View>
         </View>
       ) : renderList()}
 
@@ -251,7 +250,7 @@ export default function MenuEngScreen() {
           </View>
         )}
       </FormModal>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 
@@ -291,3 +290,4 @@ const s = StyleSheet.create({
 
   separator: { width: 1, backgroundColor: colors.border.light },
 });
+

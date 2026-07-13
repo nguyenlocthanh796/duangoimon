@@ -11,6 +11,7 @@ interface ScreenContainerProps {
   useSafeArea?: boolean; // wrap in SafeAreaView (default true)
   contentContainerStyle?: any;
   accentBorder?: 'top' | 'left' | 'none'; // orange accent
+  compact?: boolean;
 }
 
 /**
@@ -26,9 +27,12 @@ export default function ScreenContainer({
   useSafeArea = true,
   contentContainerStyle,
   accentBorder = 'none',
+  compact = false,
 }: ScreenContainerProps) {
   const { isWide, hPad } = useResponsive();
-  const horizontal = padding ?? (!isWide ? 12 : isWide ? 24 : 16);
+  const horizontal = padding ?? (!isWide
+    ? (compact ? 4 : 12)
+    : (compact ? 8 : 24));
 
   // iPhone safe area offset
   const topInset = Platform.OS === 'web' ? 'var(--safe-top)' : 0;
@@ -40,8 +44,8 @@ export default function ScreenContainer({
         styles.inner,
         {
           paddingHorizontal: horizontal,
-          paddingTop: !isWide ? 8 : 16,
-          paddingBottom: !isWide ? 8 : 16,
+          paddingTop: compact ? 4 : (!isWide ? 8 : 16),
+          paddingBottom: compact ? 4 : (!isWide ? 8 : 16),
           maxWidth: isWide ? maxWidth : undefined,
           alignSelf: isWide ? 'center' : 'stretch',
           width: '100%',

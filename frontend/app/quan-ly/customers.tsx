@@ -1,7 +1,5 @@
-"use client";
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
@@ -10,9 +8,11 @@ import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import type { Customer } from '../../lib/api/client';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
+import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import FormModal from '../../lib/components/ui/FormModal';
 import FAB from '../../lib/components/ui/FAB';
 import EmptyState from '../../lib/components/ui/EmptyState';
+import SearchBar from '../../lib/components/ui/SearchBar';
 
 const API = '/api/v1/quan-ly';
 function formatVND(v: number) { return (v || 0).toLocaleString('vi-VN') + 'đ'; }
@@ -136,9 +136,9 @@ export default function CustomersScreen() {
   };
 
   return (
-    <SafeAreaView style={s.container}>
+    <ScreenContainer compact>
       <ScreenHeader title="Khách hàng" subtitle={`${stats.total} khách`}
-        onMenuPress={openSidebar} />
+        onMenuPress={openSidebar} compact />
       <View style={s.statsBar}>
         <StatItem icon="account-group" value={stats.total} label="Tổng khách" />
         <View style={s.barDivider} />
@@ -147,27 +147,26 @@ export default function CustomersScreen() {
         <StatItem icon="store" value={stats.totalVisits} label="Lượt ghé" />
       </View>
       <View style={s.searchRow}>
-        <Icon name="magnify" size={14} color={colors.text.muted} />
-        <TextInput value={search} onChangeText={setSearch} placeholder="Tìm tên hoặc SĐT..." style={s.searchInput} placeholderTextColor="#94A3B8" />
+        <SearchBar value={search} onChangeText={setSearch} placeholder="Tìm tên hoặc SĐT..." />
       </View>
       {isWide ? (
         <View style={{ flex: 1, flexDirection: 'row' }}>
           <View style={{ flex: 0.6 }}>{renderList()}</View>
           <View style={s.separator} />
-          <View style={{ flex: 0.4, backgroundColor: colors.surface.app, paddingTop: 12 }}>{renderPanel()}</View>
+          <View style={{ flex: 0.4, backgroundColor: colors.surface.app, paddingTop: 8 }}>{renderPanel()}</View>
         </View>
       ) : renderList()}
       <FAB onPress={() => setShowForm(true)} />
 
       <FormModal visible={showForm} title="Thêm khách hàng" onClose={() => setShowForm(false)} onSave={handleSave} saveLabel="Thêm">
-        <View style={{ gap: 12, paddingTop: 4 }}>
+        <View style={{ gap: 10, paddingTop: 4 }}>
           <Text style={s.fieldLabel}>Tên *</Text><TextInput value={form.name} onChangeText={v => setForm(p => ({ ...p, name: v }))} style={s.fieldInput} placeholder="Nguyễn Văn A" />
           <Text style={s.fieldLabel}>SĐT *</Text><TextInput value={form.phone} onChangeText={v => setForm(p => ({ ...p, phone: v }))} style={s.fieldInput} placeholder="090..." keyboardType="phone-pad" />
           <Text style={s.fieldLabel}>Email</Text><TextInput value={form.email} onChangeText={v => setForm(p => ({ ...p, email: v }))} style={s.fieldInput} placeholder="email@example.com" keyboardType="email-address" />
           <Text style={s.fieldLabel}>Địa chỉ</Text><TextInput value={form.address} onChangeText={v => setForm(p => ({ ...p, address: v }))} style={s.fieldInput} placeholder="Địa chỉ" />
         </View>
       </FormModal>
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 

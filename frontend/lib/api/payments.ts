@@ -88,3 +88,14 @@ export async function getPaidOrders() {
 export function exportInvoicesCsv() {
   return request<Blob>('/ke-toan/invoices/export-csv', { method: 'GET' });
 }
+
+/** Fetch combined dashboard data (single endpoint). */
+export function getKeToanDashboard() {
+  return request<any>('/ke-toan/dashboard', { method: 'GET' });
+}
+
+/** Fetch tax profile status for a branch. */
+export function getTaxProfileStatus(branchId: string) {
+  return request<any>(`/thue/profiles/${branchId}/status`, { method: 'GET' });
+}
+

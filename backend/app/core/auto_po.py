@@ -1,4 +1,5 @@
 """Auto PO generation — create purchase order drafts when stock < min_alert."""
+
 import uuid
 from datetime import date, timedelta
 
@@ -6,15 +7,15 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.quan_ly import Inventory
-from app.models.supplier import Supplier, PurchaseOrder, PurchaseOrderItem
 from app.models.recipe import RawMaterial
+from app.models.supplier import PurchaseOrder, PurchaseOrderItem, Supplier
 
 
 async def auto_generate_pos(db: AsyncSession, created_by: uuid.UUID | None = None) -> list[dict]:
     """Check all inventory items. For items below min_alert, create PO draft.
-    
+
     Returns list of created PO summaries.
-    
+
     ponytail: creates one PO per supplier. For v2, batch by supplier + expected_date.
     """
     # Find items below min_alert
@@ -67,9 +68,11 @@ async def auto_generate_pos(db: AsyncSession, created_by: uuid.UUID | None = Non
     await db.commit()
     await db.refresh(po)
 
-    return [{
-        "po_id": str(po.id),
-        "po_number": po.po_number,
-        "total_amount": float(total),
-        "items_count": len(low_stock),
-    }]
+    return [
+        {
+            "po_id": str(po.id),
+            "po_number": po.po_number,
+            "total_amount": float(total),
+            "items_count": len(low_stock),
+        }
+    ]

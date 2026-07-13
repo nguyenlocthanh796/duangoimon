@@ -2,24 +2,24 @@ import uuid
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel
-from sqlalchemy import select
+from decimal import Decimal
+from pydantic import BaseModel, Field
+from sqlalchemy import delete as sa_delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.auth import get_current_user, require_role
 from app.core.database import get_db
-from app.core.auth import get_current_user
-from app.core.pagination import PageParams, paginate
 from app.models.ke_toan import Transaction
 
 router = APIRouter(prefix="/ke-toan/transactions", tags=["ke-toan"])
 
 
 class TransactionCreate(BaseModel):
-    type: str  # thu, chi
-    category: str | None = None
-    amount: float
-    ref_id: str | None = None
-    note: str | None = None
+    type: str = Field(..., pattern="^(thu|chi)$")
+    category: str | None = Field(None, max_length=100)
+    amount: Decimal = Field(..., gt=Decimal(0), max_digits=14, decimal_places=2, description="Amount in VND")
+    ref_id: str | None = Field(None, max_length=50)
+    note: str | None = Field(None, max_length=500)
 
 
 @router.get("")
@@ -29,24 +29,36 @@ async def list_transactions(
     db: AsyncSession = Depends(get_db),
     _user: dict = Depends(get_current_user),
 ):
-    query = select(Transaction).order_by(Transaction.created_at.desc())
+    """Return transactions list + computed totals (thu, chi, balance)."""
+    base = select(Transaction)
     if type_filter:
-        query = query.where(Transaction.type == type_filter)
+        base = base.where(Transaction.type == type_filter)
     if category:
-        query = query.where(Transaction.category == category)
-    result = await db.execute(query.limit(100))
-    return [
-        {
-            "id": str(t.id),
-            "type": t.type,
-            "category": t.category,
-            "amount": float(t.amount),
-            "ref_id": str(t.ref_id) if t.ref_id else None,
-            "note": t.note,
-            "created_at": t.created_at.isoformat() if t.created_at else None,
-        }
-        for t in result.scalars()
-    ]
+        base = base.where(Transaction.category == category)
+
+    result = await db.execute(base.order_by(Transaction.created_at.desc()).limit(100))
+    rows = result.scalars().all()
+
+    total_thu = sum(t.amount for t in rows if t.type == "thu")
+    total_chi = sum(t.amount for t in rows if t.type == "chi")
+
+    return {
+        "items": [
+            {
+                "id": str(t.id),
+                "type": t.type,
+                "category": t.category,
+                "amount": float(t.amount),
+                "ref_id": str(t.ref_id) if t.ref_id else None,
+                "note": t.note,
+                "created_at": t.created_at.isoformat() if t.created_at else None,
+            }
+            for t in rows
+        ],
+        "total": len(rows),
+        "total_thu": float(total_thu),
+        "total_chi": float(total_chi),
+    }
 
 
 class TransactionBulkDelete(BaseModel):
@@ -57,10 +69,8 @@ class TransactionBulkDelete(BaseModel):
 async def bulk_delete_transactions(
     body: TransactionBulkDelete,
     db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(get_current_user),
+    current_user: dict = Depends(require_role("admin", "ke_toan")),
 ):
-    from sqlalchemy import delete as sa_delete
-
     try:
         uuids = [uuid.UUID(i) for i in body.ids]
     except ValueError:
@@ -71,9 +81,11 @@ async def bulk_delete_transactions(
 
 
 @router.post("", status_code=201)
-async def create_transaction(body: TransactionCreate, db: AsyncSession = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    if body.type not in ("thu", "chi"):
-        raise HTTPException(status_code=400, detail="Type must be 'thu' or 'chi'")
+async def create_transaction(
+    body: TransactionCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(require_role("admin", "ke_toan")),
+):
     tx = Transaction(
         type=body.type,
         category=body.category,
@@ -86,4 +98,3 @@ async def create_transaction(body: TransactionCreate, db: AsyncSession = Depends
     await db.commit()
     await db.refresh(tx)
     return {"id": str(tx.id), "status": "ok"}
-

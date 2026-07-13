@@ -9,7 +9,6 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api } from '../../../lib/api';
 import { colors, font, shape } from '../../../lib/theme';
@@ -18,6 +17,7 @@ import { useRouter } from 'expo-router';
 import { useResponsive } from '../../../lib/hooks/useResponsive';
 import { useAuth } from '../../../lib/context/AuthContext';
 import UnifiedHeader from '../../../lib/components/ui/UnifiedHeader';
+import ScreenContainer from '../../../lib/components/ui/ScreenContainer';
 import BranchPeriodFilter from '../../../lib/components/ke-toan/BranchPeriodFilter';
 import InfoCard from '../../../lib/components/ke-toan/InfoCard';
 import DataTable, { Column } from '../../../lib/components/ui/DataTable';
@@ -101,7 +101,8 @@ export default function SoSachScreen() {
       if (isRefresh) setRefreshing(true);
       else setLoading(true);
       try {
-        const r = await api.getTaxReport(branchId ?? '', parseInt(period.slice(0, 4), 10));
+        if (!branchId) { setReport(null); return; }
+      const r = await api.getTaxReport(branchId, parseInt(period.slice(0, 4), 10));
         setReport(r);
       } catch (e: any) {
         Alert.alert('Lỗi', e?.message || 'Không tải được sổ kế toán');
@@ -120,7 +121,8 @@ export default function SoSachScreen() {
   const handleExport = async (fmt: 'csv' | 'pdf') => {
     setExporting(fmt);
     try {
-      await api.exportTaxReport(branchId ?? '', parseInt(period.slice(0, 4), 10), fmt);
+      if (!branchId) return;
+      await api.exportTaxReport(branchId, parseInt(period.slice(0, 4), 10), fmt);
     } catch (e: any) {
       Alert.alert('Lỗi', e?.message || 'Xuất báo cáo thất bại');
     } finally {
@@ -250,7 +252,7 @@ export default function SoSachScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
+    <ScreenContainer compact>
       <UnifiedHeader icon="book-open-page-variant" 
         title="Sổ Kế Toán"
         subtitle="S1a / S2a–e / S3a (TT152 §3)"
@@ -372,7 +374,7 @@ export default function SoSachScreen() {
           <Text style={[font.bodySmall, { color: colors.text.muted }]}>Không có dữ liệu</Text>
         </View>
       )}
-    </SafeAreaView>
+    </ScreenContainer>
   );
 }
 
@@ -434,3 +436,5 @@ const styles = StyleSheet.create({
   mCardTitle: { ...font.body, fontWeight: '400', color: colors.text.primary },
   mCardGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
 });
+
+

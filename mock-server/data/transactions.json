@@ -1,0 +1,302 @@
+[
+  {
+    "id": "tx_001",
+    "branch_id": "br_01",
+    "type": "chi",
+    "category": "Thu khác",
+    "amount": 9093864,
+    "note": "Chi phí bảo trì thiết bị",
+    "invoice_id": null,
+    "created_at": "2026-07-10T10:06:38.364Z"
+  },
+  {
+    "id": "tx_002",
+    "branch_id": "br_01",
+    "type": "chi",
+    "category": "Nhập hàng",
+    "amount": 1101644,
+    "note": "Tiền bán hàng trong ngày",
+    "invoice_id": null,
+    "created_at": "2026-06-30T10:06:38.364Z"
+  },
+  {
+    "id": "tx_003",
+    "branch_id": "br_01",
+    "type": "chi",
+    "category": "Khác",
+    "amount": 7154584,
+    "note": "Mua nguyên liệu đợt 1",
+    "invoice_id": null,
+    "created_at": "2026-07-11T10:06:38.364Z"
+  },
+  {
+    "id": "tx_004",
+    "branch_id": "br_01",
+    "type": "thu",
+    "category": "Điện nước",
+    "amount": 1797576,
+    "note": "Rút tiền ngân hàng",
+    "invoice_id": null,
+    "created_at": "2026-06-23T10:06:38.364Z"
+  },
+  {
+    "id": "tx_005",
+    "branch_id": "br_01",
+    "type": "thu",
+    "category": "Lương",
+    "amount": 5218549,
+    "note": "Mua nguyên liệu đợt 1",
+    "invoice_id": null,
+    "created_at": "2026-07-08T10:06:38.364Z"
+  },
+  {
+    "id": "tx_006",
+    "branch_id": "br_01",
+    "type": "thu",
+    "category": "Bán hàng",
+    "amount": 8079984,
+    "note": "Thanh toán hóa đơn điện tháng 3",
+    "invoice_id": null,
+    "created_at": "2026-06-22T10:06:38.364Z"
+  },
+  {
+    "id": "tx_007",
+    "branch_id": "br_01",
+    "type": "chi",
+    "category": "Thuế",
+    "amount": 8260162,
+    "note": "Mua nguyên liệu đợt 1",
+    "invoice_id": "inv_008",
+    "created_at": "2026-07-05T10:06:38.364Z"
+  },
+  {
+    "id": "tx_008",
+    "branch_id": "br_01",
+    "type": "chi",
+    "category": "Khác",
+    "amount": 3861790,
+    "note": "Chi phí bảo trì thiết bị",
+    "invoice_id": null,
+    "created_at": "2026-06-30T10:06:38.364Z"
+  },
+  {
+    "id": "tx_009",
+    "branch_id": "br_01",
+    "type": "chi",
+    "category": "Nhập hàng",
+    "amount": 4174848,
+    "note": "Rút tiền ngân hàng",
+    "invoice_id": null,
+    "created_at": "2026-07-03T10:06:38.364Z"
+  },
+  {
+    "id": "tx_010",
+    "branch_id": "br_01",
+    "type": "chi",
+    "category": "Khác",
+    "amount": 2356799,
+    "note": "Tiền bán hàng trong ngày",
+    "invoice_id": "inv_004",
+    "created_at": "2026-06-28T10:06:38.364Z"
+  },
+  {
+    "id": "tx_011",
+    "branch_id": "br_01",
+    "type": "chi",
+    "category": "Lương",
+    "amount": 5595083,
+    "note": "Chi phí bảo trì thiết bị",
+    "invoice_id": null,
+    "created_at": "2026-06-28T10:06:38.364Z"
+  },
+  {
+    "id": "tx_012",
+    "branch_id": "br_01",
+    "type": "chi",
+    "category": "Khác",
+    "amount": 4764875,
+    "note": "Trả lương nhân viên tháng 3",
+    "invoice_id": null,
+    "created_at": "2026-07-10T10:06:38.364Z"
+  },
+  {
+    "id": "tx_013",
+    "branch_id": "br_01",
+    "type": "chi",
+    "category": "Thuế",
+    "amount": 7150898,
+    "note": "Rút tiền ngân hàng",
+    "invoice_id": null,
+    "created_at": "2026-06-16T10:06:38.364Z"
+  },
+  {
+    "id": "tx_014",
+    "branch_id": "br_01",
+    "type": "chi",
+    "category": "Bán hàng",
+    "amount": 6531149,
+    "note": "Trả lương nhân viên tháng 3",
+    "invoice_id": null,
+    "created_at": "2026-07-11T10:06:38.364Z"
+  },
+  {
+    "id": "tx_015",
+    "branch_id": "br_01",
+    "type": "chi",
+    "category": "Lương",
+    "amount": 7894209,
+    "note": "Mua nguyên liệu đợt 1",
+    "invoice_id": null,
+    "created_at": "2026-07-08T10:06:38.364Z"
+  },
+  {
+    "id": "tx_016",
+    "branch_id": "br_01",
+    "type": "thu",
+    "category": "Thuế",
+    "amount": 2568557,
+    "note": "Chi phí bảo trì thiết bị",
+    "invoice_id": null,
+    "created_at": "2026-06-20T10:06:38.364Z"
+  },
+  {
+    "id": "tx_017",
+    "branch_id": "br_01",
+    "type": "thu",
+    "category": "Khác",
+    "amount": 8026015,
+    "note": "Chi phí bảo trì thiết bị",
+    "invoice_id": null,
+    "created_at": "2026-06-17T10:06:38.364Z"
+  },
+  {
+    "id": "tx_018",
+    "branch_id": "br_01",
+    "type": "chi",
+    "category": "Thuế",
+    "amount": 6098816,
+    "note": "Rút tiền ngân hàng",
+    "invoice_id": null,
+    "created_at": "2026-07-06T10:06:38.364Z"
+  },
+  {
+    "id": "tx_019",
+    "branch_id": "br_01",
+    "type": "thu",
+    "category": "Bán hàng",
+    "amount": 6373948,
+    "note": "Chi phí bảo trì thiết bị",
+    "invoice_id": "inv_018",
+    "created_at": "2026-07-12T10:06:38.364Z"
+  },
+  {
+    "id": "tx_020",
+    "branch_id": "br_01",
+    "type": "chi",
+    "category": "Khác",
+    "amount": 4144968,
+    "note": "Mua nguyên liệu đợt 1",
+    "invoice_id": "inv_017",
+    "created_at": "2026-06-15T10:06:38.364Z"
+  },
+  {
+    "id": "tx_021",
+    "branch_id": "br_01",
+    "type": "chi",
+    "category": "Thu khác",
+    "amount": 4654011,
+    "note": "Thanh toán hóa đơn điện tháng 3",
+    "invoice_id": null,
+    "created_at": "2026-06-20T10:06:38.364Z"
+  },
+  {
+    "id": "tx_022",
+    "branch_id": "br_01",
+    "type": "chi",
+    "category": "Bán hàng",
+    "amount": 6101978,
+    "note": "Rút tiền ngân hàng",
+    "invoice_id": null,
+    "created_at": "2026-06-28T10:06:38.364Z"
+  },
+  {
+    "id": "tx_023",
+    "branch_id": "br_01",
+    "type": "chi",
+    "category": "Khác",
+    "amount": 5134612,
+    "note": "Rút tiền ngân hàng",
+    "invoice_id": null,
+    "created_at": "2026-06-20T10:06:38.364Z"
+  },
+  {
+    "id": "tx_024",
+    "branch_id": "br_01",
+    "type": "chi",
+    "category": "Điện nước",
+    "amount": 5563666,
+    "note": "Trả lương nhân viên tháng 3",
+    "invoice_id": null,
+    "created_at": "2026-07-07T10:06:38.364Z"
+  },
+  {
+    "id": "tx_025",
+    "branch_id": "br_01",
+    "type": "thu",
+    "category": "Bán hàng",
+    "amount": 9241568,
+    "note": "Thanh toán hóa đơn điện tháng 3",
+    "invoice_id": null,
+    "created_at": "2026-06-21T10:06:38.364Z"
+  },
+  {
+    "id": "tx_026",
+    "branch_id": "br_01",
+    "type": "chi",
+    "category": "Khác",
+    "amount": 8416796,
+    "note": "Trả lương nhân viên tháng 3",
+    "invoice_id": null,
+    "created_at": "2026-07-10T10:06:38.364Z"
+  },
+  {
+    "id": "tx_027",
+    "branch_id": "br_01",
+    "type": "thu",
+    "category": "Điện nước",
+    "amount": 5287289,
+    "note": "Mua nguyên liệu đợt 1",
+    "invoice_id": null,
+    "created_at": "2026-07-09T10:06:38.364Z"
+  },
+  {
+    "id": "tx_028",
+    "branch_id": "br_01",
+    "type": "chi",
+    "category": "Lương",
+    "amount": 3166247,
+    "note": "Rút tiền ngân hàng",
+    "invoice_id": null,
+    "created_at": "2026-07-09T10:06:38.364Z"
+  },
+  {
+    "id": "tx_029",
+    "branch_id": "br_01",
+    "type": "chi",
+    "category": "Nhập hàng",
+    "amount": 8700009,
+    "note": "Mua nguyên liệu đợt 1",
+    "invoice_id": null,
+    "created_at": "2026-07-04T10:06:38.364Z"
+  },
+  {
+    "id": "tx_030",
+    "branch_id": "br_01",
+    "type": "chi",
+    "category": "Thu khác",
+    "amount": 3356293,
+    "note": "Nộp thuế GTGT",
+    "invoice_id": null,
+    "created_at": "2026-07-08T10:06:38.364Z"
+  }
+]

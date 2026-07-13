@@ -1,5 +1,7 @@
 """Shared UUID parsing utility for request validation."""
+
 import uuid
+
 from fastapi import HTTPException
 
 
