@@ -43,9 +43,6 @@ posa-backup.zip
 
 # Project
 backend/alembic/versions/*.pyc
-backend/.coverage
-backend/bandit_report.json
-backend/pytest_output.txt
 frontend/.expo/
 
 # Agent workspace
@@ -56,3 +53,32 @@ frontend/.expo/
 
 # Mock server
 mock-server/node_modules/
+
+# --- Generated artifacts (reports, caches, build output) ---
+
+# Backend coverage & test output
+backend/.coverage
+backend/bandit_report.json
+backend/pytest_output.txt
+backend/cov_report.txt
+backend/pycompile.txt
+
+# Security reports at project root
+backend_bandit_report.json
+backend_safety_report.json
+backend_safety_report.txt
+
+# Frontend audit & compilation outputs
+frontend/frontend_npm_audit_report.json
+frontend/tsc_output.txt
+
+# Expo build artifacts
+frontend/dist-test/
+
+# Claude / AI agent config (IDE-specific, not project)
+frontend/.claude/
+frontend/CLAUDE.md
+
+# Standalone utility (not part of core project)
+vietqr-generator/
+duangoimon/
