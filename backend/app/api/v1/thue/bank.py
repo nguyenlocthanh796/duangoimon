@@ -5,7 +5,7 @@ receive customer payments, it must declare that account (Mẫu 01/BK-STK)
 so the tax authority can reconcile via Open Banking.
 """
 
-import uuid
+from app.core.uuid_utils import parse_uuid
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -60,7 +60,7 @@ async def create_bank_account(
         ).scalar_one_or_none()
     if not prof and body.branch_id:
         try:
-            b_uuid = uuid.UUID(body.branch_id)
+            b_uuid = parse_uuid(body.branch_id)
             prof = (
                 await db.execute(select(HKDProfile).where(HKDProfile.branch_id == b_uuid))
             ).scalar_one_or_none()
@@ -69,7 +69,7 @@ async def create_bank_account(
     if not prof:
         raise HTTPException(status_code=404, detail="HKD profile not found")
     ba = NotifiedBankAccount(
-        branch_id=prof.branch_id or (uuid.UUID(body.branch_id) if body.branch_id else None),
+        branch_id=prof.branch_id or (parse_uuid(body.branch_id) if body.branch_id else None),
         tax_code=prof.tax_code,
         bank_name=body.bank_name,
         account_number=body.account_number,
@@ -107,7 +107,7 @@ async def list_by_branch(
 ):
     """List notified accounts for a branch (resolves tax_code via HKD profile)."""
     try:
-        b_uuid = uuid.UUID(branch_id)
+        b_uuid = parse_uuid(branch_id)
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid branch_id")
     prof = (
@@ -127,7 +127,7 @@ async def patch_bank_account(
 ):
     ba = (
         await db.execute(
-            select(NotifiedBankAccount).where(NotifiedBankAccount.id == uuid.UUID(account_id))
+            select(NotifiedBankAccount).where(NotifiedBankAccount.id == parse_uuid(account_id))
         )
     ).scalar_one_or_none()
     if not ba:
@@ -152,7 +152,7 @@ async def notify_tax(
     """Mark Mẫu 01/BK-STK as notified to tax authority (stub — A2 no creds)."""
     ba = (
         await db.execute(
-            select(NotifiedBankAccount).where(NotifiedBankAccount.id == uuid.UUID(account_id))
+            select(NotifiedBankAccount).where(NotifiedBankAccount.id == parse_uuid(account_id))
         )
     ).scalar_one_or_none()
     if not ba:

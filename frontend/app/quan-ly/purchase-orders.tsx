@@ -345,7 +345,7 @@ const s = StyleSheet.create({
 
   statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
           barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-          statValue: { ...font.h4, fontWeight: '900', color: colors.text.primary, lineHeight: 18 },
+          statValue: { ...font.h4, fontWeight: '800', color: colors.text.primary, lineHeight: 18 },
           statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },
 
   filterRow: { flexDirection: 'row', gap: 4, padding: 8, flexWrap: 'wrap' },
@@ -378,7 +378,7 @@ const s = StyleSheet.create({
 
   detailRow: { flexDirection: 'row', gap: 8 },
           detailItem: { flex: 1, alignItems: 'center' },
-          detailValue: { ...font.bodySmall, fontWeight: '900', color: colors.text.primary },
+          detailValue: { ...font.bodySmall, fontWeight: '800', color: colors.text.primary },
           detailLabel: { ...font.micro, color: colors.text.muted },
           detailDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 4 },
 

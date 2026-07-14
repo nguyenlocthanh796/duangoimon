@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   left: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  text: { ...font.h3, color: colors.text.primary, fontWeight: '800' },
+  text: { ...font.h3, color: colors.text.primary },
   subtitle: { ...font.caption, color: colors.text.muted, marginTop: 2 },
   pill: {
     backgroundColor: colors.surface.card,
@@ -67,6 +67,6 @@ const styles = StyleSheet.create({
     borderColor: colors.border.light,
     minWidth: 96,
   },
-  pillLabel: { ...font.caption, color: colors.text.muted, fontWeight: '700' },
-  pillValue: { ...font.h3, fontWeight: '900', marginTop: 2 },
+  pillLabel: { ...font.caption, color: colors.text.muted, fontWeight: '600' },
+  pillValue: { ...font.h3, fontWeight: '800', marginTop: 2 },
 });

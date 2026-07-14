@@ -1,6 +1,6 @@
 """Membership + Loyalty API — tiers, points, auto-calc."""
 
-import uuid
+from app.core.uuid_utils import parse_uuid
 
 from fastapi import APIRouter, Depends, HTTPException
 from decimal import Decimal
@@ -71,12 +71,12 @@ async def get_points(
 ):
     earn = await db.execute(
         select(func.coalesce(func.sum(LoyaltyPoint.points), 0)).where(
-            LoyaltyPoint.customer_id == uuid.UUID(customer_id), LoyaltyPoint.type == "earn"
+            LoyaltyPoint.customer_id == parse_uuid(customer_id), LoyaltyPoint.type == "earn"
         )
     )
     redeem = await db.execute(
         select(func.coalesce(func.sum(LoyaltyPoint.points), 0)).where(
-            LoyaltyPoint.customer_id == uuid.UUID(customer_id), LoyaltyPoint.type == "redeem"
+            LoyaltyPoint.customer_id == parse_uuid(customer_id), LoyaltyPoint.type == "redeem"
         )
     )
     return {"customer_id": customer_id, "balance": (earn.scalar() or 0) - (redeem.scalar() or 0)}
@@ -89,7 +89,7 @@ async def get_customer_tier(
     """Determine customer's tier based on total_spent."""
     from app.models.crm import Customer
 
-    result = await db.execute(select(Customer).where(Customer.id == uuid.UUID(customer_id)))
+    result = await db.execute(select(Customer).where(Customer.id == parse_uuid(customer_id)))
     c = result.scalar_one_or_none()
     if not c:
         raise HTTPException(status_code=404)

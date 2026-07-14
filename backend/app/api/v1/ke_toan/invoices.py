@@ -1,4 +1,4 @@
-import uuid
+from app.core.uuid_utils import parse_uuid
 from datetime import date, datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -77,7 +77,7 @@ async def create_invoice(
     _user: dict = Depends(require_role("admin", "ke_toan")),
 ):
     # Verify order exists
-    result = await db.execute(select(Order).where(Order.id == uuid.UUID(body.order_id)))
+    result = await db.execute(select(Order).where(Order.id == parse_uuid(body.order_id)))
     order = result.scalar_one_or_none()
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
@@ -86,7 +86,7 @@ async def create_invoice(
 
     # Check existing
     existing = await db.execute(
-        select(Invoice).where(Invoice.order_id == uuid.UUID(body.order_id)).limit(1)
+        select(Invoice).where(Invoice.order_id == parse_uuid(body.order_id)).limit(1)
     )
     if existing.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Invoice already exists for this order")
@@ -134,7 +134,7 @@ async def bulk_export_invoices(
     _user: dict = Depends(require_role("admin", "ke_toan")),
 ):
     try:
-        uuids = [uuid.UUID(i) for i in body.ids]
+        uuids = [parse_uuid(i) for i in body.ids]
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid invoice id")
     rows = (
@@ -160,7 +160,7 @@ async def export_invoice(
     db: AsyncSession = Depends(get_db),
     _user: dict = Depends(require_role("admin", "ke_toan")),
 ):
-    result = await db.execute(select(Invoice).where(Invoice.id == uuid.UUID(invoice_id)))
+    result = await db.execute(select(Invoice).where(Invoice.id == parse_uuid(invoice_id)))
     inv = result.scalar_one_or_none()
     if not inv:
         raise HTTPException(status_code=404, detail="Invoice not found")

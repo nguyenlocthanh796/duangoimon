@@ -161,7 +161,7 @@ const s = StyleSheet.create({
 
   statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-  statValue: { ...font.h4, fontWeight: '900', color: colors.text.primary, lineHeight: 18 },
+  statValue: { ...font.h4, fontWeight: '800', color: colors.text.primary, lineHeight: 18 },
   statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },
 
   filterRow: { flexDirection: 'row', gap: 6, paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
@@ -181,7 +181,7 @@ const s = StyleSheet.create({
 
   kpi: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, borderWidth: 1, borderColor: colors.border.light },
   kpiLabel: { ...font.caption, color: colors.text.muted, marginBottom: 2 },
-  kpiValue: { ...font.h1, fontWeight: '900', color: colors.text.primary, marginBottom: 2 },
+  kpiValue: { ...font.h1, fontWeight: '800', color: colors.text.primary, marginBottom: 2 },
   kpiChange: { ...font.badge, fontWeight: '700' },
 
   separator: { width: 1, backgroundColor: colors.border.light },

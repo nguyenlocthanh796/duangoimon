@@ -1,6 +1,6 @@
 """Customer self-order API — called by QR app."""
 
-import uuid
+from app.core.uuid_utils import parse_uuid
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
@@ -66,7 +66,7 @@ async def create_self_order(
         if item.quantity > 20:
             raise HTTPException(status_code=400, detail="Số lượng mỗi món tối đa 20")
 
-    table_id = uuid.UUID(body.table_id)
+    table_id = parse_uuid(body.table_id)
     # Verify table exists
     t_result = await db.execute(select(Table).where(Table.id == table_id))
     if not t_result.scalar_one_or_none():
@@ -78,7 +78,7 @@ async def create_self_order(
 
     total = 0
     for item in body.items:
-        p_result = await db.execute(select(Product).where(Product.id == uuid.UUID(item.product_id)))
+        p_result = await db.execute(select(Product).where(Product.id == parse_uuid(item.product_id)))
         p = p_result.scalar_one_or_none()
         if not p:
             raise HTTPException(

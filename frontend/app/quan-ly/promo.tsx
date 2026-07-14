@@ -193,7 +193,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
           addBtnSmText: { ...font.label, color: '#fff' },
           statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
           barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-          statValue: { ...font.h4, fontWeight: '900', color: colors.text.primary, lineHeight: 18 },
+          statValue: { ...font.h4, fontWeight: '800', color: colors.text.primary, lineHeight: 18 },
           statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },
         
           tabRow: { flexDirection: 'row', gap: 6, paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light, alignItems: 'center' },
@@ -211,7 +211,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
           panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.border.light },
           panelHeaderText: { ...font.body, fontWeight: '700', color: colors.text.primary },
           panelStatLabel: { ...font.caption, color: colors.text.muted, marginTop: 2 },
-          panelStatValue: { ...font.h3, fontWeight: '900', color: colors.text.primary },
+          panelStatValue: { ...font.h3, fontWeight: '800', color: colors.text.primary },
           panelDivider: { height: 1, backgroundColor: colors.border.light },
           panelDividerV: { width: 1, backgroundColor: colors.border.light },
           panelLabel: { ...font.caption, color: colors.text.muted },

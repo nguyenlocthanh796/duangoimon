@@ -1,4 +1,4 @@
-import uuid
+from app.core.uuid_utils import parse_uuid
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -160,7 +160,7 @@ async def update_raw_material(
     db: AsyncSession = Depends(get_db),
     _user: dict = Depends(get_current_user),
 ):
-    result = await db.execute(select(RawMaterial).where(RawMaterial.id == uuid.UUID(rm_id)))
+    result = await db.execute(select(RawMaterial).where(RawMaterial.id == parse_uuid(rm_id)))
     rm = result.scalar_one_or_none()
     if not rm:
         raise HTTPException(status_code=404, detail="Raw material not found")
@@ -194,13 +194,13 @@ async def list_recipes(
 async def create_recipe(
     body: RecipeCreate, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)
 ):
-    prod_result = await db.execute(select(Product).where(Product.id == uuid.UUID(body.product_id)))
+    prod_result = await db.execute(select(Product).where(Product.id == parse_uuid(body.product_id)))
     product = prod_result.scalar_one_or_none()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
     recipe = Recipe(
-        product_id=uuid.UUID(body.product_id),
+        product_id=parse_uuid(body.product_id),
         name=body.name,
         yield_qty=body.yield_qty,
         yield_unit=body.yield_unit,
@@ -211,7 +211,7 @@ async def create_recipe(
     total_cost = 0
     for item_data in body.items:
         rm_result = await db.execute(
-            select(RawMaterial).where(RawMaterial.id == uuid.UUID(item_data.raw_material_id))
+            select(RawMaterial).where(RawMaterial.id == parse_uuid(item_data.raw_material_id))
         )
         rm = rm_result.scalar_one_or_none()
         item_cost = (
@@ -222,7 +222,7 @@ async def create_recipe(
         total_cost += item_cost
         recipe.items.append(
             RecipeItem(
-                raw_material_id=uuid.UUID(item_data.raw_material_id),
+                raw_material_id=parse_uuid(item_data.raw_material_id),
                 quantity=item_data.quantity,
                 unit=item_data.unit,
                 cost=item_cost,
@@ -266,7 +266,7 @@ async def update_recipe(
     _user: dict = Depends(get_current_user),
 ):
     result = await db.execute(
-        select(Recipe).options(selectinload(Recipe.items)).where(Recipe.id == uuid.UUID(recipe_id))
+        select(Recipe).options(selectinload(Recipe.items)).where(Recipe.id == parse_uuid(recipe_id))
     )
     r = result.scalar_one_or_none()
     if not r:
@@ -285,7 +285,7 @@ async def update_recipe(
         total_cost = 0
         for item_data in items_data:
             rm_result = await db.execute(
-                select(RawMaterial).where(RawMaterial.id == uuid.UUID(item_data["raw_material_id"]))
+                select(RawMaterial).where(RawMaterial.id == parse_uuid(item_data["raw_material_id"]))
             )
             rm = rm_result.scalar_one_or_none()
             item_cost = item_data.get("cost", 0) or (
@@ -294,7 +294,7 @@ async def update_recipe(
             total_cost += item_cost
             r.items.append(
                 RecipeItem(
-                    raw_material_id=uuid.UUID(item_data["raw_material_id"]),
+                    raw_material_id=parse_uuid(item_data["raw_material_id"]),
                     quantity=item_data["quantity"],
                     unit=item_data.get("unit", "kg"),
                     cost=item_cost,
@@ -342,7 +342,7 @@ async def get_recipe(
     recipe_id: str, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)
 ):
     result = await db.execute(
-        select(Recipe).options(selectinload(Recipe.items)).where(Recipe.id == uuid.UUID(recipe_id))
+        select(Recipe).options(selectinload(Recipe.items)).where(Recipe.id == parse_uuid(recipe_id))
     )
     r = result.scalar_one_or_none()
     if not r:
@@ -356,7 +356,7 @@ async def list_recipe_versions(
 ):
     result = await db.execute(
         select(RecipeVersion)
-        .where(RecipeVersion.recipe_id == uuid.UUID(recipe_id))
+        .where(RecipeVersion.recipe_id == parse_uuid(recipe_id))
         .order_by(RecipeVersion.version_number.desc())
     )
     versions = result.scalars().all()
@@ -377,7 +377,7 @@ async def list_recipe_versions(
 async def delete_recipe(
     recipe_id: str, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)
 ):
-    result = await db.execute(select(Recipe).where(Recipe.id == uuid.UUID(recipe_id)))
+    result = await db.execute(select(Recipe).where(Recipe.id == parse_uuid(recipe_id)))
     r = result.scalar_one_or_none()
     if not r:
         raise HTTPException(status_code=404, detail="Recipe not found")

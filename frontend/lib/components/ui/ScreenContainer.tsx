@@ -3,6 +3,7 @@ import { View, StyleSheet, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useResponsive } from '../../hooks/useResponsive';
 import { colors } from '../../theme';
+import { shape } from '../../theme/shape';
 
 interface ScreenContainerProps {
   children: React.ReactNode;
@@ -29,10 +30,11 @@ export default function ScreenContainer({
   accentBorder = 'none',
   compact = false,
 }: ScreenContainerProps) {
-  const { isWide, hPad } = useResponsive();
+  const { isWide } = useResponsive();
   const horizontal = padding ?? (!isWide
-    ? (compact ? 4 : 12)
-    : (compact ? 8 : 24));
+    ? (compact ? shape.spacing.xs : shape.spacing.md)
+    : (compact ? shape.spacing.sm : shape.spacing.xl));
+  const vertical = compact ? shape.spacing.xs : (!isWide ? shape.spacing.sm : shape.spacing.lg);
 
   // iPhone safe area offset
   const topInset = Platform.OS === 'web' ? 'var(--safe-top)' : 0;
@@ -44,8 +46,8 @@ export default function ScreenContainer({
         styles.inner,
         {
           paddingHorizontal: horizontal,
-          paddingTop: compact ? 4 : (!isWide ? 8 : 16),
-          paddingBottom: compact ? 4 : (!isWide ? 8 : 16),
+          paddingTop: vertical,
+          paddingBottom: vertical,
           maxWidth: isWide ? maxWidth : undefined,
           alignSelf: isWide ? 'center' : 'stretch',
           width: '100%',

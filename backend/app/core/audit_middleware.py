@@ -6,16 +6,16 @@ This catches POST/PUT/DELETE on any /api/v1/... route and records:
 For detailed old/new_value logging, wire `log_action()` directly in the endpoint.
 """
 
-import json
-import uuid
-from datetime import datetime, timezone
+import logging
 
-from fastapi import Request, Response
-from sqlalchemy import select
+from fastapi import Request
 
 from app.core.auth import decode_token
 from app.core.database import AsyncSessionLocal
+from app.core.uuid_utils import parse_uuid
 from app.models.audit import AuditLog
+
+logger = logging.getLogger(__name__)
 
 
 async def audit_mutation_middleware(request: Request, call_next):
@@ -42,8 +42,8 @@ async def audit_mutation_middleware(request: Request, call_next):
             payload = decode_token(auth_header[7:])
             user_id = payload.get("sub")
             user_name = payload.get("role") or payload.get("username")
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug("audit_middleware: invalid token in request: %s", e)
 
     # Derive resource name from path
     parts = [p for p in path.split("/") if p and p not in ("api", "v1")]
@@ -55,11 +55,18 @@ async def audit_mutation_middleware(request: Request, call_next):
         return response  # Don't log failures as audit events
 
     # Background log to DB — use a new session
+    user_uuid = None
+    if user_id:
+        try:
+            user_uuid = parse_uuid(user_id)
+        except ValueError as e:
+            logger.warning("audit_middleware: invalid user_id=%r: %s", user_id, e)
+
     try:
         async with AsyncSessionLocal() as db:
             resource = parts[0] if parts else "unknown"
             log = AuditLog(
-                user_id=uuid.UUID(user_id) if user_id else None,
+                user_id=user_uuid,
                 user_name=user_name,
                 action=action,
                 resource=resource,
@@ -68,7 +75,8 @@ async def audit_mutation_middleware(request: Request, call_next):
             )
             db.add(log)
             await db.commit()
-    except Exception:
-        pass  # Audit failure shouldn't crash the request
+    except Exception as e:
+        # Audit failure shouldn't crash the request, but must be logged
+        logger.error("audit_middleware: failed to write audit log: %s", e, exc_info=True)
 
     return response

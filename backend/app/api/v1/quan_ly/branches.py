@@ -1,6 +1,6 @@
 """Multi-branch CRUD API."""
 
-import uuid
+from app.core.uuid_utils import parse_uuid
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
@@ -80,7 +80,7 @@ async def update_branch(
     db: AsyncSession = Depends(get_db),
     _user: dict = Depends(get_current_user),
 ):
-    result = await db.execute(select(Branch).where(Branch.id == uuid.UUID(branch_id)))
+    result = await db.execute(select(Branch).where(Branch.id == parse_uuid(branch_id)))
     branch = result.scalar_one_or_none()
     if not branch:
         raise HTTPException(status_code=404, detail="Branch not found")
@@ -101,7 +101,7 @@ async def update_branch(
 async def delete_branch(
     branch_id: str, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)
 ):
-    result = await db.execute(select(Branch).where(Branch.id == uuid.UUID(branch_id)))
+    result = await db.execute(select(Branch).where(Branch.id == parse_uuid(branch_id)))
     branch = result.scalar_one_or_none()
     if not branch:
         raise HTTPException(status_code=404, detail="Branch not found")

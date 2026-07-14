@@ -7,7 +7,7 @@ Endpoints:
   POST /thue/cash-invoices/{id}/deliver  push via QR/Zalo/Email channels
 """
 
-import uuid
+from app.core.uuid_utils import parse_uuid
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -42,7 +42,7 @@ async def issue_invoice(
     _user: dict = Depends(get_current_user),
 ):
     order = (
-        await db.execute(select(Order).where(Order.id == uuid.UUID(order_id)))
+        await db.execute(select(Order).where(Order.id == parse_uuid(order_id)))
     ).scalar_one_or_none()
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
@@ -86,7 +86,7 @@ async def adjust_invoice(
 ):
     original = (
         await db.execute(
-            select(CashRegisterInvoice).where(CashRegisterInvoice.id == uuid.UUID(invoice_id))
+            select(CashRegisterInvoice).where(CashRegisterInvoice.id == parse_uuid(invoice_id))
         )
     ).scalar_one_or_none()
     if not original:
@@ -129,7 +129,7 @@ async def get_invoice(
 ):
     inv = (
         await db.execute(
-            select(CashRegisterInvoice).where(CashRegisterInvoice.id == uuid.UUID(invoice_id))
+            select(CashRegisterInvoice).where(CashRegisterInvoice.id == parse_uuid(invoice_id))
         )
     ).scalar_one_or_none()
     if not inv:
@@ -156,7 +156,7 @@ async def deliver_invoice(
 ):
     inv = (
         await db.execute(
-            select(CashRegisterInvoice).where(CashRegisterInvoice.id == uuid.UUID(invoice_id))
+            select(CashRegisterInvoice).where(CashRegisterInvoice.id == parse_uuid(invoice_id))
         )
     ).scalar_one_or_none()
     if not inv:

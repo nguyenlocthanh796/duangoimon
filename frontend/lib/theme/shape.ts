@@ -2,11 +2,13 @@ import { Platform } from 'react-native';
 
 export const shape = {
   spacing: {
+    xxs: 2,
     xs: 4,
     sm: 8,
     md: 12,
     lg: 16,
     xl: 24,
+    xxl: 32,
   },
   radius: {
     sm: 4,
@@ -19,6 +21,18 @@ export const shape = {
     rowHeight: 44,
     headerHeight: 48,
     cellPadding: 8,
+  },
+  // Shared control/form tokens — keep touch targets >= 44px on iPad
+  control: {
+    minTouch: 44,
+    fieldHeight: 48,
+    inputPaddingH: 12,
+    inputPaddingV: 12,
+  },
+  // Screen horizontal padding by device class
+  screenPad: {
+    phone: 12,
+    tablet: 24,
   },
 };
 

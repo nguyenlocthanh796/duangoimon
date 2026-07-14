@@ -1,6 +1,6 @@
 """Multi-station KDS routing - stations CRUD + routing logic."""
 
-import uuid
+from app.core.uuid_utils import parse_uuid
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
@@ -93,7 +93,7 @@ async def update_station(
     db: AsyncSession = Depends(get_db),
     _user: dict = Depends(get_current_user),
 ):
-    result = await db.execute(select(Station).where(Station.id == uuid.UUID(s_id)))
+    result = await db.execute(select(Station).where(Station.id == parse_uuid(s_id)))
     s = result.scalar_one_or_none()
     if not s:
         raise HTTPException(status_code=404, detail="Station not found")

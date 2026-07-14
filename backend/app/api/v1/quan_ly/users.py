@@ -1,4 +1,4 @@
-import uuid
+from app.core.uuid_utils import parse_uuid
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -99,7 +99,7 @@ async def update_user(
     _user: dict = Depends(get_current_user),
 ):
     data = body.model_dump(exclude_unset=True)
-    result = await db.execute(select(User).where(User.id == uuid.UUID(user_id)))
+    result = await db.execute(select(User).where(User.id == parse_uuid(user_id)))
     u = result.scalar_one_or_none()
     if not u:
         raise HTTPException(status_code=404, detail="User not found")

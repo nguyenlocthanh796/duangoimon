@@ -1,4 +1,4 @@
-import uuid
+from app.core.uuid_utils import parse_uuid
 from datetime import date, datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -141,7 +141,7 @@ async def update_supplier(
     db: AsyncSession = Depends(get_db),
     _user: dict = Depends(get_current_user),
 ):
-    result = await db.execute(select(Supplier).where(Supplier.id == uuid.UUID(s_id)))
+    result = await db.execute(select(Supplier).where(Supplier.id == parse_uuid(s_id)))
     s = result.scalar_one_or_none()
     if not s:
         raise HTTPException(status_code=404, detail="Supplier not found")
@@ -176,7 +176,7 @@ async def create_po(
     total = 0
     po = PurchaseOrder(
         po_number=_generate_po_number(),
-        supplier_id=uuid.UUID(body.supplier_id),
+        supplier_id=parse_uuid(body.supplier_id),
         note=body.note,
         expected_date=date.fromisoformat(body.expected_date) if body.expected_date else None,
     )
@@ -186,13 +186,13 @@ async def create_po(
         rm_name = item.raw_material_name
         if not rm_name:
             rm_result = await db.execute(
-                select(RawMaterial).where(RawMaterial.id == uuid.UUID(item.raw_material_id))
+                select(RawMaterial).where(RawMaterial.id == parse_uuid(item.raw_material_id))
             )
             rm = rm_result.scalar_one_or_none()
             rm_name = rm.name if rm else "Unknown"
         po.items.append(
             PurchaseOrderItem(
-                raw_material_id=uuid.UUID(item.raw_material_id),
+                raw_material_id=parse_uuid(item.raw_material_id),
                 raw_material_name=rm_name,
                 quantity=item.quantity,
                 unit_price=item.unit_price,
@@ -217,7 +217,7 @@ async def receive_po(
     result = await db.execute(
         select(PurchaseOrder)
         .options(selectinload(PurchaseOrder.items))
-        .where(PurchaseOrder.id == uuid.UUID(po_id))
+        .where(PurchaseOrder.id == parse_uuid(po_id))
     )
     po = result.scalar_one_or_none()
     if not po:
@@ -236,7 +236,7 @@ async def receive_po(
             item_map[rm_id].received_quantity += qty
 
         # Update stock
-        rm_result = await db.execute(select(RawMaterial).where(RawMaterial.id == uuid.UUID(rm_id)))
+        rm_result = await db.execute(select(RawMaterial).where(RawMaterial.id == parse_uuid(rm_id)))
         rm = rm_result.scalar_one_or_none()
         if rm:
             rm.current_stock += qty

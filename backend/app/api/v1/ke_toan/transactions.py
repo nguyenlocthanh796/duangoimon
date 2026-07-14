@@ -1,4 +1,4 @@
-import uuid
+from app.core.uuid_utils import parse_uuid
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -72,7 +72,7 @@ async def bulk_delete_transactions(
     current_user: dict = Depends(require_role("admin", "ke_toan")),
 ):
     try:
-        uuids = [uuid.UUID(i) for i in body.ids]
+        uuids = [parse_uuid(i) for i in body.ids]
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid transaction id")
     await db.execute(sa_delete(Transaction).where(Transaction.id.in_(uuids)))
@@ -90,9 +90,9 @@ async def create_transaction(
         type=body.type,
         category=body.category,
         amount=body.amount,
-        ref_id=uuid.UUID(body.ref_id) if body.ref_id else None,
+        ref_id=parse_uuid(body.ref_id) if body.ref_id else None,
         note=body.note,
-        created_by=uuid.UUID(current_user["sub"]),
+        created_by=parse_uuid(current_user["sub"]),
     )
     db.add(tx)
     await db.commit()

@@ -151,7 +151,7 @@ export default function MenuEngScreen() {
         <Text style={s.sectionTitle}>🔥 Top bán chạy</Text>
         {tb.top.map((item, i) => (
           <View key={'t' + i} style={s.tbRow}>
-            <View style={[s.rankDot, { backgroundColor: '#DCFCE7' }]}><Text style={{ ...font.micro, fontWeight: '900', color: '#16A34A' }}>{i + 1}</Text></View>
+            <View style={[s.rankDot, { backgroundColor: '#DCFCE7' }]}><Text style={{ ...font.micro, fontWeight: '800', color: '#16A34A' }}>{i + 1}</Text></View>
             <Text style={{ flex: 1, ...font.bodySmall, fontWeight: '600', color: colors.text.primary }}>{item.name}</Text>
             <Text style={{ width: 50, textAlign: 'right', ...font.caption, color: colors.text.muted }}>{item.qty} cái</Text>
             <Text style={{ width: 85, textAlign: 'right', ...font.bodySmall, fontWeight: '700', color: colors.text.primary }}>{formatVND(item.revenue)}</Text>
@@ -160,7 +160,7 @@ export default function MenuEngScreen() {
         <Text style={[s.sectionTitle, { marginTop: 8 }]}>❄️ Bottom bán chậm</Text>
         {tb.bottom.map((item, i) => (
           <View key={'b' + i} style={s.tbRow}>
-            <View style={[s.rankDot, { backgroundColor: '#FEE2E2' }]}><Text style={{ ...font.micro, fontWeight: '900', color: '#DC2626' }}>{i + 1}</Text></View>
+            <View style={[s.rankDot, { backgroundColor: '#FEE2E2' }]}><Text style={{ ...font.micro, fontWeight: '800', color: '#DC2626' }}>{i + 1}</Text></View>
             <Text style={{ flex: 1, ...font.bodySmall, fontWeight: '600', color: colors.text.primary }}>{item.name}</Text>
             <Text style={{ width: 50, textAlign: 'right', ...font.caption, color: colors.text.muted }}>{item.qty} cái</Text>
             <Text style={{ width: 85, textAlign: 'right', ...font.bodySmall, fontWeight: '700', color: colors.text.primary }}>{formatVND(item.revenue)}</Text>
@@ -258,7 +258,7 @@ const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface.app },
   statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-  statValue: { ...font.h4, fontWeight: '900', color: colors.text.primary, lineHeight: 18 },
+  statValue: { ...font.h4, fontWeight: '800', color: colors.text.primary, lineHeight: 18 },
   statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },
 
   filterRow: { flexDirection: 'row', gap: 6, paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
@@ -268,7 +268,7 @@ const s = StyleSheet.create({
   panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 12 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   panelHeaderText: { ...font.body, fontWeight: '700', color: colors.text.primary },
-  panelStatValue: { ...font.h1, fontWeight: '900', color: colors.text.primary },
+  panelStatValue: { ...font.h1, fontWeight: '800', color: colors.text.primary },
   panelStatLabel: { ...font.caption, color: colors.text.muted, marginTop: 2 },
 
   thead: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 6, borderBottomWidth: 2, borderBottomColor: colors.border.default, marginBottom: 4 },
@@ -284,7 +284,7 @@ const s = StyleSheet.create({
   detailRow: { flexDirection: 'row', gap: 12 },
   detailCell: { flex: 1, backgroundColor: colors.surface.app, borderRadius: shape.radius.md, padding: 10, alignItems: 'center', borderWidth: 1, borderColor: colors.border.light },
   detailLabel: { ...font.micro, color: colors.text.muted, marginBottom: 4 },
-  detailValue: { ...font.h4, fontWeight: '900', color: colors.text.primary },
+  detailValue: { ...font.h4, fontWeight: '800', color: colors.text.primary },
   detailChip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderRadius: shape.radius.full, backgroundColor: colors.surface.disabled },
   detailChipText: { ...font.micro, color: colors.text.muted },
 

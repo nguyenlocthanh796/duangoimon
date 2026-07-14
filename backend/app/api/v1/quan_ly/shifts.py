@@ -1,6 +1,6 @@
 """Shift management API - start/end shift, get active shift, history."""
 
-import uuid
+from app.core.uuid_utils import parse_uuid
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -55,7 +55,7 @@ async def get_active_shift(
     result = await db.execute(
         select(ShiftLog)
         .where(
-            ShiftLog.user_id == uuid.UUID(user["sub"]),
+            ShiftLog.user_id == parse_uuid(user["sub"]),
             ShiftLog.status == "dang_lam",
         )
         .order_by(ShiftLog.start_at.desc())
@@ -72,7 +72,7 @@ async def start_shift(
     body: ShiftStart, db: AsyncSession = Depends(get_db), user: dict = Depends(get_current_user)
 ):
     """Start a new shift."""
-    uid = uuid.UUID(user["sub"])
+    uid = parse_uuid(user["sub"])
     # Check no active shift
     result = await db.execute(
         select(ShiftLog)
@@ -105,14 +105,14 @@ async def end_shift(
     user: dict = Depends(get_current_user),
 ):
     """End shift, calculate summary."""
-    result = await db.execute(select(ShiftLog).where(ShiftLog.id == uuid.UUID(shift_id)))
+    result = await db.execute(select(ShiftLog).where(ShiftLog.id == parse_uuid(shift_id)))
     shift = result.scalar_one_or_none()
     if not shift:
         raise HTTPException(status_code=404, detail="Shift not found")
     if shift.status == "da_ket_thuc":
         raise HTTPException(status_code=400, detail="Shift already ended")
 
-    uid = uuid.UUID(user["sub"])
+    uid = parse_uuid(user["sub"])
     # Calculate totals from paid orders in this shift
     from app.models.ban_hang import Order
 
@@ -159,7 +159,7 @@ async def list_shifts(
     offset = (page - 1) * limit
     result = await db.execute(
         select(ShiftLog)
-        .where(ShiftLog.user_id == uuid.UUID(user["sub"]))
+        .where(ShiftLog.user_id == parse_uuid(user["sub"]))
         .order_by(ShiftLog.start_at.desc())
         .offset(offset)
         .limit(limit)

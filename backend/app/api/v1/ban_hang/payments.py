@@ -1,4 +1,3 @@
-import uuid
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -10,15 +9,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.audit import log_action
 from app.core.auth import get_current_user
 from app.core.database import get_db
+from app.core.uuid_utils import parse_uuid
 from app.models.ban_hang import Order, Table
 from app.models.ke_toan import Invoice, Transaction
-
-
-def _uuid(val: str) -> uuid.UUID:
-    try:
-        return uuid.UUID(val)
-    except ValueError:
-        raise HTTPException(status_code=422, detail=f"Invalid UUID: {val}")
 
 
 router = APIRouter(prefix="/ban-hang/payments", tags=["ban-hang"])
@@ -43,7 +36,7 @@ async def process_payment(
     db: AsyncSession = Depends(get_db),
     _user: dict = Depends(get_current_user),
 ):
-    result = await db.execute(select(Order).where(Order.id == _uuid(body.order_id)))
+    result = await db.execute(select(Order).where(Order.id == parse_uuid(body.order_id)))
     order = result.scalar_one_or_none()
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
@@ -125,7 +118,7 @@ async def process_payment(
         amount=order.total_amount,
         ref_id=order.id,
         note=f"Thanh toán đơn #{str(order.id)[:8].upper()} - {order.payment_method}",
-        created_by=uuid.UUID(_user["sub"]),
+        created_by=parse_uuid(_user["sub"]),
     )
     db.add(transaction)
 

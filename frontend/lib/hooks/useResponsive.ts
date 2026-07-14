@@ -15,6 +15,7 @@ export interface ResponsiveInfo {
   containerWidth: number;    // usable width excluding sidebar
   gutter: number;
   hPad: number;
+  pad: { screen: number; section: number; card: number; gap: number };
   safeBottom: number;
   sidebarWidth: number;      // 0 | 64 | 240
   columns: (minItemWidth: number) => number;
@@ -56,6 +57,14 @@ export function useResponsive(): ResponsiveInfo {
   const gutter = isWide ? Math.max(8, Math.min(16, width * 0.01)) : 10;
   const hPad = isWide ? 16 : 12;
 
+  // Unified responsive padding tokens (phone smaller, iPad roomier)
+  const pad = {
+    screen: isWide ? 24 : 12,
+    section: isWide ? 16 : 12,
+    card: isWide ? 16 : 12,
+    gap: isWide ? 12 : 8,
+  };
+
   const columns = (minItemWidth: number) =>
     !isWide ? 1 : Math.max(2, calcGridCols(containerWidth, minItemWidth, hPad, gutter));
 
@@ -71,6 +80,7 @@ export function useResponsive(): ResponsiveInfo {
     containerWidth,
     gutter,
     hPad,
+    pad,
     safeBottom: insets.bottom,
     sidebarWidth,
     columns,

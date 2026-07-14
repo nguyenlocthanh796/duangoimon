@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, font } from '../../theme';
+import { shape } from '../../theme/shape';
 
 export interface UnifiedHeaderProps {
   title: string;
@@ -94,7 +95,7 @@ export default function UnifiedHeader({
 
 const styles = StyleSheet.create({
   header: {
-    paddingHorizontal: 16,
+    paddingHorizontal: shape.spacing.lg,
     backgroundColor: colors.surface.card,
     borderBottomWidth: 1,
     borderBottomColor: colors.border.default,
@@ -104,7 +105,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: shape.spacing.sm,
   },
   menuBtn: {
     width: 44,

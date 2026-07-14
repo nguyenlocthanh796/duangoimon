@@ -186,7 +186,7 @@ const s = StyleSheet.create({
   refreshBtn: { width: 44, height: 44, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' },
   statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-  statValue: { ...font.h4, fontWeight: '900', color: colors.text.primary, lineHeight: 18 },
+  statValue: { ...font.h4, fontWeight: '800', color: colors.text.primary, lineHeight: 18 },
   statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },
 
   filterRow: { flexDirection: 'row', gap: 6, paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light, flexWrap: 'wrap', alignItems: 'center' },
@@ -203,7 +203,7 @@ const s = StyleSheet.create({
   panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 10 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   panelHeaderText: { ...font.body, fontWeight: '700', color: colors.text.primary },
-  panelStatValue: { ...font.h1, fontWeight: '900', color: colors.text.primary },
+  panelStatValue: { ...font.h1, fontWeight: '800', color: colors.text.primary },
   panelStatLabel: { ...font.caption, color: colors.text.muted, marginTop: 2 },
   panelDivider: { height: 1, backgroundColor: colors.border.light },
   panelRowDot: { width: 8, height: 8, borderRadius: 4 },

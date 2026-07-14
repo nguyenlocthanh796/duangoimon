@@ -1,4 +1,4 @@
-import uuid
+from app.core.uuid_utils import parse_uuid
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
@@ -59,7 +59,7 @@ async def update_table(
     _user: dict = Depends(get_current_user),
 ):
     data = body.model_dump(exclude_unset=True)
-    result = await db.execute(select(Table).where(Table.id == uuid.UUID(table_id)))
+    result = await db.execute(select(Table).where(Table.id == parse_uuid(table_id)))
     tbl = result.scalar_one_or_none()
     if not tbl:
         raise HTTPException(status_code=404, detail="Table not found")
@@ -74,7 +74,7 @@ async def update_table(
 async def delete_table(
     table_id: str, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)
 ):
-    result = await db.execute(select(Table).where(Table.id == uuid.UUID(table_id)))
+    result = await db.execute(select(Table).where(Table.id == parse_uuid(table_id)))
     tbl = result.scalar_one_or_none()
     if not tbl:
         raise HTTPException(status_code=404, detail="Table not found")

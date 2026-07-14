@@ -433,7 +433,7 @@ const styles = StyleSheet.create({
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   panelHeaderText: { ...font.body, fontWeight: '700', color: colors.text.primary },
   panelStatLabel: { ...font.caption, color: colors.text.muted, marginTop: 2 },
-  panelStatValue: { ...font.h3, fontWeight: '900', color: colors.text.primary },
+  panelStatValue: { ...font.h3, fontWeight: '800', color: colors.text.primary },
   panelDivider: { height: 1, backgroundColor: colors.border.light },
   panelDividerV: { width: 1, backgroundColor: colors.border.light },
   panelLabel: { ...font.caption, color: colors.text.muted },

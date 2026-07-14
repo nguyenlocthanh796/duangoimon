@@ -339,7 +339,7 @@ const s = StyleSheet.create({
   // Stats bar
   statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-  statValue: { ...font.h4, fontWeight: '900', color: colors.text.primary, lineHeight: 18 },
+  statValue: { ...font.h4, fontWeight: '800', color: colors.text.primary, lineHeight: 18 },
   statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },
 
   // Search

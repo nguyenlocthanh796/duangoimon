@@ -1,6 +1,6 @@
 """Online Booking API."""
 
-import uuid
+from app.core.uuid_utils import parse_uuid
 from datetime import date, datetime, time, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -74,7 +74,7 @@ async def create_booking(
 async def confirm_booking(
     booking_id: str, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)
 ):
-    result = await db.execute(select(Booking).where(Booking.id == uuid.UUID(booking_id)))
+    result = await db.execute(select(Booking).where(Booking.id == parse_uuid(booking_id)))
     b = result.scalar_one_or_none()
     if not b:
         raise HTTPException(status_code=404)
@@ -89,7 +89,7 @@ async def confirm_booking(
 async def cancel_booking(
     booking_id: str, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)
 ):
-    result = await db.execute(select(Booking).where(Booking.id == uuid.UUID(booking_id)))
+    result = await db.execute(select(Booking).where(Booking.id == parse_uuid(booking_id)))
     b = result.scalar_one_or_none()
     if not b:
         raise HTTPException(status_code=404)

@@ -34,10 +34,10 @@ const styles = StyleSheet.create({
   box: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: shape.spacing.xs,
     backgroundColor: colors.surface.card,
     borderRadius: shape.radius.md,
-    paddingHorizontal: 10,
+    paddingHorizontal: shape.spacing.sm,
     height: 36,
     borderWidth: 1,
     borderColor: colors.border.light,

@@ -8,10 +8,13 @@ import hashlib
 import hmac
 import os
 
-_SECRET = os.getenv("WEBHOOK_SECRET", "")
+
+def _get_secret() -> str:
+    """Lazy-load the webhook secret so env var changes are respected at call time."""
+    return os.getenv("WEBHOOK_SECRET", "")
 
 
-def verify_signature(body: bytes, signature_header: str | None, secret: str = "") -> bool:
+def verify_signature(body: bytes, signature_header: str | None, secret: str | None = None) -> bool:
     """Verify HMAC-SHA256 signature.
 
     Args:
@@ -22,7 +25,7 @@ def verify_signature(body: bytes, signature_header: str | None, secret: str = ""
     Returns:
         True if valid or if no secret configured (dev mode).
     """
-    key = secret or _SECRET
+    key = secret if secret is not None else _get_secret()
     if not key:
         return True  # dev mode — skip verify
     if not signature_header:

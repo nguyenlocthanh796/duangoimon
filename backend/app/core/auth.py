@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+import logging
 
 import jwt
 from fastapi import Depends, HTTPException, status
@@ -17,6 +18,9 @@ BLACKLISTED_TOKENS: set[str] = set()
 BLACKLISTED_EXP: set[int] = set()  # Track exp times of blacklisted tokens
 
 
+logger = logging.getLogger(__name__)
+
+
 def blacklist_token(token: str) -> None:
     """Add token to blacklist so it's rejected even before expiry."""
     try:
@@ -26,8 +30,9 @@ def blacklist_token(token: str) -> None:
         )
         exp = decoded.get("exp", 0)
         BLACKLISTED_EXP.add(exp)
-    except Exception:
-        pass
+    except Exception as e:
+        # Malformed token can't be blacklisted by exp — log for debugging
+        logger.debug("blacklist_token: cannot parse token: %s", e)
 
 
 def is_token_blacklisted(exp: int) -> bool:

@@ -539,9 +539,9 @@ const styles = StyleSheet.create({
   headCell: { paddingVertical: 12, paddingHorizontal: 12, justifyContent: 'center' },
   headCellActive: { backgroundColor: colors.brand.primaryBg },
   headInner: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  headText: { fontSize: 12, color: colors.text.tableHeader, fontWeight: '700', letterSpacing: 0.5 },
+  headText: { ...font.tableHeader, color: colors.text.tableHeader, fontWeight: '700' },
   headTextActive: { color: colors.brand.primaryDark },
-  headTextCompact: { fontSize: 11, color: colors.text.tableHeader, fontWeight: '700' },
+  headTextCompact: { ...font.tableHeader, color: colors.text.tableHeader, fontWeight: '700' },
   bodyRow: {
     flexDirection: 'row',
     alignItems: 'center',

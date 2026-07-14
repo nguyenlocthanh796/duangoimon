@@ -6,6 +6,8 @@ frontend (lib/api/thue.ts) calls /thue/deadlines/{branch_id} and a future
 handlers in app.api.v1.thue.declaration.
 """
 
+import logging
+
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -48,7 +50,8 @@ async def bulk_submit_deadlines_alias(
             )
             if res.get("submitted"):
                 submitted += 1
-        except Exception:
+        except Exception as e:
+            logging.warning("bulk_submit: failed for deadline %s: %s", dl_id, e)
             continue
     return {"submitted": submitted, "status": "ok"}
 

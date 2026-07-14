@@ -6,7 +6,7 @@ POST /thue/legacy-inventory/checklist/{branch_id}
   Response matches frontend lib/api/thue.ts::LegacyChecklist.
 """
 
-import uuid
+from app.core.uuid_utils import parse_uuid
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -42,7 +42,7 @@ async def get_checklist(
     _user: dict = Depends(ensure_branch_access),
 ):
     try:
-        b_uuid = uuid.UUID(branch_id)
+        b_uuid = parse_uuid(branch_id)
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid branch_id")
 

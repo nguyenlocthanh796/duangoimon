@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from fastapi.security import HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -11,6 +11,7 @@ from app.core.database import get_db
 from app.models.user import User
 
 router = APIRouter(tags=["auth"])
+security = HTTPBearer(auto_error=False)
 
 
 class LoginRequest(BaseModel):
@@ -45,13 +46,14 @@ async def login(body: LoginRequest, db: AsyncSession = Depends(get_db)):
 
 @router.post("/logout")
 async def logout(
-    cred: HTTPAuthorizationCredentials = None,
+    cred: HTTPAuthorizationCredentials = Depends(security),
     current_user: dict = Depends(get_current_user),
 ):
     """Logout user by blacklisting current JWT token."""
-    if not cred:
+    token = cred.credentials if cred else ""
+    if not token:
         raise HTTPException(status_code=401, detail="Missing token")
-    blacklist_token(cred.credentials)
+    blacklist_token(token)
     return {"detail": "Logged out successfully"}
 
 

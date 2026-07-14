@@ -1,6 +1,6 @@
 """Supplier portal API endpoints."""
 
-import uuid
+from app.core.uuid_utils import parse_uuid
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
@@ -63,7 +63,7 @@ async def portal_confirm_po(
     db: AsyncSession = Depends(get_db),
     user: dict = Depends(get_current_user),
 ):
-    result = await db.execute(select(PurchaseOrder).where(PurchaseOrder.id == uuid.UUID(po_id)))
+    result = await db.execute(select(PurchaseOrder).where(PurchaseOrder.id == parse_uuid(po_id)))
     po = result.scalar_one_or_none()
     if not po:
         raise HTTPException(status_code=404)

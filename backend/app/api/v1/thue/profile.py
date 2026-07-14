@@ -1,6 +1,6 @@
 """Thue (tax) API router — HKD profile + tier dashboard."""
 
-import uuid
+from app.core.uuid_utils import parse_uuid
 from decimal import Decimal
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -58,7 +58,7 @@ async def create_profile(
     if existing.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Tax code already registered")
     profile = HKDProfile(
-        branch_id=uuid.UUID(body.branch_id) if body.branch_id else None,
+        branch_id=parse_uuid(body.branch_id) if body.branch_id else None,
         tax_code=body.tax_code,
         legal_name=body.legal_name,
         opened_in_first_half=body.opened_in_first_half,
@@ -78,7 +78,7 @@ async def get_profile(
 ):
     """Get tax profile for a branch (protected by branch access check)."""
     result = await db.execute(
-        select(HKDProfile).where(HKDProfile.branch_id == uuid.UUID(branch_id))
+        select(HKDProfile).where(HKDProfile.branch_id == parse_uuid(branch_id))
     )
     profile = result.scalar_one_or_none()
     if not profile:
@@ -95,7 +95,7 @@ async def patch_profile(
 ):
     from datetime import datetime, timezone
 
-    result = await db.execute(select(HKDProfile).where(HKDProfile.id == uuid.UUID(profile_id)))
+    result = await db.execute(select(HKDProfile).where(HKDProfile.id == parse_uuid(profile_id)))
     profile = result.scalar_one_or_none()
     if not profile:
         raise HTTPException(status_code=404, detail="Profile not found")
@@ -116,7 +116,7 @@ async def profile_status(
     _user: dict = Depends(ensure_branch_access),
 ):
     result = await db.execute(
-        select(HKDProfile).where(HKDProfile.branch_id == uuid.UUID(branch_id))
+        select(HKDProfile).where(HKDProfile.branch_id == parse_uuid(branch_id))
     )
     profile = result.scalar_one_or_none()
     if not profile:

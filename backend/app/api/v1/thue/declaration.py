@@ -1,6 +1,6 @@
 """Declaration deadline API (kê khai thuế HKD)."""
 
-import uuid
+from app.core.uuid_utils import parse_uuid
 from datetime import date, datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -52,7 +52,7 @@ async def list_deadlines(
         (
             await db.execute(
                 select(DeclarationDeadline)
-                .where(DeclarationDeadline.branch_id == uuid.UUID(branch_id))
+                .where(DeclarationDeadline.branch_id == parse_uuid(branch_id))
                 .order_by(DeclarationDeadline.due_date)
             )
         )
@@ -86,7 +86,7 @@ async def ensure(
     from app.models.thue.hkd_profile import HKDProfile
 
     prof = (
-        await db.execute(select(HKDProfile).where(HKDProfile.branch_id == uuid.UUID(branch_id)))
+        await db.execute(select(HKDProfile).where(HKDProfile.branch_id == parse_uuid(branch_id)))
     ).scalar_one_or_none()
     if not prof:
         raise HTTPException(status_code=404, detail="Profile not found")
@@ -103,7 +103,7 @@ async def submit(
 ):
     dl = (
         await db.execute(
-            select(DeclarationDeadline).where(DeclarationDeadline.id == uuid.UUID(deadline_id))
+            select(DeclarationDeadline).where(DeclarationDeadline.id == parse_uuid(deadline_id))
         )
     ).scalar_one_or_none()
     if not dl:
@@ -140,7 +140,7 @@ async def get_declaration_xml(
     if period and not re.match(r"^\d{4}-(0[1-9]|1[0-2])$", period):
         raise HTTPException(status_code=400, detail="Invalid period format, expected YYYY-MM")
     try:
-        b_uuid = uuid.UUID(branch_id)
+        b_uuid = parse_uuid(branch_id)
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid branch_id")
     prof = (
@@ -159,7 +159,7 @@ async def submit_declaration(
 ):
     """Stub T-VAN submit: mark matching deadline (if any) as submitted."""
     try:
-        b_uuid = uuid.UUID(body.branch_id)
+        b_uuid = parse_uuid(body.branch_id)
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid branch_id")
     form_code = "01_TKN_CNKD" if body.form == "01-tkn-cnkd" else "01_CNKD"

@@ -1,4 +1,4 @@
-import uuid
+from app.core.uuid_utils import parse_uuid
 from decimal import Decimal
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -66,7 +66,7 @@ async def list_products(
 async def get_product(
     product_id: str, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)
 ):
-    result = await db.execute(select(Product).where(Product.id == uuid.UUID(product_id)))
+    result = await db.execute(select(Product).where(Product.id == parse_uuid(product_id)))
     p = result.scalar_one_or_none()
     if not p:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -99,7 +99,7 @@ async def update_product(
         data = body.model_dump(exclude_unset=True)
         if not data:
             raise HTTPException(status_code=400, detail="No fields to update")
-        result = await db.execute(select(Product).where(Product.id == uuid.UUID(product_id)))
+        result = await db.execute(select(Product).where(Product.id == parse_uuid(product_id)))
         p = result.scalar_one_or_none()
         if not p:
             raise HTTPException(status_code=404, detail="Product not found")
@@ -121,7 +121,7 @@ async def delete_product(
     product_id: str, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)
 ):
     try:
-        result = await db.execute(select(Product).where(Product.id == uuid.UUID(product_id)))
+        result = await db.execute(select(Product).where(Product.id == parse_uuid(product_id)))
         p = result.scalar_one_or_none()
         if not p:
             raise HTTPException(status_code=404, detail="Product not found")

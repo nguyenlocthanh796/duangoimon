@@ -1,4 +1,5 @@
 import uuid
+from app.core.uuid_utils import parse_uuid
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -16,7 +17,7 @@ from app.schemas.ban_hang import OrderOut
 
 def _uuid(val: str) -> uuid.UUID:
     try:
-        return uuid.UUID(val)
+        return parse_uuid(val)
     except ValueError:
         raise HTTPException(status_code=422, detail=f"Invalid UUID: {val}")
 
@@ -147,7 +148,7 @@ async def create_order(
     table_uuid = None if body.table_id == "TAKEAWAY" else _uuid(body.table_id)
     order = Order(
         table_id=table_uuid,
-        cashier_id=uuid.UUID(current_user["sub"]),
+        cashier_id=parse_uuid(current_user["sub"]),
         total_amount=total,
         tax_amount=total_tax,
         note=body.note,
@@ -299,7 +300,7 @@ async def update_order(
     _user: dict = Depends(get_current_user),
 ):
     result = await db.execute(
-        select(Order).options(selectinload(Order.items)).where(Order.id == uuid.UUID(order_id))
+        select(Order).options(selectinload(Order.items)).where(Order.id == parse_uuid(order_id))
     )
     order = result.scalar_one_or_none()
     if not order:

@@ -1,6 +1,6 @@
 """CRM API - customers CRUD + purchase history."""
 
-import uuid
+from app.core.uuid_utils import parse_uuid
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -57,7 +57,7 @@ async def list_customers(
 async def get_customer(
     customer_id: str, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)
 ):
-    result = await db.execute(select(Customer).where(Customer.id == uuid.UUID(customer_id)))
+    result = await db.execute(select(Customer).where(Customer.id == parse_uuid(customer_id)))
     c = result.scalar_one_or_none()
     if not c:
         raise HTTPException(status_code=404, detail="Customer not found")

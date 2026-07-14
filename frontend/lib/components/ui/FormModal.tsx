@@ -206,12 +206,12 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.border.light,
   },
   sheetTitle: {
-    fontSize: 18,
+    ...font.h3,
     fontWeight: '800',
     color: colors.text.primary,
   },
   sheetSubtitle: {
-    fontSize: 12,
+    ...font.caption,
     color: colors.text.muted,
     marginTop: 2,
   },
@@ -247,12 +247,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   phoneTitle: {
-    fontSize: 16,
+    ...font.bodyBold,
     fontWeight: '800',
     color: '#fff',
   },
   phoneSubtitle: {
-    fontSize: 11,
+    ...font.micro,
     color: 'rgba(255,255,255,0.8)',
     marginTop: 1,
   },

@@ -229,7 +229,7 @@ const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface.app },
   statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-  statValue: { ...font.h4, fontWeight: '900', color: colors.text.primary, lineHeight: 18 },
+  statValue: { ...font.h4, fontWeight: '800', color: colors.text.primary, lineHeight: 18 },
   statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },
 
   thead: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 6, borderBottomWidth: 2, borderBottomColor: colors.border.default, marginBottom: 4 },

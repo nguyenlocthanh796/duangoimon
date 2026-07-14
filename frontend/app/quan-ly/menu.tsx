@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
   panelHeaderText: { ...font.body, fontWeight: '700', color: colors.text.primary },
   panelStatRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 4 },
   panelStatLabel: { ...font.caption, color: colors.text.muted },
-  panelStatValue: { ...font.h2, fontWeight: '900', color: colors.text.primary },
+  panelStatValue: { ...font.h2, fontWeight: '800', color: colors.text.primary },
   panelDivider: { height: 1, backgroundColor: colors.border.light, marginVertical: 4 },
   catRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 6, paddingHorizontal: 4, borderRadius: shape.radius.md },
   catDot: { width: 8, height: 8, borderRadius: 4 },

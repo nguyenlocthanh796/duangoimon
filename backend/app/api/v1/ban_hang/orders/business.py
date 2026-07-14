@@ -1,5 +1,3 @@
-import uuid
-
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy import select, update
@@ -8,15 +6,11 @@ from sqlalchemy.orm import selectinload
 
 from app.core.auth import get_current_user
 from app.core.database import get_db
+from app.core.uuid_utils import parse_uuid
 from app.models.ban_hang import Order, OrderItem, Table
 from app.schemas.ban_hang import OrderOut
 
 
-def _uuid(val: str) -> uuid.UUID:
-    try:
-        return uuid.UUID(val)
-    except ValueError:
-        raise HTTPException(status_code=422, detail=f"Invalid UUID: {val}")
 
 
 router = APIRouter()
@@ -61,7 +55,7 @@ async def split_order(
     current_user: dict = Depends(get_current_user),
 ):
     result = await db.execute(
-        select(Order).options(selectinload(Order.items)).where(Order.id == _uuid(body.order_id))
+        select(Order).options(selectinload(Order.items)).where(Order.id == parse_uuid(body.order_id))
     )
     order = result.scalar_one_or_none()
     if not order:
@@ -88,12 +82,12 @@ async def split_order(
 
     table_uuid = None
     if body.new_table_id:
-        table_uuid = _uuid(body.new_table_id)
+        table_uuid = parse_uuid(body.new_table_id)
         await db.execute(update(Table).where(Table.id == table_uuid).values(status="dang_su_dung"))
 
     new_order = Order(
         table_id=table_uuid,
-        cashier_id=uuid.UUID(current_user["sub"]),
+        cashier_id=parse_uuid(current_user["sub"]),
         total_amount=sum(i.unit_price * i.quantity for i in split_items),
         note=f"Tách từ {order.id}",
     )
@@ -120,7 +114,7 @@ async def split_table(
     current_user: dict = Depends(get_current_user),
 ):
     result = await db.execute(
-        select(Order).options(selectinload(Order.items)).where(Order.id == _uuid(body.order_id))
+        select(Order).options(selectinload(Order.items)).where(Order.id == parse_uuid(body.order_id))
     )
     order = result.scalar_one_or_none()
     if not order:
@@ -144,7 +138,7 @@ async def split_table(
     order.tax_amount = round(
         sum(i.unit_price * i.quantity * (i.vat_rate or 0) / 100 for i in keep_items), 2
     )
-    table_uuid = _uuid(body.new_table_id)
+    table_uuid = parse_uuid(body.new_table_id)
 
     existing = await db.execute(
         select(Order).where(Order.table_id == table_uuid).where(Order.status != "da_thanh_toan")
@@ -156,7 +150,7 @@ async def split_table(
 
     new_order = Order(
         table_id=table_uuid,
-        cashier_id=uuid.UUID(current_user["sub"]),
+        cashier_id=parse_uuid(current_user["sub"]),
         total_amount=sum(i.unit_price * i.quantity for i in split_items),
         note=f"Tách bàn từ {order.id}",
     )
@@ -184,7 +178,7 @@ async def move_table(
     _user: dict = Depends(get_current_user),
 ):
     result = await db.execute(
-        select(Order).options(selectinload(Order.items)).where(Order.id == _uuid(order_id))
+        select(Order).options(selectinload(Order.items)).where(Order.id == parse_uuid(order_id))
     )
     order = result.scalar_one_or_none()
     if not order:
@@ -192,7 +186,7 @@ async def move_table(
     if order.status == "da_thanh_toan":
         raise HTTPException(status_code=400, detail="Cannot move a paid order")
 
-    new_table_uuid = _uuid(body.table_id)
+    new_table_uuid = parse_uuid(body.table_id)
     existing = await db.execute(
         select(Order)
         .options(selectinload(Order.items))
@@ -249,7 +243,7 @@ async def merge_orders(
     result = await db.execute(
         select(Order)
         .options(selectinload(Order.items))
-        .where(Order.id == _uuid(body.source_order_id))
+        .where(Order.id == parse_uuid(body.source_order_id))
     )
     source = result.scalar_one_or_none()
     if not source:
@@ -261,7 +255,7 @@ async def merge_orders(
         target_result = await db.execute(
             select(Order)
             .options(selectinload(Order.items))
-            .where(Order.id == _uuid(body.target_order_id))
+            .where(Order.id == parse_uuid(body.target_order_id))
         )
         target = target_result.scalar_one_or_none()
         if not target:
@@ -311,7 +305,7 @@ async def cancel_order_item(
     if _user.get("role") not in ["admin", "manager"]:
         raise HTTPException(status_code=403, detail="Only managers can cancel items")
 
-    result = await db.execute(select(OrderItem).where(OrderItem.id == _uuid(body.item_id)))
+    result = await db.execute(select(OrderItem).where(OrderItem.id == parse_uuid(body.item_id)))
     item = result.scalar_one_or_none()
     if not item:
         raise HTTPException(status_code=404, detail="OrderItem not found")

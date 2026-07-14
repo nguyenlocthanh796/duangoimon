@@ -7,6 +7,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.auth import get_current_user
 from app.core.database import get_db
 from app.models.ban_hang import Order, OrderItem, Product
+import logging
+
 
 router = APIRouter(prefix="/quan-ly/reports", tags=["quan-ly"])
 
@@ -47,8 +49,8 @@ async def sales_report(
             dt_from = datetime.fromisoformat(date_from.replace("Z", "+00:00"))
             query_daily = query_daily.where(Order.created_at >= dt_from)
             query_top = query_top.where(Order.created_at >= dt_from)
-        except Exception:
-            pass
+        except ValueError as e:
+            logging.warning("reports: invalid date_from=%r: %s", date_from, e)
     else:
         # Default: last 7 days
         default_from = today - dt_mod.timedelta(days=7)
@@ -63,8 +65,8 @@ async def sales_report(
                 dt_to = dt_to.replace(hour=23, minute=59, second=59)
             query_daily = query_daily.where(Order.created_at <= dt_to)
             query_top = query_top.where(Order.created_at <= dt_to)
-        except Exception:
-            pass
+        except ValueError as e:
+            logging.warning("reports: invalid date_to=%r: %s", date_to, e)
 
     # Execute
     res_daily = await db.execute(

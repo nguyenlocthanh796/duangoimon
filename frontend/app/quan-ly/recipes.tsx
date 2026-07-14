@@ -405,7 +405,7 @@ function StatItem({ icon, label, value }: { icon: string; label: string; value: 
     <View style={{ flex: 1, alignItems: 'center', flexDirection: 'row', gap: 6, justifyContent: 'center' }}>
       <Icon name={icon as any} size={16} color={colors.brand.primary} />
       <View>
-        <Text style={{ ...font.h4, fontWeight: '900', color: colors.text.primary, lineHeight: 18 }}>{value}</Text>
+        <Text style={{ ...font.h4, fontWeight: '800', color: colors.text.primary, lineHeight: 18 }}>{value}</Text>
         <Text style={{ ...font.micro, color: colors.text.muted, lineHeight: 12 }}>{label}</Text>
       </View>
     </View>
