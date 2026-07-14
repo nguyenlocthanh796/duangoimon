@@ -113,7 +113,7 @@ const s = StyleSheet.create({
     padding: 16,
     ...CARD_SHADOW,
   },
-  sectionTitle: { ...font.h3, color: colors.text.primary, marginBottom: 14 },
+  sectionTitle: { ...font.sectionTitle, color: colors.text.primary, marginBottom: 14 },
   emptyBox: { alignItems: 'center', paddingVertical: 24, gap: 8 },
   emptyText: { ...font.bodySmall, color: colors.text.secondary },
   tableHeader: {
@@ -124,7 +124,7 @@ const s = StyleSheet.create({
     borderBottomColor: colors.border.light,
     marginBottom: 4,
   },
-  thCell: { ...font.caption, color: colors.text.secondary, fontWeight: '700' },
+  thCell: { ...font.caption, color: colors.text.secondary, fontWeight: '600' },
   tableRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -133,20 +133,20 @@ const s = StyleSheet.create({
     borderRadius: 4,
   },
   tdCell: { ...font.bodySmall, color: colors.text.primary },
-  revCell: { ...font.bodySmall, fontWeight: '700', color: colors.text.primary, textAlign: 'right' },
-  rankCell: { ...font.body, fontWeight: '700', color: colors.brand.primary },
+  revCell: { ...font.bodySmall, fontWeight: '600', color: colors.text.primary, textAlign: 'right' },
+  rankCell: { ...font.body, fontWeight: '600', color: colors.brand.primary },
   ordersBadge: {
     backgroundColor: colors.brand.primaryBg,
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 4,
   },
-  ordersCount: { ...font.bodySmall, fontWeight: '700', color: colors.status.info },
+  ordersCount: { ...font.bodySmall, fontWeight: '600', color: colors.status.info },
   qtyBadge: {
     backgroundColor: colors.brand.primaryBg,
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 4,
   },
-  qtyText: { ...font.bodySmall, fontWeight: '700', color: colors.brand.primary },
+  qtyText: { ...font.bodySmall, fontWeight: '600', color: colors.brand.primary },
 });

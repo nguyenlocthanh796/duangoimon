@@ -67,7 +67,7 @@ export default function MoveTableModal({
               marginBottom: 8,
             }}
           >
-            <Text style={{ ...font.h3, color: colors.text.primary }}>{title}</Text>
+            <Text style={{ ...font.sectionTitle, color: colors.text.primary }}>{title}</Text>
             <TouchableOpacity
               onPress={onClose}
               style={{

@@ -324,7 +324,7 @@ const sccStyles = StyleSheet.create({
   },
   top: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
   title: { ...font.caption, color: colors.text.muted, fontWeight: '500' },
-  value: { ...font.h2, fontWeight: '700', marginTop: 2 },
+  value: { ...font.sectionTitle, fontWeight: '600', marginTop: 2 },
   trend: { ...font.caption, fontWeight: '600', marginTop: 4 },
   trendLabel: { ...font.caption, color: colors.text.muted, fontWeight: '400' },
   chartWrap: { marginTop: 2 },
@@ -353,7 +353,7 @@ export function QuickTable({ columns, data, maxRows = 5 }: QuickTableProps) {
       {/* Header */}
       <View style={qtStyles.headerRow}>
         {columns.map((col) => (
-          <View key={col.key} style={[qtStyles.headerCell, col.width && { width: col.width }]}>
+          <View key={col.key} style={[qtStyles.headerCell, col.width != null ? { width: col.width } : undefined]}>
             <Text style={qtStyles.headerText} numberOfLines={1}>
               {col.label}
             </Text>
@@ -373,7 +373,7 @@ export function QuickTable({ columns, data, maxRows = 5 }: QuickTableProps) {
                 key={col.key}
                 style={[
                   qtStyles.dataCell,
-                  col.width && { width: col.width },
+                  col.width != null ? { width: col.width } : undefined,
                   col.align === 'right' && qtStyles.dataCellRight,
                   col.align === 'center' && qtStyles.dataCellCenter,
                 ]}
@@ -448,7 +448,7 @@ export function QuickTableSummary({
         if (sumKeys.includes(col.key)) {
           const total = data.reduce((acc, row) => acc + (Number(row[col.key]) || 0), 0);
           return (
-            <View key={col.key} style={[qtsStyles.cell, col.width && { width: col.width }]}>
+            <View key={col.key} style={[qtsStyles.cell, col.width != null ? { width: col.width } : undefined]}>
               <Text style={qtsStyles.value} numberOfLines={1}>
                 {Intl.NumberFormat('vi-VN').format(total)}
               </Text>
@@ -456,7 +456,7 @@ export function QuickTableSummary({
           );
         }
         return (
-          <View key={col.key} style={[qtsStyles.cell, col.width && { width: col.width }]}>
+          <View key={col.key} style={[qtsStyles.cell, col.width != null ? { width: col.width } : undefined]}>
             <Text style={qtsStyles.label}>{col.key === 'label' ? 'Tổng' : ''}</Text>
           </View>
         );
@@ -474,6 +474,6 @@ const qtsStyles = StyleSheet.create({
     borderTopColor: colors.border.strong,
   },
   cell: { flex: 1, justifyContent: 'center' },
-  label: { ...font.caption, color: colors.text.primary, fontWeight: '700' },
+  label: { ...font.caption, color: colors.text.primary, fontWeight: '600' },
   value: { ...font.tableCellBold, color: colors.text.primary, textAlign: 'right' },
 });

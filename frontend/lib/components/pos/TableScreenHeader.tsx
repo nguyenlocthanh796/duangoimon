@@ -61,7 +61,7 @@ export default function TableScreenHeader({
           <Icon name="menu" size={iconSize} color={colors.icon.inverse} />
         </TouchableOpacity>
         <View>
-          <Text style={{ ...(isWide ? font.h3 : font.h4), color: colors.text.inverse, fontWeight: '600' }}>
+          <Text style={{ ...(isWide ? font.sectionTitle : font.bodyBold), color: colors.text.inverse, fontWeight: '600' }}>
             Sơ đồ bàn
           </Text>
           {!isWide && (
@@ -96,14 +96,14 @@ export default function TableScreenHeader({
               gap: 6,
               paddingHorizontal: isWide ? 14 : 10,
               height: btnSize,
-              borderRadius: shape.radius.md,
+              borderRadius: 99,
               backgroundColor: colors.surface.card,
               borderWidth: 1.5,
               borderColor: colors.surface.card,
             }}
           >
             <Icon name="bag-personal" size={iconSize} color={colors.brand.primary} />
-            <Text style={{ ...(isWide ? font.tab : font.buttonSmall), color: colors.brand.primary }}>
+            <Text style={{ ...(isWide ? font.button : font.button), color: colors.brand.primary }}>
               Mang Về
             </Text>
           </TouchableOpacity>
@@ -118,14 +118,14 @@ export default function TableScreenHeader({
               gap: 6,
               paddingHorizontal: 10,
               height: btnSize,
-              borderRadius: shape.radius.md,
+              borderRadius: 99,
               backgroundColor: colors.surface.card,
               borderWidth: 1.5,
               borderColor: colors.surface.card,
             }}
           >
             <Icon name="bag-personal" size={iconSize} color={colors.brand.primary} />
-            <Text style={{ ...font.buttonSmall, color: colors.brand.primary }}>Mang Về</Text>
+            <Text style={{ ...font.button, color: colors.brand.primary }}>Mang Về</Text>
           </TouchableOpacity>
         ) : null}
       </View>

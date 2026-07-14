@@ -18,7 +18,7 @@ from pydantic import BaseModel
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.auth import ensure_branch_access, get_current_user
+from app.core.auth import ensure_branch_access
 from app.core.database import get_db
 from app.core.thue import report_export as exporter
 from app.core.thue.report_export import RevenueRow, build_report

@@ -1,10 +1,47 @@
+"""POS F&B API — FastAPI application entry point.
+
+Layout:
+  imports (stdlib → 3rd-party → app)
+  lifespan (startup / shutdown)
+  FastAPI app creation
+  middleware stack
+  route registration
+  WebSocket handlers
+  health / readiness probes
+  exception handlers
+"""
+
+import logging
 import os
 import re
 import socket
 import sys
+from contextlib import asynccontextmanager
 
-# Windows + Python 3.14+: asyncpg needs SelectorEventLoop
-# conftest.py sets this at test import time; here we handle server startup
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
+from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
+from app.core.logging_config import setup_logging
+
+setup_logging()
+
+from app.core.database import engine
+from app.core.rbac import require_branch_access, require_role
+from app.core.ws_manager import ws_manager
+from app.middleware.request_id import RequestIDMiddleware
+from app.middleware.security_headers import SecurityHeadersMiddleware
+from app.core.audit_middleware import audit_mutation_middleware
+from app.core.csrf_middleware import csrf_middleware
+from app.core.rate_limiter import rate_limit_middleware
+from app.api.v1 import auth, public, integrations
+from app.api.v1 import ban_hang, ke_toan, quan_ly, thue
+
+logger = logging.getLogger(__name__)
+
+# ── Windows / Python 3.14+ selector event loop ────────────────────────────
 if sys.platform == "win32":
     import asyncio
     import selectors
@@ -22,48 +59,27 @@ if sys.platform == "win32":
     except RuntimeError:
         pass
 
-from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
-from fastapi.middleware.cors import CORSMiddleware
-from app.middleware.request_id import RequestIDMiddleware
-from app.middleware.security_headers import SecurityHeadersMiddleware
-from app.core.logging_config import setup_logging
-
-setup_logging()
-
-from sqlalchemy import text
-
-from app.api.v1 import auth, ban_hang, ke_toan, quan_ly, thue
-from app.core.database import engine
-from app.core.rbac import require_branch_access, require_role
-from app.core.ws_manager import ws_manager
-from app.models.audit import AuditLog  # noqa
-from app.models.ban_hang import Order, OrderItem, Product, Table  # noqa
-from app.models.ke_toan import Invoice, Transaction  # noqa
-from app.models.quan_ly import Inventory, InventoryTransaction, ShiftLog  # noqa
-from app.models.recipe import RawMaterial, Recipe, RecipeItem  # noqa
-from app.models.user import User  # noqa
-
+# ── Lifespan (startup / shutdown) ─────────────────────────────────────────
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     from app.core.sentry_config import init_sentry
     init_sentry()
-    # Tax scheduler — disable on Windows (ProactorEventLoop not compatible with psycopg async)
-    # Will be enabled when running with SelectorEventLoop
+
+    # Tax scheduler — fails gracefully on Windows (ProactorEventLoop)
     try:
         from app.core.thue.scheduler import start_scheduler
         await start_scheduler()
     except Exception as e:
-        import logging as _l
-        _l.getLogger("lifespan").warning("Tax scheduler not started: %s", e)
+        logger.warning("Tax scheduler not started: %s", e)
+
     yield
     await engine.dispose()
 
 
-# Disable OpenAPI in production (prevent API schema leak to attackers)
-# Set POS_ENV=production to hide /docs and /openapi.json
+# ── FastAPI app ────────────────────────────────────────────────────────────
+
 _show_docs = os.getenv("POS_ENV", "development") != "production"
 
 app = FastAPI(
@@ -75,48 +91,14 @@ app = FastAPI(
     openapi_url="/openapi.json" if _show_docs else None,
 )
 
-# Thue (tax) routes — admin + accountant only
-app.include_router(
-    thue.profile.router,
-    prefix="/api/v1",
-    dependencies=[require_role(endpoint_path="thue")],
-)
-app.include_router(
-    thue.cash_register_invoice.router,
-    prefix="/api/v1",
-    dependencies=[require_role(endpoint_path="thue"), require_branch_access()],
-)
-app.include_router(
-    thue.declaration.router,
-    prefix="/api/v1",
-    dependencies=[require_role(endpoint_path="thue"), require_branch_access()],
-)
-app.include_router(
-    thue.bank.router,
-    prefix="/api/v1",
-    dependencies=[require_role(endpoint_path="thue"), require_branch_access()],
-)
-app.include_router(
-    thue.report.router,
-    prefix="/api/v1",
-    dependencies=[require_role(endpoint_path="thue"), require_branch_access()],
-)
-app.include_router(
-    thue.legacy.router,
-    prefix="/api/v1",
-    dependencies=[require_role(endpoint_path="thue")],
-)
-app.include_router(
-    thue._alias.router,
-    prefix="/api/v1",
-    dependencies=[require_role(endpoint_path="thue")],
-)
 
-# CORS — restrict origins via env, but always allow localhost / 127.0.0.1 / the
-# machine's LAN IPs on any dev port (covers Expo web on :8081/:19006, the
+# ── CORS ──────────────────────────────────────────────────────────────────
+# Restrict origins via env, but always allow localhost / 127.0.0.1 / the
+# machine's LAN IPs on any dev port (covers Expo web on :8081/:19006,
 # production build on :3000, and access from the LAN URL or a phone).
-# Note: backend/.env is not auto-loaded (no python-dotenv), so CORS_ORIGINS must
-# be set in the real process env if you need non-localhost origins.
+# Note: .env is NOT auto-loaded (no python-dotenv), so CORS_ORIGINS must
+# be set in the real process env for non-localhost origins.
+
 _env_origins = os.getenv("CORS_ORIGINS", "")
 origins = [o.strip() for o in _env_origins.split(",") if o.strip()] or [
     "http://localhost:3000",
@@ -137,12 +119,16 @@ try:
     _lan_ips.add(_s.getsockname()[0])
     _s.close()
 except Exception as e:
-    import structlog
+    try:
+        import structlog
 
-    structlog.get_logger("cors").warning("Failed to resolve LAN IP for CORS", error=str(e))
+        structlog.get_logger("cors").warning(
+            "Failed to resolve LAN IP for CORS", error=str(e)
+        )
+    except ImportError:
+        pass
 
 _lan_pattern = "|".join(re.escape(ip) for ip in _lan_ips)
-# Match http(s)://(localhost|127.0.0.1|<lan-ips>)(:port)?
 _cors_regex = (
     r"^https?://(localhost|127\.0\.0\.1"
     + (f"|{_lan_pattern}" if _lan_pattern else "")
@@ -155,18 +141,107 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "Accept", "X-Requested-With"],
-    # Allow localhost + LAN IPs on any port during local/dev use.
     allow_origin_regex=_cors_regex,
 )
 
-# Request ID tracing — assign unique ID to each request
+# Middleware stack (order matters)
 app.add_middleware(RequestIDMiddleware)
-
-# Security headers — CSP, XSS, frame protection
 app.add_middleware(SecurityHeadersMiddleware)
 
+app.middleware("http")(audit_mutation_middleware)
+app.middleware("http")(csrf_middleware)
+app.middleware("http")(rate_limit_middleware)
 
-# Health check
+
+# ── Route registration ────────────────────────────────────────────────────
+
+# Public endpoints (no auth)
+app.include_router(auth.router, prefix="/api/v1/auth")
+app.include_router(public.router, prefix="/api/v1")
+app.include_router(integrations.router, prefix="/api/v1")
+
+# Ban-hang (POS) — cashier + admin + manager
+_ban_hang_deps = [require_role(endpoint_path="ban-hang"), require_branch_access()]
+app.include_router(ban_hang.tables.router, prefix="/api/v1", dependencies=_ban_hang_deps)
+app.include_router(ban_hang.products.router, prefix="/api/v1", dependencies=_ban_hang_deps)
+app.include_router(ban_hang.orders.router, prefix="/api/v1", dependencies=_ban_hang_deps)
+app.include_router(ban_hang.payments.router, prefix="/api/v1", dependencies=_ban_hang_deps)
+
+# Quan-ly (admin / manager)
+_quan_ly_deps = [require_role(endpoint_path="quan-ly"), require_branch_access()]
+app.include_router(quan_ly.router, prefix="/api/v1", dependencies=_quan_ly_deps)
+app.include_router(
+    quan_ly.users.router,
+    prefix="/api/v1",
+    dependencies=[require_role(endpoint_path="quan-ly/users"), require_branch_access()],
+)
+
+# Ke-toan (accounting) — admin + accountant
+_ke_toan_deps = [require_role(endpoint_path="ke-toan"), require_branch_access()]
+app.include_router(ke_toan.transactions.router, prefix="/api/v1", dependencies=_ke_toan_deps)
+app.include_router(ke_toan.invoices.router, prefix="/api/v1", dependencies=_ke_toan_deps)
+app.include_router(ke_toan.dashboard.router, prefix="/api/v1", dependencies=_ke_toan_deps)
+
+# Thue (tax) — admin + accountant
+_thue_deps_mgmt = [require_role(endpoint_path="thue")]
+_thue_deps_branch = [require_role(endpoint_path="thue"), require_branch_access()]
+app.include_router(thue.profile.router, prefix="/api/v1", dependencies=_thue_deps_mgmt)
+app.include_router(thue.legacy.router, prefix="/api/v1", dependencies=_thue_deps_mgmt)
+app.include_router(thue._alias.router, prefix="/api/v1", dependencies=_thue_deps_mgmt)
+app.include_router(thue.cash_register_invoice.router, prefix="/api/v1", dependencies=_thue_deps_branch)
+app.include_router(thue.declaration.router, prefix="/api/v1", dependencies=_thue_deps_branch)
+app.include_router(thue.bank.router, prefix="/api/v1", dependencies=_thue_deps_branch)
+app.include_router(thue.report.router, prefix="/api/v1", dependencies=_thue_deps_branch)
+
+
+# ── WebSocket endpoints ──────────────────────────────────────────────────
+
+from app.core.auth import decode_token
+
+
+async def _ws_auth(websocket: WebSocket) -> bool:
+    """Validate JWT token from WebSocket query param."""
+    token = websocket.query_params.get("token", "")
+    if not token:
+        await websocket.close(code=4001, reason="Missing auth token")
+        return False
+    try:
+        decode_token(token)
+        return True
+    except Exception:
+        await websocket.close(code=4001, reason="Invalid auth token")
+        return False
+
+
+@app.websocket("/ws/kitchen")
+async def kitchen_ws(websocket: WebSocket):
+    if not await _ws_auth(websocket):
+        return
+    await ws_manager.connect(websocket, "kitchen")
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        ws_manager.disconnect(websocket, "kitchen")
+
+
+@app.websocket("/ws/inventory")
+async def inventory_ws(websocket: WebSocket):
+    if not await _ws_auth(websocket):
+        return
+    await ws_manager.connect(websocket, "inventory")
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        ws_manager.disconnect(websocket, "inventory")
+
+
+# ── Health / readiness ────────────────────────────────────────────────────
+
+from sqlalchemy import text
+
+
 @app.get("/healthz")
 @app.get("/readyz")
 async def healthz():
@@ -176,8 +251,7 @@ async def healthz():
             await conn.execute(text("SELECT 1"))
         db_ok = True
     except Exception:
-        import logging
-        logging.getLogger("healthz").warning("Database health check failed", exc_info=True)
+        logger.warning("Database health check failed", exc_info=True)
     return {
         "status": "ok",
         "version": "1.0.0",
@@ -185,11 +259,7 @@ async def healthz():
     }
 
 
-# Global exception handlers
-from fastapi import Request
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
-from starlette.exceptions import HTTPException as StarletteHTTPException
+# ── Exception handlers ────────────────────────────────────────────────────
 
 
 def _get_cors_headers(request: Request) -> dict[str, str]:
@@ -243,128 +313,3 @@ async def not_found_handler(request: Request, exc):
         content={"detail": "Not found"},
         headers=_get_cors_headers(request),
     )
-
-
-# Auto-audit all POST/PUT/DELETE on /api/v1...
-from app.core.audit_middleware import audit_mutation_middleware
-
-app.middleware("http")(audit_mutation_middleware)
-
-# CSRF protection — checks Origin/Referer on mutation requests
-from app.core.csrf_middleware import csrf_middleware as _csrf_mw
-
-app.middleware("http")(_csrf_mw)
-
-# Rate limiting — 60 req/min per IP
-from app.core.rate_limiter import rate_limit_middleware
-
-app.middleware("http")(rate_limit_middleware)
-
-
-# WebSocket - Kitchen
-@app.websocket("/ws/kitchen")
-async def kitchen_ws(websocket: WebSocket):
-    # Require JWT token as query param ?token=xxx
-    token = websocket.query_params.get("token", "")
-    if not token:
-        await websocket.close(code=4001, reason="Missing auth token")
-        return
-    try:
-        from app.core.auth import decode_token
-        decode_token(token)
-    except Exception:
-        await websocket.close(code=4001, reason="Invalid auth token")
-        return
-    await ws_manager.connect(websocket, "kitchen")
-    try:
-        while True:
-            await websocket.receive_text()
-    except WebSocketDisconnect:
-        ws_manager.disconnect(websocket, "kitchen")
-
-
-# WebSocket - Inventory alerts
-@app.websocket("/ws/inventory")
-async def inventory_ws(websocket: WebSocket):
-    # Require JWT token as query param ?token=xxx
-    token = websocket.query_params.get("token", "")
-    if not token:
-        await websocket.close(code=4001, reason="Missing auth token")
-        return
-    try:
-        from app.core.auth import decode_token
-        decode_token(token)
-    except Exception:
-        await websocket.close(code=4001, reason="Invalid auth token")
-        return
-    await ws_manager.connect(websocket, "inventory")
-    try:
-        while True:
-            await websocket.receive_text()
-    except WebSocketDisconnect:
-        ws_manager.disconnect(websocket, "inventory")
-
-
-# Auth routes (public)
-app.include_router(auth.router, prefix="/api/v1/auth")
-
-# Public routes (QR self-order — no auth)
-from app.api.v1 import public
-
-app.include_router(public.router, prefix="/api/v1")
-
-# Public integrations (no auth — webhook receivers)
-from app.api.v1 import integrations
-
-app.include_router(integrations.router, prefix="/api/v1")
-
-# BanHang routes — cashier + admin + manager
-app.include_router(
-    ban_hang.tables.router,
-    prefix="/api/v1",
-    dependencies=[require_role(endpoint_path="ban-hang"), require_branch_access()],
-)
-app.include_router(
-    ban_hang.products.router,
-    prefix="/api/v1",
-    dependencies=[require_role(endpoint_path="ban-hang"), require_branch_access()],
-)
-app.include_router(
-    ban_hang.orders.router,
-    prefix="/api/v1",
-    dependencies=[require_role(endpoint_path="ban-hang"), require_branch_access()],
-)
-app.include_router(
-    ban_hang.payments.router,
-    prefix="/api/v1",
-    dependencies=[require_role(endpoint_path="ban-hang"), require_branch_access()],
-)
-
-# QuanLy routes — admin + manager only
-app.include_router(
-    quan_ly.router,
-    prefix="/api/v1",
-    dependencies=[require_role(endpoint_path="quan-ly"), require_branch_access()],
-)
-app.include_router(
-    quan_ly.users.router,
-    prefix="/api/v1",
-    dependencies=[require_role(endpoint_path="quan-ly/users"), require_branch_access()],
-)
-
-# KeToan routes — admin + accountant only
-app.include_router(
-    ke_toan.transactions.router,
-    prefix="/api/v1",
-    dependencies=[require_role(endpoint_path="ke-toan"), require_branch_access()],
-)
-app.include_router(
-    ke_toan.invoices.router,
-    prefix="/api/v1",
-    dependencies=[require_role(endpoint_path="ke-toan"), require_branch_access()],
-)
-app.include_router(
-    ke_toan.dashboard.router,
-    prefix="/api/v1",
-    dependencies=[require_role(endpoint_path="ke-toan"), require_branch_access()],
-)

@@ -277,7 +277,7 @@ export default function RecipeForm({
           <TouchableOpacity onPress={onClose}>
             <Text style={{ ...font.button, color: colors.text.muted }}>Huỷ</Text>
           </TouchableOpacity>
-          <Text style={{ ...font.h2, color: colors.text.primary }}>
+          <Text style={{ ...font.sectionTitle, color: colors.text.primary }}>
             {isEdit ? 'Sửa công thức' : isClone ? 'Nhân bản công thức' : 'Công thức mới'}
           </Text>
           <TouchableOpacity onPress={save} disabled={saving}>
@@ -375,7 +375,7 @@ export default function RecipeForm({
                   style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
                 >
                   <Icon name="plus-circle-outline" size={18} color={colors.brand.primary} />
-                  <Text style={{ ...font.tab, color: colors.brand.primary }}>Thêm</Text>
+                  <Text style={{ ...font.bodySmall, color: colors.brand.primary }}>Thêm</Text>
                 </TouchableOpacity>
               </View>
             </View>

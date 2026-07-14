@@ -8,7 +8,6 @@ from typing import Any
 
 from pydantic import BaseModel, Field, ConfigDict
 
-from app.schemas.base_types import MoneyAmount
 
 
 class TableOut(BaseModel):

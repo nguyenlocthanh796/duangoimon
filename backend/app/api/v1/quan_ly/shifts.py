@@ -11,7 +11,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth import get_current_user
 from app.core.database import get_db
-from app.core.pagination import PageParams, paginate
 from app.models.quan_ly import ShiftLog
 
 router = APIRouter(prefix="/quan-ly/shifts", tags=["quan-ly"])

@@ -20,7 +20,7 @@ import { palette } from '../lib/theme/colors';
 import { font } from '../lib/theme/typography';
 
 // ─── Constants ─────────────────────────────────────────────
-const ORANGE_GRADIENT: [string, string, string] = ['#F97316', '#EA580C', '#DC2626'];
+const ORANGE_GRADIENT: [string, string, string] = ['#F97316', '#F97316', '#DC2626'];
 const ORANGE_GRADIENT_LIGHT: [string, string] = ['#FF8A50', '#F97316'];
 
 const FEATURES = [
@@ -72,13 +72,13 @@ function BrandSide() {
         <View style={s.brandDivider} />
 
         {/* Feature list */}
-        <View style={{ gap: 20 }}>
+        <View style={{ gap: 12}}>
           {FEATURES.map((item, i) => (
             <Animated.View
               key={item.label}
               style={{
                 flexDirection: 'row',
-                gap: 14,
+                gap: 12,
                 alignItems: 'flex-start',
                 opacity: fadeAnim,
                 transform: [{ translateX: slideAnim }],
@@ -156,7 +156,7 @@ export default function LoginScreen() {
   const bgColor = isDark ? '#0F172A' : palette.stone[50];
   const cardBg = isDark ? '#1E293B' : '#fff';
   const textPrimary = isDark ? '#F1F5F9' : '#111827';
-  const textSecondary = isDark ? '#94A3B8' : '#6B7280';
+  const textSecondary = isDark ? '#737373' : '#6B7280';
   const borderColor = isDark ? 'rgba(255,255,255,0.08)' : '#F3F4F6';
 
   // ── iPad ───────────────────────────────────────────────
@@ -238,7 +238,7 @@ const s = StyleSheet.create({
   },
   decoCircle: {
     position: 'absolute',
-    borderRadius: 999,
+    borderRadius: 12,
     backgroundColor: '#fff',
   },
   // ── Brand Side ──
@@ -258,7 +258,7 @@ const s = StyleSheet.create({
     marginBottom: 20,
   },
   brandTitle: {
-    ...font.h1,
+    ...font.pageTitle,
     fontSize: 40,
     color: '#fff',
     letterSpacing: -0.5,
@@ -314,7 +314,7 @@ const s = StyleSheet.create({
     }),
   },
   formTitle: {
-    ...font.h2,
+    ...font.sectionTitle,
   },
   formSubtitle: {
     ...font.bodySmall,
@@ -326,9 +326,9 @@ const s = StyleSheet.create({
     flex: 1,
     minHeight: 700,
     justifyContent: 'flex-start',
-    paddingHorizontal: 20,
-    paddingTop: 48,
-    paddingBottom: 40,
+    paddingHorizontal: 4,
+    paddingTop: 8,
+    paddingBottom: 8,
   },
   phoneLogoContainer: {
     width: 64,
@@ -343,7 +343,7 @@ const s = StyleSheet.create({
     justifyContent: 'center',
   },
   phoneTitle: {
-    ...font.h1,
+    ...font.pageTitle,
     fontSize: 28,
     color: '#fff',
     textAlign: 'center',
@@ -358,7 +358,8 @@ const s = StyleSheet.create({
   phoneCard: {
     width: '100%',
     borderRadius: 20,
-    padding: 24,
+    paddingHorizontal: 4,
+    paddingVertical: 8,
     borderWidth: 1,
     ...Platform.select({
       web: { boxShadow: '0 20px 60px rgba(0,0,0,0.12)' },
@@ -372,7 +373,7 @@ const s = StyleSheet.create({
     }),
   },
   phoneCardTitle: {
-    ...font.h3,
+    ...font.sectionTitle,
     textAlign: 'center',
   },
   phoneCardSub: {

@@ -68,7 +68,7 @@ export default function POForm({
           <TouchableOpacity onPress={onClose}>
             <Text style={{ ...font.button, color: colors.text.muted }}>Huỷ</Text>
           </TouchableOpacity>
-          <Text style={{ ...font.h2, color: colors.text.primary }}>PO mới</Text>
+          <Text style={{ ...font.sectionTitle, color: colors.text.primary }}>PO mới</Text>
           <TouchableOpacity onPress={save} disabled={saving}>
             <Text
               style={{ ...font.button, color: saving ? colors.text.muted : colors.brand.primary }}
@@ -110,7 +110,7 @@ export default function POForm({
               <Text style={s.label}>Nguyên liệu</Text>
               <TouchableOpacity onPress={addItem} style={{ flexDirection: 'row', gap: 4 }}>
                 <Icon name="plus-circle" size={18} color={colors.brand.primary} />
-                <Text style={{ ...font.tab, color: colors.brand.primary }}>Thêm</Text>
+                <Text style={{ ...font.bodySmall, color: colors.brand.primary }}>Thêm</Text>
               </TouchableOpacity>
             </View>
             {items.map((it, idx) => (
@@ -202,5 +202,5 @@ const s = StyleSheet.create({
   },
   supChipActive: { borderColor: colors.brand.primary, backgroundColor: colors.brand.primaryBg },
   supChipText: { ...font.caption, color: colors.text.secondary },
-  supChipTextActive: { color: colors.brand.primary, fontWeight: '700' },
+  supChipTextActive: { color: colors.brand.primary, fontWeight: '600' },
 });

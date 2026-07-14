@@ -34,7 +34,7 @@ export default function StatusBadge({ label, severity = 'neutral', size = 'md' }
       <Text
         style={{
           ...(isSmall ? font.micro : font.badge),
-          fontWeight: '700',
+          fontWeight: '600',
           color: palette.text,
         }}
       >

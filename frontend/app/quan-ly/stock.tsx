@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '../../lib/context/AuthContext';
+import { TableSkeleton } from '../../lib/components/ui/Skeleton';
 import {
   View, Text, FlatList, TouchableOpacity, StyleSheet,
-  TextInput, Alert, ActivityIndicator, RefreshControl,
+  TextInput, Alert, RefreshControl,
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSidebar } from '../../lib/context/SidebarContext';
@@ -150,7 +151,7 @@ export default function StockScreen() {
       { text: 'Xoá', style: 'destructive', onPress: async () => {
         setSelectedItemId(null);
         load();
-      }},
+      } },
     ]);
   };
 
@@ -170,7 +171,7 @@ export default function StockScreen() {
             <Text style={s.panelSub}>{selectedItem.code}</Text>
           </View>
           <View style={[s.badge, { backgroundColor: lv.bg }]}>
-            <Text style={{ ...font.micro, fontWeight: '700', color: lv.text }}>{lv.label}</Text>
+            <Text style={{ ...font.micro, fontWeight: '600', color: lv.text }}>{lv.label}</Text>
           </View>
         </View>
 
@@ -200,7 +201,7 @@ export default function StockScreen() {
                 backgroundColor: lv.text,
               }]} />
             </View>
-            <Text style={{ ...font.micro, color: colors.text.muted, marginTop: 2 }}>
+            <Text style={{ ...font.micro, color: '#737373', marginTop: 2 }}>
               {selectedItem.current_stock >= selectedItem.min_stock
                 ? 'Đạt ngưỡng tối thiểu'
                 : `Thiếu ${(selectedItem.min_stock - selectedItem.current_stock).toFixed(1)} ${selectedItem.unit}`}
@@ -208,14 +209,14 @@ export default function StockScreen() {
           </View>
         )}
 
-        <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
-          <TouchableOpacity onPress={() => openEdit(selectedItem)} style={[s.panelBtn, { backgroundColor: colors.brand.primary }]}>
+        <View style={{ flexDirection: 'row', gap: 16, marginTop: 4 }}>
+          <TouchableOpacity onPress={() => openEdit(selectedItem)} style={[s.panelBtn, { backgroundColor: '#F97316' }]}>
             <Icon name="pencil-outline" size={14} color="#fff" />
             <Text style={s.panelBtnText}>Sửa</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => deleteMaterial(selectedItem.id)} style={[s.panelBtn, { backgroundColor: '#FEE2E2' }]}>
-            <Icon name="delete-outline" size={14} color={colors.status.danger} />
-            <Text style={{ ...s.panelBtnText, color: colors.status.danger }}>Xoá</Text>
+            <Icon name="delete-outline" size={14} color={'#DC2626'} />
+            <Text style={{ ...s.panelBtnText, color: '#DC2626' }}>Xoá</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -237,11 +238,11 @@ export default function StockScreen() {
     return (
       <TouchableOpacity
         onPress={() => setSelectedItemId(isSelected ? null : item.id)}
-        style={[s.card, isSelected && { borderColor: colors.brand.primary }]}
+        style={[s.card, isSelected && { borderColor: '#F97316' }]}
         activeOpacity={0.7}
       >
         <View style={s.cardTop}>
-          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 32}}>
             <View style={[s.cardIcon, { backgroundColor: lv.bg }]}>
               <Icon name="package-variant" size={18} color={lv.text} />
             </View>
@@ -281,11 +282,11 @@ export default function StockScreen() {
         {/* Always-visible actions */}
         <View style={s.actionRow}>
           <TouchableOpacity onPress={() => openEdit(item)} style={s.actionBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Icon name="pencil-outline" size={15} color={colors.text.muted} />
+            <Icon name="pencil-outline" size={15} color={'#737373'} />
           </TouchableOpacity>
           <View style={s.actionDot} />
           <TouchableOpacity onPress={() => deleteMaterial(item.id)} style={s.actionBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Icon name="delete-outline" size={15} color={colors.text.muted} />
+            <Icon name="delete-outline" size={15} color={'#737373'} />
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
@@ -296,16 +297,16 @@ export default function StockScreen() {
   const renderFilters = () => (
     <View style={s.filterBar}>
       <View style={s.searchBox}>
-        <Icon name="magnify" size={16} color={colors.text.muted} />
+        <Icon name="magnify" size={16} color={'#737373'} />
         <TextInput value={search} onChangeText={setSearch} placeholder="Tìm nguyên liệu..."
-          placeholderTextColor={colors.text.muted}
-          style={{ flex: 1, ...font.caption, color: colors.text.primary, paddingVertical: 0 }} />
+          placeholderTextColor={'#737373'}
+          style={{ flex: 1, ...font.caption, color: '#171717', paddingVertical: 0 }} />
         {search !== '' && (
-          <TouchableOpacity onPress={() => setSearch('')}><Icon name="close-circle" size={16} color={colors.text.muted} /></TouchableOpacity>
+          <TouchableOpacity onPress={() => setSearch('')}><Icon name="close-circle" size={16} color={'#737373'} /></TouchableOpacity>
         )}
       </View>
       {categories.length > 1 && (
-        <View style={{ flexDirection: 'row', gap: 4, flexWrap: 'wrap' }}>
+        <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
           {categories.map(cat => (
             <TouchableOpacity key={cat} onPress={() => setCatFilter(cat)}
               style={[s.chip, catFilter === cat && s.chipActive]}>
@@ -320,15 +321,15 @@ export default function StockScreen() {
   );
 
   const renderList = () => {
-    if (loading) return <ActivityIndicator size="large" color={colors.brand.primary} style={{ marginTop: 40 }} />;
+    if (loading) return <TableSkeleton rowCount={5} />;
     return (
       <FlatList data={filtered} keyExtractor={item => item.id}
         key={`cols-${numCols}`}
         numColumns={numCols}
         renderItem={({ item }) => renderCard(item as any)}
-        contentContainerStyle={{ padding: 4, gap: 8 }}
-        columnWrapperStyle={numCols > 1 ? { gap: 8, marginBottom: 8 } : undefined}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand.primary} />}
+        contentContainerStyle={{ padding: 4, gap: 16}}
+        columnWrapperStyle={numCols > 1 ? { gap: 16, marginBottom: 8 } : undefined}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={'#F97316'} />}
         ListHeaderComponent={renderFilters}
         ListEmptyComponent={<EmptyState icon="package-variant" title="Chưa có nguyên liệu" subtitle="Nhấn + để thêm nguyên liệu đầu tiên" />}
       />
@@ -342,7 +343,7 @@ export default function StockScreen() {
         subtitle={`${stats.total} mặt hàng · ${stats.critical} cảnh báo`}
         onMenuPress={openSidebar} compact
         right={
-          <View style={{ flexDirection: 'row', gap: 6 }}>
+          <View style={{ flexDirection: 'row', gap: 12}}>
             <TouchableOpacity onPress={load} style={s.headerBtn}>
               <Icon name="refresh" size={18} color={colors.icon.default} />
             </TouchableOpacity>
@@ -358,7 +359,7 @@ export default function StockScreen() {
       <View style={s.statsBar}>
         <StatItem icon="package-variant" label="Mặt hàng" value={stats.total} />
         <View style={s.barDivider} />
-        <StatItem icon="alert-circle-outline" label="Cảnh báo" value={stats.critical} valueColor={stats.critical > 0 ? colors.status.danger : colors.status.success} />
+        <StatItem icon="alert-circle-outline" label="Cảnh báo" value={stats.critical} valueColor={stats.critical > 0 ? '#DC2626' : '#16A34A'} />
         <View style={s.barDivider} />
         <StatItem icon="currency-usd" label="Tổng giá trị" value={formatVND(stats.totalValue)} />
       </View>
@@ -371,9 +372,9 @@ export default function StockScreen() {
           <View style={s.separator} />
           <View style={{ flex: 0.4, paddingTop: 8, paddingLeft: 8, paddingRight: 12 }}>
             {selectedItem ? renderDetail() : (
-              <View style={{ alignItems: 'center', padding: 40, gap: 8 }}>
-                <Icon name="hand-pointing-up" size={36} color={colors.text.muted} />
-                <Text style={{ ...font.body, color: colors.text.muted }}>Chọn nguyên liệu để xem chi tiết</Text>
+              <View style={{ alignItems: 'center', padding: 40, gap: 16}}>
+                <Icon name="hand-pointing-up" size={36} color={'#737373'} />
+                <Text style={{ ...font.body, color: '#737373' }}>Chọn nguyên liệu để xem chi tiết</Text>
               </View>
             )}
           </View>
@@ -394,11 +395,11 @@ export default function StockScreen() {
           <TextInputField label="Mã" value={formFields.code} onChange={(v) => setFormFields({...formFields, code: v})} placeholder="VD: BOTL001" />
           <TextInputField label="Tên" value={formFields.name} onChange={(v) => setFormFields({...formFields, name: v})} placeholder="VD: Thịt bò" />
           <TextInputField label="Danh mục" value={formFields.category} onChange={(v) => setFormFields({...formFields, category: v})} placeholder="Thịt, Rau, Gia vị..." />
-          <View style={{ flexDirection: 'row', gap: 10 }}>
+          <View style={{ flexDirection: 'row', gap: 32}}>
             <TextInputField label="ĐVT" value={formFields.unit} onChange={(v) => setFormFields({...formFields, unit: v})} placeholder="kg" flex={1} />
             <TextInputField label="Giá mua" value={formFields.default_cost} onChange={(v) => setFormFields({...formFields, default_cost: v})} placeholder="0" keyboard="decimal-pad" flex={1} />
           </View>
-          <View style={{ flexDirection: 'row', gap: 10 }}>
+          <View style={{ flexDirection: 'row', gap: 32}}>
             <TextInputField label="Tồn hiện tại" value={formFields.current_stock} onChange={(v) => setFormFields({...formFields, current_stock: v})} placeholder="0" keyboard="decimal-pad" flex={1} />
             <TextInputField label="Tồn tối thiểu" value={formFields.min_stock} onChange={(v) => setFormFields({...formFields, min_stock: v})} placeholder="0" keyboard="decimal-pad" flex={1} />
           </View>
@@ -411,8 +412,8 @@ export default function StockScreen() {
 // ── Sub-components ──
 function StatItem({ icon, label, value, valueColor }: { icon: string; label: string; value: string | number; valueColor?: string }) {
   return (
-    <View style={{ flex: 1, alignItems: 'center', flexDirection: 'row', gap: 6, justifyContent: 'center' }}>
-      <Icon name={icon as any} size={16} color={colors.brand.primary} />
+    <View style={{ flex: 1, alignItems: 'center', flexDirection: 'row', gap: 12, justifyContent: 'center' }}>
+      <Icon name={icon as any} size={16} color={'#F97316'} />
       <View>
         <Text style={[s.statValue, valueColor ? { color: valueColor } : undefined]}>{value}</Text>
         <Text style={s.statLabel}>{label}</Text>
@@ -429,7 +430,7 @@ function TextInputField({ label, value, onChange, placeholder, keyboard, flex }:
     <View style={{ flex: flex ?? undefined }}>
       <Text style={s.fieldLabel}>{label}</Text>
       <TextInput value={value} onChangeText={onChange} placeholder={placeholder}
-        placeholderTextColor="#94A3B8" keyboardType={keyboard || 'default'}
+        placeholderTextColor={'#737373'} keyboardType={keyboard || 'default'}
         style={s.fieldInput} />
     </View>
   );
@@ -442,71 +443,71 @@ const FAB = ({ onPress }: { onPress: () => void }) => (
 );
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface.app },
+  container: { flex: 1, backgroundColor: '#FAFAFA' },
 
-  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 38, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },
-  addBtnText: { ...font.buttonSmall, fontWeight: '700', color: '#fff' },
-  headerBtn: { width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' },
+  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, height: 38, borderRadius: 8, backgroundColor: '#F97316' },
+  addBtnText: { ...font.buttonSmall, fontWeight: '600', color: '#fff' },
+  headerBtn: { width: 36, height: 36, borderRadius: 8, backgroundColor: '#F5F5F5', alignItems: 'center', justifyContent: 'center' },
 
   // Stats bar
-  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-  statValue: { ...font.h4, fontWeight: '800', color: colors.text.primary, lineHeight: 18 },
-  statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },
+  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
+  barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
+  statValue: { ...font.bodyBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
+  statLabel: { ...font.micro, color: '#737373', lineHeight: 12 },
 
   // Filters
-  filterBar: { paddingHorizontal: 12, paddingVertical: 6, backgroundColor: colors.surface.app, gap: 6 },
-  searchBox: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: colors.surface.card, borderRadius: shape.radius.md, paddingHorizontal: 10, height: 36, borderWidth: 1, borderColor: colors.border.light },
-  chip: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: shape.radius.full, backgroundColor: colors.surface.disabled },
-  chipActive: { backgroundColor: colors.brand.primary },
-  chipText: { ...font.micro, fontWeight: '600', color: colors.text.muted },
+  filterBar: { paddingHorizontal: 12, paddingVertical: 12, backgroundColor: '#FAFAFA', gap: 12},
+  searchBox: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#FFFFFF', borderRadius: 8, paddingHorizontal: 32, height: 36, borderWidth: 1, borderColor: '#F0F0F0' },
+  chip: { paddingHorizontal: 32, paddingVertical: 5, borderRadius: 999, backgroundColor: '#F5F5F5' },
+  chipActive: { backgroundColor: '#F97316' },
+  chipText: { ...font.micro, fontWeight: '600', color: '#737373' },
   chipTextActive: { color: colors.text.inverse },
 
   // Card
-  card: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 12, borderWidth: 1, borderColor: colors.border.light },
+  card: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#F0F0F0' },
   cardTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
-  cardIcon: { width: 36, height: 36, borderRadius: shape.radius.md, alignItems: 'center', justifyContent: 'center' },
-  cardName: { ...font.bodySmall, fontWeight: '700', color: colors.text.primary },
-  cardCode: { ...font.micro, color: colors.text.muted, marginTop: 1 },
-  badge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: shape.radius.full },
-  badgeText: { ...font.micro, fontWeight: '700' },
+  cardIcon: { width: 36, height: 36, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+  cardName: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
+  cardCode: { ...font.micro, color: '#737373', marginTop: 1 },
+  badge: { paddingHorizontal: 16, paddingVertical: 3, borderRadius: 999},
+  badgeText: { ...font.micro, fontWeight: '600' },
 
   // Stock bar
   stockBar: { height: 5, backgroundColor: '#F1F5F9', borderRadius: 2.5, overflow: 'hidden' },
   stockBarFill: { height: '100%', borderRadius: 2.5, minWidth: 3 },
 
   // Card stats
-  cardStats: { flexDirection: 'row', gap: 8, marginTop: 8, borderTopWidth: 1, borderTopColor: colors.border.light, paddingTop: 8 },
+  cardStats: { flexDirection: 'row', gap: 16, marginTop: 8, borderTopWidth: 1, borderTopColor: '#F0F0F0', paddingTop: 8 },
   cardStatItem: { flex: 1, alignItems: 'center' },
-  cardStatValue: { ...font.caption, fontWeight: '700', color: colors.text.primary },
-  cardStatLabel: { ...font.micro, color: colors.text.muted },
+  cardStatValue: { ...font.caption, fontWeight: '600', color: '#171717' },
+  cardStatLabel: { ...font.micro, color: '#737373' },
 
   // Actions
-  actionRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 6, paddingTop: 6, borderTopWidth: 1, borderTopColor: colors.border.light },
+  actionRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 6, paddingTop: 6, borderTopWidth: 1, borderTopColor: '#F0F0F0' },
   actionBtn: { padding: 4 },
-  actionDot: { width: 3, height: 3, borderRadius: 1.5, backgroundColor: colors.border.default },
+  actionDot: { width: 3, height: 3, borderRadius: 1.5, backgroundColor: '#E5E5E5' },
 
   // Panel (iPad detail)
-  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: colors.border.light, gap: 10 },
-  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  panelIconBox: { width: 40, height: 40, borderRadius: shape.radius.md, alignItems: 'center', justifyContent: 'center' },
-  panelTitle: { ...font.body, fontWeight: '700', color: colors.text.primary },
-  panelSub: { ...font.caption, color: colors.text.muted, marginTop: 1 },
-  panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 6, paddingHorizontal: 12, borderRadius: shape.radius.md },
-  panelBtnText: { ...font.caption, color: '#fff', fontWeight: '700' },
-  detailRow: { flexDirection: 'row', gap: 8 },
+  panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: '#F0F0F0', gap: 32},
+  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 32, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
+  panelIconBox: { width: 40, height: 40, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+  panelTitle: { ...font.body, fontWeight: '600', color: '#171717' },
+  panelSub: { ...font.caption, color: '#737373', marginTop: 1 },
+  panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12, paddingHorizontal: 12, borderRadius: 8},
+  panelBtnText: { ...font.caption, color: '#fff', fontWeight: '600' },
+  detailRow: { flexDirection: 'row', gap: 16},
   detailItem: { flex: 1, alignItems: 'center' },
-  detailValue: { ...font.bodySmall, fontWeight: '800', color: colors.text.primary },
-  detailLabel: { ...font.micro, color: colors.text.muted },
-  detailDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 4 },
+  detailValue: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
+  detailLabel: { ...font.micro, color: '#737373' },
+  detailDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 4 },
 
   // Form
-  fieldLabel: { ...font.label, color: colors.text.secondary, marginBottom: 4 },
-  fieldInput: { borderWidth: 1.5, borderColor: colors.border.default, borderRadius: shape.radius.md, padding: 12, ...font.body, color: colors.text.primary, backgroundColor: colors.surface.app },
+  fieldLabel: { ...font.label, color: '#404040', marginBottom: 4 },
+  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.body, color: '#171717', backgroundColor: '#FAFAFA' },
 
-  separator: { width: 1, backgroundColor: colors.border.light },
+  separator: { width: 1, backgroundColor: '#F0F0F0' },
 
   // FAB
-  fab: { position: 'absolute', bottom: 24, right: 20, width: 56, height: 56, borderRadius: 28, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center', elevation: 4, boxShadow: "0px 4px 8px rgba(249,115,22,0.3)" },
+  fab: { position: 'absolute', bottom: 24, right: 20, width: 56, height: 56, borderRadius: 28, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center', elevation: 4, boxShadow: "0px 4px 8px rgba(249,115,22,0.3)" },
 });
 

@@ -48,7 +48,8 @@ async def test_logout_invalidates_token(client: AsyncClient):
 
 async def test_logout_without_token(client: AsyncClient):
     resp = await client.post("/api/v1/auth/logout")
-    assert resp.status_code == 403  # no token
+    # 401 (Unauthorized) when missing token — semantically correct
+    assert resp.status_code == 401
 
 
 # ── CSRF: mutation without Origin/Referer and without Bearer ──

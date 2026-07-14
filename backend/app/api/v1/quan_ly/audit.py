@@ -1,6 +1,5 @@
 """API endpoint for viewing audit logs."""
 
-import uuid
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy import select
@@ -8,7 +7,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth import get_current_user
 from app.core.database import get_db
-from app.core.pagination import PageParams, paginate
 from app.models.audit import AuditLog
 
 router = APIRouter(prefix="/quan-ly/audit-logs", tags=["quan-ly"])

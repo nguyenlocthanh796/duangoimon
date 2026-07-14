@@ -82,7 +82,7 @@ export default function OrderHeader({
       )}
       <View style={{ marginHorizontal: 8, flex: 1, justifyContent: 'center' }}>
         <Text
-          style={{ ...(isWide ? font.h3 : font.h4), color: colors.text.primary }}
+          style={{ ...(isWide ? font.sectionTitle : font.bodyBold), color: colors.text.primary }}
           numberOfLines={1}
         >
           {tableName || 'Bàn ăn'}

@@ -17,7 +17,7 @@ interface ScreenContainerProps {
 
 /**
  * Standard screen wrapper - flat design, iPhone/iPad safe areas.
- * - iPhone: smaller padding, safe area insets for notch/Dynamic Island
+ * - iPhone 14/15: edge-to-edge (0px outer padding), cards provide 4px inner
  * - iPad: wider padding, centered max-width container
  * - Orange accent border option for section headers
  */
@@ -30,24 +30,19 @@ export default function ScreenContainer({
   accentBorder = 'none',
   compact = false,
 }: ScreenContainerProps) {
-  const { isWide } = useResponsive();
-  const horizontal = padding ?? (!isWide
-    ? (compact ? shape.spacing.xs : shape.spacing.md)
-    : (compact ? shape.spacing.sm : shape.spacing.xl));
-  const vertical = compact ? shape.spacing.xs : (!isWide ? shape.spacing.sm : shape.spacing.lg);
-
-  // iPhone safe area offset
-  const topInset = Platform.OS === 'web' ? 'var(--safe-top)' : 0;
-  const bottomInset = Platform.OS === 'web' ? 'var(--safe-bottom)' : 0;
+  const { isWide, pad } = useResponsive();
+  // Mobile: edge-to-edge (0px). iPad: uses pad tokens.
+  const padH = padding ?? (!isWide ? 0 : (compact ? shape.spacing.sm : pad.screen));
+  const padV = compact ? shape.spacing.xs : (!isWide ? shape.spacing.xs : shape.spacing.lg);
 
   const inner = (
     <View
       style={[
         styles.inner,
         {
-          paddingHorizontal: horizontal,
-          paddingTop: vertical,
-          paddingBottom: vertical,
+          paddingHorizontal: padH,
+          paddingTop: padV,
+          paddingBottom: padV,
           maxWidth: isWide ? maxWidth : undefined,
           alignSelf: isWide ? 'center' : 'stretch',
           width: '100%',

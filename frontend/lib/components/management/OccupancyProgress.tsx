@@ -27,7 +27,7 @@ export default function OccupancyProgress({ trong, coKhach, daDat }: OccupancyPr
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <Icon name="chart-donut" size={18} color={colors.brand.primary} />
-          <Text style={{ ...font.h3, color: colors.text.primary }}>Mật độ bàn ăn</Text>
+          <Text style={{ ...font.sectionTitle, color: colors.text.primary }}>Mật độ bàn ăn</Text>
         </View>
         <Text style={{ ...font.bodySmall, color: colors.text.secondary }}>
           {coKhach}/{total} bàn đang dùng
@@ -58,17 +58,17 @@ export default function OccupancyProgress({ trong, coKhach, daDat }: OccupancyPr
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#10B981' }} />
-          <Text style={{ ...font.bodySmall, color: colors.text.secondary }}>Trống: {trong}</Text>
+          <Text style={{ ...font.caption, color: colors.text.secondary }}>Trống: {trong}</Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#F97316' }} />
-          <Text style={{ ...font.bodySmall, color: colors.text.secondary }}>
+          <Text style={{ ...font.caption, color: colors.text.secondary }}>
             Có khách: {coKhach}
           </Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#64748B' }} />
-          <Text style={{ ...font.bodySmall, color: colors.text.secondary }}>Đã đặt: {daDat}</Text>
+          <Text style={{ ...font.caption, color: colors.text.secondary }}>Đã đặt: {daDat}</Text>
         </View>
       </View>
     </View>

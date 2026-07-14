@@ -103,7 +103,7 @@ export default function CategoryTabs({
             >
               <Text
                 style={{
-                  ...font.tab,
+                  ...font.bodySmall,
                   color: active ? colors.text.inverse : colors.text.body,
                 }}
               >

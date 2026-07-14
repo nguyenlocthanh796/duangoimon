@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { TableSkeleton } from '../../../lib/components/ui/Skeleton';
 import {
   View,
   Text,
@@ -41,11 +42,11 @@ function daysLeft(due: string): number {
 }
 
 function urgencyColor(days: number): string {
-  if (days <= 1) return colors.status.danger;
-  if (days <= 3) return '#EA580C';
+  if (days <= 1) return '#DC2626';
+  if (days <= 3) return '#F97316';
   if (days <= 7) return '#D97706';
   if (days <= 14) return '#CA8A04';
-  return colors.status.success;
+  return '#16A34A';
 }
 
 export default function DeadlineScreen() {
@@ -165,7 +166,7 @@ export default function DeadlineScreen() {
                 key={lvl}
                 style={[
                   styles.levelDot,
-                  { backgroundColor: ok ? colors.status.success : colors.surface.disabled },
+                  { backgroundColor: ok ? '#16A34A' : '#F5F5F5' },
                 ]}
               >
                 <Text style={styles.levelText}>{lvl}</Text>
@@ -184,12 +185,12 @@ export default function DeadlineScreen() {
       sortValue: (d) => (d.submitted ? 1 : 0),
       render: (d) =>
         d.submitted ? (
-          <View style={[styles.badge, { backgroundColor: colors.status.success + '1A' }]}>
-            <Text style={[styles.badgeText, { color: colors.status.success }]}>Đã nộp</Text>
+          <View style={[styles.badge, { backgroundColor: '#16A34A' + '1A' }]}>
+            <Text style={[styles.badgeText, { color: '#16A34A' }]}>Đã nộp</Text>
           </View>
         ) : (
-          <View style={[styles.badge, { backgroundColor: colors.status.warning + '1A' }]}>
-            <Text style={[styles.badgeText, { color: colors.status.warning }]}>Chưa nộp</Text>
+          <View style={[styles.badge, { backgroundColor: '#D97706' + '1A' }]}>
+            <Text style={[styles.badgeText, { color: '#D97706' }]}>Chưa nộp</Text>
           </View>
         ),
     },
@@ -219,7 +220,7 @@ export default function DeadlineScreen() {
                   key={lvl}
                   style={[
                     styles.levelDot,
-                    { backgroundColor: ok ? colors.status.success : colors.surface.disabled },
+                    { backgroundColor: ok ? '#16A34A' : '#F5F5F5' },
                   ]}
                 >
                   <Text style={styles.levelText}>{lvl}</Text>
@@ -249,7 +250,7 @@ export default function DeadlineScreen() {
 
       {loading ? (
         <View style={styles.loadingBox}>
-          <ActivityIndicator size="large" color={colors.brand.primary} />
+          <TableSkeleton rowCount={5} />
         </View>
       ) : (
         <View style={{ flex: 1 }}>
@@ -286,40 +287,40 @@ export default function DeadlineScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface.app },
+  container: { flex: 1, backgroundColor: '#FAFAFA' },
   loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 60 },
-  cellText: { ...font.body, color: colors.text.primary },
-  cellBold: { ...font.bodyBold, color: colors.text.primary },
-  leftBadge: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: shape.radius.md },
+  cellText: { ...font.body, color: '#171717' },
+  cellBold: { ...font.bodyBold, color: '#171717' },
+  leftBadge: { paddingHorizontal: 12, paddingVertical: 16, borderRadius: 8},
   leftText: { ...font.buttonSmall, color: '#fff', fontWeight: '400' },
-  progressRow: { flexDirection: 'row', gap: 6, marginTop: 8, justifyContent: 'center' },
+  progressRow: { flexDirection: 'row', gap: 12, marginTop: 8, justifyContent: 'center' },
   levelDot: {
     width: 28,
     height: 28,
-    borderRadius: shape.radius.full,
+    borderRadius: 999,
     alignItems: 'center',
     justifyContent: 'center',
   },
   levelText: { ...font.caption, color: '#fff', fontWeight: '400' },
-  badge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999, alignSelf: 'center' },
+  badge: { paddingHorizontal: 32, paddingVertical: 8, borderRadius: 12, alignSelf: 'center' },
   badgeText: { ...font.badge, fontWeight: '400' },
-  remindText: { ...font.caption, color: colors.text.muted, marginTop: 4 },
+  remindText: { ...font.caption, color: '#737373', marginTop: 4 },
   deadCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.md,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
     padding: 14,
     marginHorizontal: 16,
     marginVertical: 4,
     borderWidth: 1,
-    borderColor: colors.border.light,
+    borderColor: '#F0F0F0',
     borderLeftWidth: 4,
     gap: 12,
   },
-  deadDot: { width: 8, height: 8, borderRadius: 4 },
-  deadForm: { ...font.bodyBold, color: colors.text.primary },
-  deadMeta: { ...font.bodySmall, color: colors.text.muted, marginTop: 2 },
+  deadDot: { width: 8, height: 8, borderRadius: 12},
+  deadForm: { ...font.bodyBold, color: '#171717' },
+  deadMeta: { ...font.bodySmall, color: '#737373', marginTop: 2 },
 });
 
 

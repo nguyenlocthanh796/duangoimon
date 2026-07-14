@@ -2,6 +2,7 @@ import { Stack } from 'expo-router';
 import { View, StyleSheet } from 'react-native';
 import { colors } from '../../lib/theme';
 import { useResponsive } from '../../lib/hooks/useResponsive';
+import { usePreloadRoutes } from '../../lib/hooks/usePreloadRoutes';
 import Sidebar from '../../lib/components/Sidebar';
 import { getSections } from '../../lib/components/SidebarMenu';
 
@@ -17,6 +18,7 @@ const s = StyleSheet.create({
 
 export default function KeToanLayout() {
   const { isWide } = useResponsive();
+  usePreloadRoutes('ke-toan');
 
   return (
     <View style={s.container}>

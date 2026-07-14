@@ -37,15 +37,69 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <title>POS F&B — Hệ thống quản lý nhà hàng</title>
   <meta name="description" content="Hệ thống quản lý nhà hàng chuyên nghiệp — POS, bếp, kho, kế toán, CRM." />
+
+  <!-- ⚡ Resource Hints -->
+  <link rel="dns-prefetch" href="http://localhost:8000" />
+  <link rel="preconnect" href="http://localhost:8000" />
+  <link rel="preload" href="/fonts/BeVietnamPro_400Regular.ttf" as="font" type="font/ttf" crossorigin />
+  <link rel="preload" href="/fonts/BeVietnamPro_500Medium.ttf" as="font" type="font/ttf" crossorigin />
+  <link rel="preload" href="/fonts/BeVietnamPro_600SemiBold.ttf" as="font" type="font/ttf" crossorigin />
+  <link rel="preload" href="/fonts/BeVietnamPro_700Bold.ttf" as="font" type="font/ttf" crossorigin />
+  <link rel="preload" href="/fonts/MaterialCommunityIcons.ttf" as="font" type="font/ttf" crossorigin />
   <style id="expo-reset">
     html, body { height: 100%; }
     body { overflow: hidden; margin: 0; }
     #root { display: flex; height: 100%; flex: 1; }
+    @font-face {
+      font-family: 'BeVietnamPro_400Regular';
+      src: url('/fonts/BeVietnamPro_400Regular.ttf') format('truetype');
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'BeVietnamPro_500Medium';
+      src: url('/fonts/BeVietnamPro_500Medium.ttf') format('truetype');
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'BeVietnamPro_600SemiBold';
+      src: url('/fonts/BeVietnamPro_600SemiBold.ttf') format('truetype');
+      font-weight: 600;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'BeVietnamPro_700Bold';
+      src: url('/fonts/BeVietnamPro_700Bold.ttf') format('truetype');
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'material-community';
+      src: url('/fonts/MaterialCommunityIcons.ttf') format('truetype');
+      font-display: swap;
+    }
   </style>
 </head>
 <body>
   <!-- Required by Expo/React for rendering -->
   <div id="root"></div>
   <noscript>You need to enable JavaScript to run this app.</noscript>
+  <!-- ⚡ Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').then(function(registration) {
+          console.log('[SW] Registered:', registration.scope);
+        }, function(err) {
+          console.warn('[SW] Registration failed:', err);
+        });
+      });
+    }
+  </script>
 </body>
 </html>

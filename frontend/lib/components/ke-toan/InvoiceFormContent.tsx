@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginBottom: 20,
   },
-  sheetTitle: { ...font.h3, color: colors.text.primary, marginBottom: 16 },
+  sheetTitle: { ...font.sectionTitle, color: colors.text.primary, marginBottom: 16 },
   orderRow: {
     flexDirection: 'row',
     alignItems: 'center',

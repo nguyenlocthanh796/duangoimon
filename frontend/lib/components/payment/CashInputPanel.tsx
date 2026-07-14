@@ -49,7 +49,7 @@ export default function CashInputPanel({ cashInput, cash, change, total, setCash
         }}
       >
         <Text
-          style={{ ...font.h1, color: cashInput ? colors.text.primary : colors.text.placeholder }}
+          style={{ ...font.pageTitle, color: cashInput ? colors.text.primary : colors.text.placeholder }}
         >
           {cashInput ? formatPriceFull(cash) : '0đ'}
         </Text>

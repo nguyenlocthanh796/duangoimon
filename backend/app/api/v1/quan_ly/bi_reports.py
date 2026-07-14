@@ -1,7 +1,6 @@
 """BI Reports API - revenue, food cost, labor cost, profit."""
 
-import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy import func, select
@@ -9,8 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth import get_current_user
 from app.core.database import get_db
-from app.models.ban_hang import Order, OrderItem
-from app.models.ke_toan import Transaction
+from app.models.ban_hang import Order, OrderItem, Product
 
 router = APIRouter(prefix="/quan-ly/reports/bi", tags=["quan-ly"])
 
@@ -73,7 +71,6 @@ async def food_cost_report(
     total_rev = float(rev.scalar() or 1)  # avoid div by zero
 
     # Total cost from recipe costs
-    from app.models.recipe import RawMaterial, Recipe, RecipeItem
 
     # Simple approach: sum cost_price from products that were sold
     cost_result = await db.execute(

@@ -1,5 +1,5 @@
 # Runtime
-fastapi==0.115.0
+fastapi==0.139.0  # Upgraded from 0.115 to bundle patched starlette (CVE-2026-48710: Host header smuggling in starlette 0.52.1)
 uvicorn[standard]==0.30.6
 sqlalchemy==2.0.35
 psycopg>=3.2,<4
@@ -11,7 +11,7 @@ pydantic-settings==2.5.2
 pyjwt==2.9.0
 passlib[bcrypt]==1.7.4
 bcrypt>=4.0,<4.1
-python-multipart==0.0.9
+python-multipart==0.0.32  # CVE-fixed: 0.0.19 had multipart DoS, path traversal
 websockets==13.0
 
 # Structured logging

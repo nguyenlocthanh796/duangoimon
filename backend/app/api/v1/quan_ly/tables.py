@@ -1,3 +1,5 @@
+"""Quan-ly Tables API router."""
+
 from app.core.uuid_utils import parse_uuid
 
 from fastapi import APIRouter, Depends, HTTPException

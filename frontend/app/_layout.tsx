@@ -10,14 +10,13 @@ import { SidebarProvider } from '../lib/context/SidebarContext';
 import { ThemeProvider, useTheme } from '../lib/context/ThemeContext';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import ErrorBoundary from '../lib/components/ui/ErrorBoundary';
+import { TableSkeleton } from '../lib/components/ui/Skeleton';
 import {
   useFonts,
   BeVietnamPro_400Regular,
   BeVietnamPro_500Medium,
   BeVietnamPro_600SemiBold,
   BeVietnamPro_700Bold,
-  BeVietnamPro_800ExtraBold,
-  BeVietnamPro_900Black,
 } from '@expo-google-fonts/be-vietnam-pro';
 import * as SplashScreen from 'expo-splash-screen';
 
@@ -46,7 +45,7 @@ function AppStack() {
           backgroundColor: '#0F172A',
         }}
       >
-        <ActivityIndicator size="large" color="#F97316" />
+        <TableSkeleton rowCount={5} />
       </View>
     );
   }
@@ -80,8 +79,6 @@ export default function RootLayout() {
     BeVietnamPro_500Medium,
     BeVietnamPro_600SemiBold,
     BeVietnamPro_700Bold,
-    BeVietnamPro_800ExtraBold,
-    BeVietnamPro_900Black,
   });
 
   useEffect(() => {

@@ -80,7 +80,7 @@ function LogoHeader({ collapsed, onToggle }: { collapsed: boolean; onToggle?: ()
             />
           </View>
           <View>
-            <Text style={{ ...font.h3, color: colors.text.primary }}>OngChu POS</Text>
+            <Text style={{ ...font.sectionTitle, color: colors.text.primary }}>OngChu POS</Text>
             <Text style={{ ...font.micro, color: colors.text.muted, marginTop: 1 }}>Hệ thống quản lý F&B</Text>
           </View>
         </View>

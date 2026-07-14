@@ -132,7 +132,7 @@ export default function BillDetailModal({ visible, orderId, onClose }: BillDetai
               <Text style={[styles.cellText, { flex: 1.2, textAlign: 'right' }]}>
                 {formatPrice(item.unit_price)}
               </Text>
-              <Text style={[styles.cellText, { flex: 1.3, textAlign: 'right', fontWeight: '700' }]}>
+              <Text style={[styles.cellText, { flex: 1.3, textAlign: 'right', fontWeight: '600' }]}>
                 {formatPrice(item.unit_price * item.quantity)}
               </Text>
             </View>
@@ -149,13 +149,13 @@ export default function BillDetailModal({ visible, orderId, onClose }: BillDetai
             </View>
           ) : null}
           <View style={[styles.summaryRow, { marginTop: 4 }]}>
-            <Text style={[styles.summaryLabel, { fontSize: 16, fontWeight: '900' }]}>
+            <Text style={[styles.summaryLabel, { fontSize: 16, fontWeight: '600' }]}>
               TỔNG CỘNG:
             </Text>
             <Text
               style={[
                 styles.summaryVal,
-                { fontSize: 18, fontWeight: '900', color: colors.brand.primary },
+                { fontSize: 18, fontWeight: '600', color: colors.brand.primary },
               ]}
             >
               {formatPrice(order.total_amount)}
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
   },
   shopName: {
     fontSize: 18,
-    fontWeight: '900',
+    fontWeight: '600',
     color: '#171717',
     textAlign: 'center',
   },
@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
   },
   receiptTitle: {
     fontSize: 14,
-    fontWeight: '900',
+    fontWeight: '600',
     color: '#171717',
     textAlign: 'center',
     marginBottom: 8,
@@ -314,7 +314,7 @@ const styles = StyleSheet.create({
   },
   infoVal: {
     fontSize: 12,
-    fontWeight: '700',
+    fontWeight: '600',
     color: '#171717',
   },
   tableHead: {
@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
   },
   headCell: {
     fontSize: 11,
-    fontWeight: '700',
+    fontWeight: '600',
     color: '#404040',
   },
   tableRow: {
@@ -357,12 +357,12 @@ const styles = StyleSheet.create({
   },
   summaryVal: {
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: '600',
     color: '#171717',
   },
   thankyou: {
     fontSize: 11,
-    fontWeight: '700',
+    fontWeight: '600',
     color: '#737373',
     textAlign: 'center',
     marginTop: 10,
@@ -396,7 +396,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   mobileTitle: {
-    ...font.h2,
+    ...font.sectionTitle,
     color: colors.text.primary,
     textAlign: 'center',
   },

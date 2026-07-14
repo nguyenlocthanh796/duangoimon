@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { TableSkeleton } from '../../lib/components/ui/Skeleton';
 import {
-          View, Text, FlatList, TouchableOpacity, StyleSheet,
-          ActivityIndicator, RefreshControl,
+          View, Text, FlatList, TouchableOpacity, StyleSheet, RefreshControl,
         } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSidebar } from '../../lib/context/SidebarContext';
@@ -22,7 +22,7 @@ const STATUS_LABEL: Record<string, string> = {
           draft: 'Nháp', sent: 'Đã gửi', confirmed: 'Xác nhận', received: 'Đã nhận', cancelled: 'Hủy',
         };
 const STATUS_COLOR: Record<string, string> = {
-          draft: '#94A3B8', sent: '#3B82F6', confirmed: '#16A34A', received: '#0D9488', cancelled: '#DC2626',
+          draft: '#737373', sent: '#3B82F6', confirmed: '#16A34A', received: '#0D9488', cancelled: '#DC2626',
         };
 const STATUS_BG: Record<string, string> = {
           draft: '#F1F5F9', sent: '#EFF6FF', confirmed: '#DCFCE7', received: '#F0FDFA', cancelled: '#FEE2E2',
@@ -102,7 +102,7 @@ export default function POScreen() {
   // ── Detail panel ──
           const renderDetail = () => {
             if (!selected) return null;
-            const sc = STATUS_COLOR[selected.status] || '#94A3B8';
+            const sc = STATUS_COLOR[selected.status] || '#737373';
             const sbg = STATUS_BG[selected.status] || '#F1F5F9';
             const sl = STATUS_LABEL[selected.status] || selected.status;
             const supplier = suppliers.find(s => s.id === selected.supplier_id);
@@ -120,7 +120,7 @@ export default function POScreen() {
                     <Text style={s.panelSub}>{supplier?.name || selected.supplier_name || '—'}</Text>
                   </View>
                   <View style={[s.badge, { backgroundColor: sbg }]}>
-                    <Text style={{ ...font.micro, fontWeight: '700', color: sc }}>{sl}</Text>
+                    <Text style={{ ...font.micro, fontWeight: '600', color: sc }}>{sl}</Text>
                   </View>
                 </View>
 
@@ -143,14 +143,14 @@ export default function POScreen() {
 
         {/* Items */}
                 {selected.items?.length > 0 && (
-                  <View style={{ borderTopWidth: 1, borderTopColor: colors.border.light, paddingTop: 8 }}>
-                    <Text style={{ ...font.label, color: colors.text.secondary, marginBottom: 4 }}>Chi tiết</Text>
+                  <View style={{ borderTopWidth: 1, borderTopColor: '#F0F0F0', paddingTop: 8 }}>
+                    <Text style={{ ...font.label, color: '#404040', marginBottom: 4 }}>Chi tiết</Text>
                     {selected.items.map((it: any, i: number) => (
                       <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 3 }}>
-                        <Text style={{ ...font.caption, color: colors.text.primary, flex: 1 }} numberOfLines={1}>
+                        <Text style={{ ...font.caption, color: '#171717', flex: 1 }} numberOfLines={1}>
                           {it.raw_material_name || it.raw_material_id?.slice(0, 8)}
                         </Text>
-                        <Text style={{ ...font.caption, color: colors.text.muted }}>
+                        <Text style={{ ...font.caption, color: '#737373' }}>
                           {it.quantity} × {formatVND(it.unit_price)}
                         </Text>
                       </View>
@@ -162,7 +162,7 @@ export default function POScreen() {
                 {selected.status !== 'received' && selected.status !== 'cancelled' && (
                   <TouchableOpacity
                     onPress={() => { setShowReceive(true); }}
-                    style={[s.panelBtn, { backgroundColor: colors.brand.primary, justifyContent: 'center', marginTop: 4 }]}
+                    style={[s.panelBtn, { backgroundColor: '#F97316', justifyContent: 'center', marginTop: 4 }]}
                   >
                     <Icon name="package-down" size={16} color="#fff" />
                     <Text style={s.panelBtnText}>Nhập kho</Text>
@@ -174,7 +174,7 @@ export default function POScreen() {
 
   // ── Card ──
           const renderCard = (item: any) => {
-            const sc = STATUS_COLOR[item.status] || '#94A3B8';
+            const sc = STATUS_COLOR[item.status] || '#737373';
             const sbg = STATUS_BG[item.status] || '#F1F5F9';
             const sl = STATUS_LABEL[item.status] || item.status;
             const isSelected = selectedPo?.id === item.id;
@@ -187,10 +187,10 @@ export default function POScreen() {
               >
                 <View style={s.cardTop}>
                   <View style={{ flex: 1 }}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16}}>
                       <Text style={s.cardPoNum}>{item.po_number}</Text>
                       <View style={[s.badge, { backgroundColor: sbg }]}>
-                        <Text style={{ ...font.micro, fontWeight: '700', color: sc }}>{sl}</Text>
+                        <Text style={{ ...font.micro, fontWeight: '600', color: sc }}>{sl}</Text>
                       </View>
                     </View>
                     <Text style={s.cardSupplier} numberOfLines={1}>{item.supplier_name || '—'}</Text>
@@ -215,8 +215,8 @@ export default function POScreen() {
         {item.status === 'draft' && (
                   <View style={s.actionRow}>
                     <TouchableOpacity style={s.actionBtn}>
-                      <Icon name="send" size={14} color={colors.brand.primary} />
-                      <Text style={{ ...font.micro, color: colors.brand.primary }}>Gửi</Text>
+                      <Icon name="send" size={14} color={'#F97316'} />
+                      <Text style={{ ...font.micro, color: '#F97316' }}>Gửi</Text>
                     </TouchableOpacity>
                   </View>
                 )}
@@ -225,15 +225,15 @@ export default function POScreen() {
           };
 
   const renderList = () => {
-            if (loading) return <ActivityIndicator size="large" color={colors.brand.primary} style={{ marginTop: 40 }} />;
+            if (loading) return <TableSkeleton rowCount={5} />;
             return (
               <FlatList data={filtered} keyExtractor={item => item.id}
                 key={`cols-${numCols}`}
                 numColumns={numCols}
                 renderItem={({ item }) => renderCard(item as any)}
-                contentContainerStyle={{ padding: 4, gap: 8 }}
-                columnWrapperStyle={numCols > 1 ? { gap: 8, marginBottom: 8 } : undefined}
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand.primary} />}
+                contentContainerStyle={{ padding: 4, gap: 16}}
+                columnWrapperStyle={numCols > 1 ? { gap: 16, marginBottom: 8 } : undefined}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={'#F97316'} />}
                 ListEmptyComponent={<EmptyState icon="clipboard-text-off" title="Chưa có đơn nhập hàng" subtitle='Nhấn "Tạo PO" để tạo đơn đầu tiên' />}
               />
             );
@@ -246,7 +246,7 @@ export default function POScreen() {
                 subtitle={`${stats.total} đơn · ${stats.draft} nháp, ${stats.pending} chờ nhập`}
                 onMenuPress={openSidebar} compact
                 right={
-                  <View style={{ flexDirection: 'row', gap: 6 }}>
+                  <View style={{ flexDirection: 'row', gap: 12}}>
                     <TouchableOpacity onPress={load} style={s.headerBtn}>
                       <Icon name="refresh" size={18} color={colors.icon.default} />
                     </TouchableOpacity>
@@ -273,7 +273,7 @@ export default function POScreen() {
               <View style={s.filterRow}>
                 {statuses.map(statusKey => (
                   <TouchableOpacity key={statusKey} onPress={() => setStatusFilter(statusKey)}
-                    style={[s.chip, statusFilter === statusKey ? { backgroundColor: colors.brand.primary } : null]}>
+                    style={[s.chip, statusFilter === statusKey ? { backgroundColor: '#F97316' } : null]}>
                     <Text style={[s.chipText, statusFilter === statusKey ? { color: '#fff' } : null]}>
                       {statusKey === 'all' ? 'Tất cả' : STATUS_LABEL[statusKey] || statusKey}
                     </Text>
@@ -289,9 +289,9 @@ export default function POScreen() {
                   <View style={s.separator} />
                   <View style={{ flex: 0.4, paddingTop: 8, paddingLeft: 8, paddingRight: 12 }}>
                     {selected ? renderDetail() : (
-                      <View style={{ alignItems: 'center', padding: 40, gap: 8 }}>
-                        <Icon name="hand-pointing-up" size={36} color={colors.text.muted} />
-                        <Text style={{ ...font.body, color: colors.text.muted }}>Chọn đơn để xem chi tiết</Text>
+                      <View style={{ alignItems: 'center', padding: 40, gap: 16}}>
+                        <Icon name="hand-pointing-up" size={36} color={'#737373'} />
+                        <Text style={{ ...font.body, color: '#737373' }}>Chọn đơn để xem chi tiết</Text>
                       </View>
                     )}
                   </View>
@@ -327,8 +327,8 @@ export default function POScreen() {
         
 function StatItem({ icon, label, value, valueColor }: { icon: string; label: string; value: string | number; valueColor?: string }) {
           return (
-            <View style={{ flex: 1, alignItems: 'center', flexDirection: 'row', gap: 6, justifyContent: 'center' }}>
-              <Icon name={icon as any} size={16} color={colors.brand.primary} />
+            <View style={{ flex: 1, alignItems: 'center', flexDirection: 'row', gap: 12, justifyContent: 'center' }}>
+              <Icon name={icon as any} size={16} color={'#F97316'} />
               <View>
                 <Text style={[s.statValue, valueColor ? { color: valueColor } : undefined]}>{value}</Text>
                 <Text style={s.statLabel}>{label}</Text>
@@ -338,52 +338,52 @@ function StatItem({ icon, label, value, valueColor }: { icon: string; label: str
         }
         
 const s = StyleSheet.create({
-          container: { flex: 1, backgroundColor: colors.surface.app },
-          addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 38, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },
-          addBtnText: { ...font.buttonSmall, fontWeight: '700', color: '#fff' },
-          headerBtn: { width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' },
+          container: { flex: 1, backgroundColor: '#FAFAFA' },
+          addBtn: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, height: 38, borderRadius: 8, backgroundColor: '#F97316' },
+          addBtnText: { ...font.buttonSmall, fontWeight: '600', color: '#fff' },
+          headerBtn: { width: 36, height: 36, borderRadius: 8, backgroundColor: '#F5F5F5', alignItems: 'center', justifyContent: 'center' },
 
-  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-          barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-          statValue: { ...font.h4, fontWeight: '800', color: colors.text.primary, lineHeight: 18 },
-          statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },
+  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
+          barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
+          statValue: { ...font.bodyBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
+          statLabel: { ...font.micro, color: '#737373', lineHeight: 12 },
 
-  filterRow: { flexDirection: 'row', gap: 4, padding: 8, flexWrap: 'wrap' },
-          chip: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: shape.radius.full, backgroundColor: colors.surface.disabled },
-          chipActive: { backgroundColor: colors.brand.primary },
-          chipText: { ...font.micro, fontWeight: '600', color: colors.text.muted },
+  filterRow: { flexDirection: 'row', gap: 8, padding: 8, flexWrap: 'wrap' },
+          chip: { paddingHorizontal: 32, paddingVertical: 5, borderRadius: 999, backgroundColor: '#F5F5F5' },
+          chipActive: { backgroundColor: '#F97316' },
+          chipText: { ...font.micro, fontWeight: '600', color: '#737373' },
           chipTextActive: { color: '#fff' },
 
-  card: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 12, borderWidth: 1, borderColor: colors.border.light },
+  card: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#F0F0F0' },
           cardTop: { marginBottom: 6 },
-          cardPoNum: { ...font.body, fontWeight: '700', color: colors.text.primary },
-          cardSupplier: { ...font.caption, color: colors.text.muted, marginTop: 2 },
-          badge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: shape.radius.full },
+          cardPoNum: { ...font.body, fontWeight: '600', color: '#171717' },
+          cardSupplier: { ...font.caption, color: '#737373', marginTop: 2 },
+          badge: { paddingHorizontal: 16, paddingVertical: 3, borderRadius: 999},
 
-  cardStats: { flexDirection: 'row', gap: 8, marginTop: 6, borderTopWidth: 1, borderTopColor: colors.border.light, paddingTop: 6 },
+  cardStats: { flexDirection: 'row', gap: 16, marginTop: 6, borderTopWidth: 1, borderTopColor: '#F0F0F0', paddingTop: 6 },
           cardStatItem: { flex: 1, alignItems: 'center' },
-          cardStatValue: { ...font.caption, fontWeight: '700', color: colors.text.primary },
-          cardStatLabel: { ...font.micro, color: colors.text.muted },
+          cardStatValue: { ...font.caption, fontWeight: '600', color: '#171717' },
+          cardStatLabel: { ...font.micro, color: '#737373' },
 
-  actionRow: { flexDirection: 'row', marginTop: 6, paddingTop: 6, borderTopWidth: 1, borderTopColor: colors.border.light },
-          actionBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 4, paddingHorizontal: 8, borderRadius: shape.radius.sm },
+  actionRow: { flexDirection: 'row', marginTop: 6, paddingTop: 6, borderTopWidth: 1, borderTopColor: '#F0F0F0' },
+          actionBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, paddingHorizontal: 16, borderRadius: 4},
 
-  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: colors.border.light, gap: 8 },
-          panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-          panelIconBox: { width: 40, height: 40, borderRadius: shape.radius.md, alignItems: 'center', justifyContent: 'center' },
-          panelTitle: { ...font.body, fontWeight: '700', color: colors.text.primary },
-          panelSub: { ...font.caption, color: colors.text.muted, marginTop: 1 },
-          panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 8, paddingHorizontal: 12, borderRadius: shape.radius.md },
-          panelBtnText: { ...font.caption, color: '#fff', fontWeight: '700' },
+  panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: '#F0F0F0', gap: 16},
+          panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 32, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
+          panelIconBox: { width: 40, height: 40, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+          panelTitle: { ...font.body, fontWeight: '600', color: '#171717' },
+          panelSub: { ...font.caption, color: '#737373', marginTop: 1 },
+          panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 16, paddingHorizontal: 12, borderRadius: 8},
+          panelBtnText: { ...font.caption, color: '#fff', fontWeight: '600' },
 
-  detailRow: { flexDirection: 'row', gap: 8 },
+  detailRow: { flexDirection: 'row', gap: 16},
           detailItem: { flex: 1, alignItems: 'center' },
-          detailValue: { ...font.bodySmall, fontWeight: '800', color: colors.text.primary },
-          detailLabel: { ...font.micro, color: colors.text.muted },
-          detailDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 4 },
+          detailValue: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
+          detailLabel: { ...font.micro, color: '#737373' },
+          detailDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 4 },
 
-  separator: { width: 1, backgroundColor: colors.border.light },
-          fab: { position: 'absolute', bottom: 24, right: 20, width: 56, height: 56, borderRadius: 28, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center', elevation: 4, boxShadow: "0px 4px 8px rgba(249,115,22,0.3)" },
+  separator: { width: 1, backgroundColor: '#F0F0F0' },
+          fab: { position: 'absolute', bottom: 24, right: 20, width: 56, height: 56, borderRadius: 28, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center', elevation: 4, boxShadow: "0px 4px 8px rgba(249,115,22,0.3)" },
         });
 
 

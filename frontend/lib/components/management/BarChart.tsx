@@ -53,7 +53,7 @@ export default function BarChart({ data }: { data: Daily[] }) {
                 />
               </View>
               <Text
-                style={[chartStyles.barLabel, isToday && { color: '#F97316', fontWeight: '700' }]}
+                style={[chartStyles.barLabel, isToday && { color: '#F97316', fontWeight: '600' }]}
               >
                 {formatDayLabel(d.date)}
               </Text>

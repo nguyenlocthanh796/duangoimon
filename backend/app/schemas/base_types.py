@@ -8,8 +8,6 @@ Add Field constraints to ALL input schemas:
 - Ints: ge/le bounds
 """
 from decimal import Decimal
-from pydantic import BaseModel, Field, ConfigDict, EmailStr
-from uuid import UUID
 
 
 class MoneyAmount:

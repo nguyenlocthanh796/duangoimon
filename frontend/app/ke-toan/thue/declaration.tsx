@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { TableSkeleton } from '../../../lib/components/ui/Skeleton';
 import {
   View,
   Text,
@@ -97,7 +98,7 @@ export default function DeclarationScreen() {
 
       {loading ? (
         <View style={styles.loadingBox}>
-          <ActivityIndicator size="large" color={colors.brand.primary} />
+          <TableSkeleton rowCount={5} />
         </View>
       ) : (
         <ScrollView
@@ -106,7 +107,7 @@ export default function DeclarationScreen() {
             <RefreshControl
               refreshing={loading}
               onRefresh={load}
-              tintColor={colors.brand.primary}
+              tintColor={'#F97316'}
             />
           }
         >
@@ -133,13 +134,13 @@ export default function DeclarationScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface.app },
+  container: { flex: 1, backgroundColor: '#FAFAFA' },
   loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   scroll: { padding: 16, gap: 12, paddingBottom: 100 },
   xmlTitle: { ...colHeader },
   xmlBox: {
     backgroundColor: '#0F172A',
-    borderRadius: shape.radius.md,
+    borderRadius: 8,
     padding: 14,
     maxHeight: 360,
   },
@@ -148,10 +149,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    backgroundColor: colors.brand.primary,
-    borderRadius: shape.radius.md,
-    paddingVertical: 14,
+    gap: 16,
+    backgroundColor: '#F97316',
+    borderRadius: 8,
+    paddingVertical: 12,
   },
   submitText: { ...font.buttonSmall, color: colors.text.inverse, fontWeight: '600' },
   mobileSpacer: { height: 80 },

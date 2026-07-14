@@ -29,7 +29,7 @@ export default function NoteEditor({
             gap: 12,
           }}
         >
-          <Text style={{ ...font.h4, color: colors.text.primary }}>Ghi chú món</Text>
+          <Text style={{ ...font.bodyBold, color: colors.text.primary }}>Ghi chú món</Text>
           <TextInput
             value={noteText}
             onChangeText={onChangeText}

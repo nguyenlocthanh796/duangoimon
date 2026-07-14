@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  ActivityIndicator,
+  
   RefreshControl,
   TextInput,
 } from 'react-native';
@@ -126,7 +126,7 @@ export default function InvoicesScreen() {
       key: 'delete',
       label: 'Xóa',
       icon: 'delete',
-      color: colors.status.danger,
+      color: '#DC2626',
       onPress: () => deleteInvoice(inv.id),
     },
   ];
@@ -233,7 +233,7 @@ export default function InvoicesScreen() {
       width: 90,
       align: 'center',
       render: (i) => (
-        <View style={{ flexDirection: 'row', gap: 4, justifyContent: 'center' }}>
+        <View style={{ flexDirection: 'row', gap: 8, justifyContent: 'center' }}>
           {i.status === 'moi' && (
             <TouchableOpacity
               style={styles.actionBtn}
@@ -246,14 +246,14 @@ export default function InvoicesScreen() {
                 }
               }}
             >
-              <Icon name="file-export" size={16} color={colors.brand.primary} />
+              <Icon name="file-export" size={16} color={'#F97316'} />
             </TouchableOpacity>
           )}
           <TouchableOpacity
             style={styles.actionBtn}
             onPress={() => setSelectedOrderId(i.order_id?.toString() || null)}
           >
-            <Icon name="eye-outline" size={16} color={colors.text.muted} />
+            <Icon name="eye-outline" size={16} color={'#737373'} />
           </TouchableOpacity>
         </View>
       ),
@@ -299,7 +299,7 @@ export default function InvoicesScreen() {
         onMenuPress={openSidebar} compact
         onBackPress={() => router.push('/ke-toan')}
         right={
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12}}>
             {isWide && (
               <TouchableOpacity style={styles.addBtn} onPress={openForm}>
                 <Icon name="plus" size={18} color="#fff" />
@@ -324,28 +324,28 @@ export default function InvoicesScreen() {
       />
       <View style={{ paddingHorizontal: hPad, paddingTop: 12 }}>
         <View style={styles.searchWrap}>
-          <Icon name="magnify" size={18} color={colors.text.muted} />
+          <Icon name="magnify" size={18} color={'#737373'} />
           <TextInput
             style={styles.searchInput}
             placeholder="Tìm số HĐ, tên người mua…"
-            placeholderTextColor={colors.text.muted}
+            placeholderTextColor={'#737373'}
             value={query}
             onChangeText={setQuery}
           />
         </View>
         <View style={styles.statStrip}>
           <View style={styles.statBox}>
-            <View style={[styles.statDot, { backgroundColor: colors.status.warning }]} />
+            <View style={[styles.statDot, { backgroundColor: '#D97706' }]} />
             <Text style={styles.statLabel}>Mới</Text>
             <Text style={styles.statCount}>{invoices.filter((i) => i.status === 'moi').length}</Text>
           </View>
           <View style={styles.statBox}>
-            <View style={[styles.statDot, { backgroundColor: colors.status.success }]} />
+            <View style={[styles.statDot, { backgroundColor: '#16A34A' }]} />
             <Text style={styles.statLabel}>Đã xuất</Text>
             <Text style={styles.statCount}>{invoices.filter((i) => i.status === 'da_xuat').length}</Text>
           </View>
           <View style={styles.statBox}>
-            <View style={[styles.statDot, { backgroundColor: colors.status.danger }]} />
+            <View style={[styles.statDot, { backgroundColor: '#DC2626' }]} />
             <Text style={styles.statLabel}>Hủy</Text>
             <Text style={styles.statCount}>{invoices.filter((i) => i.status === 'huy').length}</Text>
           </View>
@@ -357,6 +357,7 @@ export default function InvoicesScreen() {
           data={filtered}
           getRowId={(i) => i.id}
           loading={loading}
+          compact
           refreshing={refreshing}
           onRefresh={() => load(true)}
           sortKey={sort.sortKey}
@@ -395,37 +396,37 @@ export default function InvoicesScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface.app },
+  container: { flex: 1, backgroundColor: '#FAFAFA' },
   addBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 14,
+    gap: 12,
+    paddingHorizontal: 12,
     height: 44,
-    borderRadius: shape.radius.md,
+    borderRadius: 8,
     backgroundColor: 'rgba(255,255,255,0.2)',
   },
   addBtnText: { ...font.buttonSmall, fontWeight: '600', color: '#fff' },
   searchWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.lg,
+    gap: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
     paddingHorizontal: 12,
-    paddingVertical: 4,
+    paddingVertical: 8,
     borderWidth: 1,
-    borderColor: colors.border.light,
+    borderColor: '#F0F0F0',
   },
-  searchInput: { flex: 1, ...font.bodySmall, color: colors.text.primary, paddingVertical: 8 },
+  searchInput: { flex: 1, ...font.bodySmall, color: '#171717', paddingVertical: 16},
   statStrip: {
     flexDirection: 'row',
-    backgroundColor: colors.surface.card,
+    backgroundColor: '#FFFFFF',
     marginTop: 12,
-    borderRadius: shape.radius.lg,
-    paddingVertical: 14,
+    borderRadius: 12,
+    paddingVertical: 12,
     borderWidth: 1,
-    borderColor: colors.border.light,
+    borderColor: '#F0F0F0',
     boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
     elevation: 2,
   },
@@ -434,55 +435,55 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
+    gap: 12,
   },
   statDot: { width: 10, height: 10, borderRadius: 5 },
-  statLabel: { ...font.caption, color: colors.text.muted, fontWeight: '400' },
+  statLabel: { ...font.caption, color: '#737373', fontWeight: '400' },
   statCount: { ...font.body, fontWeight: '400' },
-  cellText: { ...font.body, color: colors.text.primary },
-  cellTextMuted: { ...font.body, color: colors.text.muted },
-  cellBold: { ...font.bodyBold, color: colors.text.primary },
-  cellAmount: { ...font.body, fontWeight: '400', color: colors.text.primary },
-  footerLabel: { ...font.body, fontWeight: '400', color: colors.text.primary },
-  footerValue: { ...font.body, fontWeight: '400', color: colors.text.primary },
+  cellText: { ...font.body, color: '#171717' },
+  cellTextMuted: { ...font.body, color: '#737373' },
+  cellBold: { ...font.bodyBold, color: '#171717' },
+  cellAmount: { ...font.body, fontWeight: '400', color: '#171717' },
+  footerLabel: { ...font.body, fontWeight: '400', color: '#171717' },
+  footerValue: { ...font.body, fontWeight: '400', color: '#171717' },
   invoiceIcon: {
     width: 38,
     height: 38,
-    borderRadius: shape.radius.md,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  rowPrimary: { ...font.body, fontWeight: '400', color: colors.text.primary },
-  rowSub: { ...font.bodySmall, color: colors.text.muted, marginTop: 2 },
-  rowAmount: { ...font.bodyBold, color: colors.text.primary },
+  rowPrimary: { ...font.body, fontWeight: '400', color: '#171717' },
+  rowSub: { ...font.bodySmall, color: '#737373', marginTop: 2 },
+  rowAmount: { ...font.bodyBold, color: '#171717' },
   exportBtn: {
-    backgroundColor: colors.brand.primary,
-    borderRadius: shape.radius.md,
-    paddingHorizontal: 14,
+    backgroundColor: '#F97316',
+    borderRadius: 8,
+    paddingHorizontal: 12,
     paddingVertical: 12,
     minHeight: 44,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  exportText: { ...font.badge, fontWeight: '700', color: colors.text.inverse },
+  exportText: { ...font.badge, fontWeight: '600', color: colors.text.inverse },
   actionBtn: {
     width: 32,
     height: 32,
-    borderRadius: shape.radius.md,
-    backgroundColor: colors.surface.app,
+    borderRadius: 8,
+    backgroundColor: '#FAFAFA',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: colors.border.light,
+    borderColor: '#F0F0F0',
   },
   mRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.md,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
     padding: 14,
     borderWidth: 1,
-    borderColor: colors.border.light,
+    borderColor: '#F0F0F0',
   },
 });
 

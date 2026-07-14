@@ -257,6 +257,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  branchItemName: { ...font.body, fontWeight: '700', color: colors.text.primary },
+  branchItemName: { ...font.body, fontWeight: '600', color: colors.text.primary },
   branchItemNameActive: { color: colors.brand.primary },
 });

@@ -55,14 +55,14 @@ export function useResponsive(): ResponsiveInfo {
 
   // Scale spacing with width
   const gutter = isWide ? Math.max(8, Math.min(16, width * 0.01)) : 10;
-  const hPad = isWide ? 16 : 12;
+  const hPad = isWide ? 16 : 4;
 
-  // Unified responsive padding tokens (phone smaller, iPad roomier)
+  // Unified responsive padding tokens (phone minimal, iPad premium)
   const pad = {
-    screen: isWide ? 24 : 12,
-    section: isWide ? 16 : 12,
-    card: isWide ? 16 : 12,
-    gap: isWide ? 12 : 8,
+    screen: isWide ? 32 : 4,
+    section: isWide ? 24 : 4,
+    card: isWide ? 20 : 4,
+    gap: isWide ? 16 : 4,
   };
 
   const columns = (minItemWidth: number) =>

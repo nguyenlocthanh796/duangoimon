@@ -221,7 +221,7 @@ export default function CartPanel({
             <>
               {(sent.length > 0 || cancelled.length > 0) && (
                 <View style={{ paddingHorizontal: 4, paddingBottom: 4 }}>
-                  <Text style={{ ...font.tab, color: colors.brand.primary }}>Món mới</Text>
+                  <Text style={{ ...font.bodySmall, color: colors.brand.primary }}>Món mới</Text>
                 </View>
               )}
               {unsent.map((item) => (
@@ -234,7 +234,7 @@ export default function CartPanel({
             <>
               {(unsent.length > 0 || cancelled.length > 0) && (
                 <View style={{ paddingHorizontal: 4, paddingVertical: 4 }}>
-                  <Text style={{ ...font.tab, color: '#16a34a' }}>Đã gửi bếp</Text>
+                  <Text style={{ ...font.bodySmall, color: '#16a34a' }}>Đã gửi bếp</Text>
                 </View>
               )}
               {sent.map((item) => (
@@ -246,7 +246,7 @@ export default function CartPanel({
           {cancelled.length > 0 && (
             <>
               <View style={{ paddingHorizontal: 4, paddingVertical: 4 }}>
-                <Text style={{ ...font.tab, color: '#dc2626' }}>Đã huỷ</Text>
+                <Text style={{ ...font.bodySmall, color: '#dc2626' }}>Đã huỷ</Text>
               </View>
               {cancelled.map((item) => (
                 <CartItemRow key={item.cartItemId} {...itemRowProps(item)} />
@@ -407,7 +407,7 @@ export default function CartPanel({
               <MaterialIcons name="close" size={iconSize} color={colors.icon.inverse} />
             </TouchableOpacity>
           )}
-          <Text style={{ ...(isWide ? font.h3 : font.h4), color: colors.text.inverse, fontWeight: '600' }}>
+          <Text style={{ ...(isWide ? font.sectionTitle : font.bodyBold), color: colors.text.inverse, fontWeight: '600' }}>
             Giỏ hàng
           </Text>
           {itemCount > 0 && (

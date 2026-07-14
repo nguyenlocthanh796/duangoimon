@@ -1,177 +1,233 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator, Alert } from 'react-native';
+import { useCallback, useEffect, useMemo, useState, Suspense } from 'react';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import { colors, font } from '../../lib/theme';
-import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import type { Branch } from '../../lib/api/client';
+import DataTable, { type Column } from '../../lib/components/ui/DataTable';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
 import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import FormModal from '../../lib/components/ui/FormModal';
 import FAB from '../../lib/components/ui/FAB';
-import EmptyState from '../../lib/components/ui/EmptyState';
+import { StatsSkeleton, TableSkeleton } from '../../lib/components/ui/Skeleton';
 
 const API = '/api/v1/quan-ly';
-
-type SortKey = 'name' | 'code' | 'active';
 
 export default function BranchesScreen() {
   const { openSidebar } = useSidebar();
   const { isWide } = useResponsive();
-  const [items, setItems] = useState<Branch[]>([]);
+  const [data, setData] = useState<Branch[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState<Branch | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Branch | null>(null);
-  const [selected, setSelected] = useState<Branch | null>(null);
   const [form, setForm] = useState({ name: '', code: '', address: '', phone: '', is_active: true });
-  const [sortKey, setSortKey] = useState<SortKey>('name');
-  const [sortAsc, setSortAsc] = useState(false);
+  const [sortKey, setSortKey] = useState<string>('name');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
   const load = useCallback(async () => {
-    try { setLoading(true); const data: any = await request(`${API}/branches`); setItems(Array.isArray(data) ? data : (data?.items || [])); }
+    try { setLoading(true); const d: any = await request(`${API}/branches`); setData(Array.isArray(d) ? d : (d?.items || [])); }
     catch { /* ignore */ } finally { setLoading(false); }
   }, []);
   useEffect(() => { load(); }, [load]);
 
-  const toggleSort = (k: SortKey) => { if (sortKey === k) setSortAsc(v => !v); else { setSortKey(k); setSortAsc(false); } };
+  const sorted = useMemo(() => {
+    const arr = [...data];
+    arr.sort((a, b) => {
+      let va: any = (a as any)[sortKey];
+      let vb: any = (b as any)[sortKey];
+      if (sortKey === 'is_active') { va = a.is_active ? 1 : 0; vb = b.is_active ? 1 : 0; }
+      if (va == null) va = ''; if (vb == null) vb = '';
+      const cmp = typeof va === 'number' ? va - vb : String(va).localeCompare(String(vb));
+      return sortDir === 'asc' ? cmp : -cmp;
+    });
+    return arr;
+  }, [data, sortKey, sortDir]);
 
-  const openNew = () => { setEditing(null); setForm({ name: '', code: '', address: '', phone: '', is_active: true }); setShowForm(true); };
-  const openEdit = (b: Branch) => { setEditing(b); setForm({ name: b.name, code: b.code, address: b.address || '', phone: b.phone || '', is_active: b.is_active ?? true }); setShowForm(true); };
+  const stats = {
+    total: data.length,
+    active: data.filter(b => b.is_active).length,
+  };
+
+  const columns: Column<Branch>[] = [
+    {
+      key: 'name',
+      title: 'Tên chi nhánh',
+      flex: 1,
+      sortable: true,
+      sortValue: (b) => b.name || '',
+      render: (b) => <Text style={styles.cellPrimary} numberOfLines={1}>{b.name}</Text>,
+    },
+    {
+      key: 'code',
+      title: 'Mã',
+      width: 70,
+      sortable: true,
+      sortValue: (b) => b.code || '',
+      render: (b) => <Text style={styles.cellCode}>{b.code}</Text>,
+    },
+    {
+      key: 'is_active',
+      title: 'Trạng thái',
+      width: 90,
+      align: 'center',
+      sortable: true,
+      sortValue: (b) => b.is_active ? 1 : 0,
+      render: (b) => (
+        <View style={[styles.statusChip, { backgroundColor: b.is_active ? '#DCFCE7' : '#FEE2E2' }]}>
+          <Text style={{ ...font.micro, fontWeight: '600', color: b.is_active ? '#16A34A' : '#DC2626' }}>{b.is_active ? 'Bật' : 'Tắt'}</Text>
+        </View>
+      ),
+    },
+  ];
+
+  const renderPanel = () => {
+    if (!selected) return null;
+    return (
+      <View style={styles.panelBox}>
+        <View style={styles.panelHeader}>
+          <View style={[styles.panelIcon, { backgroundColor: '#F97316' }]}>
+            <Icon name="store" size={18} color={'#F97316'} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.panelTitle} numberOfLines={1}>{selected.name}</Text>
+            <Text style={styles.panelSub}>{selected.code}</Text>
+          </View>
+        </View>
+        <View style={{ flexDirection: 'row', gap: 12 }}>
+          <View style={{ alignItems: 'center', flex: 1 }}>
+            <Text style={styles.statValue}>{selected.is_active ? 'Hoạt động' : 'Ngừng'}</Text>
+            <Text style={styles.statLabel}>Trạng thái</Text>
+          </View>
+          <View style={styles.barDivider} />
+          <View style={{ alignItems: 'center', flex: 1 }}>
+            <Text style={styles.statValue}>{selected.phone || '—'}</Text>
+            <Text style={styles.statLabel}>SĐT</Text>
+          </View>
+        </View>
+        {selected.address && (
+          <>
+            <View style={styles.panelDivider} />
+            <Text style={styles.panelAddress}>{selected.address}</Text>
+          </>
+        )}
+        <View style={{ flexDirection: 'row', gap: 16, marginTop: 4 }}>
+          <TouchableOpacity onPress={() => { setEditing(selected); setForm({ name: selected.name, code: selected.code, address: selected.address || '', phone: selected.phone || '', is_active: selected.is_active }); setShowForm(true); }} style={[styles.panelBtn, { backgroundColor: '#F97316' }]}>
+            <Icon name="pencil" size={14} color="#fff" /><Text style={styles.panelBtnText}>Sửa</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => del(selected.id)} style={[styles.panelBtn, { backgroundColor: '#DC2626' }]}>
+            <Icon name="delete" size={14} color="#fff" /><Text style={styles.panelBtnText}>Xoá</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
+  const del = (id: string) => {
+    Alert.alert('Xác nhận', 'Xoá chi nhánh này?', [
+      { text: 'Huỷ', style: 'cancel' },
+      { text: 'Xoá', style: 'destructive', onPress: async () => { try { await request(`${API}/branches`, { method: 'DELETE', body: JSON.stringify({ id }) }); setSelected(null); load(); } catch { Alert.alert('Lỗi', 'Xoá thất bại'); } } },
+    ]);
+  };
 
   const handleSave = async () => {
     if (!form.name || !form.code) { Alert.alert('Lỗi', 'Tên và mã bắt buộc'); return; }
     try {
-      const body = { name: form.name, code: form.code, address: form.address, phone: form.phone, is_active: form.is_active };
-      if (editing) await request(`${API}/branches/${editing.id}`, { method: 'PUT', body: JSON.stringify(body) });
-      else await request(`${API}/branches`, { method: 'POST', body: JSON.stringify(body) });
-      setShowForm(false); load();
+      const body = JSON.stringify(form);
+      if (editing) { await request(`${API}/branches`, { method: 'PUT', body: JSON.stringify({ ...JSON.parse(body), id: editing.id }) }); }
+      else { await request(`${API}/branches`, { method: 'POST', body }); }
+      setShowForm(false); setEditing(null); load();
     } catch { Alert.alert('Lỗi', 'Không thể lưu'); }
   };
 
-  const del = (id: string) => { Alert.alert('Xác nhận', 'Xoá chi nhánh này?', [{ text: 'Hủy', style: 'cancel' }, { text: 'Xóa', style: 'destructive', onPress: async () => { try { await request(`${API}/branches/${id}`, { method: 'DELETE' }); load(); } catch {} } }]); };
-
-  const stats = { total: items.length, active: items.filter(i => i.is_active).length };
-
-  const sorted = useMemo(() => {
-    return [...items].sort((a, b) => {
-      if (sortKey === 'code') return sortAsc ? a.code.localeCompare(b.code) : b.code.localeCompare(a.code);
-      if (sortKey === 'active') return sortAsc ? Number(a.is_active) - Number(b.is_active) : Number(b.is_active) - Number(a.is_active);
-      return sortAsc ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name);
-    });
-  }, [items, sortKey, sortAsc]);
-
-  const StatItem = ({ icon, value, label }: { icon: string; value: string | number; label: string }) => (
-    <View style={{ alignItems: 'center', flex: 1 }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-        <Icon name={icon as any} size={14} color={colors.text.muted} />
-        <Text style={s.statValue}>{value}</Text>
-      </View>
-      <Text style={s.statLabel}>{label}</Text>
-    </View>
-  );
-
-  const SortHeader = ({ label, sort, w }: { label: string; sort: SortKey; w?: number | string }) => (
-    <TouchableOpacity onPress={() => toggleSort(sort)} style={{ width: w as any, flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-      <Text style={[s.thText, sortKey === sort && { color: colors.brand.primary }]}>{label}</Text>
-      {sortKey === sort ? <Icon name={sortAsc ? 'arrow-up' : 'arrow-down'} size={10} color={colors.brand.primary} /> : null}
-    </TouchableOpacity>
-  );
-
-  const renderPanel = () => (
-    <View style={s.panelBox}>
-      <View style={s.panelHeader}><Icon name="store" size={18} color={colors.brand.primary} /><Text style={s.panelHeaderText}>Chi nhánh</Text></View>
-      <View style={{ flexDirection: 'row', gap: 12 }}>
-        <StatItem icon="store" value={stats.total} label="Tổng" />
-        <View style={s.panelDividerV} />
-        <StatItem icon="check-circle" value={stats.active} label="Hoạt động" />
-      </View>
-      <View style={s.panelDivider} />
-      {selected ? (
-        <View style={{ gap: 8 }}>
-          <Text style={{ ...font.body, fontWeight: '700', color: colors.text.primary }}>{selected.name}</Text>
-          <Text style={{ ...font.caption, color: colors.text.muted }}>Mã: {selected.code}</Text>
-          {selected.address && <Text style={{ ...font.caption, color: colors.text.muted }}>🏠 {selected.address}</Text>}
-          {selected.phone && <Text style={{ ...font.caption, color: colors.text.muted }}>📞 {selected.phone}</Text>}
-          <View style={[s.activeChip, { backgroundColor: selected.is_active ? '#DCFCE7' : '#FEE2E2', alignSelf: 'flex-start' }]}>
-            <Text style={{ ...font.micro, fontWeight: '700', color: selected.is_active ? '#16A34A' : '#DC2626' }}>{selected.is_active ? 'Hoạt động' : 'Tạm ngừng'}</Text>
-          </View>
-          <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
-            <TouchableOpacity onPress={() => openEdit(selected)} style={[s.panelBtn, { backgroundColor: colors.brand.primary }]}><Icon name="pencil" size={14} color="#fff" /><Text style={s.panelBtnText}>Sửa</Text></TouchableOpacity>
-            <TouchableOpacity onPress={() => del(selected.id)} style={[s.panelBtn, { backgroundColor: colors.status.danger }]}><Icon name="delete" size={14} color="#fff" /><Text style={s.panelBtnText}>Xoá</Text></TouchableOpacity>
-          </View>
-        </View>
-      ) : (
-        <TouchableOpacity style={s.panelCta} onPress={openNew}><Icon name="plus" size={14} color="#fff" /><Text style={s.panelCtaText}>Thêm chi nhánh</Text></TouchableOpacity>
-      )}
-    </View>
-  );
-
-  const TableRow = ({ item }: { item: Branch }) => (
-    <TouchableOpacity onPress={() => setSelected(item)} style={s.tr} activeOpacity={0.7}>
-      <Text style={[s.td, { flex: 1, fontWeight: '600' }]} numberOfLines={1}>{item.name}</Text>
-      <Text style={[s.td, { width: 50, textAlign: 'center', ...font.caption, color: colors.text.muted }]}>{item.code}</Text>
-      <View style={{ width: 80, alignItems: 'flex-end' }}>
-        <View style={[s.activeChipSmall, { backgroundColor: item.is_active ? '#DCFCE7' : '#FEE2E2' }]}>
-          <Text style={{ ...font.micro, fontWeight: '700', color: item.is_active ? '#16A34A' : '#DC2626' }}>{item.is_active ? 'Bật' : 'Tắt'}</Text>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-
-  const renderList = () => {
-    if (loading) return <ActivityIndicator size="large" color={colors.brand.primary} style={{ marginTop: 40 }} />;
-    return (
-      <FlatList data={sorted} keyExtractor={item => item.id} renderItem={TableRow}
-        contentContainerStyle={{ paddingHorizontal: isWide ? 12 : 4, paddingBottom: 100 }}
-        refreshing={loading} onRefresh={load}
-        ListEmptyComponent={<EmptyState icon="store" title="Chưa có chi nhánh" subtitle="Thêm chi nhánh đầu tiên" />}
-        ListHeaderComponent={
-          <View style={s.thead}>
-            <SortHeader label="Tên chi nhánh" sort="name" w={1} />
-            <SortHeader label="Mã" sort="code" w={50} />
-            <View style={{ width: 80, alignItems: 'flex-end' }}><Text style={s.thText}>Trạng thái</Text></View>
-          </View>
-        }
-      />
-    );
+  const handleSortChange = (key: string) => {
+    if (key === sortKey) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    else { setSortKey(key); setSortDir('asc'); }
   };
 
   return (
     <ScreenContainer compact>
       <ScreenHeader title="Chi nhánh" subtitle={`${stats.total} chi nhánh · ${stats.active} hoạt động`}
         onMenuPress={openSidebar} compact
-        right={isWide ? undefined : <TouchableOpacity onPress={openNew} style={s.addBtn}><Icon name="plus" size={18} color="#fff" /></TouchableOpacity>}
+        right={isWide ? undefined : <TouchableOpacity onPress={() => { setEditing(null); setForm({ name: '', code: '', address: '', phone: '', is_active: true }); setShowForm(true); }} style={styles.addBtn}><Icon name="plus" size={18} color="#fff" /></TouchableOpacity>}
       />
-      <View style={s.statsBar}>
-        <StatItem icon="store" value={stats.total} label="Tổng" />
-        <View style={s.barDivider} />
-        <StatItem icon="check-circle" value={stats.active} label="Hoạt động" />
+      <View style={styles.statsBar}>
+        <View style={{ alignItems: 'center', flex: 1 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
+            <Icon name="store" size={14} color={'#737373'} />
+            <Text style={styles.statValue}>{stats.total}</Text>
+          </View>
+          <Text style={styles.statLabel}>Tổng</Text>
+        </View>
+        <View style={styles.barDivider} />
+        <View style={{ alignItems: 'center', flex: 1 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
+            <Icon name="check-circle" size={14} color={'#737373'} />
+            <Text style={styles.statValue}>{stats.active}</Text>
+          </View>
+          <Text style={styles.statLabel}>Hoạt động</Text>
+        </View>
       </View>
       {isWide ? (
         <View style={{ flex: 1, flexDirection: 'row' }}>
-          <View style={{ flex: 0.6 }}>{renderList()}</View>
-          <View style={s.separator} />
-          <View style={{ flex: 0.4, backgroundColor: colors.surface.app, paddingTop: 8 }}>{renderPanel()}</View>
+          <View style={{ flex: 0.6 }}>
+              <DataTable<Branch>
+                columns={columns}
+                data={sorted}
+                getRowId={(b: Branch) => b.id}
+                loading={loading}
+                sortKey={sortKey}
+                sortDir={sortDir}
+                onSortChange={handleSortChange}
+                onRowPress={setSelected}
+                selectedRowId={selected?.id ?? null}
+                onRefresh={load}
+                compact
+                emptyIcon="store-off"
+                emptyTitle="Chưa có chi nhánh"
+                emptySubtitle="Thêm chi nhánh đầu tiên"
+              />
+          </View>
+          <View style={styles.separator} />
+          <View style={{ flex: 0.4, backgroundColor: '#FAFAFA', paddingTop: 8 }}>{renderPanel()}</View>
         </View>
-      ) : renderList()}
-      {!isWide && <FAB onPress={openNew} />}
+      ) : (
+          <DataTable<Branch>
+            columns={columns}
+            data={sorted}
+            getRowId={(b: Branch) => b.id}
+            loading={loading}
+            sortKey={sortKey}
+            sortDir={sortDir}
+            onSortChange={handleSortChange}
+            onRowPress={setSelected}
+            selectedRowId={selected?.id ?? null}
+            onRefresh={load}
+            compact
+            emptyIcon="store-off"
+            emptyTitle="Chưa có chi nhánh"
+            emptySubtitle="Thêm chi nhánh đầu tiên"
+          />
+
+      )}
+      {!isWide && <FAB onPress={() => { setEditing(null); setForm({ name: '', code: '', address: '', phone: '', is_active: true }); setShowForm(true); }} />}
 
       <FormModal visible={showForm} title={editing ? 'Sửa chi nhánh' : 'Thêm chi nhánh'}
-        onClose={() => setShowForm(false)} onSave={handleSave} saveLabel={editing ? 'Cập nhật' : 'Thêm'}>
-        <View style={{ gap: 10, paddingTop: 4 }}>
-          <View style={{ flexDirection: 'row', gap: 8 }}>
-            <View style={{ flex: 1 }}><Text style={s.fieldLabel}>Tên *</Text><TextInput value={form.name} onChangeText={v => setForm(p => ({ ...p, name: v }))} style={s.fieldInput} placeholder="CN Hà Nội" /></View>
-            <View style={{ flex: 1 }}><Text style={s.fieldLabel}>Mã *</Text><TextInput value={form.code} onChangeText={v => setForm(p => ({ ...p, code: v }))} style={s.fieldInput} placeholder="HN" /></View>
+        onClose={() => { setShowForm(false); setEditing(null); }} onSave={handleSave} saveLabel={editing ? 'Cập nhật' : 'Thêm'}>
+        <View style={{ gap: 12, paddingTop: 4 }}>
+          <View style={{ flexDirection: 'row', gap: 16}}>
+            <View style={{ flex: 1 }}><Text style={styles.fieldLabel}>Tên *</Text><TextInput value={form.name} onChangeText={v => setForm(p => ({ ...p, name: v }))} style={styles.fieldInput} placeholder="CN Hà Nội" /></View>
+            <View style={{ flex: 1 }}><Text style={styles.fieldLabel}>Mã *</Text><TextInput value={form.code} onChangeText={v => setForm(p => ({ ...p, code: v }))} style={styles.fieldInput} placeholder="HN" /></View>
           </View>
-          <Text style={s.fieldLabel}>Địa chỉ</Text>
-          <TextInput value={form.address} onChangeText={v => setForm(p => ({ ...p, address: v }))} style={s.fieldInput} placeholder="Số nhà, đường, thành phố" />
-          <Text style={s.fieldLabel}>Số điện thoại</Text>
-          <TextInput value={form.phone} onChangeText={v => setForm(p => ({ ...p, phone: v }))} style={s.fieldInput} placeholder="090..." keyboardType="phone-pad" />
-          <TouchableOpacity onPress={() => setForm(p => ({ ...p, is_active: !p.is_active }))} style={[s.activeChip, { alignSelf: 'flex-start' }]}>
-            <Icon name={form.is_active ? 'toggle-switch' : 'toggle-switch-off'} size={20} color={form.is_active ? '#16A34A' : colors.text.muted} />
-            <Text style={{ ...font.bodySmall, color: colors.text.primary }}>{form.is_active ? 'Đang hoạt động' : 'Tạm ngừng'}</Text>
+          <Text style={styles.fieldLabel}>Địa chỉ</Text>
+          <TextInput value={form.address} onChangeText={v => setForm(p => ({ ...p, address: v }))} style={styles.fieldInput} placeholder="Số nhà, đường, thành phố" />
+          <Text style={styles.fieldLabel}>Số điện thoại</Text>
+          <TextInput value={form.phone} onChangeText={v => setForm(p => ({ ...p, phone: v }))} style={styles.fieldInput} placeholder="090..." keyboardType="phone-pad" />
+          <TouchableOpacity onPress={() => setForm(p => ({ ...p, is_active: !p.is_active }))} style={[styles.toggleChip, { alignSelf: 'flex-start' }]}>
+            <Icon name={form.is_active ? 'toggle-switch' : 'toggle-switch-off'} size={20} color={form.is_active ? '#16A34A' : '#737373'} />
+            <Text style={{ ...font.bodySmall, color: '#171717' }}>{form.is_active ? 'Đang hoạt động' : 'Tạm ngừng'}</Text>
           </TouchableOpacity>
         </View>
       </FormModal>
@@ -179,33 +235,26 @@ export default function BranchesScreen() {
   );
 }
 
-const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface.app },
-  addBtn: { width: 44, height: 44, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center' },
-  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-  statValue: { ...font.h4, fontWeight: '800', color: colors.text.primary, lineHeight: 18 },
-  statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },
-
-  thead: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 6, borderBottomWidth: 2, borderBottomColor: colors.border.default, marginBottom: 4 },
-  thText: { ...font.caption, fontWeight: '700', color: colors.text.muted },
-  tr: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 6, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  td: { ...font.bodySmall, color: colors.text.primary },
-  activeChipSmall: { paddingVertical: 3, paddingHorizontal: 8, borderRadius: shape.radius.full },
-
-  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 12 },
-  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  panelHeaderText: { ...font.body, fontWeight: '700', color: colors.text.primary },
-  panelDivider: { height: 1, backgroundColor: colors.border.light },
-  panelDividerV: { width: 1, backgroundColor: colors.border.light },
-  panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 8, paddingHorizontal: 12, borderRadius: shape.radius.md },
-  panelBtnText: { ...font.buttonSmall, fontWeight: '700', color: '#fff' },
-  panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, paddingVertical: 12, minHeight: 44 },
-  panelCtaText: { ...font.button, color: '#fff' },
-  activeChip: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 6, paddingHorizontal: 12, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled },
-
-  fieldLabel: { ...font.label, color: colors.text.secondary, marginBottom: 6 },
-  fieldInput: { borderWidth: 1.5, borderColor: colors.border.default, borderRadius: shape.radius.md, padding: 12, ...font.body, color: colors.text.primary, backgroundColor: colors.surface.app },
-
-  separator: { width: 1, backgroundColor: colors.border.light },
+const styles = StyleSheet.create({
+  addBtn: { width: 44, height: 44, borderRadius: 8, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center' },
+  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
+  barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
+  statValue: { ...font.bodyBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
+  statLabel: { ...font.micro, color: '#737373', lineHeight: 12 },
+  cellPrimary: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
+  cellCode: { ...font.caption, color: '#737373' },
+  statusChip: { paddingVertical: 3, paddingHorizontal: 12, borderRadius: 999 },
+  panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12},
+  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
+  panelIcon: { width: 36, height: 36, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+  panelTitle: { ...font.body, fontWeight: '600', color: '#171717' },
+  panelSub: { ...font.caption, color: '#737373' },
+  panelAddress: { ...font.caption, color: '#737373' },
+  panelDivider: { height: 1, backgroundColor: '#F0F0F0' },
+  panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12, paddingHorizontal: 12, borderRadius: 8},
+  panelBtnText: { ...font.buttonSmall, fontWeight: '600', color: '#fff' },
+  fieldLabel: { ...font.label, color: '#404040', marginBottom: 6 },
+  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.body, color: '#171717', backgroundColor: '#FAFAFA' },
+  toggleChip: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12, paddingHorizontal: 12, borderRadius: 8, backgroundColor: '#F5F5F5' },
+  separator: { width: 1, backgroundColor: '#F0F0F0' },
 });

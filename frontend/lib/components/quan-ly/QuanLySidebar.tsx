@@ -134,7 +134,7 @@ function FullItem({
         />
       </View>
       <Text
-        style={[fullStyles.label, active && { color: colors.brand.primary, fontWeight: '700' }]}
+        style={[fullStyles.label, active && { color: colors.brand.primary, fontWeight: '600' }]}
         numberOfLines={1}
       >
         {item.label}
@@ -256,9 +256,9 @@ const styles = StyleSheet.create({
     height: 34,
   },
   brandName: {
-    ...font.h4,
+    ...font.bodyBold,
     color: colors.text.primary,
-    fontWeight: '700',
+    fontWeight: '600',
   },
   brandRole: {
     ...font.badge,
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontSize: 10,
     color: colors.text.muted,
-    fontWeight: '700',
+    fontWeight: '600',
     letterSpacing: 1,
     paddingHorizontal: 14,
     marginBottom: 2,

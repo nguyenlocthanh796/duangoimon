@@ -1,24 +1,29 @@
 import { request } from './client';
+import { cachedGet, invalidateCache } from './cache';
 
 export async function getProducts() {
-  const res = await request<any>('/ban-hang/products');
-  if (res && typeof res === 'object') {
-    if (Array.isArray(res.items)) return res.items;
-    if (Array.isArray(res)) return res;
-  }
-  return [];
+  return cachedGet('products_pos', async () => {
+    const res = await request<any>('/ban-hang/products');
+    if (res && typeof res === 'object') {
+      if (Array.isArray(res.items)) return res.items;
+      if (Array.isArray(res)) return res;
+    }
+    return [];
+  });
 }
 
 export async function getQuanLyProducts() {
-  const res = await request<any>('/quan-ly/products');
-  if (res && typeof res === 'object') {
-    if (Array.isArray(res.items)) return res.items;
-    if (Array.isArray(res)) return res;
-  }
-  return [];
+  return cachedGet('products_quan_ly', async () => {
+    const res = await request<any>('/quan-ly/products');
+    if (res && typeof res === 'object') {
+      if (Array.isArray(res.items)) return res.items;
+      if (Array.isArray(res)) return res;
+    }
+    return [];
+  });
 }
 
-export function createProduct(
+export async function createProduct(
   data: Partial<{
     id: string;
     code: string;
@@ -31,10 +36,13 @@ export function createProduct(
     options: any[];
   }>
 ) {
-  return request<any>('/quan-ly/products', { method: 'POST', body: JSON.stringify(data) });
+  const res = await request<any>('/quan-ly/products', { method: 'POST', body: JSON.stringify(data) });
+  invalidateCache('products_pos');
+  invalidateCache('products_quan_ly');
+  return res;
 }
 
-export function updateProduct(
+export async function updateProduct(
   id: string,
   data: Partial<{
     code: string;
@@ -47,9 +55,15 @@ export function updateProduct(
     options: any[];
   }>
 ) {
-  return request<any>(`/quan-ly/products/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+  const res = await request<any>(`/quan-ly/products/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+  invalidateCache('products_pos');
+  invalidateCache('products_quan_ly');
+  return res;
 }
 
-export function deleteProduct(id: string) {
-  return request<{ status: string }>(`/quan-ly/products/${id}`, { method: 'DELETE' });
+export async function deleteProduct(id: string) {
+  const res = await request<{ status: string }>(`/quan-ly/products/${id}`, { method: 'DELETE' });
+  invalidateCache('products_pos');
+  invalidateCache('products_quan_ly');
+  return res;
 }

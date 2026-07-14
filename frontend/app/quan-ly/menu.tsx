@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { TableSkeleton } from '../../lib/components/ui/Skeleton';
 import {
   View, Text, FlatList, TouchableOpacity, StyleSheet,
   Alert, ActivityIndicator, TextInput, ScrollView,
@@ -33,8 +34,8 @@ const CATEGORIES = [
   { key: 'Đồ ăn', icon: 'food', color: '#D97706', bg: '#FEF3C7' },
   { key: 'Đồ uống', icon: 'cup-water', color: '#2563EB', bg: '#EFF6FF' },
   { key: 'Tráng miệng', icon: 'ice-cream', color: '#DB2777', bg: '#FCE7F3' },
-  { key: 'Snack', icon: 'candy', color: '#16A34A', bg: '#F0FDF4' },
-  { key: 'Khác', icon: 'dots-horizontal', color: '#64748B', bg: '#F1F5F9' },
+  { key: 'Snack', icon: 'candy', color: '#16A34A', bg: '#16A34A' },
+  { key: 'Khác', icon: 'dots-horizontal', color: '#737373', bg: '#F1F5F9' },
 ];
 
 function getCatStyle(cat: string | null) {
@@ -101,7 +102,7 @@ export default function MenuScreen() {
     return (
       <View style={styles.panelBox}>
         <View style={styles.panelHeader}>
-          <Icon name="silverware" size={18} color={colors.brand.primary} />
+          <Icon name="silverware" size={18} color={'#F97316'} />
           <Text style={styles.panelHeaderText}>Thực đơn</Text>
         </View>
         <View style={styles.panelStatRow}>
@@ -114,7 +115,7 @@ export default function MenuScreen() {
             <View style={[styles.catDot, { backgroundColor: c.color }]} />
             <Text style={styles.catLabel}>{c.key}</Text>
             <Text style={[styles.catCount, { color: c.color }]}>{c.count}</Text>
-            {catFilter === c.key && <Icon name="check" size={14} color={colors.brand.primary} />}
+            {catFilter === c.key && <Icon name="check" size={14} color={'#F97316'} />}
           </TouchableOpacity>
         ))}
         <View style={styles.panelDivider} />
@@ -130,21 +131,21 @@ export default function MenuScreen() {
     return (
       <View style={[styles.panelBox, { flex: 1, marginHorizontal: 12 }]}>
         <View style={styles.panelHeader}>
-          <Icon name={editingId ? 'pencil' : 'plus'} size={18} color={colors.brand.primary} />
+          <Icon name={editingId ? 'pencil' : 'plus'} size={18} color={'#F97316'} />
           <Text style={styles.panelHeaderText}>{editingId ? 'Chỉnh sửa món' : 'Thêm món mới'}</Text>
         </View>
         <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, marginVertical: 10 }}>
           <MenuFormContent form={form} onChange={(updates) => setForm(f => ({ ...f, ...updates }))} />
         </ScrollView>
-        <View style={{ flexDirection: 'row', gap: 10, marginTop: 8 }}>
+        <View style={{ flexDirection: 'row', gap: 32, marginTop: 8 }}>
           <TouchableOpacity
-            style={{ flex: 1, minHeight: 44, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default, alignItems: 'center', justifyContent: 'center' }}
+            style={{ flex: 1, minHeight: 44, borderRadius: 8, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#E5E5E5', alignItems: 'center', justifyContent: 'center' }}
             onPress={() => setShowForm(false)}
           >
-            <Text style={{ ...font.button, color: colors.text.secondary }}>Hủy</Text>
+            <Text style={{ ...font.button, color: '#404040' }}>Hủy</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={{ flex: 1.5, minHeight: 44, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }}
+            style={{ flex: 1.5, minHeight: 44, borderRadius: 8, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 12}}
             onPress={handleSave}
             disabled={saving}
           >
@@ -161,13 +162,13 @@ export default function MenuScreen() {
     const cat = getCatStyle(item.category);
     return (
       <TouchableOpacity style={styles.item} onPress={() => openEdit(item)} activeOpacity={0.7}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, gap: 10 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, gap: 32}}>
           <View style={[styles.codeTag, { backgroundColor: cat.bg }]}>
             <Text style={[styles.codeText, { color: cat.color }]}>{item.code}</Text>
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.itemName} numberOfLines={1}>{item.name}</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 2 }}>
               <View style={[styles.catBadge, { backgroundColor: cat.bg }]}>
                 <Icon name={cat.icon as any} size={10} color={cat.color} />
                 <Text style={[styles.catText, { color: cat.color }]}>{item.category || 'Khác'}</Text>
@@ -176,11 +177,11 @@ export default function MenuScreen() {
             </View>
           </View>
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16}}>
           <Text style={styles.priceText}>{formatVND(item.price)}</Text>
-          <View style={[styles.activeDot, { backgroundColor: item.is_active ? colors.status.success : '#CBD5E1' }]} />
+          <View style={[styles.activeDot, { backgroundColor: item.is_active ? '#16A34A' : '#CBD5E1' }]} />
           <TouchableOpacity onPress={() => handleDelete(item.id, item.name)} style={styles.deleteBtn} hitSlop={8}>
-            <Icon name="trash-can-outline" size={18} color={colors.status.danger} />
+            <Icon name="trash-can-outline" size={18} color={'#DC2626'} />
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
@@ -189,16 +190,16 @@ export default function MenuScreen() {
 
   const renderSearch = () => (
     <View style={styles.searchWrap}>
-      <Icon name="magnify" size={18} color="#94A3B8" />
-      <TextInput style={styles.searchInput} placeholder="Tìm theo tên, mã món..." placeholderTextColor="#94A3B8" value={search} onChangeText={setSearch} />
-      {search.length > 0 && <TouchableOpacity onPress={() => setSearch('')}><Icon name="close" size={16} color="#94A3B8" /></TouchableOpacity>}
+      <Icon name="magnify" size={18} color={'#737373'} />
+      <TextInput style={styles.searchInput} placeholder="Tìm theo tên, mã món..." placeholderTextColor={'#737373'} value={search} onChangeText={setSearch} />
+      {search.length > 0 && <TouchableOpacity onPress={() => setSearch('')}><Icon name="close" size={16} color={'#737373'} /></TouchableOpacity>}
     </View>
   );
 
   const renderList = () => {
     if (loading) return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color={colors.brand.primary} />
+        <TableSkeleton rowCount={5} />
         <Text style={styles.loadingText}>Đang tải...</Text>
       </View>
     );
@@ -252,56 +253,56 @@ export default function MenuScreen() {
 
 // ── Styles ──
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface.app },
+  container: { flex: 1, backgroundColor: '#FAFAFA' },
 
-  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 44, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },
+  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, height: 44, borderRadius: 8, backgroundColor: '#F97316' },
   addBtnText: { ...font.buttonSmall, fontWeight: '600', color: colors.text.inverse },
 
   /* Right panel */
-  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 10, boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3 },
-  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  panelHeaderText: { ...font.body, fontWeight: '700', color: colors.text.primary },
-  panelStatRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 4 },
-  panelStatLabel: { ...font.caption, color: colors.text.muted },
-  panelStatValue: { ...font.h2, fontWeight: '800', color: colors.text.primary },
-  panelDivider: { height: 1, backgroundColor: colors.border.light, marginVertical: 4 },
-  catRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 6, paddingHorizontal: 4, borderRadius: shape.radius.md },
-  catDot: { width: 8, height: 8, borderRadius: 4 },
-  catLabel: { flex: 1, ...font.bodySmall, color: colors.text.primary },
-  catCount: { ...font.bodySmall, fontWeight: '700' },
-  panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, paddingVertical: 12, minHeight: 44, marginTop: 4 },
+  panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 32, boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3 },
+  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
+  panelHeaderText: { ...font.body, fontWeight: '600', color: '#171717' },
+  panelStatRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 8},
+  panelStatLabel: { ...font.caption, color: '#737373' },
+  panelStatValue: { ...font.sectionTitle, fontWeight: '600', color: '#171717' },
+  panelDivider: { height: 1, backgroundColor: '#F0F0F0', marginVertical: 4 },
+  catRow: { flexDirection: 'row', alignItems: 'center', gap: 32, paddingVertical: 12, paddingHorizontal: 8, borderRadius: 8},
+  catDot: { width: 8, height: 8, borderRadius: 12},
+  catLabel: { flex: 1, ...font.bodySmall, color: '#171717' },
+  catCount: { ...font.bodySmall, fontWeight: '600' },
+  panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16, backgroundColor: '#F97316', borderRadius: 8, paddingVertical: 12, minHeight: 44, marginTop: 4 },
   panelCtaText: { ...font.button, color: colors.text.inverse },
 
   /* Search */
   searchWrap: {
-    flexDirection: 'row', alignItems: 'center', gap: 8,
-    backgroundColor: colors.surface.card, marginHorizontal: 12, marginBottom: 8,
-    borderRadius: shape.radius.lg, paddingHorizontal: 14, paddingVertical: 10,
-    borderWidth: 1, borderColor: colors.border.light,
+    flexDirection: 'row', alignItems: 'center', gap: 16,
+    backgroundColor: '#FFFFFF', marginHorizontal: 12, marginBottom: 8,
+    borderRadius: 12, paddingHorizontal: 12, paddingVertical: 32,
+    borderWidth: 1, borderColor: '#F0F0F0',
     boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3,
   },
-  searchInput: { flex: 1, ...font.body, color: colors.text.primary },
+  searchInput: { flex: 1, ...font.body, color: '#171717' },
 
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 60, gap: 8 },
-  loadingText: { ...font.bodySmall, color: colors.text.secondary },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 60, gap: 16},
+  loadingText: { ...font.bodySmall, color: '#404040' },
 
   /* Item card */
   item: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: colors.surface.card, marginHorizontal: 12, marginBottom: 8,
-    borderRadius: shape.radius.lg, padding: 14,
-    borderWidth: 1, borderColor: colors.border.light,
+    backgroundColor: '#FFFFFF', marginHorizontal: 12, marginBottom: 8,
+    borderRadius: 12, padding: 14,
+    borderWidth: 1, borderColor: '#F0F0F0',
     boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3,
   },
-  codeTag: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: shape.radius.sm },
-  codeText: { ...font.caption, fontWeight: '700' },
-  itemName: { ...font.bodySmall, fontWeight: '600', color: colors.text.primary },
-  catBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 7, paddingVertical: 3, borderRadius: shape.radius.full },
-  catText: { ...font.micro, fontWeight: '700' },
-  metaText: { ...font.caption, color: colors.text.secondary },
-  priceText: { ...font.price, color: colors.brand.primary },
-  activeDot: { width: 8, height: 8, borderRadius: 4 },
+  codeTag: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 4},
+  codeText: { ...font.caption, fontWeight: '600' },
+  itemName: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
+  catBadge: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 7, paddingVertical: 3, borderRadius: 999},
+  catText: { ...font.micro, fontWeight: '600' },
+  metaText: { ...font.caption, color: '#404040' },
+  priceText: { ...font.price, color: '#F97316' },
+  activeDot: { width: 8, height: 8, borderRadius: 12},
   deleteBtn: { padding: 4 },
 
-  separator: { width: 1, backgroundColor: colors.border.light },
+  separator: { width: 1, backgroundColor: '#F0F0F0' },
 });

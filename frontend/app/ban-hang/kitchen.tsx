@@ -42,25 +42,25 @@ const COLUMNS: Array<{
     id: 'cho_xu_ly',
     label: 'Chờ xử lý',
     icon: 'clock-outline',
-    headerBg: colors.surface.disabled,
-    headerText: colors.text.primary,
-    dotColor: colors.status.warning,
+    headerBg: '#F5F5F5',
+    headerText: '#171717',
+    dotColor: '#D97706',
     emptyIcon: 'timer-sand',
   },
   {
     id: 'dang_lam',
     label: 'Đang làm',
     icon: 'chef-hat',
-    headerBg: colors.brand.primary + '10',
-    headerText: colors.brand.primary,
-    dotColor: colors.brand.primary,
+    headerBg: '#F97316' + '10',
+    headerText: '#F97316',
+    dotColor: '#F97316',
     emptyIcon: 'silverware-fork-knife',
   },
   {
     id: 'hoan_thanh',
     label: 'Hoàn thành',
     icon: 'check-all',
-    headerBg: colors.status.success + '10',
+    headerBg: '#16A34A' + '10',
     headerText: colors.status.available,
     dotColor: colors.status.available,
     emptyIcon: 'check-circle-outline',
@@ -248,30 +248,30 @@ export default function KitchenScreen() {
           flex: 1,
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: colors.surface.disabled,
+          backgroundColor: '#F5F5F5',
         }}
       >
-        <ActivityIndicator size="large" color={colors.brand.primary} />
+        <ActivityIndicator size="large" color={'#F97316'} />
       </SafeAreaView>
     );
   }
 
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
-    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+    <View style={{ flex: 1, backgroundColor: '#FAFAFA' }}>
       <UnifiedHeader
         icon="fridge-industrial-outline"
         title="Bếp"
         subtitle={`Cập nhật lúc ${formatTime(lastUpdate)} · tự động 30s`}
         onMenuPress={openSidebar}
         right={
-          <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+          <View style={{ flexDirection: 'row', gap: 16, alignItems: 'center' }}>
             <TouchableOpacity
               onPress={() => setSoundEnabled((prev) => !prev)}
               style={{
                 width: 42,
                 height: 42,
-                borderRadius: shape.radius.md,
+                borderRadius: 8,
                 backgroundColor: soundEnabled ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.10)',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -287,18 +287,18 @@ export default function KitchenScreen() {
               style={{
                 backgroundColor: 'rgba(255,255,255,0.18)',
                 paddingHorizontal: 12,
-                paddingVertical: 6,
-                borderRadius: shape.radius.md,
+                paddingVertical: 12,
+                borderRadius: 8,
               }}
             >
-              <Text style={{ ...font.tab, color: '#fff' }}>{allOrders.length} đơn</Text>
+              <Text style={{ ...font.bodySmall, color: '#fff' }}>{allOrders.length} đơn</Text>
             </View>
             <TouchableOpacity
               onPress={fetchOrders}
               style={{
                 width: 42,
                 height: 42,
-                borderRadius: shape.radius.md,
+                borderRadius: 8,
                 backgroundColor: 'rgba(255,255,255,0.10)',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -315,12 +315,12 @@ export default function KitchenScreen() {
         <View
           style={{
             flexDirection: 'row',
-            paddingHorizontal: 8,
-            paddingVertical: 6,
-            backgroundColor: colors.surface.card,
+            paddingHorizontal: 4,
+            paddingVertical: 8,
+            backgroundColor: '#FFFFFF',
             borderBottomWidth: 1,
-            borderBottomColor: colors.border.light,
-            gap: 6,
+            borderBottomColor: '#F0F0F0',
+            gap: 12,
           }}
         >
           {COLUMNS.map((col) => {
@@ -332,15 +332,15 @@ export default function KitchenScreen() {
                 onPress={() => setActiveTab(col.id)}
                 style={{
                   flex: 1,
-                  paddingVertical: 10,
-                  borderRadius: shape.radius.md,
-                  backgroundColor: sel ? col.dotColor + '20' : colors.surface.disabled,
+                  paddingVertical: 32,
+                  borderRadius: 8,
+                  backgroundColor: sel ? col.dotColor + '20' : '#F5F5F5',
                   borderWidth: 1,
-                  borderColor: sel ? col.dotColor : colors.border.default,
+                  borderColor: sel ? col.dotColor : '#E5E5E5',
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexDirection: 'row',
-                  gap: 6,
+                  gap: 12,
                 }}
               >
                 <Icon
@@ -348,21 +348,21 @@ export default function KitchenScreen() {
                   size={16}
                   color={sel ? col.dotColor : colors.icon.muted}
                 />
-                <Text style={{ ...font.label, color: sel ? col.dotColor : colors.text.secondary }}>
+                <Text style={{ ...font.label, color: sel ? col.dotColor : '#404040' }}>
                   {col.label}
                 </Text>
                 <View
                   style={{
                     width: 20,
                     height: 20,
-                    borderRadius: 10,
-                    backgroundColor: sel ? col.dotColor : colors.surface.disabled,
+                    borderRadius: 12,
+                    backgroundColor: sel ? col.dotColor : '#F5F5F5',
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}
                 >
                   <Text
-                    style={{ ...font.badge, color: sel ? colors.text.inverse : colors.text.muted }}
+                    style={{ ...font.badge, color: sel ? colors.text.inverse : '#737373' }}
                   >
                     {count}
                   </Text>
@@ -377,7 +377,7 @@ export default function KitchenScreen() {
         {isWide ? (
           /* iPad: 3 kanban columns side by side */
           <View
-            style={{ flex: 1, flexDirection: 'row', paddingHorizontal: 8, paddingTop: 12, gap: 8 }}
+            style={{ flex: 1, flexDirection: 'row', paddingHorizontal: 16, paddingTop: 12, gap: 16}}
           >
             {COLUMNS.map((col) => (
               <KanbanColumn
@@ -391,7 +391,7 @@ export default function KitchenScreen() {
           </View>
         ) : (
           /* Mobile: single column based on activeTab */
-          <View style={{ flex: 1, paddingHorizontal: 8, paddingTop: 8 }}>
+          <View style={{ flex: 1, paddingHorizontal: 4, paddingTop: 4 }}>
             {COLUMNS.filter((col) => col.id === activeTab).map((col) => (
               <KanbanColumn
                 key={col.id}

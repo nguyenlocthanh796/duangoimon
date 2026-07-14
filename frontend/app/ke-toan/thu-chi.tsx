@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  ActivityIndicator,
+  
   RefreshControl,
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
@@ -169,13 +169,13 @@ export default function ThuChiScreen() {
           <View
             style={[
               styles.badge,
-              { backgroundColor: (thu ? colors.status.success : colors.status.danger) + '1A' },
+              { backgroundColor: (thu ? '#16A34A' : '#DC2626') + '1A' },
             ]}
           >
             <Text
               style={[
                 styles.badgeText,
-                { color: thu ? colors.status.success : colors.status.danger },
+                { color: thu ? '#16A34A' : '#DC2626' },
               ]}
             >
               {thu ? 'Thu' : 'Chi'}
@@ -209,7 +209,7 @@ export default function ThuChiScreen() {
           <Text
             style={[
               styles.cellAmount,
-              { color: thu ? colors.status.success : colors.status.danger },
+              { color: thu ? '#16A34A' : '#DC2626' },
             ]}
           >
             {thu ? '+' : '-'}
@@ -223,7 +223,7 @@ export default function ThuChiScreen() {
       title: 'Ghi chú',
       flex: 1.4,
       render: (t) => (
-        <Text style={[styles.cellText, { color: colors.text.muted }]} numberOfLines={1}>
+        <Text style={[styles.cellText, { color: '#737373' }]} numberOfLines={1}>
           {t.note?.trim() || '—'}
         </Text>
       ),
@@ -248,7 +248,7 @@ export default function ThuChiScreen() {
             }}
             activeOpacity={0.7}
           >
-            <Icon name="pencil-outline" size={18} color={colors.text.muted} />
+            <Icon name="pencil-outline" size={18} color={'#737373'} />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.iconBtn}
@@ -271,7 +271,7 @@ export default function ThuChiScreen() {
             }}
             activeOpacity={0.7}
           >
-            <Icon name="trash-can-outline" size={18} color={colors.status.danger} />
+            <Icon name="trash-can-outline" size={18} color={'#DC2626'} />
           </TouchableOpacity>
         </View>
       ),
@@ -290,7 +290,7 @@ export default function ThuChiScreen() {
       align: 'right' as const,
       width: 130,
       content: (
-        <Text style={[styles.footerValue, { color: colors.status.success }]}>
+        <Text style={[styles.footerValue, { color: '#16A34A' }]}>
           {formatVND(totalThu)}
         </Text>
       ),
@@ -303,7 +303,7 @@ export default function ThuChiScreen() {
         <Text
           style={[
             styles.footerValue,
-            { color: totalThu - totalChi >= 0 ? colors.status.success : colors.status.danger },
+            { color: totalThu - totalChi >= 0 ? '#16A34A' : '#DC2626' },
           ]}
         >
           {formatVND(totalThu - totalChi)}
@@ -315,14 +315,14 @@ export default function ThuChiScreen() {
   const renderMobileCard = (t: Transaction, opts: { selected: boolean; onToggle: () => void }) => (
     <RowCard
       leftIcon={t.type === 'thu' ? 'arrow-bottom-left' : 'arrow-top-right'}
-      leftIconColor={t.type === 'thu' ? colors.status.success : colors.status.danger}
+      leftIconColor={t.type === 'thu' ? '#16A34A' : '#DC2626'}
       title={t.note?.trim() ? t.note : t.category || 'Không ghi chú'}
       subtitle={`${formatDate(t.created_at)} · ${t.category || 'Khác'}`}
       right={
         <Text
           style={[
             styles.cellAmount,
-            { color: t.type === 'thu' ? colors.status.success : colors.status.danger },
+            { color: t.type === 'thu' ? '#16A34A' : '#DC2626' },
           ]}
         >
           {t.type === 'thu' ? '+' : '-'}
@@ -344,7 +344,7 @@ export default function ThuChiScreen() {
             }}
             activeOpacity={0.7}
           >
-            <Icon name="pencil-outline" size={16} color={colors.brand.primary} />
+            <Icon name="pencil-outline" size={16} color={'#F97316'} />
             <Text style={styles.tcActionText}>Sửa</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -368,8 +368,8 @@ export default function ThuChiScreen() {
             }
             activeOpacity={0.7}
           >
-            <Icon name="trash-can-outline" size={16} color={colors.status.danger} />
-            <Text style={[styles.tcActionText, { color: colors.status.danger }]}>Xóa</Text>
+            <Icon name="trash-can-outline" size={16} color={'#DC2626'} />
+            <Text style={[styles.tcActionText, { color: '#DC2626' }]}>Xóa</Text>
           </TouchableOpacity>
         </View>
       }
@@ -414,14 +414,14 @@ export default function ThuChiScreen() {
               <Icon
                 name="arrow-bottom-left"
                 size={14}
-                color={filter === f ? '#fff' : colors.status.success}
+                color={filter === f ? '#fff' : '#16A34A'}
               />
             ) : null}
             {f === 'chi' ? (
               <Icon
                 name="arrow-top-right"
                 size={14}
-                color={filter === f ? '#fff' : colors.status.danger}
+                color={filter === f ? '#fff' : '#DC2626'}
               />
             ) : null}
             <Text style={[styles.chipText, filter === f && styles.chipTextActive]}>
@@ -435,14 +435,14 @@ export default function ThuChiScreen() {
       <View style={[styles.kpiStrip, { marginHorizontal: hPad }]}>
         <View style={styles.kpiBox}>
           <Text style={styles.kpiLabel}>Tổng Thu</Text>
-          <Text style={[styles.kpiValue, { color: colors.status.success }]}>
+          <Text style={[styles.kpiValue, { color: '#16A34A' }]}>
             {formatAmount(totalThu)}
           </Text>
         </View>
         <View style={styles.kpiDivider} />
         <View style={styles.kpiBox}>
           <Text style={styles.kpiLabel}>Tổng Chi</Text>
-          <Text style={[styles.kpiValue, { color: colors.status.danger }]}>
+          <Text style={[styles.kpiValue, { color: '#DC2626' }]}>
             {formatAmount(totalChi)}
           </Text>
         </View>
@@ -452,7 +452,7 @@ export default function ThuChiScreen() {
           <Text
             style={[
               styles.kpiValue,
-              { color: totalThu - totalChi >= 0 ? colors.status.success : colors.status.danger },
+              { color: totalThu - totalChi >= 0 ? '#16A34A' : '#DC2626' },
             ]}
           >
             {formatAmount(totalThu - totalChi)}
@@ -507,101 +507,101 @@ export default function ThuChiScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface.app },
+  container: { flex: 1, backgroundColor: '#FAFAFA' },
   headerAdd: {
     width: 42,
     height: 42,
-    borderRadius: shape.radius.md,
+    borderRadius: 8,
     backgroundColor: 'rgba(255,255,255,0.18)',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  headerActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  headerActions: { flexDirection: 'row', alignItems: 'center', gap: 16},
   headerCsv: {
     width: 42,
     height: 42,
-    borderRadius: shape.radius.md,
+    borderRadius: 8,
     backgroundColor: 'rgba(255,255,255,0.18)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   filterRow: {
     flexDirection: 'row',
-    gap: 8,
-    paddingHorizontal: 8,
+    gap: 16,
+    paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: colors.surface.app,
+    backgroundColor: '#FAFAFA',
   },
   chip: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: shape.radius.full,
-    backgroundColor: colors.surface.card,
+    gap: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 16,
+    borderRadius: 999,
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: colors.border.default,
+    borderColor: '#E5E5E5',
     minHeight: 40,
   },
-  chipActive: { backgroundColor: colors.brand.primary, borderColor: colors.brand.primary },
-  chipText: { ...font.caption, color: colors.text.muted, fontWeight: '600' },
+  chipActive: { backgroundColor: '#F97316', borderColor: '#F97316' },
+  chipText: { ...font.caption, color: '#737373', fontWeight: '600' },
   chipTextActive: { color: '#fff' },
   kpiStrip: {
     flexDirection: 'row',
-    backgroundColor: colors.surface.card,
+    backgroundColor: '#FFFFFF',
     marginHorizontal: 8,
-    borderRadius: shape.radius.lg,
-    paddingVertical: 14,
+    borderRadius: 12,
+    paddingVertical: 12,
     borderWidth: 1,
-    borderColor: colors.border.light,
+    borderColor: '#F0F0F0',
     boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
     elevation: 2,
   },
   kpiBox: { flex: 1, alignItems: 'center' },
-  kpiLabel: { ...font.caption, color: colors.text.muted, fontWeight: '400' },
+  kpiLabel: { ...font.caption, color: '#737373', fontWeight: '400' },
   kpiValue: { ...font.body, fontWeight: '400', marginTop: 2 },
-  kpiDivider: { width: 1, backgroundColor: colors.border.light },
-  cellText: { ...font.body, color: colors.text.primary },
+  kpiDivider: { width: 1, backgroundColor: '#F0F0F0' },
+  cellText: { ...font.body, color: '#171717' },
   cellAmount: { ...font.body, fontWeight: '400' },
-  badge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999, alignSelf: 'center' },
+  badge: { paddingHorizontal: 32, paddingVertical: 8, borderRadius: 12, alignSelf: 'center' },
   badgeText: { ...font.body, fontWeight: '400' },
-  actionRow: { flexDirection: 'row', gap: 6, justifyContent: 'center' },
+  actionRow: { flexDirection: 'row', gap: 12, justifyContent: 'center' },
   iconBtn: {
     width: 32,
     height: 32,
-    borderRadius: shape.radius.md,
-    backgroundColor: colors.surface.app,
+    borderRadius: 8,
+    backgroundColor: '#FAFAFA',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: colors.border.light,
+    borderColor: '#F0F0F0',
   },
-  footerLabel: { ...font.bodySmall, fontWeight: '400', color: colors.text.primary },
+  footerLabel: { ...font.bodySmall, fontWeight: '400', color: '#171717' },
   footerValue: { ...font.bodySmall, fontWeight: '400' },
   loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
-  loadingText: { ...font.bodySmall, color: colors.text.muted },
+  loadingText: { ...font.bodySmall, color: '#737373' },
   tcCardActions: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 16,
     marginTop: 10,
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: colors.border.light,
+    borderTopColor: '#F0F0F0',
   },
   tcActionBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 8,
     paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: shape.radius.sm,
+    paddingVertical: 12,
+    borderRadius: 4,
     backgroundColor: '#f0f4ff',
     borderWidth: 1,
     borderColor: '#dbeafe',
   },
   tcActionDanger: { backgroundColor: '#fef2f2', borderColor: '#fee2e2' },
-  tcActionText: { ...font.caption, color: colors.brand.primary, fontWeight: '700' },
+  tcActionText: { ...font.caption, color: '#F97316', fontWeight: '600' },
 });
 
 

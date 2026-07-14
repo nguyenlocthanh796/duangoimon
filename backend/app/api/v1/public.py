@@ -1,10 +1,9 @@
 """Customer self-order API — called by QR app."""
 
 from app.core.uuid_utils import parse_uuid
-from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 

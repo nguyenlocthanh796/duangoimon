@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Image, TextInput, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { Image } from 'expo-image';
 import { Swipeable } from 'react-native-gesture-handler';
 import { MaterialIcons, MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font, formatPrice } from '../../theme';
@@ -231,9 +232,11 @@ export default function CartItemRow({
         >
           {item.image && !imageError ? (
             <Image
-              source={{ uri: item.image }}
+              source={item.image}
               style={{ width: '100%', height: '100%' }}
-              resizeMode="cover"
+              contentFit="cover"
+              transition={200}
+              cachePolicy="disk"
               onError={() => setImageError(true)}
             />
           ) : (

@@ -51,7 +51,7 @@ export default function KanbanColumn({
           <Text
             style={{
               ...font.label,
-              fontWeight: '800',
+              fontWeight: '600',
               color: col.headerText,
               textTransform: 'uppercase',
               letterSpacing: 0.5,
@@ -70,7 +70,7 @@ export default function KanbanColumn({
             justifyContent: 'center',
           }}
         >
-          <Text style={{ ...font.caption, fontWeight: '700', color: colors.text.inverse }}>
+          <Text style={{ ...font.caption, fontWeight: '600', color: colors.text.inverse }}>
             {orders.length}
           </Text>
         </View>

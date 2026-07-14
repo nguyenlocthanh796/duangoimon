@@ -90,7 +90,7 @@ export default function ModifierSheet({
           }}
         >
           <View style={{ flex: 1 }}>
-            <Text style={{ ...font.h2, color: colors.text.primary, marginBottom: 4 }}>
+            <Text style={{ ...font.sectionTitle, color: colors.text.primary, marginBottom: 4 }}>
               {modalItem?.name}
             </Text>
             <Text style={{ ...font.price, color: COLORS.primary }}>{formatPrice(modalPrice)}</Text>
@@ -440,7 +440,7 @@ export default function ModifierSheet({
               style={{
                 flex: 1,
                 paddingVertical: 14,
-                borderRadius: shape.radius.md,
+                borderRadius: 99,
                 backgroundColor: colors.surface.disabled,
                 alignItems: 'center',
               }}
@@ -451,7 +451,7 @@ export default function ModifierSheet({
               onPress={isEditMode ? onSave : onAdd}
               style={{
                 flex: 2.5,
-                borderRadius: shape.radius.md,
+                borderRadius: 99,
                 overflow: 'hidden',
                 boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
               }}

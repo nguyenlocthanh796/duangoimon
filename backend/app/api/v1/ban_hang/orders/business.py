@@ -1,3 +1,5 @@
+"""Ban-hang Orders Business API router."""
+
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy import select, update

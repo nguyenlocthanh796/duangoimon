@@ -1,16 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import { colors, font } from '../../lib/theme';
-import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
+import DataTable, { type Column } from '../../lib/components/ui/DataTable';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
 import ScreenContainer from '../../lib/components/ui/ScreenContainer';
-import EmptyState from '../../lib/components/ui/EmptyState';
-
-type SortKey = 'date' | 'forecast' | 'confidence';
 
 export default function ForecastScreen() {
   const { openSidebar } = useSidebar();
@@ -18,8 +15,8 @@ export default function ForecastScreen() {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [days, setDays] = useState(7);
-  const [sortKey, setSortKey] = useState<SortKey>('date');
-  const [sortAsc, setSortAsc] = useState(false);
+  const [sortKey, setSortKey] = useState<string>('date');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
   const load = useCallback(async () => {
     try { setLoading(true); setData(await request<any[]>(`/api/v1/quan-ly/forecast/demand?days_ahead=${days}`)); }
@@ -27,157 +24,193 @@ export default function ForecastScreen() {
   }, [days]);
   useEffect(() => { load(); }, [load]);
 
-  const toggleSort = (k: SortKey) => { if (sortKey === k) setSortAsc(v => !v); else { setSortKey(k); setSortAsc(false); } };
-
   const total = data.reduce((s, d) => s + (d.forecast || 0), 0);
   const avg = data.length ? Math.round(total / data.length) : 0;
   const avgConf = data.length ? Math.round(data.reduce((s, d) => s + (d.confidence || 0), 0) / data.length) : 0;
 
-  const sorted = useMemo(() => {
-    return [...data].sort((a, b) => {
-      if (sortKey === 'forecast') return sortAsc ? (a.forecast || 0) - (b.forecast || 0) : (b.forecast || 0) - (a.forecast || 0);
-      if (sortKey === 'confidence') return sortAsc ? (a.confidence || 0) - (b.confidence || 0) : (b.confidence || 0) - (a.confidence || 0);
-      return sortAsc ? (a.date || '').localeCompare(b.date || '') : (b.date || '').localeCompare(a.date || '');
-    });
-  }, [data, sortKey, sortAsc]);
-
-  const StatItem = ({ icon, value, label }: { icon: string; value: string | number; label: string }) => (
-    <View style={{ alignItems: 'center', flex: 1 }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-        <Icon name={icon as any} size={14} color={colors.text.muted} />
-        <Text style={s.statValue}>{value}</Text>
+  const renderConfidence = (c: number) => (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, justifyContent: 'flex-end' }}>
+      <View style={{ width: 35, height: 6, backgroundColor: '#F5F5F5', borderRadius: 3 }}>
+        <View style={{ width: `${c}%`, height: 6, borderRadius: 3, backgroundColor: c > 70 ? '#16A34A' : c > 50 ? '#D97706' : '#DC2626' }} />
       </View>
-      <Text style={s.statLabel}>{label}</Text>
+      <Text style={{ ...font.micro, fontWeight: '600', color: c > 70 ? '#16A34A' : c > 50 ? '#D97706' : '#DC2626', width: 28, textAlign: 'right' }}>{Math.round(c)}%</Text>
     </View>
   );
 
-  const SortHeader = ({ label, sort, w }: { label: string; sort: SortKey; w?: number | string }) => (
-    <TouchableOpacity onPress={() => toggleSort(sort)} style={{ width: w as any, flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-      <Text style={[s.thText, sortKey === sort && { color: colors.brand.primary }]}>{label}</Text>
-      {sortKey === sort ? <Icon name={sortAsc ? 'arrow-up' : 'arrow-down'} size={10} color={colors.brand.primary} /> : null}
-    </TouchableOpacity>
-  );
+  const columns: Column<any>[] = [
+    {
+      key: 'date',
+      title: 'Ngày',
+      flex: 1,
+      sortable: true,
+      sortValue: (r) => r.date || '',
+      render: (r) => <Text style={styles.cellPrimary}>{r.date}</Text>,
+    },
+    {
+      key: 'forecast',
+      title: 'Dự báo',
+      width: 80,
+      align: 'right',
+      sortable: true,
+      sortValue: (r) => r.forecast || 0,
+      render: (r) => <Text style={styles.cellHighlight}>{Math.round(r.forecast) || 0}</Text>,
+    },
+    {
+      key: 'confidence',
+      title: 'Độ tin cậy',
+      width: 100,
+      align: 'right',
+      sortable: true,
+      sortValue: (r) => r.confidence || 0,
+      render: (r) => renderConfidence(r.confidence || 0),
+    },
+  ];
 
   const renderPanel = () => (
-    <View style={s.panelBox}>
-      <View style={s.panelHeader}>
-        <Icon name="chart-timeline-variant" size={18} color={colors.brand.primary} />
-        <Text style={s.panelHeaderText}>Dự báo</Text>
+    <View style={styles.panelBox}>
+      <View style={styles.panelHeader}>
+        <Icon name="chart-timeline-variant" size={18} color={'#F97316'} />
+        <Text style={styles.panelHeaderText}>Dự báo</Text>
       </View>
-      <View style={{ flexDirection: 'row', gap: 12 }}>
-        <StatItem icon="chart-line" value={total} label="Tổng" />
-        <View style={s.panelDividerV} />
-        <StatItem icon="calendar" value={avg} label="TB/ngày" />
+      <View style={{ flexDirection: 'row', gap: 12}}>
+        <View style={{ alignItems: 'center', flex: 1 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
+            <Icon name="chart-line" size={14} color={'#737373'} />
+            <Text style={styles.statValue}>{total}</Text>
+          </View>
+          <Text style={styles.statLabel}>Tổng</Text>
+        </View>
+        <View style={styles.barDivider} />
+        <View style={{ alignItems: 'center', flex: 1 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
+            <Icon name="calendar" size={14} color={'#737373'} />
+            <Text style={styles.statValue}>{avg}</Text>
+          </View>
+          <Text style={styles.statLabel}>TB/ngày</Text>
+        </View>
       </View>
-      <View style={s.panelDivider} />
+      <View style={styles.panelDivider} />
       <View style={{ alignItems: 'center' }}>
-        <Text style={[s.panelStatValue, { fontSize: 24, color: avgConf > 70 ? '#16A34A' : avgConf > 50 ? '#D97706' : '#DC2626' }]}>{avgConf}%</Text>
-        <Text style={s.panelStatLabel}>Độ tin cậy TB</Text>
+        <Text style={[styles.panelStatValue, { fontSize: 24, color: avgConf > 70 ? '#16A34A' : avgConf > 50 ? '#D97706' : '#DC2626' }]}>{avgConf}%</Text>
+        <Text style={styles.panelStatLabel}>Độ tin cậy TB</Text>
       </View>
       {/* Mini bar: confidence distribution */}
-      <View style={s.panelDivider} />
-      {sorted.slice(0, 7).map((item, i) => {
+      <View style={styles.panelDivider} />
+      {data.slice(0, 7).map((item, i) => {
         const c = item.confidence || 0;
         return (
-          <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <Text style={{ width: 50, ...font.micro, color: colors.text.muted }}>{item.date?.slice(5)}</Text>
-            <View style={{ flex: 1, height: 8, backgroundColor: colors.surface.disabled, borderRadius: 4 }}>
-              <View style={{ width: `${c}%`, height: 8, borderRadius: 4, backgroundColor: c > 70 ? '#16A34A' : c > 50 ? '#D97706' : '#DC2626' }} />
+          <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
+            <Text style={{ width: 45, ...font.micro, color: '#737373' }}>{item.date?.slice(5)}</Text>
+            <View style={{ flex: 1, height: 6, backgroundColor: '#F5F5F5', borderRadius: 3}}>
+              <View style={{ width: `${c}%`, height: 6, borderRadius: 3, backgroundColor: c > 70 ? '#16A34A' : c > 50 ? '#D97706' : '#DC2626' }} />
             </View>
-            <Text style={{ width: 25, textAlign: 'right', ...font.micro, color: colors.text.muted }}>{Math.round(c)}%</Text>
+            <Text style={{ width: 25, textAlign: 'right', ...font.micro, color: '#737373' }}>{Math.round(c)}%</Text>
           </View>
         );
       })}
     </View>
   );
 
-  const TableRow = ({ item }: { item: any }) => {
-    const c = item.confidence || 0;
-    return (
-      <View style={s.tr}>
-        <Text style={[s.td, { flex: 1, fontWeight: '600' }]}>{item.date}</Text>
-        <Text style={[s.td, { width: 65, textAlign: 'right', fontWeight: '700', color: colors.brand.primary }]}>{Math.round(item.forecast) || 0}</Text>
-        <View style={{ width: 70, flexDirection: 'row', alignItems: 'center', gap: 4, justifyContent: 'flex-end' }}>
-          <View style={{ width: 35, height: 6, backgroundColor: colors.surface.disabled, borderRadius: 3 }}>
-            <View style={{ width: `${c}%`, height: 6, borderRadius: 3, backgroundColor: c > 70 ? '#16A34A' : c > 50 ? '#D97706' : '#DC2626' }} />
-          </View>
-          <Text style={{ ...font.micro, fontWeight: '700', color: c > 70 ? '#16A34A' : c > 50 ? '#D97706' : '#DC2626', width: 25, textAlign: 'right' }}>{Math.round(c)}%</Text>
-        </View>
-      </View>
-    );
-  };
-
-  const renderList = () => {
-    if (loading) return <ActivityIndicator size="large" color={colors.brand.primary} style={{ marginTop: 40 }} />;
-    return (
-      <FlatList data={sorted} keyExtractor={(_: any, i: number) => String(i)} renderItem={TableRow}
-        contentContainerStyle={{ paddingHorizontal: isWide ? 12 : 4, paddingBottom: 32 }}
-        refreshing={loading} onRefresh={load}
-        ListEmptyComponent={<EmptyState icon="chart-timeline-variant" title="Chưa có dữ liệu" subtitle="Không có dự báo cho kỳ này" />}
-        ListHeaderComponent={
-          <View style={s.thead}>
-            <SortHeader label="Ngày" sort="date" w={1} />
-            <SortHeader label="Dự báo" sort="forecast" w={65} />
-            <Text style={[s.thText, { width: 70, textAlign: 'right' }]}>Độ tin cậy</Text>
-          </View>
-        }
-      />
-    );
+  const handleSortChange = (key: string) => {
+    if (key === sortKey) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    else { setSortKey(key); setSortDir('asc'); }
   };
 
   return (
     <ScreenContainer compact>
       <ScreenHeader title="Dự báo" subtitle={`${days} ngày`}
         onMenuPress={openSidebar} compact />
-      <View style={s.statsBar}>
-        <StatItem icon="chart-line" value={total} label="Tổng dự báo" />
-        <View style={s.barDivider} />
-        <StatItem icon="calendar" value={avg} label="TB/ngày" />
-        <View style={s.barDivider} />
-        <StatItem icon="shield-check" value={`${avgConf}%`} label="Tin cậy TB" />
+      <View style={styles.statsBar}>
+        <View style={{ alignItems: 'center', flex: 1 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
+            <Icon name="chart-line" size={14} color={'#737373'} />
+            <Text style={styles.statValue}>{total}</Text>
+          </View>
+          <Text style={styles.statLabel}>Tổng dự báo</Text>
+        </View>
+        <View style={styles.barDivider} />
+        <View style={{ alignItems: 'center', flex: 1 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
+            <Icon name="calendar" size={14} color={'#737373'} />
+            <Text style={styles.statValue}>{avg}</Text>
+          </View>
+          <Text style={styles.statLabel}>TB/ngày</Text>
+        </View>
+        <View style={styles.barDivider} />
+        <View style={{ alignItems: 'center', flex: 1 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
+            <Icon name="shield-check" size={14} color={'#737373'} />
+            <Text style={styles.statValue}>{avgConf}%</Text>
+          </View>
+          <Text style={styles.statLabel}>Tin cậy TB</Text>
+        </View>
       </View>
-      <View style={s.filterRow}>
+      <View style={styles.filterRow}>
         {[3, 7, 14].map(d => (
           <TouchableOpacity key={d} onPress={() => setDays(d)}
-            style={[s.chip, days === d && { backgroundColor: colors.brand.primary, borderColor: colors.brand.primary }]}>
-            <Text style={[s.chipText, days === d && { color: '#fff', fontWeight: '700' }]}>{d} ngày</Text>
+            style={[styles.chip, days === d && styles.chipActive]}>
+            <Text style={[styles.chipText, days === d && styles.chipTextActive]}>{d} ngày</Text>
           </TouchableOpacity>
         ))}
       </View>
       {isWide ? (
         <View style={{ flex: 1, flexDirection: 'row' }}>
-          <View style={{ flex: 0.6 }}>{renderList()}</View>
-          <View style={s.separator} />
-          <View style={{ flex: 0.4, backgroundColor: colors.surface.app, paddingTop: 8 }}>{renderPanel()}</View>
+          <View style={{ flex: 0.6 }}>
+            <DataTable<any>
+              columns={columns}
+              data={data}
+              getRowId={(r: any) => r?.id || r?.date || String(Math.random())}
+              loading={loading}
+              sortKey={sortKey}
+              sortDir={sortDir}
+              onSortChange={handleSortChange}
+              onRefresh={load}
+              compact
+              emptyIcon="chart-timeline-variant"
+              emptyTitle="Chưa có dữ liệu"
+              emptySubtitle="Không có dự báo cho kỳ này"
+            />
+          </View>
+          <View style={styles.separator} />
+          <View style={{ flex: 0.4, backgroundColor: '#FAFAFA', paddingTop: 8 }}>{renderPanel()}</View>
         </View>
-      ) : renderList()}
+      ) : (
+        <DataTable<any>
+          columns={columns}
+          data={data}
+          getRowId={(r: any) => r?.id || r?.date || String(Math.random())}
+          loading={loading}
+          sortKey={sortKey}
+          sortDir={sortDir}
+          onSortChange={handleSortChange}
+          onRefresh={load}
+          compact
+          emptyIcon="chart-timeline-variant"
+          emptyTitle="Chưa có dữ liệu"
+          emptySubtitle="Không có dự báo cho kỳ này"
+        />
+      )}
     </ScreenContainer>
   );
 }
 
-const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface.app },
-  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-  statValue: { ...font.h4, fontWeight: '800', color: colors.text.primary, lineHeight: 18 },
-  statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },
-
-  filterRow: { flexDirection: 'row', gap: 6, paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  chip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: shape.radius.full, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default },
-  chipText: { ...font.badge, color: colors.text.muted },
-
-  thead: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 6, borderBottomWidth: 2, borderBottomColor: colors.border.default, marginBottom: 4 },
-  thText: { ...font.caption, fontWeight: '700', color: colors.text.muted },
-  tr: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 6, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  td: { ...font.bodySmall, color: colors.text.primary },
-
-  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 12 },
-  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  panelHeaderText: { ...font.body, fontWeight: '700', color: colors.text.primary },
-  panelStatLabel: { ...font.caption, color: colors.text.muted, marginTop: 2 },
-  panelStatValue: { ...font.h1, fontWeight: '800', color: colors.text.primary },
-  panelDivider: { height: 1, backgroundColor: colors.border.light },
-  panelDividerV: { width: 1, backgroundColor: colors.border.light },
-
-  separator: { width: 1, backgroundColor: colors.border.light },
+const styles = StyleSheet.create({
+  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
+  barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
+  statValue: { ...font.bodyBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
+  statLabel: { ...font.micro, color: '#737373', lineHeight: 12 },
+  filterRow: { flexDirection: 'row', gap: 12, paddingHorizontal: 12, paddingVertical: 12, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
+  chip: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#E5E5E5' },
+  chipActive: { backgroundColor: '#F97316', borderColor: '#F97316' },
+  chipText: { ...font.badge, color: '#737373' },
+  chipTextActive: { color: '#fff', fontWeight: '600' },
+  cellPrimary: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
+  cellHighlight: { ...font.bodySmall, fontWeight: '600', color: '#F97316' },
+  panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12 },
+  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
+  panelHeaderText: { ...font.body, fontWeight: '600', color: '#171717' },
+  panelStatLabel: { ...font.caption, color: '#737373', marginTop: 2 },
+  panelStatValue: { ...font.pageTitle, fontWeight: '600', color: '#171717' },
+  panelDivider: { height: 1, backgroundColor: '#F0F0F0' },
+  separator: { width: 1, backgroundColor: '#F0F0F0' },
 });

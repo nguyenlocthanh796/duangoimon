@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   title: {
-    ...font.h3,
+    ...font.sectionTitle,
     color: colors.text.primary,
     marginTop: 8,
   },

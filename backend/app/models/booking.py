@@ -3,7 +3,7 @@
 import uuid
 from datetime import date, datetime, time, timezone
 
-from sqlalchemy import Boolean, Date, DateTime, Integer, String, Text, Time
+from sqlalchemy import Date, DateTime, Integer, String, Text, Time
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 

@@ -8,8 +8,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.models.ban_hang import Order, OrderItem
-from app.models.recipe import RawMaterial, Recipe, RecipeItem
+from app.models.ban_hang import Order
+from app.models.recipe import RawMaterial, Recipe
 
 
 async def deduct_inventory(order_id: str, db: AsyncSession):

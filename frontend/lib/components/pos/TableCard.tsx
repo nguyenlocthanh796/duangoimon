@@ -112,7 +112,7 @@ export default function TableCard({ table, onPress, selected, isWide, cardWidth 
                 numberOfLines={1}
                 style={{
                   fontSize: amountSize,
-                  fontWeight: '700' as const,
+                  fontWeight: '600' as const,
                   color: colors.text.inverse,
                   letterSpacing: -1,
                   textAlign: 'center',

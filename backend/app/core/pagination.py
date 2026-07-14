@@ -1,7 +1,7 @@
 """Pagination utilities for list endpoints."""
 
 from math import ceil
-from typing import Any, Generic, TypeVar
+from typing import Generic, TypeVar
 
 from fastapi import Query
 from pydantic import BaseModel
@@ -85,7 +85,6 @@ def _self_validate() -> None:
     # PageParams clamp (logic is in FastAPI Query ge=1, but verify)
     # PagedResponse negative/zero page not possible — API validation catches it.
     # test_page_params in test_core.py covers direct usage.
-    pass
 
 
 _self_validate()

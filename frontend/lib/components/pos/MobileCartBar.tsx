@@ -70,7 +70,7 @@ export default function MobileCartBar({
         </View>
         <View>
           <Text style={{ ...font.buttonSmall, color: colors.text.muted }}>Tổng tiền</Text>
-          <Text style={{ ...font.h4, color: COLORS.primary }}>{formatPrice(total)}</Text>
+          <Text style={{ ...font.bodyBold, color: COLORS.primary }}>{formatPrice(total)}</Text>
         </View>
       </TouchableOpacity>
 

@@ -43,7 +43,7 @@ export default function PaymentSuccessScreen({
         </View>
         <Text
           style={{
-            ...font.h2,
+            ...font.sectionTitle,
             color: colors.text.primary,
             textAlign: 'center',
           }}

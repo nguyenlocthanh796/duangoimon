@@ -1,25 +1,32 @@
 import { request } from './client';
 import type { Dashboard, User, SalesReport } from './client';
+import { cachedGet, invalidateCache } from './cache';
 
 export function getDashboard() {
   return request<Dashboard>('/quan-ly/dashboard');
 }
 
 export async function getUsers() {
-  const res = await request<any>('/quan-ly/users');
-  if (res && typeof res === 'object') {
-    if (Array.isArray(res.items)) return res.items;
-    if (Array.isArray(res)) return res;
-  }
-  return [];
+  return cachedGet('management_users', async () => {
+    const res = await request<any>('/quan-ly/users');
+    if (res && typeof res === 'object') {
+      if (Array.isArray(res.items)) return res.items;
+      if (Array.isArray(res)) return res;
+    }
+    return [];
+  });
 }
 
-export function createUser(data: Partial<User>) {
-  return request<any>('/quan-ly/users', { method: 'POST', body: JSON.stringify(data) });
+export async function createUser(data: Partial<User>) {
+  const res = await request<any>('/quan-ly/users', { method: 'POST', body: JSON.stringify(data) });
+  invalidateCache('management_users');
+  return res;
 }
 
-export function updateUser(id: string, data: Partial<User>) {
-  return request<any>(`/quan-ly/users/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+export async function updateUser(id: string, data: Partial<User>) {
+  const res = await request<any>(`/quan-ly/users/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+  invalidateCache('management_users');
+  return res;
 }
 
 export function getSalesReport(dateFrom?: string, dateTo?: string) {
@@ -38,8 +45,10 @@ export interface Branch {
 }
 
 export async function getBranches(): Promise<Branch[]> {
-  const res = await request<any>('/quan-ly/branches/flat');
-  if (Array.isArray(res)) return res;
-  if (res && Array.isArray(res.items)) return res.items;
-  return [];
+  return cachedGet('management_branches', async () => {
+    const res = await request<any>('/quan-ly/branches/flat');
+    if (Array.isArray(res)) return res;
+    if (res && Array.isArray(res.items)) return res.items;
+    return [];
+  }, 300_000, 600_000); // cache branches for 5 minutes (stale), 10 mins (expire)
 }

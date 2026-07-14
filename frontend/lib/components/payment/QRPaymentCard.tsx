@@ -265,7 +265,7 @@ export default function QRPaymentCard({ total, orderId, note }: QRPaymentCardPro
           alignItems: 'center',
         }}
       >
-        <Text style={{ ...font.button, color: '#fff', fontWeight: '700' }}>Mở app ngân hàng</Text>
+        <Text style={{ ...font.button, color: '#fff', fontWeight: '600' }}>Mở app ngân hàng</Text>
       </TouchableOpacity>
     </View>
   );

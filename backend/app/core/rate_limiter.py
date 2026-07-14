@@ -42,7 +42,6 @@ _lock = threading.Lock()
 
 
 def _load_state() -> None:
-    global _requests
     if not os.path.exists(_STATE_FILE):
         return
     try:

@@ -1,27 +1,28 @@
 // Assets index — dùng require() để Expo bundle tối ưu
+// Lưu ý: Đã chuyển sang WebP để giảm tải (giảm 92% dung lượng)
 export const ASSETS = {
   brand: {
-    logoMark: require('../assets/brand/logo_mark.png'),
+    logoMark: require('../assets/brand/webp/logo_mark.webp'),
   },
   images: {
-    foodPlaceholder: require('../assets/images/food_placeholder.png'),
-    drinkPlaceholder: require('../assets/images/drink_placeholder.png'),
-    dessertPlaceholder: require('../assets/images/dessert_placeholder.png'),
-    emptyStateMenu: require('../assets/images/empty_state_menu.png'),
-    emptyStateOrders: require('../assets/images/empty_state_orders.png'),
-    errorState: require('../assets/images/error_state.png'),
-    loadingFood: require('../assets/images/loading_food.png'),
-    searchEmpty: require('../assets/images/search_empty.png'),
+    foodPlaceholder: require('../assets/images/webp/food_placeholder.webp'),
+    drinkPlaceholder: require('../assets/images/webp/drink_placeholder.webp'),
+    dessertPlaceholder: require('../assets/images/webp/dessert_placeholder.webp'),
+    emptyStateMenu: require('../assets/images/webp/empty_state_menu.webp'),
+    emptyStateOrders: require('../assets/images/webp/empty_state_orders.webp'),
+    errorState: require('../assets/images/webp/error_state.webp'),
+    loadingFood: require('../assets/images/webp/loading_food.webp'),
+    searchEmpty: require('../assets/images/webp/search_empty.webp'),
     // Category images
-    categorySuaChua: require('../assets/images/category_sua_chua.png'),
-    categoryTraChanh: require('../assets/images/category_tra_chanh.png'),
-    categoryDoAnVat: require('../assets/images/category_do_an_vat.png'),
-    categoryChe: require('../assets/images/category_che.png'),
-    categoryTraSua: require('../assets/images/category_tra_sua.png'),
-    categorySoda: require('../assets/images/category_soda.png'),
-    categoryKem: require('../assets/images/category_kem.png'),
+    categorySuaChua: require('../assets/images/webp/category_sua_chua.webp'),
+    categoryTraChanh: require('../assets/images/webp/category_tra_chanh.webp'),
+    categoryDoAnVat: require('../assets/images/webp/category_do_an_vat.webp'),
+    categoryChe: require('../assets/images/webp/category_che.webp'),
+    categoryTraSua: require('../assets/images/webp/category_tra_sua.webp'),
+    categorySoda: require('../assets/images/webp/category_soda.webp'),
+    categoryKem: require('../assets/images/webp/category_kem.webp'),
   },
   illustrations: {
-    success: require('../assets/images/success_check.png'),
+    success: require('../assets/images/webp/success_check.webp'),
   },
 } as const;

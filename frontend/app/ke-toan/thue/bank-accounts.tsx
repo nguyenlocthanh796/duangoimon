@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { TableSkeleton } from '../../../lib/components/ui/Skeleton';
 import {
   View,
   Text,
@@ -132,7 +133,7 @@ export default function BankAccountsScreen() {
 
       {loading ? (
         <View style={styles.loadingBox}>
-          <ActivityIndicator size="large" color={colors.brand.primary} />
+          <TableSkeleton rowCount={5} />
         </View>
       ) : (
         <FlatList
@@ -145,12 +146,12 @@ export default function BankAccountsScreen() {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={() => load(true)}
-              tintColor={colors.brand.primary}
+              tintColor={'#F97316'}
             />
           }
           ListEmptyComponent={
             <View style={styles.loadingBox}>
-              <Text style={[font.bodySmall, { color: colors.text.muted }]}>Chưa có tài khoản</Text>
+              <Text style={[font.bodySmall, { color: '#737373' }]}>Chưa có tài khoản</Text>
             </View>
           }
           renderItem={({ item }) => (
@@ -175,14 +176,14 @@ export default function BankAccountsScreen() {
             <TextInput
               style={styles.field}
               placeholder="Tên ngân hàng/ví"
-              placeholderTextColor={colors.text.muted}
+              placeholderTextColor={'#737373'}
               value={form.bank_name}
               onChangeText={(t) => setForm({ ...form, bank_name: t })}
             />
             <TextInput
               style={styles.field}
               placeholder="Số tài khoản"
-              placeholderTextColor={colors.text.muted}
+              placeholderTextColor={'#737373'}
               value={form.account_number}
               onChangeText={(t) => setForm({ ...form, account_number: t })}
             />
@@ -219,26 +220,26 @@ export default function BankAccountsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface.app },
-  headerActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  container: { flex: 1, backgroundColor: '#FAFAFA' },
+  headerActions: { flexDirection: 'row', alignItems: 'center', gap: 16},
   csvBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 12,
     height: 44,
     paddingHorizontal: 12,
-    borderRadius: shape.radius.md,
+    borderRadius: 8,
     backgroundColor: 'rgba(255,255,255,0.18)',
   },
   csvText: { ...font.buttonSmall, fontWeight: '600', color: colors.text.inverse },
   addBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 14,
+    gap: 12,
+    paddingHorizontal: 12,
     height: 44,
-    borderRadius: shape.radius.md,
-    backgroundColor: colors.brand.primary,
+    borderRadius: 8,
+    backgroundColor: '#F97316',
   },
   addBtnText: { ...font.buttonSmall, fontWeight: '600', color: colors.text.inverse },
   loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center' },
@@ -255,49 +256,49 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   modalCard: {
-    backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.lg,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
     padding: 20,
     gap: 12,
   },
-  modalTitle: { ...font.h4, color: colors.text.primary },
+  modalTitle: { ...font.bodyBold, color: '#171717' },
   field: {
-    backgroundColor: colors.surface.app,
-    borderRadius: shape.radius.md,
+    backgroundColor: '#FAFAFA',
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.border.default,
+    borderColor: '#E5E5E5',
     paddingHorizontal: 12,
     height: 46,
     ...font.body,
-    color: colors.text.primary,
+    color: '#171717',
   },
-  walletRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  walletRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 16},
   walletChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: shape.radius.full,
-    backgroundColor: colors.surface.disabled,
+    paddingHorizontal: 12,
+    paddingVertical: 16,
+    borderRadius: 999,
+    backgroundColor: '#F5F5F5',
     borderWidth: 1,
-    borderColor: colors.border.default,
+    borderColor: '#E5E5E5',
   },
-  walletChipActive: { backgroundColor: colors.brand.primary, borderColor: colors.brand.primary },
-  walletText: { ...font.caption, color: colors.text.muted, fontWeight: '600' },
+  walletChipActive: { backgroundColor: '#F97316', borderColor: '#F97316' },
+  walletText: { ...font.caption, color: '#737373', fontWeight: '600' },
   walletTextActive: { color: '#fff' },
   modalActions: { flexDirection: 'row', gap: 12, marginTop: 4 },
   cancelBtn: {
     flex: 1,
     height: 46,
-    borderRadius: shape.radius.md,
-    backgroundColor: colors.surface.disabled,
+    borderRadius: 8,
+    backgroundColor: '#F5F5F5',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cancelText: { ...font.buttonSmall, color: colors.text.muted, fontWeight: '600' },
+  cancelText: { ...font.buttonSmall, color: '#737373', fontWeight: '600' },
   saveBtn: {
     flex: 1,
     height: 46,
-    borderRadius: shape.radius.md,
-    backgroundColor: colors.brand.primary,
+    borderRadius: 8,
+    backgroundColor: '#F97316',
     alignItems: 'center',
     justifyContent: 'center',
   },

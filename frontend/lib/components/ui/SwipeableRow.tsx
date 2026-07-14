@@ -70,5 +70,5 @@ const styles = StyleSheet.create({
     width: 76,
     gap: 4,
   },
-  actionText: { ...font.micro, color: '#fff', fontWeight: '700' },
+  actionText: { ...font.micro, color: '#fff', fontWeight: '600' },
 });

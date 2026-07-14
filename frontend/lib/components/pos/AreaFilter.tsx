@@ -45,7 +45,7 @@ export default function AreaFilter({ areas, selectedArea, onSelectArea }: AreaFi
             }}
           >
             <Text
-              style={{ ...font.tab, color: isSelected ? colors.text.inverse : colors.text.body }}
+              style={{ ...font.bodySmall, color: isSelected ? colors.text.inverse : colors.text.body }}
             >
               {areaName}
             </Text>

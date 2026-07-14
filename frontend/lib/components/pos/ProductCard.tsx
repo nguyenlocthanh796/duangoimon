@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font } from '../../theme/index';
 import { formatPrice } from '../../utils/format';
@@ -53,21 +54,15 @@ export default function ProductCard({
         position: 'relative',
       }}
     >
-      {/* Background Image Layer (Set explicit width & height to avoid web native-size zoom bug) */}
-      {item.image && !imageError ? (
-        <Image
-          source={{ uri: item.image }}
-          style={{ position: 'absolute', width: '100%', height: '100%' }}
-          resizeMode="cover"
-          onError={() => setImageError(true)}
-        />
-      ) : (
-        <Image
-          source={categoryImage[item.category] || ASSETS.images.foodPlaceholder}
-          style={{ position: 'absolute', width: '100%', height: '100%' }}
-          resizeMode="cover"
-        />
-      )}
+      {/* Background Image Layer */}
+      <Image
+        source={item.image && !imageError ? item.image : (categoryImage[item.category] || ASSETS.images.foodPlaceholder)}
+        style={{ position: 'absolute', width: '100%', height: '100%' }}
+        contentFit="cover"
+        transition={200}
+        cachePolicy="disk"
+        onError={() => setImageError(true)}
+      />
 
       {/* Full-width bottom bar overlay stretching fully across the card width */}
       <View

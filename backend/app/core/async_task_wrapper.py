@@ -1,7 +1,7 @@
 """Safe async task wrapper with error handling."""
 import asyncio
 import logging
-from typing import Awaitable, Callable
+from typing import Awaitable
 
 logger = logging.getLogger(__name__)
 

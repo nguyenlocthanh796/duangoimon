@@ -1,9 +1,11 @@
+"""Quan-ly Products API router."""
+
 from app.core.uuid_utils import parse_uuid
 from decimal import Decimal
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
-from sqlalchemy import delete, select, update
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth import get_current_user

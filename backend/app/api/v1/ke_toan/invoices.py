@@ -1,3 +1,5 @@
+"""Ke-toan Invoices API router."""
+
 from app.core.uuid_utils import parse_uuid
 from datetime import date, datetime, timezone
 
@@ -8,7 +10,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth import get_current_user, require_role
 from app.core.database import get_db
-from app.core.pagination import PageParams, paginate
 from app.models.ban_hang import Order
 from app.models.ke_toan import Invoice
 

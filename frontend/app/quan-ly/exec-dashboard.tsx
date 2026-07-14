@@ -1,15 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import { colors, font } from '../../lib/theme';
-import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import type { ExecDashboard } from '../../lib/api/client';
+import DataTable, { type Column } from '../../lib/components/ui/DataTable';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
 import ScreenContainer from '../../lib/components/ui/ScreenContainer';
-import EmptyState from '../../lib/components/ui/EmptyState';
 
 function formatVND(v: number) { return (v || 0).toLocaleString('vi-VN') + 'đ'; }
 
@@ -28,27 +27,40 @@ export default function ExecDashboardScreen() {
   }, []);
   useEffect(() => { load(); }, [load]);
 
-  const StatItem = ({ icon, value, label }: { icon: string; value: string | number; label: string }) => (
-    <View style={{ alignItems: 'center', flex: 1 }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-        <Icon name={icon as any} size={14} color={colors.text.muted} />
-        <Text style={s.statValue}>{value}</Text>
-      </View>
-      <Text style={s.statLabel}>{label}</Text>
-    </View>
-  );
+  const rows = useMemo(() => {
+    if (!d) return [];
+    return tab === 'branch' ? (d.revenue_by_branch || []) : (d.daily_revenue || []);
+  }, [d, tab]);
+
+  const columns: Column<any>[] = [
+    {
+      key: 'name',
+      title: tab === 'branch' ? 'Chi nhánh' : 'Ngày',
+      flex: 1,
+      render: (r) => <Text style={styles.cellPrimary} numberOfLines={1}>{r.branch || r.date?.slice(5) || r.date}</Text>,
+    },
+    {
+      key: 'revenue',
+      title: 'Doanh thu',
+      width: 130,
+      align: 'right',
+      sortable: true,
+      sortValue: (r) => r.revenue || 0,
+      render: (r) => <Text style={styles.cellHighlight}>{formatVND(r.revenue)}</Text>,
+    },
+  ];
 
   const KpiCard = ({ icon, iconBg, label, value, change }: { icon: string; iconBg: string; label: string; value: string | number; change?: { value: number; label: string } }) => (
-    <View style={[s.kpi, { flex: 1 }]}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-        <View style={{ backgroundColor: iconBg, borderRadius: shape.radius.md, width: 28, height: 28, alignItems: 'center', justifyContent: 'center' }}>
-          <Icon name={icon as any} size={16} color={colors.text.primary} />
+    <View style={[styles.kpi, { flex: 1 }]}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+        <View style={{ backgroundColor: iconBg, borderRadius: 8, width: 28, height: 28, alignItems: 'center', justifyContent: 'center' }}>
+          <Icon name={icon as any} size={16} color={'#171717'} />
         </View>
-        <Text style={s.kpiLabel}>{label}</Text>
+        <Text style={styles.kpiLabel}>{label}</Text>
       </View>
-      <Text style={s.kpiValue}>{value}</Text>
+      <Text style={styles.kpiValue}>{value}</Text>
       {change && (
-        <Text style={[s.kpiChange, { color: change.value >= 0 ? '#16A34A' : '#DC2626' }]}>
+        <Text style={[styles.kpiChange, { color: change.value >= 0 ? '#16A34A' : '#DC2626' }]}>
           {change.value >= 0 ? '↑' : '↓'} {Math.abs(change.value)}% so với kỳ trước
         </Text>
       )}
@@ -56,13 +68,13 @@ export default function ExecDashboardScreen() {
   );
 
   const renderPanel = () => (
-    <View style={s.panelBox}>
-      <View style={s.panelHeader}>
-        <Icon name="view-dashboard" size={18} color={colors.brand.primary} />
-        <Text style={s.panelHeaderText}>Chỉ số</Text>
+    <View style={styles.panelBox}>
+      <View style={styles.panelHeader}>
+        <Icon name="view-dashboard" size={18} color={'#F97316'} />
+        <Text style={styles.panelHeaderText}>Chỉ số</Text>
       </View>
       {d && (
-        <View style={{ gap: 10 }}>
+        <View style={{ gap: 12}}>
           {[
             { label: 'Doanh thu', value: formatVND(d.total_revenue) },
             { label: 'Đơn hàng', value: String(d.total_orders) },
@@ -70,11 +82,11 @@ export default function ExecDashboardScreen() {
             { label: 'Occupancy', value: `${d.table_occupancy}%` },
           ].map((r, i) => (
             <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Text style={s.panelLabel}>{r.label}</Text>
-              <Text style={s.panelValue}>{r.value}</Text>
+              <Text style={styles.panelLabel}>{r.label}</Text>
+              <Text style={styles.panelValue}>{r.value}</Text>
             </View>
           ))}
-          <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
+          <View style={{ flexDirection: 'row', gap: 16, marginTop: 4 }}>
             <KpiCard icon="chart-line" iconBg="#E0F2FE" label="TB đơn" value={formatVND(d.avg_order)} />
           </View>
         </View>
@@ -82,107 +94,109 @@ export default function ExecDashboardScreen() {
     </View>
   );
 
-  const rows = useMemo(() => {
-    if (!d) return [];
-    const data = tab === 'branch' ? (d.revenue_by_branch || []) : (d.daily_revenue || []);
-    return data;
-  }, [d, tab]);
-
-  const TableRow = ({ item }: { item: any }) => (
-    <View style={s.tr}>
-      <Text style={[s.td, { flex: 1, fontWeight: '600' }]} numberOfLines={1}>{item.branch || item.date?.slice(5) || item.date}</Text>
-      <Text style={[s.td, { width: 110, textAlign: 'right', fontWeight: '700', color: colors.brand.primary }]}>{formatVND(item.revenue)}</Text>
-    </View>
-  );
-
-  const renderList = () => {
-    if (loading) return <ActivityIndicator size="large" color={colors.brand.primary} style={{ marginTop: 40 }} />;
-    if (!d) return <EmptyState icon="view-dashboard-outline" title="Không có dữ liệu" />;
-    return (
-      <FlatList data={rows} keyExtractor={(_: any, i: number) => String(i)} renderItem={TableRow}
-        contentContainerStyle={{ paddingHorizontal: isWide ? 12 : 4, paddingBottom: 32 }}
-        ListHeaderComponent={
-          <>
-            {/* KPI cards */}
-            <View style={{ flexDirection: 'row', gap: 10, marginBottom: 12 }}>
-              <KpiCard icon="currency-usd" iconBg="#FFF7ED" label="Doanh thu" value={formatVND(d.total_revenue)}
-                change={{ value: d.revenue_change, label: 'So kỳ trước' }} />
-              <KpiCard icon="receipt" iconBg="#FEF3C7" label="Đơn hàng" value={d.total_orders}
-                change={{ value: d.order_change, label: 'So kỳ trước' }} />
-            </View>
-            {/* Table header */}
-            <View style={s.thead}>
-              <Text style={[s.thText, { flex: 1 }]}>{tab === 'branch' ? 'Chi nhánh' : 'Ngày'}</Text>
-              <Text style={[s.thText, { width: 110, textAlign: 'right' }]}>Doanh thu</Text>
-            </View>
-          </>
-        }
-      />
-    );
-  };
-
   return (
     <ScreenContainer compact>
       <ScreenHeader title="Exec Dashboard" subtitle="Tổng quan"
         onMenuPress={openSidebar} compact
-        right={<TouchableOpacity onPress={load} style={s.refreshBtn}><Icon name="refresh" size={18} color={colors.icon.default} /></TouchableOpacity>}
+        right={<TouchableOpacity onPress={load} style={styles.refreshBtn}><Icon name="refresh" size={18} color={colors.icon.default} /></TouchableOpacity>}
       />
-      <View style={s.statsBar}>
-        <StatItem icon="currency-usd" value={d ? formatVND(d.total_revenue) : '-'} label="Doanh thu" />
-        <View style={s.barDivider} />
-        <StatItem icon="receipt" value={d?.total_orders || '-'} label="Đơn" />
-        <View style={s.barDivider} />
-        <StatItem icon="table-furniture" value={d ? `${d.active_tables} bàn` : '-'} label="Đang dùng" />
-        <View style={s.barDivider} />
-        <StatItem icon="chart-line" value={d ? `${d.table_occupancy}%` : '-'} label="Occupancy" />
+      <View style={styles.statsBar}>
+        <View style={{ alignItems: 'center', flex: 1 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
+            <Icon name="currency-usd" size={14} color={'#737373'} />
+            <Text style={styles.statValue}>{d ? formatVND(d.total_revenue) : '-'}</Text>
+          </View>
+          <Text style={styles.statLabel}>Doanh thu</Text>
+        </View>
+        <View style={styles.barDivider} />
+        <View style={{ alignItems: 'center', flex: 1 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
+            <Icon name="receipt" size={14} color={'#737373'} />
+            <Text style={styles.statValue}>{d?.total_orders || '-'}</Text>
+          </View>
+          <Text style={styles.statLabel}>Đơn</Text>
+        </View>
+        <View style={styles.barDivider} />
+        <View style={{ alignItems: 'center', flex: 1 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
+            <Icon name="table-furniture" size={14} color={'#737373'} />
+            <Text style={styles.statValue}>{d ? `${d.active_tables} bàn` : '-'}</Text>
+          </View>
+          <Text style={styles.statLabel}>Đang dùng</Text>
+        </View>
+        <View style={styles.barDivider} />
+        <View style={{ alignItems: 'center', flex: 1 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
+            <Icon name="chart-line" size={14} color={'#737373'} />
+            <Text style={styles.statValue}>{d ? `${d.table_occupancy}%` : '-'}</Text>
+          </View>
+          <Text style={styles.statLabel}>Occupancy</Text>
+        </View>
       </View>
-      <View style={s.filterRow}>
+      <View style={styles.filterRow}>
         {(['branch', 'daily'] as const).map(t => (
           <TouchableOpacity key={t} onPress={() => setTab(t)}
-            style={[s.chip, tab === t && { backgroundColor: colors.brand.primary, borderColor: colors.brand.primary }]}>
-            <Text style={[s.chipText, tab === t && { color: '#fff', fontWeight: '700' }]}>{t === 'branch' ? 'Chi nhánh' : '7 ngày'}</Text>
+            style={[styles.chip, tab === t && styles.chipActive]}>
+            <Text style={[styles.chipText, tab === t && styles.chipTextActive]}>{t === 'branch' ? 'Chi nhánh' : '7 ngày'}</Text>
           </TouchableOpacity>
         ))}
       </View>
       {isWide ? (
         <View style={{ flex: 1, flexDirection: 'row' }}>
-          <View style={{ flex: 0.6 }}>{renderList()}</View>
-          <View style={s.separator} />
-          <View style={{ flex: 0.4, backgroundColor: colors.surface.app, paddingTop: 8 }}>{renderPanel()}</View>
+          <View style={{ flex: 0.6 }}>
+            <DataTable<any>
+              columns={columns}
+              data={rows}
+              getRowId={(r: any) => r?.id || r?.date || String(Math.random())}
+              loading={loading}
+              onRefresh={load}
+              compact
+              emptyIcon="view-dashboard-outline"
+              emptyTitle="Không có dữ liệu"
+              emptySubtitle=""
+            />
+          </View>
+          <View style={styles.separator} />
+          <View style={{ flex: 0.4, backgroundColor: '#FAFAFA', paddingTop: 8 }}>{renderPanel()}</View>
         </View>
-      ) : renderList()}
+      ) : (
+        <DataTable<any>
+          columns={columns}
+          data={rows}
+          getRowId={(r: any) => r?.id || r?.date || String(Math.random())}
+          loading={loading}
+          onRefresh={load}
+          compact
+          emptyIcon="view-dashboard-outline"
+          emptyTitle="Không có dữ liệu"
+          emptySubtitle=""
+        />
+      )}
     </ScreenContainer>
   );
 }
 
-const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface.app },
-  refreshBtn: { width: 44, height: 44, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' },
-
-  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-  statValue: { ...font.h4, fontWeight: '800', color: colors.text.primary, lineHeight: 18 },
-  statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },
-
-  filterRow: { flexDirection: 'row', gap: 6, paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  chip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: shape.radius.full, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default },
-  chipText: { ...font.badge, color: colors.text.muted },
-
-  thead: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 6, borderBottomWidth: 2, borderBottomColor: colors.border.default, marginBottom: 4 },
-  thText: { ...font.caption, fontWeight: '700', color: colors.text.muted },
-  tr: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 6, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  td: { ...font.bodySmall, color: colors.text.primary },
-
-  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 10 },
-  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  panelHeaderText: { ...font.body, fontWeight: '700', color: colors.text.primary },
-  panelLabel: { ...font.caption, color: colors.text.muted },
-  panelValue: { ...font.bodySmall, fontWeight: '700', color: colors.text.primary },
-
-  kpi: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, borderWidth: 1, borderColor: colors.border.light },
-  kpiLabel: { ...font.caption, color: colors.text.muted, marginBottom: 2 },
-  kpiValue: { ...font.h1, fontWeight: '800', color: colors.text.primary, marginBottom: 2 },
-  kpiChange: { ...font.badge, fontWeight: '700' },
-
-  separator: { width: 1, backgroundColor: colors.border.light },
+const styles = StyleSheet.create({
+  refreshBtn: { width: 44, height: 44, borderRadius: 8, backgroundColor: '#F5F5F5', alignItems: 'center', justifyContent: 'center' },
+  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
+  barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
+  statValue: { ...font.bodyBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
+  statLabel: { ...font.micro, color: '#737373', lineHeight: 12 },
+  filterRow: { flexDirection: 'row', gap: 12, paddingHorizontal: 12, paddingVertical: 12, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
+  chip: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#E5E5E5' },
+  chipActive: { backgroundColor: '#F97316', borderColor: '#F97316' },
+  chipText: { ...font.badge, color: '#737373' },
+  chipTextActive: { color: '#fff', fontWeight: '600' },
+  cellPrimary: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
+  cellHighlight: { ...font.bodySmall, fontWeight: '600', color: '#F97316' },
+  panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12},
+  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
+  panelHeaderText: { ...font.body, fontWeight: '600', color: '#171717' },
+  panelLabel: { ...font.caption, color: '#737373' },
+  panelValue: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
+  kpi: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: '#F0F0F0' },
+  kpiLabel: { ...font.caption, color: '#737373', marginBottom: 2 },
+  kpiValue: { ...font.pageTitle, fontWeight: '600', color: '#171717', marginBottom: 2 },
+  kpiChange: { ...font.badge, fontWeight: '600' },
+  separator: { width: 1, backgroundColor: '#F0F0F0' },
 });

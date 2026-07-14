@@ -79,9 +79,9 @@ const styles = StyleSheet.create({
   },
   iconWrapHover: { backgroundColor: colors.brand.primary + '1A' },
   badge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: shape.radius.full },
-  badgeText: { ...font.micro, fontWeight: '700' },
-  title: { ...font.h4, color: colors.text.primary, fontWeight: '700' },
+  badgeText: { ...font.micro, fontWeight: '600' },
+  title: { ...font.bodyBold, color: colors.text.primary, fontWeight: '600' },
   desc: { ...font.caption, color: colors.text.muted, marginTop: -4 },
   cta: { flexDirection: 'row', alignItems: 'center', gap: 2, marginTop: 'auto' },
-  ctaText: { ...font.caption, color: colors.brand.primary, fontWeight: '700' },
+  ctaText: { ...font.caption, color: colors.brand.primary, fontWeight: '600' },
 });

@@ -14,6 +14,7 @@ import { useAuth } from '../../../lib/context/AuthContext';
 import InfoCard from '../../../lib/components/ke-toan/InfoCard';
 import DataTable, { Column } from '../../../lib/components/ui/DataTable';
 import { colHeader, dataValue, dataAmountPos, totalValue } from '../../../lib/theme/dataText';
+import { TableSkeleton } from '../../../lib/components/ui/Skeleton';
 
 const formatVND = (n: number) => (n ?? 0).toLocaleString('vi-VN') + '₫';
 
@@ -111,7 +112,7 @@ export default function LegacyInventoryScreen() {
       flex: 1.2,
       align: 'right',
       render: (it) => (
-        <Text style={[styles.cellAmount, { color: colors.status.success }]}>
+        <Text style={[styles.cellAmount, { color: '#16A34A' }]}>
           {formatVND(it.value)}
         </Text>
       ),
@@ -127,7 +128,7 @@ export default function LegacyInventoryScreen() {
       align: 'right' as const,
       flex: 1.2,
       content: (
-        <Text style={[styles.footerValue, { color: colors.status.success }]}>
+        <Text style={[styles.footerValue, { color: '#16A34A' }]}>
           {formatVND(totalValueSum)}
         </Text>
       ),
@@ -163,7 +164,7 @@ export default function LegacyInventoryScreen() {
 
       {loading ? (
         <View style={styles.loadingBox}>
-          <ActivityIndicator size="large" color={colors.brand.primary} />
+          <TableSkeleton rowCount={5} />
         </View>
       ) : checklist ? (
         <View style={{ flex: 1 }}>
@@ -174,7 +175,7 @@ export default function LegacyInventoryScreen() {
               right={
                 <View style={styles.totalBox}>
                   <Text style={styles.totalLabel}>Tổng giá trị</Text>
-                  <Text style={[styles.totalValue, { color: colors.status.success }]}>
+                  <Text style={[styles.totalValue, { color: '#16A34A' }]}>
                     {formatVND(totalValueSum)}
                   </Text>
                 </View>
@@ -199,14 +200,14 @@ export default function LegacyInventoryScreen() {
       ) : (
         <View style={styles.loadingBox}>
           <Icon name="package-variant-closed" size={56} color="#CBD5E1" />
-          <Text style={[font.h3, { color: colors.text.primary, marginTop: 8 }]}>
+          <Text style={[font.sectionTitle, { color: '#171717', marginTop: 8 }]}>
             Chưa có biên bản
           </Text>
           <Text
             style={[
               font.bodySmall,
               {
-                color: colors.text.muted,
+                color: '#737373',
                 textAlign: 'center',
                 paddingHorizontal: 40,
                 marginTop: 4,
@@ -222,30 +223,30 @@ export default function LegacyInventoryScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface.app },
-  headerActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  container: { flex: 1, backgroundColor: '#FAFAFA' },
+  headerActions: { flexDirection: 'row', alignItems: 'center', gap: 16},
   csvBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 12,
     height: 44,
     paddingHorizontal: 12,
-    borderRadius: shape.radius.md,
+    borderRadius: 8,
     backgroundColor: 'rgba(255,255,255,0.18)',
   },
   csvText: { ...font.buttonSmall, fontWeight: '600', color: colors.text.inverse },
   genBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 14,
+    gap: 12,
+    paddingHorizontal: 12,
     height: 44,
-    borderRadius: shape.radius.md,
-    backgroundColor: colors.brand.primary,
+    borderRadius: 8,
+    backgroundColor: '#F97316',
   },
   genText: { ...font.buttonSmall, fontWeight: '600', color: colors.text.inverse },
-  loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 8 },
-  infoWrap: { paddingHorizontal: 16, paddingTop: 12 },
+  loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 16},
+  infoWrap: { paddingHorizontal: 12, paddingTop: 12 },
   totalBox: { alignItems: 'flex-end' },
   totalLabel: { ...colHeader },
   totalValue: { ...totalValue },

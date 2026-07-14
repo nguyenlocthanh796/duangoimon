@@ -1,15 +1,8 @@
 """Seed data for production — branches, categories, default users."""
 
-import asyncio
-import uuid
 
-from sqlalchemy import select, text
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from app.core.config import settings
 from app.models.all_models import *  # noqa
-from app.models.branch import Branch
-from app.models.user import User
 
 # Needs to be a sync seed or use proper async
 # For now: we append to seed.py

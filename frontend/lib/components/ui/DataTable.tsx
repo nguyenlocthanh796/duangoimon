@@ -4,8 +4,8 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
+  FlatList,
   StyleSheet,
-  ActivityIndicator,
   RefreshControl,
   Platform,
 } from 'react-native';
@@ -13,6 +13,7 @@ import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font, shape } from '../../theme';
 import { useResponsive } from '../../hooks/useResponsive';
 import { applySort, useSortState, type SortDir } from './tableUtils';
+import { TableSkeleton } from './Skeleton';
 
 export type Align = 'left' | 'center' | 'right';
 
@@ -69,15 +70,16 @@ export interface DataTableProps<T> {
   renderMobileCard?: (row: T, opts: { selected: boolean; onToggle: () => void }) => React.ReactNode;
   // row
   onRowPress?: (row: T) => void;
+  selectedRowId?: string | null; // highlight selected row
   emptyIcon?: string;
   emptyTitle?: string;
   emptySubtitle?: string;
-  compact?: boolean; // NEW: dense mode for high-density tables
+  compact?: boolean; // dense mode for high-density tables
 }
 
 const SELECT_COL_WIDTH = 44;
 
-export default function DataTable<T>(props: DataTableProps<T>) {
+function DataTableComponent<T>(props: DataTableProps<T>) {
   const {
     columns,
     data,
@@ -95,6 +97,7 @@ export default function DataTable<T>(props: DataTableProps<T>) {
     footerColumns,
     renderMobileCard,
     onRowPress,
+    selectedRowId,
     emptyIcon = 'table',
     emptyTitle = 'Chua co du lieu',
     emptySubtitle = '',
@@ -132,9 +135,7 @@ export default function DataTable<T>(props: DataTableProps<T>) {
   if (!isWide) {
     if (loading) {
       return (
-        <View style={styles.loadingBox}>
-          <ActivityIndicator size="large" color={colors.brand.primary} />
-        </View>
+        <TableSkeleton rowCount={7} />
       );
     }
     if (data.length === 0) {
@@ -142,9 +143,14 @@ export default function DataTable<T>(props: DataTableProps<T>) {
     }
     return (
       <View style={{ flex: 1 }}>
-        <ScrollView
+        <FlatList
           style={{ flex: 1 }}
           contentContainerStyle={styles.mobileList}
+          data={sorted}
+          keyExtractor={(row) => getRowId(row)}
+          initialNumToRender={10}
+          maxToRenderPerBatch={10}
+          windowSize={5}
           refreshControl={
             onRefresh ? (
               <RefreshControl
@@ -155,12 +161,11 @@ export default function DataTable<T>(props: DataTableProps<T>) {
               />
             ) : undefined
           }
-        >
-          {sorted.map((row) => {
+          renderItem={({ item: row }) => {
             const id = getRowId(row);
             const selected = selSet.has(id);
             return (
-              <View key={id}>
+              <View>
                 {selectable && (
                   <TouchableOpacity
                     style={styles.mobileSelRow}
@@ -178,8 +183,8 @@ export default function DataTable<T>(props: DataTableProps<T>) {
                 )}
               </View>
             );
-          })}
-        </ScrollView>
+          }}
+        />
         {selectable && selSet.size > 0 && (
           <BulkBar
             actions={bulkActions ?? []}
@@ -307,15 +312,17 @@ export default function DataTable<T>(props: DataTableProps<T>) {
 
           {/* Body */}
           {loading ? (
-            <View style={styles.loadingBox}>
-              <ActivityIndicator size="large" color={colors.brand.primary} />
-            </View>
+            <TableSkeleton rowCount={7} />
           ) : sorted.length === 0 ? (
             <EmptyState icon={emptyIcon} title={emptyTitle} subtitle={emptySubtitle} />
           ) : (
-            <ScrollView
+            <FlatList
               style={{ flex: 1 }}
-              nestedScrollEnabled
+              data={sorted}
+              keyExtractor={(row) => getRowId(row)}
+              initialNumToRender={15}
+              maxToRenderPerBatch={10}
+              windowSize={5}
               refreshControl={
                 onRefresh ? (
                   <RefreshControl
@@ -326,33 +333,24 @@ export default function DataTable<T>(props: DataTableProps<T>) {
                   />
                 ) : undefined
               }
-            >
-              {sorted.map((row, idx) => {
+              renderItem={({ item: row, index: idx }) => {
                 const id = getRowId(row);
-                if (!onRowPress) {
-                  return (
-                    <View key={id} style={[styles.bodyRow, compact && styles.bodyRowCompact, idx % 2 === 1 && styles.bodyRowAlt]}>
-                      {renderRowCells(row)}
-                    </View>
-                  );
-                }
+                const isSelected = selectedRowId != null && selectedRowId === id;
                 return (
-                  <TouchableOpacity
-                    key={id}
-                    style={[
-                      styles.bodyRow,
-                      compact && styles.bodyRowCompact,
-                      idx % 2 === 1 && styles.bodyRowAlt,
-                      styles.bodyRowClickable,
-                    ]}
-                    onPress={() => onRowPress(row)}
-                    activeOpacity={0.6}
-                  >
-                    {renderRowCells(row)}
-                  </TouchableOpacity>
+                  <DataTableRow
+                    row={row}
+                    idx={idx}
+                    columns={columns}
+                    compact={compact}
+                    isSelected={isSelected}
+                    isRowSelected={selSet.has(id)}
+                    selectable={!!selectable}
+                    onToggleRow={() => toggleRow(id)}
+                    onRowPress={onRowPress ? () => onRowPress(row) : undefined}
+                  />
                 );
-              })}
-            </ScrollView>
+              }}
+            />
           )}
 
           {/* Footer */}
@@ -386,6 +384,8 @@ export default function DataTable<T>(props: DataTableProps<T>) {
     </View>
   );
 }
+
+export default React.memo(DataTableComponent) as typeof DataTableComponent;
 
 // ─── Sub-components ──────────────────────────────────────────────
 
@@ -497,12 +497,16 @@ function safeRender(node: React.ReactNode) {
 }
 
 function DefaultMobileCard<T>({ columns, row, compact }: { columns: Column<T>[]; row: T; compact?: boolean }) {
+  const { isWide } = useResponsive();
+  // Mobile phone → edge-to-edge, card inner provides 4px breathing room.
+  const cardPadStyle = !isWide ? { padding: 4, gap: 4 } : compact ? styles.mobileCardCompact : null;
+  const rowGapStyle = !isWide ? { gap: 4 } : null;
   return (
-    <View style={[styles.mobileCard, compact && styles.mobileCardCompact]}>
+    <View style={[styles.mobileCard, cardPadStyle]}>
       {columns.map((col) => (
-        <View key={col.key} style={styles.mobileCardRow}>
+        <View key={col.key} style={[styles.mobileCardRow, rowGapStyle]}>
           <Text style={styles.mobileCardLabel}>{col.title}</Text>
-          <View style={{ flex: 1, alignItems: 'flex-end' }}>{col.render(row)}</View>
+          <View style={{ flex: 1, alignItems: 'flex-end' }}>{safeRender(col.render(row))}</View>
         </View>
       ))}
     </View>
@@ -517,6 +521,89 @@ function EmptyState({ icon, title, subtitle }: { icon: string; title: string; su
     </View>
   );
 }
+
+// --- Memoized Row Components ---
+
+const DataTableRow = React.memo(function DataTableRow<T>({
+  row,
+  idx,
+  columns,
+  compact,
+  isSelected,
+  isRowSelected,
+  selectable,
+  onToggleRow,
+  onRowPress,
+}: {
+  row: T;
+  idx: number;
+  columns: Column<T>[];
+  compact?: boolean;
+  isSelected?: boolean;
+  isRowSelected?: boolean;
+  selectable?: boolean;
+  onToggleRow: () => void;
+  onRowPress?: () => void;
+}) {
+  const cellWidthStyle = (col: Column<T>, isSelect: boolean) =>
+    isSelect
+      ? { width: SELECT_COL_WIDTH, alignItems: 'center' as const }
+      : col.width
+        ? { width: col.width }
+        : { flex: col.flex ?? 1 };
+
+  const renderRowCells = () => (
+    <>
+      {selectable && (
+        <TouchableOpacity
+          style={[styles.cell, compact && styles.cellCompact, { width: SELECT_COL_WIDTH, alignItems: 'center' }]}
+          onPress={onToggleRow}
+          activeOpacity={0.7}
+        >
+          <CheckCircle selected={!!isRowSelected} />
+        </TouchableOpacity>
+      )}
+      {columns.map((col) => (
+        <View
+          key={col.key}
+          style={[
+            styles.cell,
+            compact && styles.cellCompact,
+            cellWidthStyle(col, false),
+            (col.align ?? 'left') === 'right' && { alignItems: 'flex-end' },
+            (col.align ?? 'left') === 'center' && { alignItems: 'center' },
+          ]}
+        >
+          {safeRender(col.render(row))}
+        </View>
+      ))}
+    </>
+  );
+
+  if (!onRowPress) {
+    return (
+      <View style={[styles.bodyRow, compact && styles.bodyRowCompact, idx % 2 === 1 && styles.bodyRowAlt, isSelected && styles.bodyRowSelected]}>
+        {renderRowCells()}
+      </View>
+    );
+  }
+
+  return (
+    <TouchableOpacity
+      style={[
+        styles.bodyRow,
+        compact && styles.bodyRowCompact,
+        idx % 2 === 1 && styles.bodyRowAlt,
+        styles.bodyRowClickable,
+        isSelected && styles.bodyRowSelected,
+      ]}
+      onPress={onRowPress}
+      activeOpacity={0.6}
+    >
+      {renderRowCells()}
+    </TouchableOpacity>
+  );
+}) as <T>(props: any) => React.ReactElement;
 
 // ─── Styles ──────────────────────────────────────────────────────
 const styles = StyleSheet.create({
@@ -539,9 +626,9 @@ const styles = StyleSheet.create({
   headCell: { paddingVertical: 12, paddingHorizontal: 12, justifyContent: 'center' },
   headCellActive: { backgroundColor: colors.brand.primaryBg },
   headInner: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  headText: { ...font.tableHeader, color: colors.text.tableHeader, fontWeight: '700' },
+  headText: { ...font.tableHeader, color: colors.text.tableHeader, fontWeight: '600' },
   headTextActive: { color: colors.brand.primaryDark },
-  headTextCompact: { ...font.tableHeader, color: colors.text.tableHeader, fontWeight: '700' },
+  headTextCompact: { ...font.tableHeader, color: colors.text.tableHeader, fontWeight: '600' },
   bodyRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -556,6 +643,7 @@ const styles = StyleSheet.create({
   bodyRowAlt: { backgroundColor: colors.surface.tableRowAlt },
   bodyRowHover: { backgroundColor: colors.surface.tableRowHover },
   bodyRowClickable: { cursor: 'pointer' },
+  bodyRowSelected: { backgroundColor: colors.brand.primaryBg, borderLeftWidth: 3, borderLeftColor: colors.brand.primary },
   cell: { paddingVertical: 12, paddingHorizontal: 12, justifyContent: 'center' },
   cellCompact: {
     paddingVertical: 8,
@@ -604,7 +692,7 @@ const styles = StyleSheet.create({
   },
   filterItem: { paddingVertical: 8, paddingHorizontal: 10, borderRadius: shape.radius.sm },
   filterItemText: { ...font.caption, color: colors.text.secondary },
-  filterItemTextActive: { color: colors.brand.primary, fontWeight: '700' },
+  filterItemTextActive: { color: colors.brand.primary, fontWeight: '600' },
   // bulk
   bulkBar: {
     position: 'absolute',
@@ -621,7 +709,7 @@ const styles = StyleSheet.create({
     borderTopColor: colors.border.brand,
   },
   bulkClear: { padding: 4 },
-  bulkCount: { ...font.bodySmall, fontWeight: '700', color: colors.text.primary },
+  bulkCount: { ...font.bodySmall, fontWeight: '600', color: colors.text.primary },
   bulkBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -630,9 +718,9 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: shape.radius.md,
   },
-  bulkBtnText: { ...font.buttonSmall, color: '#fff', fontWeight: '700' },
+  bulkBtnText: { ...font.buttonSmall, color: '#fff', fontWeight: '600' },
   // mobile
-  mobileList: { padding: 12, gap: 8, paddingBottom: 100 },
+  mobileList: { paddingHorizontal: 0, gap: 4, paddingBottom: 100, paddingTop: 0 },
   mobileCard: {
     backgroundColor: colors.surface.card,
     padding: 14,

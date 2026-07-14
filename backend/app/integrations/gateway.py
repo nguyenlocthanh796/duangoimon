@@ -8,7 +8,6 @@ ponytail: stub implementations. Add real API calls when keys are provisioned.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
 
 # ────────────────────────────────────────────
 # Delivery Aggregators
@@ -60,13 +59,15 @@ async def zalopay_pay(amount: float, order_info: str, return_url: str) -> Paymen
 
 
 def generate_vietqr(amount: float, bank_account: str, bank_name: str, note: str) -> str:
-    """Generate VietQR image URL (static QR)."""
-    import base64
-    import json
+    """Generate VietQR image URL (static QR).
 
-    # Simplified QR content — in production use VietQR API
-    data = json.dumps({"bank": bank_name, "acc": bank_account, "amount": amount, "note": note})
-    return f"https://img.vietqr.io/image/{bank_name}-{bank_account}-compact.png?amount={int(amount)}&addInfo={note}"
+    Uses the public img.vietqr.io renderer. For dynamic QR with signature,
+    integrate the authenticated VietQR API instead.
+    """
+    return (
+        f"https://img.vietqr.io/image/{bank_name}-{bank_account}-compact.png"
+        f"?amount={int(amount)}&addInfo={note}"
+    )
 
 
 # ────────────────────────────────────────────

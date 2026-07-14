@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   },
   segBtnActiveThu: { backgroundColor: colors.status.success, borderColor: colors.status.success },
   segBtnActiveChi: { backgroundColor: colors.status.danger, borderColor: colors.status.danger },
-  segText: { ...font.body, fontWeight: '700', color: colors.text.primary },
+  segText: { ...font.body, fontWeight: '600', color: colors.text.primary },
   segTextActive: { color: '#fff' },
   label: { ...font.label, color: colors.text.secondary, marginBottom: 8, marginTop: 6 },
   inputWrap: {
@@ -183,5 +183,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     boxShadow: '0px 4px 8px rgba(0,0,0,0.12)',
   },
-  submitText: { ...font.button, color: '#fff', fontWeight: '800' },
+  submitText: { ...font.button, color: '#fff', fontWeight: '600' },
 });

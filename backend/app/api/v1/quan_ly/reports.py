@@ -1,3 +1,5 @@
+"""Quan-ly Reports API router."""
+
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, Query

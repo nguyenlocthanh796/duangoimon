@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { TableSkeleton } from '../../../lib/components/ui/Skeleton';
 import {
   View,
   Text,
@@ -28,35 +29,35 @@ const BOOKS = [
     key: 'S1a',
     label: 'S1a — Tổng hợp Thu - Chi',
     desc: 'Tổng quan doanh thu & chi phí trong kỳ',
-    color: colors.brand.primary,
+    color: '#F97316',
     icon: 'book-open-page-variant' as const,
   },
   {
     key: 'S2a',
     label: 'S2a — Mua hàng hóa (GTGT/TNCN)',
     desc: 'Chi tiết mua hàng & thuế đầu vào',
-    color: colors.status.success,
+    color: '#16A34A',
     icon: 'percent' as const,
   },
   {
     key: 'S2b',
     label: 'S2b — Bán hàng hóa (GTGT/TNCN)',
     desc: 'Chi tiết bán hàng & thuế đầu ra',
-    color: colors.status.info,
+    color: '#2563EB',
     icon: 'cash-multiple' as const,
   },
   {
     key: 'S2c',
     label: 'S2c — Chi phí SXKD',
     desc: 'Chi phí sản xuất kinh doanh phát sinh',
-    color: colors.status.warning,
+    color: '#D97706',
     icon: 'scale-balance' as const,
   },
   {
     key: 'S2d',
     label: 'S2d — Tài sản cố định',
     desc: 'Mua sắm & khấu hao tài sản cố định',
-    color: colors.brand.primaryHover,
+    color: '#F97316',
     icon: 'package-variant-closed' as const,
   },
   {
@@ -70,7 +71,7 @@ const BOOKS = [
     key: 'S3a',
     label: 'S3a — Tổng hợp thuế',
     desc: 'Tổng hợp & quyết toán thuế GTGT/TNCN',
-    color: colors.status.danger,
+    color: '#DC2626',
     icon: 'file-document-outline' as const,
   },
 ];
@@ -176,7 +177,7 @@ export default function SoSachScreen() {
       sortable: true,
       sortValue: (r) => r.total,
       render: (r) => (
-        <Text style={[styles.cellAmount, { color: colors.status.danger }]}>
+        <Text style={[styles.cellAmount, { color: '#DC2626' }]}>
           {formatVND(r.total)}
         </Text>
       ),
@@ -189,7 +190,7 @@ export default function SoSachScreen() {
       sortable: true,
       sortValue: (r) => r.group,
       render: (r) => (
-        <View style={[styles.badge, { backgroundColor: colors.brand.primaryBg }]}>
+        <View style={[styles.badge, { backgroundColor: '#F97316' }]}>
           <Text style={styles.badgeText}>Nhóm {r.group}</Text>
         </View>
       ),
@@ -221,7 +222,7 @@ export default function SoSachScreen() {
       align: 'right' as const,
       width: 140,
       content: (
-        <Text style={[styles.footerValue, { color: colors.status.danger }]}>
+        <Text style={[styles.footerValue, { color: '#DC2626' }]}>
           {formatVND(sumBy(rows, (r) => r.total))}
         </Text>
       ),
@@ -238,15 +239,15 @@ export default function SoSachScreen() {
     <View style={styles.mCard}>
       <View style={styles.mCardHead}>
         <Text style={styles.mCardTitle}>Tháng {r.period_month.slice(5)}</Text>
-        <View style={[styles.badge, { backgroundColor: colors.brand.primaryBg }]}>
+        <View style={[styles.badge, { backgroundColor: '#F97316' }]}>
           <Text style={styles.badgeText}>Nhóm {r.group}</Text>
         </View>
       </View>
       <View style={styles.mCardGrid}>
-        <Sum label="Doanh thu" value={formatVND(r.revenue)} color={colors.status.success} />
-        <Sum label="Thuế GTGT" value={formatVND(r.vat)} color={colors.text.primary} />
-        <Sum label="Thuế TNCN" value={formatVND(r.tncn)} color={colors.text.primary} />
-        <Sum label="Tổng thuế" value={formatVND(r.total)} color={colors.status.danger} />
+        <Sum label="Doanh thu" value={formatVND(r.revenue)} color={'#16A34A'} />
+        <Sum label="Thuế GTGT" value={formatVND(r.vat)} color={'#171717'} />
+        <Sum label="Thuế TNCN" value={formatVND(r.tncn)} color={'#171717'} />
+        <Sum label="Tổng thuế" value={formatVND(r.total)} color={'#DC2626'} />
       </View>
     </View>
   );
@@ -297,7 +298,7 @@ export default function SoSachScreen() {
 
       {loading ? (
         <View style={styles.loadingBox}>
-          <ActivityIndicator size="large" color={colors.brand.primary} />
+          <TableSkeleton rowCount={5} />
         </View>
       ) : report ? (
         <ScrollView
@@ -306,7 +307,7 @@ export default function SoSachScreen() {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={() => load(true)}
-              tintColor={colors.brand.primary}
+              tintColor={'#F97316'}
             />
           }
         >
@@ -328,29 +329,29 @@ export default function SoSachScreen() {
               <Sum
                 label="Doanh thu"
                 value={formatVND(Number(report.totals.revenue))}
-                color={colors.status.success}
+                color={'#16A34A'}
               />
               <Sum
                 label="Thuế GTGT"
                 value={formatVND(Number(report.totals.vat))}
-                color={colors.text.primary}
+                color={'#171717'}
               />
             </View>
             <View style={styles.sumRow}>
               <Sum
                 label="Thuế TNCN"
                 value={formatVND(Number(report.totals.pit))}
-                color={colors.text.primary}
+                color={'#171717'}
               />
               <Sum
                 label="Tổng thuế"
                 value={formatVND(Number(report.totals.total))}
-                color={colors.status.danger}
+                color={'#DC2626'}
               />
             </View>
           </View>
 
-          <View style={{ height: 1, backgroundColor: colors.border.light, marginVertical: 12 }} />
+          <View style={{ height: 1, backgroundColor: '#F0F0F0', marginVertical: 12 }} />
 
           <DataTable<Row>
             columns={columns}
@@ -371,7 +372,7 @@ export default function SoSachScreen() {
         </ScrollView>
       ) : (
         <View style={styles.loadingBox}>
-          <Text style={[font.bodySmall, { color: colors.text.muted }]}>Không có dữ liệu</Text>
+          <Text style={[font.bodySmall, { color: '#737373' }]}>Không có dữ liệu</Text>
         </View>
       )}
     </ScreenContainer>
@@ -388,15 +389,15 @@ function Sum({ label, value, color }: { label: string; value: string; color: str
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface.app },
-  exportRow: { flexDirection: 'row', gap: 8 },
+  container: { flex: 1, backgroundColor: '#FAFAFA' },
+  exportRow: { flexDirection: 'row', gap: 16},
   exportBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 12,
     paddingHorizontal: 12,
     height: 44,
-    borderRadius: shape.radius.md,
+    borderRadius: 8,
     backgroundColor: 'rgba(255,255,255,0.2)',
   },
   exportText: { ...font.buttonSmall, fontWeight: '600', color: '#fff' },
@@ -404,36 +405,36 @@ const styles = StyleSheet.create({
   scroll: { padding: 16, gap: 12 },
   bookGrid: { gap: 12 },
   summaryCard: {
-    backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.lg,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
     padding: 16,
     borderWidth: 1,
-    borderColor: colors.border.light,
-    gap: 10,
+    borderColor: '#F0F0F0',
+    gap: 32,
     boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
     elevation: 3,
   },
-  cardTitle: { ...font.body, fontWeight: '400', color: colors.text.primary },
+  cardTitle: { ...font.body, fontWeight: '400', color: '#171717' },
   sumRow: { flexDirection: 'row', gap: 12 },
-  sumLabel: { ...font.caption, color: colors.text.muted, fontWeight: '400' },
-  sumValue: { ...font.h3, fontWeight: '400' },
-  cellBold: { ...font.bodySmall, fontWeight: '400', color: colors.text.primary },
-  cellAmount: { ...font.bodySmall, fontWeight: '400', color: colors.text.primary },
-  badge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999, alignSelf: 'center' },
-  badgeText: { ...font.caption, fontWeight: '400', color: colors.brand.primary },
-  footerLabel: { ...font.bodySmall, fontWeight: '400', color: colors.text.primary },
-  footerValue: { ...font.bodySmall, fontWeight: '400', color: colors.text.primary },
-  footerValueMuted: { ...font.bodySmall, color: colors.text.muted },
+  sumLabel: { ...font.caption, color: '#737373', fontWeight: '400' },
+  sumValue: { ...font.sectionTitle, fontWeight: '400' },
+  cellBold: { ...font.bodySmall, fontWeight: '400', color: '#171717' },
+  cellAmount: { ...font.bodySmall, fontWeight: '400', color: '#171717' },
+  badge: { paddingHorizontal: 32, paddingVertical: 8, borderRadius: 12, alignSelf: 'center' },
+  badgeText: { ...font.caption, fontWeight: '400', color: '#F97316' },
+  footerLabel: { ...font.bodySmall, fontWeight: '400', color: '#171717' },
+  footerValue: { ...font.bodySmall, fontWeight: '400', color: '#171717' },
+  footerValueMuted: { ...font.bodySmall, color: '#737373' },
   mCard: {
-    backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.md,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
     padding: 14,
     borderWidth: 1,
-    borderColor: colors.border.light,
-    gap: 10,
+    borderColor: '#F0F0F0',
+    gap: 32,
   },
   mCardHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  mCardTitle: { ...font.body, fontWeight: '400', color: colors.text.primary },
+  mCardTitle: { ...font.body, fontWeight: '400', color: '#171717' },
   mCardGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
 });
 

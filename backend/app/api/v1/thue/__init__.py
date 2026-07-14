@@ -1,9 +1,6 @@
-"""Tax (thue) API package."""
+"""Tax (thue) API package — re-exports for route registration."""
+from app.api.v1.thue import (  # noqa
+    _alias, bank, cash_register_invoice, declaration, legacy, profile, report,
+)
 
-from app.api.v1.thue import _alias  # noqa
-from app.api.v1.thue import bank  # noqa
-from app.api.v1.thue import cash_register_invoice  # noqa
-from app.api.v1.thue import declaration  # noqa
-from app.api.v1.thue import legacy  # noqa
-from app.api.v1.thue import profile  # noqa
-from app.api.v1.thue import report  # noqa
+# pyflakes: imports above are intentional re-exports (router discovery)

@@ -1,3 +1,5 @@
+"""Quan-ly Dashboard API router."""
+
 from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends

@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { TableSkeleton } from '../../../lib/components/ui/Skeleton';
 import {
   View,
   Text,
@@ -31,9 +32,9 @@ const TIER_META: Record<string, { label: string; color: string; method: string }
 };
 
 const SEVERITY_COLOR: Record<Severity, string> = {
-  success: colors.status.success,
+  success: '#16A34A',
   warning: '#D97706',
-  danger: colors.status.danger,
+  danger: '#DC2626',
   critical: '#7F1D1D',
 };
 
@@ -126,7 +127,7 @@ export default function TierDashboard() {
       <BranchPeriodFilter branchId={branchId ?? ''} onBranchChange={() => {}} />
       {loading ? (
         <View style={styles.loadingBox}>
-          <ActivityIndicator size="large" color={colors.brand.primary} />
+          <TableSkeleton rowCount={5} />
         </View>
       ) : status ? (
         <ScrollView
@@ -135,7 +136,7 @@ export default function TierDashboard() {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={() => load(true)}
-              tintColor={colors.brand.primary}
+              tintColor={'#F97316'}
             />
           }
         >
@@ -167,7 +168,7 @@ export default function TierDashboard() {
             </View>
             <View style={styles.barLegend}>
               <Text style={styles.barLegendText}>0</Text>
-              <Text style={[styles.barLegendText, { color: colors.status.danger }]}>
+              <Text style={[styles.barLegendText, { color: '#DC2626' }]}>
                 Ngưỡng 1 tỷ
               </Text>
             </View>
@@ -235,15 +236,15 @@ function KV({ label, value }: { label: string; value: string }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface.app },
+  container: { flex: 1, backgroundColor: '#FAFAFA' },
   loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  scroll: { padding: 16, gap: 14 },
+  scroll: { padding: 16, gap: 12 },
   tierCard: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.lg,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
     borderWidth: 1.5,
     padding: 16,
     boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
@@ -252,67 +253,67 @@ const styles = StyleSheet.create({
   tierIcon: {
     width: 44,
     height: 44,
-    borderRadius: shape.radius.md,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
   tierName: { ...font.body, fontWeight: '400' },
-  tierMethod: { ...font.caption, color: colors.text.muted, marginTop: 2 },
+  tierMethod: { ...font.caption, color: '#737373', marginTop: 2 },
   card: {
-    backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.lg,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
     padding: 16,
     borderWidth: 1,
-    borderColor: colors.border.light,
-    gap: 8,
+    borderColor: '#F0F0F0',
+    gap: 16,
   },
-  cardTitle: { ...font.body, fontWeight: '400', color: colors.text.primary },
-  bigNumber: { ...font.h2, color: colors.text.primary, fontWeight: '700' },
+  cardTitle: { ...font.body, fontWeight: '400', color: '#171717' },
+  bigNumber: { ...font.sectionTitle, color: '#171717', fontWeight: '600' },
   barTrack: {
     height: 14,
-    backgroundColor: colors.surface.disabled,
-    borderRadius: shape.radius.full,
+    backgroundColor: '#F5F5F5',
+    borderRadius: 999,
     overflow: 'hidden',
     position: 'relative',
     marginTop: 6,
   },
-  barFill: { position: 'absolute', left: 0, top: 0, bottom: 0, borderRadius: shape.radius.full },
+  barFill: { position: 'absolute', left: 0, top: 0, bottom: 0, borderRadius: 999},
   barMarker: {
     position: 'absolute',
     right: 0,
     top: -3,
     bottom: -3,
     width: 2,
-    backgroundColor: colors.status.danger,
+    backgroundColor: '#DC2626',
   },
   barLegend: { flexDirection: 'row', justifyContent: 'space-between' },
-  barLegendText: { ...font.caption, color: colors.text.muted },
+  barLegendText: { ...font.caption, color: '#737373' },
   sevBadge: {
     alignSelf: 'flex-start',
     marginTop: 8,
     paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: shape.radius.full,
+    paddingVertical: 12,
+    borderRadius: 999,
   },
   sevText: { ...font.caption, color: '#fff', fontWeight: '400' },
-  methodValue: { ...font.body, color: colors.text.primary, fontWeight: '400' },
+  methodValue: { ...font.body, color: '#171717', fontWeight: '400' },
   switchBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    gap: 16,
     marginTop: 4,
     paddingVertical: 12,
-    borderRadius: shape.radius.md,
-    backgroundColor: colors.brand.primary,
+    borderRadius: 8,
+    backgroundColor: '#F97316',
   },
   switchText: { ...font.button, color: '#fff', fontWeight: '600' },
   alertBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    backgroundColor: '#FEF2F2',
-    borderRadius: shape.radius.md,
+    gap: 32,
+    backgroundColor: '#DC2626',
+    borderRadius: 8,
     padding: 12,
     borderWidth: 1,
     borderColor: '#FECACA',
@@ -321,14 +322,14 @@ const styles = StyleSheet.create({
   kvRow: { flexDirection: 'row', gap: 12 },
   kvBox: {
     flex: 1,
-    backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.md,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
     padding: 12,
     borderWidth: 1,
-    borderColor: colors.border.light,
+    borderColor: '#F0F0F0',
   },
-  kvLabel: { ...font.caption, color: colors.text.muted, fontWeight: '400' },
-  kvValue: { ...font.body, color: colors.text.primary, marginTop: 4, fontWeight: '400' },
+  kvLabel: { ...font.caption, color: '#737373', fontWeight: '400' },
+  kvValue: { ...font.body, color: '#171717', marginTop: 4, fontWeight: '400' },
 });
 
 

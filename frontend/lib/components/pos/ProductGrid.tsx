@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, ActivityIndicator, Image } from 'react-native';
+import { View, Text, ActivityIndicator } from 'react-native';
+import { Image } from 'expo-image';
 import { colors, font } from '../../theme/index';
 import { MenuItem } from './types';
 import ProductCard from './ProductCard';
@@ -62,7 +63,7 @@ export default function ProductGrid({
         <Image
           source={ASSETS.images.loadingFood}
           style={{ width: 120, height: 120 }}
-          resizeMode="contain"
+          contentFit="contain"
         />
         <Text style={{ color: colors.text.muted, ...font.bodySmall }}>Đang tải thực đơn...</Text>
       </View>
@@ -75,7 +76,7 @@ export default function ProductGrid({
         <Image
           source={ASSETS.images.searchEmpty}
           style={{ width: 120, height: 120 }}
-          resizeMode="contain"
+          contentFit="contain"
         />
         <Text style={{ color: colors.text.muted, ...font.bodySmall }}>Không có món nào</Text>
       </View>

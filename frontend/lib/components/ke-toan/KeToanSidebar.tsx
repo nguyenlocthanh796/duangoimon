@@ -88,7 +88,7 @@ export default function KeToanSidebar({ isWide }: { isWide: boolean }) {
               resizeMode="contain"
             />
             <View>
-              <Text style={{ ...font.h3, color: colors.text.primary }}>POS Pro</Text>
+              <Text style={{ ...font.sectionTitle, color: colors.text.primary }}>POS Pro</Text>
               <Text style={{ ...font.caption, color: colors.text.muted }}>Kế toán & Thuế</Text>
             </View>
           </View>

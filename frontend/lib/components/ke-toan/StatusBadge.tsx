@@ -20,5 +20,5 @@ export default function StatusBadge({ label, severity }: StatusBadgeProps) {
 
 const styles = StyleSheet.create({
   badge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999, alignSelf: 'flex-start' },
-  text: { ...font.caption, fontWeight: '700' },
+  text: { ...font.caption, fontWeight: '600' },
 });

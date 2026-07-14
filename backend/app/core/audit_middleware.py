@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 async def audit_mutation_middleware(request: Request, call_next):
     """ASGI middleware: log mutations after response is sent."""
-    response: Response = await call_next(request)
+    response = await call_next(request)
 
     # Only log API mutations
     path = request.url.path

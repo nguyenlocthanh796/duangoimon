@@ -1,42 +1,98 @@
-import { Dimensions } from 'react-native';
-import { Platform } from 'react-native';
+import { Dimensions, Platform } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 const maxDim = Math.max(width, height);
 
-// Consistent scaling - adjusted to be more suitable (smaller) for iPhone and iPad
-const scaleFactor = maxDim >= 1024 ? 1.15 : 1.0;
+// iPad scales up 1.25x so font stays readable on larger screens.
+const scaleFactor = maxDim >= 1024 ? 1.25 : 1.0;
 export const scale = (size: number) => Math.round(size * scaleFactor);
 const getLineHeight = (size: number) => Math.round(size * 1.35);
 
 const FONT = 'BeVietnamPro';
 
+/**
+ * Typography tokens — 6 size tiers × 3 weight tiers (max 600).
+ *
+ * Triết lý: nhấn mạnh bằng MÀU + NỀN. Bold chỉ dùng SemiBold (600) để tránh
+ * chữ nặng trên iPad (scale 1.15x).
+ *
+ * Quy ước mapping xem implementation_plan.md.
+ */
 export const font = {
-  h1: {
-    fontFamily: `${FONT}_700Bold`,
-    fontSize: scale(24),
-    fontWeight: '700' as const,
-    lineHeight: getLineHeight(scale(24)),
+  // ── xs tier (caption / tableHeader / badge / micro) ───────────────
+  caption: {
+    fontFamily: `${FONT}_400Regular`,
+    fontSize: scale(12),
+    fontWeight: '400' as const,
+    lineHeight: getLineHeight(scale(12)),
   },
-  h2: {
-    fontFamily: `${FONT}_700Bold`,
-    fontSize: scale(20),
-    fontWeight: '700' as const,
-    lineHeight: getLineHeight(scale(20)),
+  micro: {
+    fontFamily: `${FONT}_400Regular`,
+    fontSize: scale(12),
+    fontWeight: '400' as const,
+    lineHeight: getLineHeight(scale(12)),
   },
-  h3: {
+  badge: {
     fontFamily: `${FONT}_600SemiBold`,
-    fontSize: scale(18),
+    fontSize: scale(12),
     fontWeight: '600' as const,
-    lineHeight: getLineHeight(scale(18)),
+    lineHeight: getLineHeight(scale(12)),
   },
-  h4: {
+  tableHeader: {
     fontFamily: `${FONT}_600SemiBold`,
-    fontSize: scale(15),
+    fontSize: scale(12),
     fontWeight: '600' as const,
-    lineHeight: getLineHeight(scale(15)),
+    lineHeight: getLineHeight(scale(12)),
+    textTransform: 'uppercase' as const,
+    letterSpacing: 0.5,
+  },
+  label: {
+    fontFamily: `${FONT}_500Medium`,
+    fontSize: scale(12),
+    fontWeight: '500' as const,
+    lineHeight: getLineHeight(scale(12)),
+  },
+  statLabel: {
+    fontFamily: `${FONT}_500Medium`,
+    fontSize: scale(12),
+    fontWeight: '500' as const,
+    lineHeight: getLineHeight(scale(12)),
+    color: '#64748B',
   },
 
+  // ── sm tier (bodySmall / tableCell / buttonSmall / form label) ───
+  bodySmall: {
+    fontFamily: `${FONT}_400Regular`,
+    fontSize: scale(14),
+    fontWeight: '400' as const,
+    lineHeight: getLineHeight(scale(14)),
+  },
+  tableCell: {
+    fontFamily: `${FONT}_400Regular`,
+    fontSize: scale(14),
+    fontWeight: '400' as const,
+    lineHeight: getLineHeight(scale(14)),
+  },
+  tableCellBold: {
+    fontFamily: `${FONT}_600SemiBold`,
+    fontSize: scale(14),
+    fontWeight: '600' as const,
+    lineHeight: getLineHeight(scale(14)),
+  },
+  buttonSmall: {
+    fontFamily: `${FONT}_600SemiBold`,
+    fontSize: scale(14),
+    fontWeight: '600' as const,
+    lineHeight: getLineHeight(scale(14)),
+  },
+  formLabel: {
+    fontFamily: `${FONT}_500Medium`,
+    fontSize: scale(14),
+    fontWeight: '500' as const,
+    lineHeight: getLineHeight(scale(14)),
+  },
+
+  // ── md tier (body / button / input) ──────────────────────────────
   body: {
     fontFamily: `${FONT}_400Regular`,
     fontSize: scale(16),
@@ -49,111 +105,73 @@ export const font = {
     fontWeight: '600' as const,
     lineHeight: getLineHeight(scale(16)),
   },
-  bodySmall: {
-    fontFamily: `${FONT}_400Regular`,
-    fontSize: scale(14),
-    fontWeight: '400' as const,
-    lineHeight: getLineHeight(scale(14)),
-  },
-
-  price: {
-    fontFamily: `${FONT}_700Bold`,
-    fontSize: scale(18),
-    fontWeight: '700' as const,
-    lineHeight: getLineHeight(scale(18)),
-  },
-  priceLarge: {
-    fontFamily: `${FONT}_800ExtraBold`,
-    fontSize: scale(24),
-    fontWeight: '800' as const,
-    lineHeight: getLineHeight(scale(24)),
-  },
-
-  display: {
-    fontFamily: `${FONT}_800ExtraBold`,
-    fontSize: scale(28),
-    fontWeight: '800' as const,
-    lineHeight: getLineHeight(scale(28)),
-  },
-  statNumber: {
-    fontFamily: `${FONT}_700Bold`,
-    fontSize: scale(22),
-    fontWeight: '700' as const,
-    lineHeight: getLineHeight(scale(22)),
-  },
-  statLabel: {
-    fontFamily: `${FONT}_400Regular`,
-    fontSize: scale(13),
-    fontWeight: '400' as const,
-    lineHeight: getLineHeight(scale(13)),
-    color: '#64748B',
-  },
-
   button: {
     fontFamily: `${FONT}_600SemiBold`,
     fontSize: scale(16),
     fontWeight: '600' as const,
     lineHeight: getLineHeight(scale(16)),
   },
-  buttonSmall: {
+
+  // ── lg tier (section title / card title / sub-page heading) ──────
+  sectionTitle: {
     fontFamily: `${FONT}_600SemiBold`,
-    fontSize: scale(14),
+    fontSize: scale(20),
     fontWeight: '600' as const,
-    lineHeight: getLineHeight(scale(14)),
+    lineHeight: getLineHeight(scale(20)),
+  },
+  price: {
+    fontFamily: `${FONT}_600SemiBold`,
+    fontSize: scale(16),
+    fontWeight: '600' as const,
+    lineHeight: getLineHeight(scale(16)),
   },
 
-  label: {
-    fontFamily: `${FONT}_500Medium`,
-    fontSize: scale(14),
-    fontWeight: '500' as const,
-    lineHeight: getLineHeight(scale(14)),
+  // ── xl tier (page title / stat number / hero) ────────────────────
+  pageTitle: {
+    fontFamily: `${FONT}_600SemiBold`,
+    fontSize: scale(20),
+    fontWeight: '600' as const,
+    lineHeight: getLineHeight(scale(20)),
   },
-  caption: {
-    fontFamily: `${FONT}_400Regular`,
-    fontSize: scale(13),
-    fontWeight: '400' as const,
-    lineHeight: getLineHeight(scale(13)),
+  statNumber: {
+    fontFamily: `${FONT}_600SemiBold`,
+    fontSize: scale(20),
+    fontWeight: '600' as const,
+    lineHeight: getLineHeight(scale(20)),
+  },
+  priceLarge: {
+    fontFamily: `${FONT}_600SemiBold`,
+    fontSize: scale(20),
+    fontWeight: '600' as const,
+    lineHeight: getLineHeight(scale(20)),
   },
 
-  // Additional tokens used by components
-  micro: {
-    fontFamily: `${FONT}_400Regular`,
-    fontSize: scale(11),
-    fontWeight: '400' as const,
-    lineHeight: getLineHeight(scale(11)),
-  },
-  tab: {
+  // ── display tier (hero / banner number) ──────────────────────────
+  display: {
     fontFamily: `${FONT}_600SemiBold`,
-    fontSize: scale(13),
+    fontSize: scale(20),
     fontWeight: '600' as const,
-    lineHeight: getLineHeight(scale(13)),
-  },
-  badge: {
-    fontFamily: `${FONT}_500Medium`,
-    fontSize: scale(11),
-    fontWeight: '500' as const,
-    lineHeight: getLineHeight(scale(11)),
+    lineHeight: getLineHeight(scale(20)),
   },
 
-  // Compact table fonts
-  tableHeader: {
-    fontFamily: `${FONT}_600SemiBold`,
-    fontSize: scale(11),
-    fontWeight: '600' as const,
-    lineHeight: getLineHeight(scale(11)),
-    textTransform: 'uppercase' as const,
-    letterSpacing: 0.5,
-  },
-  tableCell: {
-    fontFamily: `${FONT}_400Regular`,
-    fontSize: scale(13),
-    fontWeight: '400' as const,
-    lineHeight: getLineHeight(scale(13)),
-  },
-  tableCellBold: {
-    fontFamily: `${FONT}_600SemiBold`,
-    fontSize: scale(13),
-    fontWeight: '600' as const,
-    lineHeight: getLineHeight(scale(13)),
-  },
+  // ── Legacy aliases (semantic mapping to new tiers) ───────────────
+  h1: undefined as any, // assigned below
+  h2: undefined as any,
+  h3: undefined as any,
+  h4: undefined as any,
+  tab: undefined as any,
 };
+
+// Wire aliases AFTER object literal so all tokens exist
+font.h1 = font.pageTitle;
+font.h2 = font.sectionTitle;
+font.h3 = font.sectionTitle;
+font.h4 = font.bodyBold;
+font.tab = font.bodySmall;
+
+// Backward-compatible alias used by some legacy files
+export const h1 = font.pageTitle;
+export const h2 = font.sectionTitle;
+export const h3 = font.sectionTitle;
+export const h4 = font.bodyBold;
+export const tab = font.bodySmall;

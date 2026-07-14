@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { TableSkeleton } from '../../lib/components/ui/Skeleton';
 import {
   View, Text, FlatList, TouchableOpacity, StyleSheet,
-  TextInput, ActivityIndicator, Alert, RefreshControl,
+  TextInput, Alert, RefreshControl,
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSidebar } from '../../lib/context/SidebarContext';
@@ -97,7 +98,7 @@ export default function SuppliersScreen() {
       { text: 'Xoá', style: 'destructive', onPress: async () => {
         setSelectedId(null);
         load();
-      }},
+      } },
     ]);
   };
 
@@ -107,8 +108,8 @@ export default function SuppliersScreen() {
     return (
       <View style={s.panelBox}>
         <View style={s.panelHeader}>
-          <View style={[s.panelIconBox, { backgroundColor: colors.brand.primaryBg }]}>
-            <Icon name="truck" size={20} color={colors.brand.primary} />
+          <View style={[s.panelIconBox, { backgroundColor: '#F97316' }]}>
+            <Icon name="truck" size={20} color={'#F97316'} />
           </View>
           <View style={{ flex: 1 }}>
             <Text style={s.panelTitle} numberOfLines={1}>{selected.name}</Text>
@@ -123,14 +124,14 @@ export default function SuppliersScreen() {
         <ContactRow icon="calendar-text" label="Điều khoản TT" value={selected.payment_terms} />
         <ContactRow icon="map-marker-outline" label="Địa chỉ" value={selected.address} multiline />
 
-        <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
-          <TouchableOpacity onPress={() => openEdit(selected)} style={[s.panelBtn, { backgroundColor: colors.brand.primary }]}>
+        <View style={{ flexDirection: 'row', gap: 16, marginTop: 4 }}>
+          <TouchableOpacity onPress={() => openEdit(selected)} style={[s.panelBtn, { backgroundColor: '#F97316' }]}>
             <Icon name="pencil-outline" size={14} color="#fff" />
             <Text style={s.panelBtnText}>Sửa</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => deleteSupplier(selected.id)} style={[s.panelBtn, { backgroundColor: '#FEE2E2' }]}>
-            <Icon name="delete-outline" size={14} color={colors.status.danger} />
-            <Text style={{ ...s.panelBtnText, color: colors.status.danger }}>Xoá</Text>
+            <Icon name="delete-outline" size={14} color={'#DC2626'} />
+            <Text style={{ ...s.panelBtnText, color: '#DC2626' }}>Xoá</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -149,26 +150,26 @@ export default function SuppliersScreen() {
     return (
       <TouchableOpacity
         onPress={() => setSelectedId(isSelected ? null : item.id)}
-        style={[s.card, isSelected && { borderColor: colors.brand.primary }]}
+        style={[s.card, isSelected && { borderColor: '#F97316' }]}
         activeOpacity={0.7}
       >
         <View style={s.cardTop}>
-          <View style={[s.cardIcon, { backgroundColor: colors.brand.primaryBg }]}>
-            <Icon name="truck" size={18} color={colors.brand.primary} />
+          <View style={[s.cardIcon, { backgroundColor: '#F97316' }]}>
+            <Icon name="truck" size={18} color={'#F97316'} />
           </View>
           <View style={{ flex: 1, marginLeft: 10 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12}}>
               <Text style={s.cardName} numberOfLines={1}>{item.name}</Text>
               <Text style={s.cardCode}>{item.code}</Text>
             </View>
             {item.contact_person && (
               <Text style={s.cardMeta}>
-                <Icon name="account-outline" size={11} color={colors.text.muted} /> {item.contact_person}
+                <Icon name="account-outline" size={11} color={'#737373'} /> {item.contact_person}
               </Text>
             )}
             {(item.phone || item.email) && (
               <Text style={s.cardMeta} numberOfLines={1}>
-                <Icon name="phone" size={11} color={colors.text.muted} /> {item.phone || ''}
+                <Icon name="phone" size={11} color={'#737373'} /> {item.phone || ''}
                 {item.phone && item.email ? ' · ' : ''}
                 {item.email || ''}
               </Text>
@@ -179,11 +180,11 @@ export default function SuppliersScreen() {
         {/* Always-visible actions */}
         <View style={s.actionRow}>
           <TouchableOpacity onPress={() => openEdit(item)} style={s.actionBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Icon name="pencil-outline" size={15} color={colors.text.muted} />
+            <Icon name="pencil-outline" size={15} color={'#737373'} />
           </TouchableOpacity>
           <View style={s.actionDot} />
           <TouchableOpacity onPress={() => deleteSupplier(item.id)} style={s.actionBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Icon name="delete-outline" size={15} color={colors.text.muted} />
+            <Icon name="delete-outline" size={15} color={'#737373'} />
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
@@ -193,26 +194,26 @@ export default function SuppliersScreen() {
   // ── Filters ──
   const renderSearch = () => (
     <View style={s.searchBox}>
-      <Icon name="magnify" size={16} color={colors.text.muted} />
+      <Icon name="magnify" size={16} color={'#737373'} />
       <TextInput value={search} onChangeText={setSearch} placeholder="Tìm NCC..."
-        placeholderTextColor={colors.text.muted}
-        style={{ flex: 1, ...font.caption, color: colors.text.primary, paddingVertical: 0 }} />
+        placeholderTextColor={'#737373'}
+        style={{ flex: 1, ...font.caption, color: '#171717', paddingVertical: 0 }} />
       {search !== '' && (
-        <TouchableOpacity onPress={() => setSearch('')}><Icon name="close-circle" size={16} color={colors.text.muted} /></TouchableOpacity>
+        <TouchableOpacity onPress={() => setSearch('')}><Icon name="close-circle" size={16} color={'#737373'} /></TouchableOpacity>
       )}
     </View>
   );
 
   const renderList = () => {
-    if (loading) return <ActivityIndicator size="large" color={colors.brand.primary} style={{ marginTop: 40 }} />;
+    if (loading) return <TableSkeleton rowCount={5} />;
     return (
       <FlatList data={filtered} keyExtractor={item => item.id}
         key={`cols-${numCols}`}
         numColumns={numCols}
         renderItem={({ item }) => renderCard(item as any)}
-        contentContainerStyle={{ padding: 4, gap: 8 }}
-        columnWrapperStyle={numCols > 1 ? { gap: 8, marginBottom: 8 } : undefined}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand.primary} />}
+        contentContainerStyle={{ padding: 4, gap: 16}}
+        columnWrapperStyle={numCols > 1 ? { gap: 16, marginBottom: 8 } : undefined}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={'#F97316'} />}
         ListHeaderComponent={renderSearch}
         ListEmptyComponent={<EmptyState icon="truck" title="Chưa có NCC" subtitle="Thêm nhà cung cấp đầu tiên" />}
       />
@@ -226,7 +227,7 @@ export default function SuppliersScreen() {
         subtitle={`${suppliers.length} NCC`}
         onMenuPress={openSidebar} compact
         right={
-          <View style={{ flexDirection: 'row', gap: 6 }}>
+          <View style={{ flexDirection: 'row', gap: 12}}>
             <TouchableOpacity onPress={load} style={s.headerBtn}>
               <Icon name="refresh" size={18} color={colors.icon.default} />
             </TouchableOpacity>
@@ -255,9 +256,9 @@ export default function SuppliersScreen() {
           <View style={s.separator} />
           <View style={{ flex: 0.4, paddingTop: 8, paddingLeft: 8, paddingRight: 12 }}>
             {selected ? renderDetail() : (
-              <View style={{ alignItems: 'center', padding: 40, gap: 8 }}>
-                <Icon name="hand-pointing-up" size={36} color={colors.text.muted} />
-                <Text style={{ ...font.body, color: colors.text.muted }}>Chọn NCC để xem chi tiết</Text>
+              <View style={{ alignItems: 'center', padding: 40, gap: 16}}>
+                <Icon name="hand-pointing-up" size={36} color={'#737373'} />
+                <Text style={{ ...font.body, color: '#737373' }}>Chọn NCC để xem chi tiết</Text>
               </View>
             )}
           </View>
@@ -269,17 +270,17 @@ export default function SuppliersScreen() {
       <FormModal visible={showForm} title={editing ? 'Sửa NCC' : 'Thêm NCC'}
         onClose={() => setShowForm(false)} onSave={handleSave} saveLabel={editing ? 'Cập nhật' : 'Thêm'}>
         <View style={{ gap: 12, paddingTop: 4 }}>
-          <View style={{ flexDirection: 'row', gap: 10 }}>
+          <View style={{ flexDirection: 'row', gap: 32}}>
             <View style={{ flex: 1 }}><Label>Mã NCC *</Label><TextInput value={form.code} onChangeText={v => setForm(p => ({ ...p, code: v }))} style={s.fieldInput} placeholder="VD: NCC001" /></View>
             <View style={{ flex: 2 }}><Label>Tên NCC *</Label><TextInput value={form.name} onChangeText={v => setForm(p => ({ ...p, name: v }))} style={s.fieldInput} placeholder="VD: Công ty ABC" /></View>
           </View>
           <Label>Người liên hệ</Label>
           <TextInput value={form.contact_person} onChangeText={v => setForm(p => ({ ...p, contact_person: v }))} style={s.fieldInput} placeholder="Tên người LH" />
-          <View style={{ flexDirection: 'row', gap: 10 }}>
+          <View style={{ flexDirection: 'row', gap: 32}}>
             <View style={{ flex: 1 }}><Label>SĐT</Label><TextInput value={form.phone} onChangeText={v => setForm(p => ({ ...p, phone: v }))} keyboardType="phone-pad" style={s.fieldInput} placeholder="SĐT" /></View>
             <View style={{ flex: 1 }}><Label>Email</Label><TextInput value={form.email} onChangeText={v => setForm(p => ({ ...p, email: v }))} keyboardType="email-address" style={s.fieldInput} placeholder="Email" /></View>
           </View>
-          <View style={{ flexDirection: 'row', gap: 10 }}>
+          <View style={{ flexDirection: 'row', gap: 32}}>
             <View style={{ flex: 1 }}><Label>Mã số thuế</Label><TextInput value={form.tax_code} onChangeText={v => setForm(p => ({ ...p, tax_code: v }))} style={s.fieldInput} placeholder="MST" /></View>
             <View style={{ flex: 1 }}><Label>Điều khoản TT</Label><TextInput value={form.payment_terms} onChangeText={v => setForm(p => ({ ...p, payment_terms: v }))} style={s.fieldInput} placeholder="COD/30 ngày" /></View>
           </View>
@@ -298,8 +299,8 @@ function Label({ children }: { children: string }) {
 
 function StatItem({ icon, label, value }: { icon: string; label: string; value: string | number }) {
   return (
-    <View style={{ flex: 1, alignItems: 'center', flexDirection: 'row', gap: 6, justifyContent: 'center' }}>
-      <Icon name={icon as any} size={16} color={colors.brand.primary} />
+    <View style={{ flex: 1, alignItems: 'center', flexDirection: 'row', gap: 12, justifyContent: 'center' }}>
+      <Icon name={icon as any} size={16} color={'#F97316'} />
       <View>
         <Text style={s.statValue}>{value}</Text>
         <Text style={s.statLabel}>{label}</Text>
@@ -311,11 +312,11 @@ function StatItem({ icon, label, value }: { icon: string; label: string; value: 
 function ContactRow({ icon, label, value, multiline }: { icon: string; label: string; value?: string | null; multiline?: boolean }) {
   if (!value) return null;
   return (
-    <View style={{ flexDirection: 'row', gap: 8, alignItems: multiline ? 'flex-start' : 'center' }}>
-      <Icon name={icon as any} size={14} color={colors.text.muted} style={{ marginTop: 1 }} />
+    <View style={{ flexDirection: 'row', gap: 16, alignItems: multiline ? 'flex-start' : 'center' }}>
+      <Icon name={icon as any} size={14} color={'#737373'} style={{ marginTop: 1 }} />
       <View style={{ flex: 1 }}>
-        <Text style={{ ...font.micro, color: colors.text.muted }}>{label}</Text>
-        <Text style={{ ...font.caption, color: colors.text.primary }}>{value}</Text>
+        <Text style={{ ...font.micro, color: '#737373' }}>{label}</Text>
+        <Text style={{ ...font.caption, color: '#171717' }}>{value}</Text>
       </View>
     </View>
   );
@@ -330,51 +331,51 @@ function FAB({ onPress }: { onPress: () => void }) {
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface.app },
+  container: { flex: 1, backgroundColor: '#FAFAFA' },
 
-  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 38, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },
-  addBtnText: { ...font.buttonSmall, fontWeight: '700', color: '#fff' },
-  headerBtn: { width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, alignItems: 'center', justifyContent: 'center' },
+  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, height: 38, borderRadius: 8, backgroundColor: '#F97316' },
+  addBtnText: { ...font.buttonSmall, fontWeight: '600', color: '#fff' },
+  headerBtn: { width: 36, height: 36, borderRadius: 8, backgroundColor: '#F5F5F5', alignItems: 'center', justifyContent: 'center' },
 
   // Stats bar
-  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-  statValue: { ...font.h4, fontWeight: '800', color: colors.text.primary, lineHeight: 18 },
-  statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },
+  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
+  barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
+  statValue: { ...font.bodyBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
+  statLabel: { ...font.micro, color: '#737373', lineHeight: 12 },
 
   // Search
-  searchBox: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: colors.surface.card, borderRadius: shape.radius.md, paddingHorizontal: 10, height: 36, borderWidth: 1, borderColor: colors.border.light, marginBottom: 6 },
+  searchBox: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#FFFFFF', borderRadius: 8, paddingHorizontal: 32, height: 36, borderWidth: 1, borderColor: '#F0F0F0', marginBottom: 6 },
 
   // Card
-  card: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 12, borderWidth: 1, borderColor: colors.border.light },
+  card: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#F0F0F0' },
   cardTop: { flexDirection: 'row', alignItems: 'center' },
-  cardIcon: { width: 40, height: 40, borderRadius: shape.radius.md, alignItems: 'center', justifyContent: 'center' },
-  cardName: { ...font.bodySmall, fontWeight: '700', color: colors.text.primary },
-  cardCode: { ...font.micro, color: colors.text.muted },
-  cardMeta: { ...font.micro, color: colors.text.muted, marginTop: 2 },
+  cardIcon: { width: 40, height: 40, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+  cardName: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
+  cardCode: { ...font.micro, color: '#737373' },
+  cardMeta: { ...font.micro, color: '#737373', marginTop: 2 },
 
   // Actions
-  actionRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 8, paddingTop: 6, borderTopWidth: 1, borderTopColor: colors.border.light },
+  actionRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8, paddingTop: 6, borderTopWidth: 1, borderTopColor: '#F0F0F0' },
   actionBtn: { padding: 4 },
-  actionDot: { width: 3, height: 3, borderRadius: 1.5, backgroundColor: colors.border.default },
+  actionDot: { width: 3, height: 3, borderRadius: 1.5, backgroundColor: '#E5E5E5' },
 
   // Panel (iPad detail)
-  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: colors.border.light, gap: 8 },
-  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  panelIconBox: { width: 40, height: 40, borderRadius: shape.radius.md, alignItems: 'center', justifyContent: 'center' },
-  panelTitle: { ...font.body, fontWeight: '700', color: colors.text.primary },
-  panelSub: { ...font.caption, color: colors.text.muted, marginTop: 1 },
-  panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 6, paddingHorizontal: 12, borderRadius: shape.radius.md },
-  panelBtnText: { ...font.caption, color: '#fff', fontWeight: '700' },
+  panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: '#F0F0F0', gap: 16},
+  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 32, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
+  panelIconBox: { width: 40, height: 40, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+  panelTitle: { ...font.body, fontWeight: '600', color: '#171717' },
+  panelSub: { ...font.caption, color: '#737373', marginTop: 1 },
+  panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12, paddingHorizontal: 12, borderRadius: 8},
+  panelBtnText: { ...font.caption, color: '#fff', fontWeight: '600' },
 
   // Form
-  fieldLabel: { ...font.label, color: colors.text.secondary, marginBottom: 6 },
-  fieldInput: { borderWidth: 1.5, borderColor: colors.border.default, borderRadius: shape.radius.md, padding: 12, ...font.body, color: colors.text.primary, backgroundColor: colors.surface.app },
+  fieldLabel: { ...font.label, color: '#404040', marginBottom: 6 },
+  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.body, color: '#171717', backgroundColor: '#FAFAFA' },
 
-  separator: { width: 1, backgroundColor: colors.border.light },
+  separator: { width: 1, backgroundColor: '#F0F0F0' },
 
   // FAB
-  fab: { position: 'absolute', bottom: 24, right: 20, width: 56, height: 56, borderRadius: 28, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center', elevation: 4, boxShadow: "0px 4px 8px rgba(249,115,22,0.3)" },
+  fab: { position: 'absolute', bottom: 24, right: 20, width: 56, height: 56, borderRadius: 28, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center', elevation: 4, boxShadow: "0px 4px 8px rgba(249,115,22,0.3)" },
 });
 
 

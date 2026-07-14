@@ -21,7 +21,6 @@ Usage:
 
 from datetime import datetime, timezone
 
-from sqlalchemy import func, select
 from sqlalchemy.sql import Select
 
 

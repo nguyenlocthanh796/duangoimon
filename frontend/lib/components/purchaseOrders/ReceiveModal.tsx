@@ -59,7 +59,7 @@ export default function ReceiveModal({
           <TouchableOpacity onPress={onClose}>
             <Text style={{ ...font.button, color: colors.text.muted }}>Huỷ</Text>
           </TouchableOpacity>
-          <Text style={{ ...font.h2, color: colors.text.primary }}>Nhập kho · {po?.po_number}</Text>
+          <Text style={{ ...font.sectionTitle, color: colors.text.primary }}>Nhập kho · {po?.po_number}</Text>
           <TouchableOpacity onPress={save} disabled={saving}>
             <Text
               style={{ ...font.button, color: saving ? colors.text.muted : colors.brand.primary }}

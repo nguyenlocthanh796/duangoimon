@@ -26,7 +26,7 @@ export default function EmptyState({
       ) : icon ? (
         <Icon name={icon as any} size={iconSize} color="#CBD5E1" />
       ) : null}
-      <Text style={{ ...font.h3, color: colors.text.body, marginTop: 4 }}>{title}</Text>
+      <Text style={{ ...font.sectionTitle, color: colors.text.body, marginTop: 4 }}>{title}</Text>
       {subtitle && (
         <Text
           style={{

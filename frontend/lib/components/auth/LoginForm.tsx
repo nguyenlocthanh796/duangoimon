@@ -9,7 +9,8 @@ import {
   Platform,
   Animated,
 } from 'react-native';
-import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+const Icon = MaterialCommunityIcons;
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../context/ThemeContext';
 import { palette } from '../../theme/colors';
@@ -170,12 +171,11 @@ function QuickPill({
     >
       {selected && (
         <View style={s.pillSelectedBg}>
-          <LinearGradient
+            <LinearGradient
             colors={['#F97316', '#EA580C']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={StyleSheet.absoluteFill}
-            borderRadius={16}
+            style={[StyleSheet.absoluteFill, { borderRadius: 16 }]}
           />
         </View>
       )}
@@ -366,7 +366,7 @@ const s = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1.5,
     height: 56,
-    transition: Platform.OS === 'web' ? 'border-color 0.2s, background-color 0.2s' : undefined,
+    ...(Platform.OS === 'web' ? { transition: 'border-color 0.2s, background-color 0.2s' as any } : {}),
   },
   input: {
     flex: 1,
@@ -462,9 +462,9 @@ const s = StyleSheet.create({
     borderColor: '#F97316',
   },
   pillSelectedBg: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderRadius: 16,
-  },
+  } as any,
   pillText: {
     ...font.label,
     color: '#6B7280',

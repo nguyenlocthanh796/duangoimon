@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { TableSkeleton } from '../../lib/components/ui/Skeleton';
 import {
   View, Text, SectionList, TouchableOpacity, StyleSheet,
   Alert, ActivityIndicator, ScrollView,
@@ -35,14 +36,14 @@ const EMPTY_FORM: FormState = {
 
 const ROLES: Array<{ key: string; label: string; color: string; bg: string; icon: string }> = [
   { key: 'admin',      label: 'Admin',    color: '#8B5CF6', bg: '#F5F3FF', icon: 'shield-account' },
-  { key: 'manager',    label: 'Quản lý',  color: '#EF4444', bg: '#FEF2F2', icon: 'account-tie' },
-  { key: 'cashier',    label: 'Thu ngân', color: '#F97316', bg: '#FFF7ED', icon: 'cash-register' },
+  { key: 'manager',    label: 'Quản lý',  color: '#EF4444', bg: '#DC2626', icon: 'account-tie' },
+  { key: 'cashier',    label: 'Thu ngân', color: '#F97316', bg: '#F97316', icon: 'cash-register' },
   { key: 'accountant', label: 'Kế toán',  color: '#10B981', bg: '#ECFDF5', icon: 'calculator-variant' },
   { key: 'kitchen',    label: 'Bếp',      color: '#F59E0B', bg: '#FEF3C7', icon: 'silverware-fork-knife' },
 ];
 
 function getRoleConfig(role: string) {
-  return ROLES.find(r => r.key === role) ?? { key: role, label: role, color: colors.text.muted, bg: colors.surface.avatar, icon: 'person' };
+  return ROLES.find(r => r.key === role) ?? { key: role, label: role, color: '#737373', bg: '#F1F5F9', icon: 'person' };
 }
 
 function getInitials(name: string | null, username: string): string {
@@ -102,7 +103,7 @@ export default function UsersScreen() {
   const renderStatsPanel = () => (
     <View style={styles.panelBox}>
       <View style={styles.panelHeader}>
-        <Icon name="account-group" size={18} color={colors.brand.primary} />
+        <Icon name="account-group" size={18} color={'#F97316'} />
         <Text style={styles.panelHeaderText}>Nhân sự</Text>
       </View>
       <View style={styles.panelStatRow}>
@@ -120,19 +121,19 @@ export default function UsersScreen() {
               <Text style={styles.panelLabel}>{r.label}</Text>
               <Text style={[styles.panelCount, { color: r.color }]}>{count} người</Text>
             </View>
-            <Text style={[styles.panelPct, { color: colors.text.muted }]}>{active}/{count} active</Text>
+            <Text style={[styles.panelPct, { color: '#737373' }]}>{active}/{count} active</Text>
           </View>
         );
       })}
       <View style={styles.panelDivider} />
       <View style={styles.panelFooter}>
-        <View style={{ flexDirection: 'row', gap: 12 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <View style={[styles.statusDotSmall, { backgroundColor: colors.status.success }]} />
+        <View style={{ flexDirection: 'row', gap: 12}}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
+            <View style={[styles.statusDotSmall, { backgroundColor: '#16A34A' }]} />
             <Text style={styles.panelFooterText}>{users.filter(u => u.is_active).length} hoạt động</Text>
           </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <View style={[styles.statusDotSmall, { backgroundColor: colors.status.danger }]} />
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
+            <View style={[styles.statusDotSmall, { backgroundColor: '#DC2626' }]} />
             <Text style={styles.panelFooterText}>{users.filter(u => !u.is_active).length} khóa</Text>
           </View>
         </View>
@@ -148,7 +149,7 @@ export default function UsersScreen() {
     return (
       <View style={[styles.panelBox, { flex: 1, marginHorizontal: 12 }]}>
         <View style={styles.panelHeader}>
-          <Icon name={editingId ? 'pencil' : 'plus'} size={18} color={colors.brand.primary} />
+          <Icon name={editingId ? 'pencil' : 'plus'} size={18} color={'#F97316'} />
           <Text style={styles.panelHeaderText}>{editingId ? 'Chỉnh sửa nhân viên' : 'Thêm nhân viên mới'}</Text>
         </View>
         <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, marginVertical: 10 }}>
@@ -158,15 +159,15 @@ export default function UsersScreen() {
             onTogglePassword={() => setShowPassword(!showPassword)}
           />
         </ScrollView>
-        <View style={{ flexDirection: 'row', gap: 10, marginTop: 8 }}>
+        <View style={{ flexDirection: 'row', gap: 32, marginTop: 8 }}>
           <TouchableOpacity
-            style={{ flex: 1, minHeight: 44, borderRadius: shape.radius.md, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default, alignItems: 'center', justifyContent: 'center' }}
+            style={{ flex: 1, minHeight: 44, borderRadius: 8, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#E5E5E5', alignItems: 'center', justifyContent: 'center' }}
             onPress={() => setShowForm(false)}
           >
-            <Text style={{ ...font.button, color: colors.text.secondary }}>Hủy</Text>
+            <Text style={{ ...font.button, color: '#404040' }}>Hủy</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={{ flex: 1.5, minHeight: 44, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }}
+            style={{ flex: 1.5, minHeight: 44, borderRadius: 8, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 12}}
             onPress={handleSave}
             disabled={saving}
           >
@@ -195,9 +196,9 @@ export default function UsersScreen() {
             <Icon name={rc.icon as any} size={11} color={rc.color} />
             <Text style={[styles.roleText, { color: rc.color }]}>{rc.label}</Text>
           </View>
-          <View style={[styles.activePill, { backgroundColor: item.is_active ? colors.status.successBg : '#FEF2F2' }]}>
-            <View style={[styles.activeDot, { backgroundColor: item.is_active ? colors.status.success : colors.status.danger }]} />
-            <Text style={[styles.activeText, { color: item.is_active ? colors.status.success : colors.status.danger }]}>
+          <View style={[styles.activePill, { backgroundColor: item.is_active ? '#16A34A' : '#DC2626' }]}>
+            <View style={[styles.activeDot, { backgroundColor: item.is_active ? '#16A34A' : '#DC2626' }]} />
+            <Text style={[styles.activeText, { color: item.is_active ? '#16A34A' : '#DC2626' }]}>
               {item.is_active ? 'Hoạt động' : 'Khóa'}
             </Text>
           </View>
@@ -219,7 +220,7 @@ export default function UsersScreen() {
   const renderList = () => {
     if (loading) return (
       <View style={styles.loadingBox}>
-        <ActivityIndicator size="large" color={colors.brand.primary} />
+        <TableSkeleton rowCount={5} />
         <Text style={styles.loadingText}>Đang tải...</Text>
       </View>
     );
@@ -258,10 +259,10 @@ export default function UsersScreen() {
         )}
       />
       {isWide ? (
-        <View style={{ flex: 1, flexDirection: 'row', paddingVertical: 8 }}>
+        <View style={{ flex: 1, flexDirection: 'row', paddingVertical: 16}}>
           <View style={{ flex: 0.55 }}>{renderList()}</View>
           <View style={styles.separator} />
-          <View style={{ flex: 0.45, backgroundColor: colors.surface.app }}>
+          <View style={{ flex: 0.45, backgroundColor: '#FAFAFA' }}>
             {showForm ? renderInlineForm() : renderStatsPanel()}
           </View>
         </View>
@@ -291,62 +292,62 @@ export default function UsersScreen() {
 
 // ── Styles ──
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface.app },
+  container: { flex: 1, backgroundColor: '#FAFAFA' },
 
-  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 38, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },
-  addBtnText: { ...font.buttonSmall, fontWeight: '700', color: colors.text.inverse },
+  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, height: 38, borderRadius: 8, backgroundColor: '#F97316' },
+  addBtnText: { ...font.buttonSmall, fontWeight: '600', color: colors.text.inverse },
 
   /* Right panel */
-  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 12, boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3 },
-  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  panelHeaderText: { ...font.body, fontWeight: '700', color: colors.text.primary },
+  panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12, boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3 },
+  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
+  panelHeaderText: { ...font.body, fontWeight: '600', color: '#171717' },
   panelStatRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  panelStatLabel: { ...font.caption, color: colors.text.muted },
-  panelStatValue: { ...font.h2, fontWeight: '800', color: colors.text.primary },
-  panelDivider: { height: 1, backgroundColor: colors.border.light },
-  panelRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  panelDot: { width: 8, height: 8, borderRadius: 4 },
-  panelLabel: { ...font.caption, color: colors.text.muted },
-  panelCount: { ...font.bodySmall, fontWeight: '700', marginTop: 1 },
+  panelStatLabel: { ...font.caption, color: '#737373' },
+  panelStatValue: { ...font.sectionTitle, fontWeight: '600', color: '#171717' },
+  panelDivider: { height: 1, backgroundColor: '#F0F0F0' },
+  panelRow: { flexDirection: 'row', alignItems: 'center', gap: 32 },
+  panelDot: { width: 8, height: 8, borderRadius: 12 },
+  panelLabel: { ...font.caption, color: '#737373' },
+  panelCount: { ...font.bodySmall, fontWeight: '600', marginTop: 1 },
   panelPct: { ...font.micro },
   panelFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 4 },
-  panelFooterText: { ...font.micro, color: colors.text.muted },
-  panelCta: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, paddingHorizontal: 12, paddingVertical: 7, minHeight: 32 },
+  panelFooterText: { ...font.micro, color: '#737373' },
+  panelCta: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#F97316', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 7, minHeight: 32 },
   panelCtaText: { ...font.buttonSmall, color: colors.text.inverse },
 
   statusDotSmall: { width: 6, height: 6, borderRadius: 3 },
 
   /* List */
   loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
-  loadingText: { ...font.bodySmall, color: colors.text.muted },
+  loadingText: { ...font.bodySmall, color: '#737373' },
 
   sectionHeader: {
-    flexDirection: 'row', alignItems: 'center', gap: 8,
+    flexDirection: 'row', alignItems: 'center', gap: 16,
     marginHorizontal: 12, marginTop: 16, marginBottom: 6,
     paddingLeft: 10, borderLeftWidth: 3,
   },
-  sectionTitle: { ...font.caption, color: colors.text.secondary },
-  sectionCount: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: shape.radius.sm },
-  sectionCountText: { ...font.badge, fontWeight: '700' },
+  sectionTitle: { ...font.caption, color: '#404040' },
+  sectionCount: { paddingHorizontal: 16, paddingVertical: 4, borderRadius: 4},
+  sectionCountText: { ...font.badge, fontWeight: '600' },
 
   userItem: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: colors.surface.card, marginHorizontal: 12, marginBottom: 6,
-    borderRadius: shape.radius.lg, padding: 14,
-    borderWidth: 1, borderColor: colors.border.light,
+    backgroundColor: '#FFFFFF', marginHorizontal: 12, marginBottom: 6,
+    borderRadius: 12, padding: 14,
+    borderWidth: 1, borderColor: '#F0F0F0',
     boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3,
   },
-  avatar: { width: 44, height: 44, borderRadius: shape.radius.md, alignItems: 'center', justifyContent: 'center' },
-  avatarText: { color: colors.text.inverse, ...font.h3 },
-  userName: { ...font.bodySmall, fontWeight: '700', color: colors.text.primary },
-  userMeta: { ...font.caption, color: colors.text.secondary, marginTop: 1 },
+  avatar: { width: 44, height: 44, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+  avatarText: { color: colors.text.inverse, ...font.sectionTitle },
+  userName: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
+  userMeta: { ...font.caption, color: '#404040', marginTop: 1 },
   userRight: { alignItems: 'flex-end', gap: 5 },
-  roleBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderRadius: shape.radius.full },
-  roleText: { ...font.badge, fontWeight: '700' },
-  activePill: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: shape.radius.full },
+  roleBadge: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16, paddingVertical: 8, borderRadius: 999},
+  roleText: { ...font.badge, fontWeight: '600' },
+  activePill: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16, paddingVertical: 3, borderRadius: 999},
   activeDot: { width: 5, height: 5, borderRadius: 3 },
   activeText: { ...font.badge, fontWeight: '600' },
 
-  separator: { width: 1, backgroundColor: colors.border.light },
+  separator: { width: 1, backgroundColor: '#F0F0F0' },
 });
 

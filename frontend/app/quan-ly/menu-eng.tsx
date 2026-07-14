@@ -1,293 +1,308 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { TableSkeleton } from '../../lib/components/ui/Skeleton';
+import {
+  View, Text, FlatList, TouchableOpacity, StyleSheet,
+  Alert, ActivityIndicator, TextInput, ScrollView,
+} from 'react-native';
+import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
+import { api } from '../../lib/api';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import { colors, font } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
-import { request } from '../../lib/api/client';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
 import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import FormModal from '../../lib/components/ui/FormModal';
+import FAB from '../../lib/components/ui/FAB';
 import EmptyState from '../../lib/components/ui/EmptyState';
+import { ASSETS } from '../../lib/assets';
+import MenuFormContent from '../../lib/components/quan-ly/menu/MenuFormContent';
+import type { Product } from '../../lib/api';
 
-interface MatrixItem { id: string; name: string; price: number; cost_price: number; margin_pct: number; qty_sold: number; revenue: number; }
-interface MatrixData { stars: MatrixItem[]; plowhorses: MatrixItem[]; puzzles: MatrixItem[]; dogs: MatrixItem[]; summary: { total_items: number; avg_qty_sold: number; avg_margin_pct: number; period_days: number }; }
-interface TopBottom { top: { name: string; qty: number; revenue: number }[]; bottom: { name: string; qty: number; revenue: number }[]; }
-function formatVND(v: number) { return (v || 0).toLocaleString('vi-VN') + 'đ'; }
-
-const QUADRANT_META: Record<string, { label: string; icon: string; color: string; bg: string; suggestion: string }> = {
-  stars:     { label: 'Ngôi sao', icon: 'star', color: '#D97706', bg: '#FFFBEB', suggestion: 'Giữ chất lượng, đẩy mạnh quảng bá, tạo combo với món Puzzle để kéo doanh thu' },
-  plowhorses: { label: 'Ngựa cày', icon: 'horse', color: '#2563EB', bg: '#EFF6FF', suggestion: 'Tăng giá nhẹ (5-10%) hoặc tìm NCC rẻ hơn, kết hợp upsell topping' },
-  puzzles:   { label: 'Câu đố', icon: 'help-circle', color: '#7C3AED', bg: '#F5F3FF', suggestion: 'Đưa lên banner/standee, tạo combo với Star, chạy BOGO để thử' },
-  dogs:      { label: 'Chó', icon: 'dog', color: '#DC2626', bg: '#FEF2F2', suggestion: 'Giảm giá xả hàng, 30 ngày không cải thiện → khai tử' },
+type FormState = {
+  code: string; name: string; category: string; price: string;
+  cost_price: string; unit: string; is_active: boolean;
 };
 
-type SortKey = 'qty_sold' | 'revenue' | 'margin_pct' | 'name';
+const EMPTY_FORM: FormState = {
+  code: '', name: '', category: '', price: '0',
+  cost_price: '0', unit: 'serving', is_active: true,
+};
 
-export default function MenuEngScreen() {
+const CATEGORIES = [
+  { key: 'Food', icon: 'food', color: '#D97706', bg: '#FEF3C7' },
+  { key: 'Drinks', icon: 'cup-water', color: '#2563EB', bg: '#EFF6FF' },
+  { key: 'Desserts', icon: 'ice-cream', color: '#DB2777', bg: '#FCE7F3' },
+  { key: 'Snack', icon: 'candy', color: '#16A34A', bg: '#16A34A' },
+  { key: 'Other', icon: 'dots-horizontal', color: '#737373', bg: '#F1F5F9' },
+];
+
+function getCatStyle(cat: string | null) {
+  return CATEGORIES.find(c => c.key === cat) ?? CATEGORIES[4];
+}
+
+function formatVND(v: number) { return v.toLocaleString('en-US', { style: 'currency', currency: 'VND' }); }
+
+export default function MenuScreen() {
+  const router = useRouter();
   const { openSidebar } = useSidebar();
   const { isWide } = useResponsive();
-  const [tab, setTab] = useState<'matrix'|'top'>('matrix');
-  const [days, setDays] = useState(30);
-  const [matrix, setMatrix] = useState<MatrixData | null>(null);
-  const [tb, setTb] = useState<TopBottom | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [search, setSearch] = useState('');
+  const [catFilter, setCatFilter] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState<{ item: any; quadrant: string } | null>(null);
-  const [chartQ, setChartQ] = useState('stars');
-  const [sortKey, setSortKey] = useState<SortKey>('qty_sold');
-  const [sortAsc, setSortAsc] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form, setForm] = useState<FormState>(EMPTY_FORM);
 
   const load = useCallback(async () => {
-    try { setLoading(true); if (tab === 'matrix') setMatrix(await request<MatrixData>(`/api/v1/quan-ly/menu-eng/matrix?days=${days}`)); else setTb(await request<TopBottom>(`/api/v1/quan-ly/menu-eng/top-bottom?days=${days}`)); }
-    catch { /* ignore */ } finally { setLoading(false); }
-  }, [tab, days]);
+    try { setLoading(true); const d = await api.getQuanLyProducts(); setProducts(d); }
+    catch (e: any) { Alert.alert('Error', e.message || 'Failed to load menu'); }
+    finally { setLoading(false); }
+  }, []);
+
   useEffect(() => { load(); }, [load]);
 
-  const toggleSort = (k: SortKey) => { if (sortKey === k) setSortAsc(v => !v); else { setSortKey(k); setSortAsc(false); } };
+  const openAdd = () => { setEditingId(null); setForm(EMPTY_FORM); setShowForm(true); };
+  const openEdit = (p: Product) => {
+    setEditingId(p.id);
+    setForm({ code: p.code, name: p.name, category: p.category ?? '', price: String(p.price), cost_price: String(p.cost_price), unit: p.unit, is_active: p.is_active });
+    setShowForm(true);
+  };
 
-  const allItems = useMemo(() => {
-    if (!matrix) return [];
-    const result: { item: MatrixItem; quadrant: string }[] = [];
-    for (const q of ['stars', 'plowhorses', 'puzzles', 'dogs'] as const) {
-      (matrix[q] || []).forEach(m => result.push({ item: m, quadrant: q }));
-    }
-    const cmp = (a: { item: MatrixItem }, b: { item: MatrixItem }) => {
-      if (sortKey === 'name') return sortAsc ? b.item.name.localeCompare(a.item.name) : a.item.name.localeCompare(b.item.name);
-      if (sortKey === 'margin_pct') return sortAsc ? a.item.margin_pct - b.item.margin_pct : b.item.margin_pct - a.item.margin_pct;
-      if (sortKey === 'revenue') return sortAsc ? a.item.revenue - b.item.revenue : b.item.revenue - a.item.revenue;
-      return sortAsc ? a.item.qty_sold - b.item.qty_sold : b.item.qty_sold - a.item.qty_sold;
-    };
-    return result.sort(cmp);
-  }, [matrix, sortKey, sortAsc]);
+  const handleSave = async () => {
+    if (!form.code.trim() || !form.name.trim()) { Alert.alert('Error', 'Code and name cannot be empty'); return; }
+    setSaving(true);
+    try {
+      const payload = { ...form, price: parseFloat(form.price) || 0, cost_price: parseFloat(form.cost_price) || 0 };
+      if (editingId) await api.updateProduct(editingId, payload); else await api.createProduct(payload);
+      setShowForm(false); setForm(EMPTY_FORM); load();
+    } catch (e: any) { Alert.alert('Error', e.message || 'Failed to save'); }
+    finally { setSaving(false); }
+  };
 
-  const StatItem = ({ icon, value, label }: { icon: string; value: string | number; label: string }) => (
-    <View style={{ alignItems: 'center', flex: 1 }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-        <Icon name={icon as any} size={14} color={colors.text.muted} />
-        <Text style={s.statValue}>{value}</Text>
-      </View>
-      <Text style={s.statLabel}>{label}</Text>
-    </View>
-  );
+  const handleDelete = (id: string, name: string) => {
+    Alert.alert('Confirm Delete', `Delete item "${name}"?`, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: async () => { try { await api.deleteProduct(id); load(); } catch (e: any) { Alert.alert('Error', e.message); } } },
+    ]);
+  };
 
-  // ── Sort header ──
-  const SortHeader = ({ label, sortKey: k, w }: { label: string; sortKey: SortKey; w: number }) => (
-    <TouchableOpacity onPress={() => toggleSort(k)} style={{ width: w, flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-      <Text style={[s.thText, sortKey === k && { color: colors.brand.primary }]}>{label}</Text>
-      {sortKey === k ? <Icon name={sortAsc ? 'arrow-up' : 'arrow-down'} size={10} color={colors.brand.primary} /> : null}
-    </TouchableOpacity>
-  );
+  const filtered = products.filter(p => {
+    const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) || p.code.toLowerCase().includes(search.toLowerCase());
+    const matchCat = !catFilter || p.category === catFilter;
+    return matchSearch && matchCat;
+  });
 
-  // ── iPad panel ──
-  const renderPanel = () => {
-    const items = matrix ? (matrix[chartQ as keyof MatrixData] as MatrixItem[] || []) : [];
-    const meta = QUADRANT_META[chartQ];
-    const maxRev = Math.max(...items.map(i => i.revenue), 1);
+  // ── Stats Panel (iPad right) ──
+  const renderStatsPanel = () => {
+    const catCounts = CATEGORIES.map(c => ({ ...c, count: products.filter(p => (p.category || 'Other') === c.key).length }));
     return (
-      <View style={s.panelBox}>
-        <View style={s.panelHeader}>
-          <Icon name="chart-bar" size={18} color={colors.brand.primary} />
-          <Text style={s.panelHeaderText}>Phân tích</Text>
+      <View style={styles.panelBox}>
+        <View style={styles.panelHeader}>
+          <Icon name="silverware" size={18} color={'#F97316'} />
+          <Text style={styles.panelHeaderText}>Menu</Text>
         </View>
-        {tab === 'matrix' && matrix ? (
-          <>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginHorizontal: -16, paddingHorizontal: 16 }} contentContainerStyle={{ gap: 6 }}>
-              {(['stars', 'plowhorses', 'puzzles', 'dogs'] as const).map(q => {
-                const m = QUADRANT_META[q];
-                return (
-                  <TouchableOpacity key={q} onPress={() => setChartQ(q)}
-                    style={[s.chip, chartQ === q && { backgroundColor: m.color, borderColor: m.color }]}>
-                    <Text style={[s.chipText, chartQ === q && { color: '#fff' }]}>{m.icon} {m.label} ({(matrix[q] || []).length})</Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-            <View style={{ gap: 6, marginTop: 8 }}>
-              {items.slice(0, 5).map((i: MatrixItem) => (
-                <View key={i.id || i.name} style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                  <Text style={{ width: 70, ...font.caption, color: colors.text.primary }} numberOfLines={1}>{i.name}</Text>
-                  <View style={{ flex: 1, height: 14, backgroundColor: colors.surface.disabled, borderRadius: 3 }}>
-                    <View style={{ width: `${Math.max(5, (i.revenue / maxRev) * 100)}%`, height: 14, backgroundColor: meta.color, borderRadius: 3 }} />
-                  </View>
-                  <Text style={{ width: 50, textAlign: 'right', ...font.micro, color: colors.text.muted }}>{formatVND(i.revenue)}</Text>
-                </View>
-              ))}
-            </View>
-            <View style={{ backgroundColor: meta.bg, padding: 10, borderRadius: shape.radius.md, borderWidth: 1, borderColor: meta.color + '30' }}>
-              <Text style={{ ...font.caption, color: meta.color, fontWeight: '600' }}>💡 {meta.suggestion}</Text>
-            </View>
-          </>
-        ) : tb ? (
-          <View style={{ alignItems: 'center', paddingVertical: 8 }}>
-            <Text style={s.panelStatValue}>{tb.top.length + tb.bottom.length}</Text>
-            <Text style={s.panelStatLabel}>Món phân tích</Text>
-          </View>
-        ) : null}
+        <View style={styles.panelStatRow}>
+          <Text style={styles.panelStatLabel}>Total Items</Text>
+          <Text style={styles.panelStatValue}>{products.length}</Text>
+        </View>
+        <View style={styles.panelDivider} />
+        {catCounts.map(c => (
+          <TouchableOpacity key={c.key} style={[styles.catRow, catFilter === c.key && { opacity: 1 }]} onPress={() => setCatFilter(catFilter === c.key ? null : c.key)}>
+            <View style={[styles.catDot, { backgroundColor: c.color }]} />
+            <Text style={styles.catLabel}>{c.key}</Text>
+            <Text style={[styles.catCount, { color: c.color }]}>{c.count}</Text>
+            {catFilter === c.key && <Icon name="check" size={14} color={'#F97316'} />}
+          </TouchableOpacity>
+        ))}
+        <View style={styles.panelDivider} />
+        <TouchableOpacity style={styles.panelCta} onPress={openAdd}>
+          <Icon name="plus" size={14} color="#fff" />
+          <Text style={styles.panelCtaText}>Add Item</Text>
+        </TouchableOpacity>
       </View>
     );
   };
 
-  // ── Table row ──
-  const TableRow = ({ item: row }: { item: { item: MatrixItem; quadrant: string } }) => {
-    const { item, quadrant } = row;
-    const meta = QUADRANT_META[quadrant];
+  const renderInlineForm = () => {
     return (
-      <TouchableOpacity onPress={() => setSelected(row)} style={s.tr} activeOpacity={0.7}>
-        <View style={[{ width: 30, alignItems: 'center', justifyContent: 'center' }]}><View style={[s.quadrantDot, { backgroundColor: meta.color }]} /></View>
-        <Text style={[s.td, { flex: 1, fontWeight: '600' }]} numberOfLines={1}>{item.name}</Text>
-        <Text style={[s.td, { width: 60, textAlign: 'right' }]}>{item.qty_sold}</Text>
-        <Text style={[s.td, { width: 85, textAlign: 'right' }]}>{formatVND(item.revenue)}</Text>
-        <Text style={[s.td, { width: 55, textAlign: 'right', color: item.margin_pct >= 0 ? '#16A34A' : '#DC2626', fontWeight: '700' }]}>{item.margin_pct}%</Text>
+      <View style={[styles.panelBox, { flex: 1, marginHorizontal: 12 }]}>
+        <View style={styles.panelHeader}>
+          <Icon name={editingId ? 'pencil' : 'plus'} size={18} color={'#F97316'} />
+          <Text style={styles.panelHeaderText}>{editingId ? 'Edit Item' : 'New Item'}</Text>
+        </View>
+        <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, marginVertical: 10 }}>
+          <MenuFormContent form={form} onChange={(updates) => setForm(f => ({ ...f, ...updates }))} />
+        </ScrollView>
+        <View style={{ flexDirection: 'row', gap: 32, marginTop: 8 }}>
+          <TouchableOpacity
+            style={{ flex: 1, minHeight: 44, borderRadius: 8, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#E5E5E5', alignItems: 'center', justifyContent: 'center' }}
+            onPress={() => setShowForm(false)}
+          >
+            <Text style={{ ...font.button, color: '#404040' }}>Cancel</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{ flex: 1.5, minHeight: 44, borderRadius: 8, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 12}}
+            onPress={handleSave}
+            disabled={saving}
+          >
+            {saving && <ActivityIndicator size="small" color={colors.text.inverse} />}
+            <Text style={{ ...font.button, color: colors.text.inverse }}>{editingId ? 'Update' : 'Save'}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
+  // ── Product Item ──
+  const renderItem = ({ item }: { item: Product }) => {
+    const cat = getCatStyle(item.category);
+    return (
+      <TouchableOpacity style={styles.item} onPress={() => openEdit(item)} activeOpacity={0.7}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, gap: 32}}>
+          <View style={[styles.codeTag, { backgroundColor: cat.bg }]}>
+            <Text style={[styles.codeText, { color: cat.color }]}>{item.code}</Text>
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.itemName} numberOfLines={1}>{item.name}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 2 }}>
+              <View style={[styles.catBadge, { backgroundColor: cat.bg }]}>
+                <Icon name={cat.icon as any} size={10} color={cat.color} />
+                <Text style={[styles.catText, { color: cat.color }]}>{item.category || 'Other'}</Text>
+              </View>
+              <Text style={styles.metaText}>{item.unit}</Text>
+            </View>
+          </View>
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16}}>
+          <Text style={styles.priceText}>{formatVND(item.price)}</Text>
+          <View style={[styles.activeDot, { backgroundColor: item.is_active ? '#16A34A' : '#CBD5E1' }]} />
+          <TouchableOpacity onPress={() => handleDelete(item.id, item.name)} style={styles.deleteBtn} hitSlop={8}>
+            <Icon name="trash-can-outline" size={18} color={'#DC2626'} />
+          </TouchableOpacity>
+        </View>
       </TouchableOpacity>
     );
   };
 
-  // ── Top/Bottom rows ──
-  const renderTopBottom = () => {
-    if (!tb) return <EmptyState icon="chart-bubble" title="Không có dữ liệu" />;
-    return (
-      <View style={{ gap: 8 }}>
-        <Text style={s.sectionTitle}>🔥 Top bán chạy</Text>
-        {tb.top.map((item, i) => (
-          <View key={'t' + i} style={s.tbRow}>
-            <View style={[s.rankDot, { backgroundColor: '#DCFCE7' }]}><Text style={{ ...font.micro, fontWeight: '800', color: '#16A34A' }}>{i + 1}</Text></View>
-            <Text style={{ flex: 1, ...font.bodySmall, fontWeight: '600', color: colors.text.primary }}>{item.name}</Text>
-            <Text style={{ width: 50, textAlign: 'right', ...font.caption, color: colors.text.muted }}>{item.qty} cái</Text>
-            <Text style={{ width: 85, textAlign: 'right', ...font.bodySmall, fontWeight: '700', color: colors.text.primary }}>{formatVND(item.revenue)}</Text>
-          </View>
-        ))}
-        <Text style={[s.sectionTitle, { marginTop: 8 }]}>❄️ Bottom bán chậm</Text>
-        {tb.bottom.map((item, i) => (
-          <View key={'b' + i} style={s.tbRow}>
-            <View style={[s.rankDot, { backgroundColor: '#FEE2E2' }]}><Text style={{ ...font.micro, fontWeight: '800', color: '#DC2626' }}>{i + 1}</Text></View>
-            <Text style={{ flex: 1, ...font.bodySmall, fontWeight: '600', color: colors.text.primary }}>{item.name}</Text>
-            <Text style={{ width: 50, textAlign: 'right', ...font.caption, color: colors.text.muted }}>{item.qty} cái</Text>
-            <Text style={{ width: 85, textAlign: 'right', ...font.bodySmall, fontWeight: '700', color: colors.text.primary }}>{formatVND(item.revenue)}</Text>
-          </View>
-        ))}
-      </View>
-    );
-  };
+  const renderSearch = () => (
+    <View style={styles.searchWrap}>
+      <Icon name="magnify" size={18} color={'#737373'} />
+      <TextInput style={styles.searchInput} placeholder="Search by name, code..." placeholderTextColor={'#737373'} value={search} onChangeText={setSearch} />
+      {search.length > 0 && <TouchableOpacity onPress={() => setSearch('')}><Icon name="close" size={16} color={'#737373'} /></TouchableOpacity>}
+    </View>
+  );
 
   const renderList = () => {
-    if (loading) return <ActivityIndicator size="large" color={colors.brand.primary} style={{ marginTop: 40 }} />;
-    if (tab === 'top') return <FlatList contentContainerStyle={{ padding: isWide ? 12 : 4, gap: 8, paddingBottom: 100 }} data={[]} keyExtractor={() => 'x'} ListHeaderComponent={renderTopBottom} renderItem={() => null} refreshing={loading} onRefresh={load} />;
+    if (loading) return (
+      <View style={styles.center}>
+        <TableSkeleton rowCount={5} />
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
     return (
-      <FlatList
-        data={allItems} keyExtractor={(row, i) => row.item.id || String(i)} renderItem={TableRow}
-        contentContainerStyle={{ paddingHorizontal: isWide ? 12 : 4, paddingBottom: 100 }}
-        refreshing={loading} onRefresh={load}
-        ListEmptyComponent={<EmptyState icon="chart-bubble" title="Chưa có dữ liệu" />}
-        ListHeaderComponent={
-          <View style={s.thead}>
-            <View style={{ width: 30 }} />
-            <SortHeader label="Tên món" sortKey="name" w={1} />
-            <SortHeader label="SL" sortKey="qty_sold" w={60} />
-            <SortHeader label="Doanh thu" sortKey="revenue" w={85} />
-            <SortHeader label="Biên" sortKey="margin_pct" w={55} />
-          </View>
-        }
+      <FlatList data={filtered} keyExtractor={item => item.id} renderItem={renderItem}
+        contentContainerStyle={{ paddingBottom: 100, paddingTop: 8 }}
+        ListHeaderComponent={renderSearch}
+        ListEmptyComponent={<EmptyState image={ASSETS.images.emptyStateMenu} title="No items yet" subtitle="Tap + to add your first item" />}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       />
     );
   };
 
-  const sm = matrix?.summary;
   return (
     <ScreenContainer compact>
-      <ScreenHeader title="Menu Engineering" subtitle={`${days} ngày`} onMenuPress={openSidebar} />
-      <View style={s.statsBar}>
-        <StatItem icon="food" value={sm?.total_items || '-'} label="Món" />
-        <View style={s.barDivider} />
-        <StatItem icon="chart-line" value={sm?.avg_qty_sold || '-'} label="SL TB" />
-        <View style={s.barDivider} />
-        <StatItem icon="percent" value={sm ? `${sm.avg_margin_pct}%` : '-'} label="Biên TB" />
-      </View>
-      <View style={s.filterRow}>
-        {['matrix', 'top'].map(t => (
-          <TouchableOpacity key={t} onPress={() => setTab(t as any)}
-            style={[s.chip, tab === t && { backgroundColor: colors.brand.primary, borderColor: colors.brand.primary }]}>
-            <Text style={[s.chipText, tab === t && { color: '#fff', fontWeight: '700' }]}>{t === 'matrix' ? 'BCG Matrix' : 'Top/Bottom'}</Text>
+      <ScreenHeader
+        title="Menu Management"
+        subtitle={`${products.length} items`}
+        showBack
+        onMenuPress={openSidebar}
+        onBackPress={() => router.back()}
+        compact
+        right={
+          <TouchableOpacity onPress={openAdd} style={styles.addBtn}>
+            <Icon name="plus" size={18} color={colors.text.inverse} />
+            <Text style={styles.addBtnText}>Add</Text>
           </TouchableOpacity>
-        ))}
-        <View style={{ flex: 1 }} />
-        {[30, 60, 90].map(d => (
-          <TouchableOpacity key={d} onPress={() => setDays(d)}
-            style={[s.chip, days === d && { backgroundColor: colors.surface.disabled, borderColor: colors.brand.primary }]}>
-            <Text style={[s.chipText, days === d && { color: colors.brand.primary, fontWeight: '700' }]}>{d}d</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+        }
+      />
       {isWide ? (
         <View style={{ flex: 1, flexDirection: 'row' }}>
-          <View style={{ flex: 0.6 }}>{renderList()}</View>
-          <View style={s.separator} />
-          <View style={{ flex: 0.4, backgroundColor: colors.surface.app, paddingTop: 8 }}>{renderPanel()}</View>
+          <View style={{ flex: 0.55 }}>{renderList()}</View>
+          <View style={styles.separator} />
+          <View style={{ flex: 0.45 }}>
+            {showForm ? renderInlineForm() : renderStatsPanel()}
+          </View>
         </View>
       ) : renderList()}
-
-      <FormModal visible={!!selected} title={selected?.item?.name || ''} onClose={() => setSelected(null)} saveLabel="">
-        {selected && (
-          <View style={{ gap: 14, paddingTop: 4 }}>
-            <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
-              {selected.item.id ? <View style={s.detailChip}><Icon name="barcode" size={12} color={colors.text.muted} /><Text style={s.detailChipText}>ID: {selected.item.id.slice(-8).toUpperCase()}</Text></View> : null}
-              <View style={[s.detailChip, { backgroundColor: QUADRANT_META[selected.quadrant]?.bg }]}><Icon name={QUADRANT_META[selected.quadrant]?.icon as any} size={12} color={QUADRANT_META[selected.quadrant]?.color} /><Text style={[s.detailChipText, { color: QUADRANT_META[selected.quadrant]?.color }]}>{QUADRANT_META[selected.quadrant]?.label}</Text></View>
-            </View>
-            <View style={s.detailRow}>
-              <View style={s.detailCell}><Text style={s.detailLabel}>Giá bán</Text><Text style={s.detailValue}>{formatVND(selected.item.price)}</Text></View>
-              <View style={s.detailCell}><Text style={s.detailLabel}>Giá vốn</Text><Text style={s.detailValue}>{formatVND(selected.item.cost_price)}</Text></View>
-              <View style={s.detailCell}><Text style={s.detailLabel}>Biên</Text><Text style={[s.detailValue, { color: selected.item.margin_pct >= 0 ? '#16A34A' : '#DC2626' }]}>{selected.item.margin_pct}%</Text></View>
-            </View>
-            <View style={s.detailRow}>
-              <View style={s.detailCell}><Text style={s.detailLabel}>Đã bán</Text><Text style={s.detailValue}>{selected.item.qty_sold} cái</Text></View>
-              <View style={s.detailCell}><Text style={s.detailLabel}>Doanh thu</Text><Text style={s.detailValue}>{formatVND(selected.item.revenue)}</Text></View>
-            </View>
-            {QUADRANT_META[selected.quadrant] && (
-              <View style={{ backgroundColor: QUADRANT_META[selected.quadrant].bg, padding: 12, borderRadius: shape.radius.md, borderWidth: 1, borderColor: QUADRANT_META[selected.quadrant].color + '30' }}>
-                <Text style={{ ...font.caption, color: QUADRANT_META[selected.quadrant].color }}>💡 {QUADRANT_META[selected.quadrant].suggestion}</Text>
-              </View>
-            )}
-          </View>
-        )}
-      </FormModal>
+      {!isWide && <FAB onPress={openAdd} />}
+      {!isWide && (
+        <FormModal visible={showForm} title={editingId ? 'Edit Item' : 'New Item'}
+          onClose={() => setShowForm(false)}
+          onSave={handleSave} saveLabel={editingId ? 'Update' : 'Add Item'} saving={saving}>
+          <MenuFormContent form={form} onChange={(updates) => setForm(f => ({ ...f, ...updates }))} />
+        </FormModal>
+      )}
     </ScreenContainer>
   );
 }
 
-const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface.app },
-  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-  statValue: { ...font.h4, fontWeight: '800', color: colors.text.primary, lineHeight: 18 },
-  statLabel: { ...font.micro, color: colors.text.muted, lineHeight: 12 },
+// ── Styles ──
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#FAFAFA' },
 
-  filterRow: { flexDirection: 'row', gap: 6, paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  chip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: shape.radius.full, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default },
-  chipText: { ...font.badge, color: colors.text.muted },
+  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, height: 44, borderRadius: 8, backgroundColor: '#F97316' },
+  addBtnText: { ...font.buttonSmall, fontWeight: '600', color: colors.text.inverse },
 
-  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 12 },
-  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  panelHeaderText: { ...font.body, fontWeight: '700', color: colors.text.primary },
-  panelStatValue: { ...font.h1, fontWeight: '800', color: colors.text.primary },
-  panelStatLabel: { ...font.caption, color: colors.text.muted, marginTop: 2 },
+  /* Right panel */
+  panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 32, boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3 },
+  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
+  panelHeaderText: { ...font.body, fontWeight: '600', color: '#171717' },
+  panelStatRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 8},
+  panelStatLabel: { ...font.caption, color: '#737373' },
+  panelStatValue: { ...font.sectionTitle, fontWeight: '600', color: '#171717' },
+  panelDivider: { height: 1, backgroundColor: '#F0F0F0', marginVertical: 4 },
+  catRow: { flexDirection: 'row', alignItems: 'center', gap: 32, paddingVertical: 12, paddingHorizontal: 8, borderRadius: 8},
+  catDot: { width: 8, height: 8, borderRadius: 12},
+  catLabel: { flex: 1, ...font.bodySmall, color: '#171717' },
+  catCount: { ...font.bodySmall, fontWeight: '600' },
+  panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16, backgroundColor: '#F97316', borderRadius: 8, paddingVertical: 12, minHeight: 44, marginTop: 4 },
+  panelCtaText: { ...font.button, color: colors.text.inverse },
 
-  thead: { flexDirection: 'row', alignItems: 'center', paddingVertical: 8, paddingHorizontal: 6, borderBottomWidth: 2, borderBottomColor: colors.border.default, marginBottom: 4 },
-  thText: { ...font.caption, fontWeight: '700', color: colors.text.muted },
-  tr: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 6, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  td: { ...font.bodySmall, color: colors.text.primary },
-  quadrantDot: { width: 10, height: 10, borderRadius: 5 },
+  /* Search */
+  searchWrap: {
+    flexDirection: 'row', alignItems: 'center', gap: 16,
+    backgroundColor: '#FFFFFF', marginHorizontal: 12, marginBottom: 8,
+    borderRadius: 12, paddingHorizontal: 12, paddingVertical: 32,
+    borderWidth: 1, borderColor: '#F0F0F0',
+    boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3,
+  },
+  searchInput: { flex: 1, ...font.body, color: '#171717' },
 
-  rankDot: { width: 22, height: 22, borderRadius: shape.radius.sm, alignItems: 'center', justifyContent: 'center' },
-  sectionTitle: { ...font.bodySmall, fontWeight: '700', color: colors.text.primary },
-  tbRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, paddingHorizontal: 6, backgroundColor: colors.surface.card, borderRadius: shape.radius.md, borderWidth: 1, borderColor: colors.border.light },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 60, gap: 16},
+  loadingText: { ...font.bodySmall, color: '#404040' },
 
-  detailRow: { flexDirection: 'row', gap: 12 },
-  detailCell: { flex: 1, backgroundColor: colors.surface.app, borderRadius: shape.radius.md, padding: 10, alignItems: 'center', borderWidth: 1, borderColor: colors.border.light },
-  detailLabel: { ...font.micro, color: colors.text.muted, marginBottom: 4 },
-  detailValue: { ...font.h4, fontWeight: '800', color: colors.text.primary },
-  detailChip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 4, borderRadius: shape.radius.full, backgroundColor: colors.surface.disabled },
-  detailChipText: { ...font.micro, color: colors.text.muted },
+  /* Item card */
+  item: {
+    flexDirection: 'row', alignItems: 'center',
+    backgroundColor: '#FFFFFF', marginHorizontal: 12, marginBottom: 8,
+    borderRadius: 12, padding: 14,
+    borderWidth: 1, borderColor: '#F0F0F0',
+    boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3,
+  },
+  codeTag: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 4},
+  codeText: { ...font.caption, fontWeight: '600' },
+  itemName: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
+  catBadge: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 7, paddingVertical: 3, borderRadius: 999},
+  catText: { ...font.micro, fontWeight: '600' },
+  metaText: { ...font.caption, color: '#404040' },
+  priceText: { ...font.price, color: '#F97316' },
+  activeDot: { width: 8, height: 8, borderRadius: 12},
+  deleteBtn: { padding: 4 },
 
-  separator: { width: 1, backgroundColor: colors.border.light },
+  separator: { width: 1, backgroundColor: '#F0F0F0' },
 });
-

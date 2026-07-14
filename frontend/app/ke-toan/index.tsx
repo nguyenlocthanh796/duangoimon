@@ -32,8 +32,8 @@ const fmt = (n: number) => Intl.NumberFormat('vi-VN').format(n);
 function TxBadge({ type }: { type: string }) {
   const isThu = type === 'thu';
   return (
-    <View style={{ paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, backgroundColor: isThu ? '#E8F5E9' : '#FFEBEE' }}>
-      <Text style={{ fontFamily: 'BeVietnamPro_700Bold', fontWeight: '700', ...font.badge, color: isThu ? '#2E7D32' : '#C62828' }}>
+    <View style={{ paddingHorizontal: 12, paddingVertical: 4, borderRadius: 12, backgroundColor: isThu ? '#E8F5E9' : '#FFEBEE' }}>
+      <Text style={{ ...font.badge, fontWeight: '600', color: isThu ? '#2E7D32' : '#C62828' }}>
         {isThu ? 'Thu' : 'Chi'}
       </Text>
     </View>
@@ -43,7 +43,7 @@ function TxBadge({ type }: { type: string }) {
 function InvBadge({ status }: { status: string }) {
   const ok = status === 'da_xuat' || status === 'exported';
   return (
-    <View style={{ paddingHorizontal: 6, paddingVertical: 3, borderRadius: 4, backgroundColor: ok ? '#E8F5E9' : '#FFF8E1' }}>
+    <View style={{ paddingHorizontal: 12, paddingVertical: 3, borderRadius: 12, backgroundColor: ok ? '#E8F5E9' : '#FFF8E1' }}>
       <Text style={{ ...font.badge, color: ok ? '#2E7D32' : '#F57F17' }}>
         {ok ? 'Đã xuất' : 'Nháp'}
       </Text>
@@ -125,7 +125,7 @@ export default function KeToanHub() {
   const profitPct = s.total_thu > 0 ? Math.round((profit / s.total_thu) * 100) : 0;
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#F8FAFC' }}>
+    <View style={{ flex: 1, backgroundColor: '#FAFAFA' }}>
       <UnifiedHeader
         icon="wallet-outline"
         title="Kế Toán & Thuế"
@@ -133,15 +133,15 @@ export default function KeToanHub() {
         onMenuPress={openSidebar}
       />
       <ScrollView
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor="#64748B" />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={'#737373'} />}
         contentContainerStyle={{ paddingHorizontal: hPad, paddingBottom: 40, gap: 0 }}
         showsVerticalScrollIndicator={false}
       >
         {loadError && (
           <View style={errBanner}>
-            <Icon name="alert-circle-outline" size={16} color="#DC2626" />
+            <Icon name="alert-circle-outline" size={16} color={'#DC2626'} />
             <Text style={{ flex: 1, ...font.bodySmall, color: '#DC2626' }}>{loadError}</Text>
-            <TouchableOpacity onPress={() => { setLoading(true); load(); }} style={{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 6, backgroundColor: '#DC2626' }}>
+            <TouchableOpacity onPress={() => { setLoading(true); load(); }} style={{ paddingHorizontal: 32, paddingVertical: 5, borderRadius: 16, backgroundColor: '#DC2626' }}>
               <Text style={{ ...font.buttonSmall, color: '#fff' }}>Thử lại</Text>
             </TouchableOpacity>
           </View>
@@ -149,10 +149,10 @@ export default function KeToanHub() {
 
         {/* ═══════════════════════ KPI CARDS ═══════════════════════ */}
         <View style={secHeader}>
-          <Icon name="speedometer" size={16} color="#64748B" />
+          <Icon name="speedometer" size={16} color={'#737373'} />
           <Text style={secTitle}>Tổng quan tài chính</Text>
         </View>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 16, marginBottom: 10 }}>
           {/* Tổng thu */}
           <View style={[kpiCard, { width: isWide ? undefined : '48%', flex: isWide ? 1 : undefined }]}>
             <Text style={kpiLabel}>Tổng thu</Text>
@@ -181,21 +181,21 @@ export default function KeToanHub() {
 
         {/* ═══════════════════════ CHARTS ═══════════════════════ */}
         <View style={secHeader}>
-          <Icon name="chart-line" size={16} color="#64748B" />
+          <Icon name="chart-line" size={16} color={'#737373'} />
           <Text style={secTitle}>Biểu đồ doanh thu & chi phí</Text>
         </View>
-        <View style={{ flexDirection: isWide ? 'row' : 'column', gap: 10, marginBottom: 10 }}>
+        <View style={{ flexDirection: isWide ? 'row' : 'column', gap: 32, marginBottom: 10 }}>
           {/* Bar chart */}
           <View style={[chartCard, isWide ? { flex: 3 } : {}, { minWidth: isWide ? containerWidth * 0.55 - hPad : 0 }]}>
-            <Text style={{ ...font.caption, color: '#64748B', fontWeight: '600', marginBottom: 8 }}>
+            <Text style={{ ...font.caption, color: '#737373', fontWeight: '600', marginBottom: 8 }}>
               Doanh thu 12 tháng
             </Text>
-            <View style={{ flexDirection: 'row', alignItems: 'flex-end', height: 160, gap: 4 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'flex-end', height: 160, gap: 8}}>
               {data.monthly_revenue.map((m: any, i: number) => {
                 const maxVal = Math.max(...data.monthly_revenue.map((r: any) => r.value), 1);
                 const h = maxVal > 0 ? (m.value / maxVal) * 140 : 2;
                 return (
-                  <View key={i} style={{ flex: 1, alignItems: 'center', gap: 2 }}>
+                  <View key={i} style={{ flex: 1, alignItems: 'center', gap: 4}}>
                     <View
                       style={{
                         width: '70%',
@@ -204,7 +204,7 @@ export default function KeToanHub() {
                         backgroundColor: m.current ? '#0F172A' : '#CBD5E1',
                       }}
                     />
-                    <Text style={{ ...font.micro, color: '#94A3B8', textAlign: 'center' }}>{m.label}</Text>
+                    <Text style={{ ...font.micro, color: '#737373', textAlign: 'center' }}>{m.label}</Text>
                   </View>
                 );
               })}
@@ -213,15 +213,15 @@ export default function KeToanHub() {
           {/* Expense donut */}
           {isWide && data.expense_by_category.length > 0 && (
             <View style={[chartCard, { flex: 2 }]}>
-              <Text style={{ ...font.caption, color: '#64748B', fontWeight: '600', marginBottom: 8 }}>
+              <Text style={{ ...font.caption, color: '#737373', fontWeight: '600', marginBottom: 8 }}>
                 Chi phí theo nhóm
               </Text>
               <DonutChart data={data.expense_by_category} size={Math.min(chartW * 0.35, 160)} />
-              <View style={{ gap: 4, marginTop: 8 }}>
+              <View style={{ gap: 8, marginTop: 8 }}>
                 {data.expense_by_category.slice(0, 5).map((e: any, i: number) => (
-                  <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                  <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
                     <View style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: e.color }} />
-                    <Text style={{ flex: 1, ...font.micro, color: '#64748B' }} numberOfLines={1}>{e.category}</Text>
+                    <Text style={{ flex: 1, ...font.micro, color: '#737373' }} numberOfLines={1}>{e.category}</Text>
                     <Text style={{ ...font.micro, color: '#0F172A', fontWeight: '600' }}>{e.pct}%</Text>
                   </View>
                 ))}
@@ -232,23 +232,23 @@ export default function KeToanHub() {
 
         {/* ═══════════════════════ TAX STATUS ═══════════════════════ */}
         <View style={secHeader}>
-          <Icon name="file-document-outline" size={16} color="#64748B" />
+          <Icon name="file-document-outline" size={16} color={'#737373'} />
           <Text style={secTitle}>Trạng thái thuế</Text>
         </View>
-        <View style={{ flexDirection: 'row', gap: 8, marginBottom: 18 }}>
+        <View style={{ flexDirection: 'row', gap: 16, marginBottom: 18 }}>
           <View style={[taxCard, { backgroundColor: '#EFF6FF' }]}>
-            <Icon name="chart-bell-curve" size={16} color="#2563EB" />
+            <Icon name="chart-bell-curve" size={16} color={'#2563EB'} />
             <Text style={taxLabel}>Phân tầng</Text>
             <Text style={[taxValue, { color: '#2563EB' }]}>{taxStatus?.tier ?? '—'}</Text>
           </View>
-          <View style={[taxCard, { backgroundColor: '#FFF7ED' }]}>
-            <Icon name="currency-usd" size={16} color="#EA580C" />
+          <View style={[taxCard, { backgroundColor: '#F97316' }]}>
+            <Icon name="currency-usd" size={16} color={'#F97316'} />
             <Text style={taxLabel}>Doanh số YTD</Text>
-            <Text style={[taxValue, { color: '#EA580C' }]}>
+            <Text style={[taxValue, { color: '#F97316' }]}>
               {taxStatus?.revenueYtd || taxStatus?.revenue_ytd ? formatPrice(taxStatus.revenueYtd || taxStatus.revenue_ytd) : '—'}
             </Text>
           </View>
-          <View style={[taxCard, { backgroundColor: taxStatus?.penaltyRisk ? '#FFFBEB' : '#F0FDF4' }]}>
+          <View style={[taxCard, { backgroundColor: taxStatus?.penaltyRisk ? '#D97706' : '#16A34A' }]}>
             <Icon name="calendar-alert" size={16} color={taxStatus?.penaltyRisk ? '#D97706' : '#059669'} />
             <Text style={taxLabel}>Hạn nộp</Text>
             <Text style={[taxValue, { color: taxStatus?.penaltyRisk ? '#D97706' : '#059669' }]}>
@@ -259,14 +259,14 @@ export default function KeToanHub() {
 
         {/* ═══════════════════════ QUICK TABLES ═══════════════════════ */}
         <View style={secHeader}>
-          <Icon name="table-eye" size={16} color="#64748B" />
+          <Icon name="table-eye" size={16} color={'#737373'} />
           <Text style={secTitle}>Bảng xem nhanh</Text>
         </View>
-        <View style={{ flexDirection: isWide ? 'row' : 'column', gap: 10, marginBottom: 18 }}>
+        <View style={{ flexDirection: isWide ? 'row' : 'column', gap: 32, marginBottom: 18 }}>
           {/* Transactions */}
           <View style={[tblWrap, { flex: isWide ? 1 : undefined }]}>
             <View style={tblHead}>
-              <Icon name="swap-vertical" size={14} color="#64748B" />
+              <Icon name="swap-vertical" size={14} color={'#737373'} />
               <Text style={tblHeadText}>Giao dịch gần đây</Text>
               <TouchableOpacity onPress={() => open('/ke-toan/thu-chi')}>
                 <Text style={{ ...font.badge, color: '#2563EB' }}>Xem tất cả →</Text>
@@ -279,7 +279,7 @@ export default function KeToanHub() {
               <Text style={[tblCol, { flex: 1, textAlign: 'right' }]}>Số tiền</Text>
             </View>
             {(data.recent_transactions || []).slice(0, isWide ? 5 : 3).map((t: any, i: number) => (
-              <View key={t.id || i} style={[tblRow, i % 2 === 1 && { backgroundColor: '#F8FAFC' }]}>
+              <View key={t.id || i} style={[tblRow, i % 2 === 1 && { backgroundColor: '#FAFAFA' }]}>
                 <Text style={[tblCell, { flex: 1 }]}>{t.created_at ? t.created_at.slice(0, 10) : '—'}</Text>
                 <View style={{ flex: 0.5 }}><TxBadge type={t.type} /></View>
                 <Text style={[tblCell, { flex: 2, color: '#0F172A' }]} numberOfLines={1}>{t.note || t.category || '—'}</Text>
@@ -290,14 +290,14 @@ export default function KeToanHub() {
             ))}
             {(data.recent_transactions || []).length === 0 && (
               <View style={{ padding: 20, alignItems: 'center' }}>
-                <Text style={{ ...font.caption, color: '#94A3B8' }}>Chưa có dữ liệu giao dịch</Text>
+                <Text style={{ ...font.caption, color: '#737373' }}>Chưa có dữ liệu giao dịch</Text>
               </View>
             )}
           </View>
           {/* Invoices */}
           <View style={[tblWrap, { flex: isWide ? 1 : undefined }]}>
             <View style={tblHead}>
-              <Icon name="receipt" size={14} color="#64748B" />
+              <Icon name="receipt" size={14} color={'#737373'} />
               <Text style={tblHeadText}>Hóa đơn gần đây</Text>
               <TouchableOpacity onPress={() => open('/ke-toan/invoices')}>
                 <Text style={{ ...font.badge, color: '#2563EB' }}>Xem tất cả →</Text>
@@ -310,7 +310,7 @@ export default function KeToanHub() {
               <Text style={[tblCol, { flex: 0.8, textAlign: 'center' }]}>Trạng thái</Text>
             </View>
             {(data.recent_invoices || []).slice(0, isWide ? 4 : 2).map((inv: any, i: number) => (
-              <View key={inv.id || i} style={[tblRow, i % 2 === 1 && { backgroundColor: '#F8FAFC' }]}>
+              <View key={inv.id || i} style={[tblRow, i % 2 === 1 && { backgroundColor: '#FAFAFA' }]}>
                 <Text style={[tblCell, { flex: 1, fontFamily: 'BeVietnamPro_500Medium', fontWeight: '500' }]}>{inv.invoice_number || '—'}</Text>
                 <Text style={[tblCell, { flex: 1.5, color: '#0F172A' }]} numberOfLines={1}>{inv.buyer_name || '—'}</Text>
                 <Text style={[tblCell, { flex: 1, textAlign: 'right', ...font.tableCellBold }]}>
@@ -321,7 +321,7 @@ export default function KeToanHub() {
             ))}
             {(data.recent_invoices || []).length === 0 && (
               <View style={{ padding: 20, alignItems: 'center' }}>
-                <Text style={{ ...font.caption, color: '#94A3B8' }}>Chưa có dữ liệu hóa đơn</Text>
+                <Text style={{ ...font.caption, color: '#737373' }}>Chưa có dữ liệu hóa đơn</Text>
               </View>
             )}
           </View>
@@ -329,24 +329,24 @@ export default function KeToanHub() {
 
         {/* ═══════════════════════ DEADLINES ═══════════════════════ */}
         <View style={secHeader}>
-          <Icon name="calendar-clock" size={16} color="#64748B" />
+          <Icon name="calendar-clock" size={16} color={'#737373'} />
           <Text style={secTitle}>Hạn nộp thuế</Text>
         </View>
-        <View style={{ gap: 6, marginBottom: 24 }}>
+        <View style={{ gap: 12, marginBottom: 24 }}>
           {(data.deadlines || []).map((d: any, i: number) => {
             const urgent = d.days_left <= 7;
             const warn = d.days_left > 7 && d.days_left <= 17;
             return (
-              <View key={i} style={[dlCard, { backgroundColor: urgent ? '#FEF2F2' : warn ? '#FFFBEB' : '#F0FDF4' }]}>
+              <View key={i} style={[dlCard, { backgroundColor: urgent ? '#DC2626' : warn ? '#D97706' : '#16A34A' }]}>
                 <View style={{ flex: 1 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12}}>
                     <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: urgent ? '#DC2626' : warn ? '#D97706' : '#059669' }} />
                     <Text style={{ ...font.bodySmall, color: '#0F172A', fontWeight: '600' }}>{d.label}</Text>
                   </View>
-                  <Text style={{ ...font.micro, color: '#64748B', marginTop: 2, marginLeft: 12 }}>Hạn: {d.due}</Text>
+                  <Text style={{ ...font.micro, color: '#737373', marginTop: 2, marginLeft: 12 }}>Hạn: {d.due}</Text>
                 </View>
                 <View style={[dlPill, { backgroundColor: urgent ? '#FEE2E2' : warn ? '#FEF3C7' : '#DCFCE7' }]}>
-                  <Text style={{ ...font.badge, color: urgent ? '#DC2626' : warn ? '#D97706' : '#059669', fontWeight: '700' }}>
+                  <Text style={{ ...font.badge, color: urgent ? '#DC2626' : warn ? '#D97706' : '#059669', fontWeight: '600' }}>
                     Còn {d.days_left} ngày
                   </Text>
                 </View>
@@ -357,10 +357,10 @@ export default function KeToanHub() {
 
         {/* ═══════════════════════ MODULES ═══════════════════════ */}
         <View style={secHeader}>
-          <Icon name="grid" size={16} color="#64748B" />
+          <Icon name="grid" size={16} color={'#737373'} />
           <Text style={secTitle}>Mô-đun nghiệp vụ</Text>
         </View>
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 16}}>
           {modules.map((m) => (
             <View key={m.key} style={{ width: isWide ? `${100 / columns(180) - 1.5}%` : '48%' }}>
               <ModuleCard icon={m.icon} title={m.title} description={m.desc} onPress={() => open(m.path)} />
@@ -374,26 +374,26 @@ export default function KeToanHub() {
 }
 
 // ─── Styles — sử dụng font tokens ────────────────────────────────────────────
-const secHeader: any = { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 10, marginTop: 16 };
+const secHeader: any = { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 10, marginTop: 16 };
 const secTitle: any = { ...font.tableHeader, color: '#0F172A' };
 
 const kpiCard: any = { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: '#E2E8F0' };
-const kpiLabel: any = { ...font.badge, color: '#64748B', textTransform: 'uppercase', letterSpacing: 0.5 };
-const kpiVal: any = { ...font.h2, marginTop: 2 };
-const kpiSub: any = { ...font.micro, color: '#94A3B8', marginTop: 2 };
+const kpiLabel: any = { ...font.badge, color: '#737373', textTransform: 'uppercase', letterSpacing: 0.5 };
+const kpiVal: any = { ...font.sectionTitle, marginTop: 2 };
+const kpiSub: any = { ...font.micro, color: '#737373', marginTop: 2 };
 
 const chartCard: any = { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: '#E2E8F0' };
 const taxCard: any = { flex: 1, borderRadius: 12, padding: 14, minWidth: 90 };
-const taxLabel: any = { ...font.micro, color: '#64748B', marginTop: 4 };
-const taxValue: any = { ...font.h4, marginTop: 2 };
+const taxLabel: any = { ...font.micro, color: '#737373', marginTop: 4 };
+const taxValue: any = { ...font.bodyBold, marginTop: 2 };
 
 const tblWrap: any = { backgroundColor: '#FFFFFF', borderRadius: 12, borderWidth: 1, borderColor: '#E2E8F0', overflow: 'hidden' };
-const tblHead: any = { flexDirection: 'row', alignItems: 'center', gap: 6, padding: 12, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' };
+const tblHead: any = { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 12, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' };
 const tblHeadText: any = { ...font.caption, color: '#0F172A', fontWeight: '600', flex: 1 };
-const tblCols: any = { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 6, backgroundColor: '#F8FAFC', borderBottomWidth: 1, borderBottomColor: '#F1F5F9' };
-const tblCol: any = { ...font.tableHeader, color: '#94A3B8' };
-const tblRow: any = { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#F8FAFC' };
-const tblCell: any = { ...font.tableCell, color: '#64748B' };
-const dlCard: any = { flexDirection: 'row', alignItems: 'center', borderRadius: 10, padding: 12, gap: 8 };
-const dlPill: any = { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6 };
-const errBanner: any = { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#FEF2F2', borderRadius: 8, padding: 10, marginBottom: 8, borderWidth: 1, borderColor: '#FECACA' };
+const tblCols: any = { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 12, backgroundColor: '#FAFAFA', borderBottomWidth: 1, borderBottomColor: '#F1F5F9' };
+const tblCol: any = { ...font.tableHeader, color: '#737373' };
+const tblRow: any = { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#FAFAFA' };
+const tblCell: any = { ...font.tableCell, color: '#737373' };
+const dlCard: any = { flexDirection: 'row', alignItems: 'center', borderRadius: 12, padding: 12, gap: 16 };
+const dlPill: any = { paddingHorizontal: 32, paddingVertical: 8, borderRadius: 16 };
+const errBanner: any = { flexDirection: 'row', alignItems: 'center', gap: 16, backgroundColor: '#DC2626', borderRadius: 12, padding: 10, marginBottom: 8, borderWidth: 1, borderColor: '#FECACA' };

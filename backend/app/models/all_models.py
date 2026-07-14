@@ -3,18 +3,7 @@ from app.models.ban_hang import Order, OrderItem, Product, Table  # noqa
 from app.models.booking import Booking  # noqa
 from app.models.branch import Branch  # noqa
 from app.models.crm import Customer  # noqa
-from app.models.ke_toan import (  # noqa
-    CashRegisterInvoice,
-    Invoice,
-    SoS1a,
-    SoS2a,
-    SoS2b,
-    SoS2c,
-    SoS2d,
-    SoS2e,
-    SoS3a,
-    Transaction,
-)
+from app.models.ke_toan import CashRegisterInvoice, Invoice, SoS1a, SoS2a, SoS2b, SoS2c, SoS2d, SoS2e, SoS3a, Transaction  # noqa
 from app.models.marketing import Campaign, MessageLog  # noqa
 from app.models.membership import LoyaltyPoint, MembershipTier  # noqa
 from app.models.promo import PromoRule, Voucher  # noqa

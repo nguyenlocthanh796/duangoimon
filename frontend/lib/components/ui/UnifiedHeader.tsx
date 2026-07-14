@@ -4,6 +4,7 @@ import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, font } from '../../theme';
 import { shape } from '../../theme/shape';
+import { useResponsive } from '../../hooks/useResponsive';
 
 export interface UnifiedHeaderProps {
   title: string;
@@ -35,6 +36,7 @@ export default function UnifiedHeader({
   hideMenu = false,
 }: UnifiedHeaderProps) {
   const insets = useSafeAreaInsets();
+  const { isWide } = useResponsive();
 
   const showLeftButton = (onMenuPress || onBackPress) && !hideMenu;
 
@@ -45,7 +47,8 @@ export default function UnifiedHeader({
         compact ? styles.headerCompact : styles.headerDefault,
         {
           paddingTop: compact ? 8 + insets.top : insets.top + 10,
-          paddingBottom: compact ? 8 : 12,
+          paddingBottom: compact ? 4 : 12,
+          paddingHorizontal: isWide ? shape.spacing.xl : shape.spacing.md,
         },
       ]}
     >
@@ -112,7 +115,7 @@ const styles = StyleSheet.create({
     height: 44,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.surface.disabled,
+    backgroundColor: 'transparent',
   },
   iconWrap: {
     width: 36,
@@ -122,9 +125,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.brand.primaryBg,
   },
   title: {
-    ...font.h3,
+    ...font.sectionTitle,
     color: colors.text.primary,
-    fontWeight: '700',
+    fontWeight: '600',
   },
   subtitle: {
     ...font.caption,

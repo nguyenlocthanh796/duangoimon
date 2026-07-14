@@ -7,8 +7,6 @@ fallback), so the escalation engine never loses an alert.
 """
 
 import logging
-from datetime import datetime, timezone
-from typing import Iterable
 
 from sqlalchemy.ext.asyncio import AsyncSession
 

@@ -3,7 +3,7 @@
 # Options: comma-separated allowed origins, e.g. "http://localhost:3000,http://localhost:8081"
 import os
 
-from fastapi import HTTPException, Request, status
+from fastapi import HTTPException, Request
 
 ALLOWED_ORIGINS = set(
     o.strip()

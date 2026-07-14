@@ -22,8 +22,15 @@ from . import (
     supplier_portal,
     suppliers,
     tables,
-    users,
+    users,  # noqa: F401
 )
+
+__all__ = [
+    "audit", "bi_reports", "booking", "branches", "crm", "dashboard",
+    "exec_dashboard", "export", "forecast", "marketing", "membership",
+    "menu_eng", "products", "promo", "recipes", "reports", "shifts",
+    "stations", "supplier_portal", "suppliers", "tables", "users",
+]  # noqa: F401
 
 # Consolidated router — single prefix + dependency in main.py
 router = APIRouter()

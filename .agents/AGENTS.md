@@ -117,6 +117,20 @@ Khi multi-edit file:
 
 ---
 
+## 📱 Hướng dẫn Chuẩn hóa UI (UI Standardization)
+
+Giao diện của POSA tuân thủ nghiêm ngặt 3 triết lý thiết kế hiện đại:
+1. **Flat Design & Edge-to-edge Layout** (Lưới phẳng, tràn viền)
+2. **Minimalist Typography** (Chuẩn 4 cỡ chữ, auto scale trên iPad)
+3. **Bright & Clear Palette** (Môi trường xám lạnh, điểm nhấn màu Cam)
+
+**⚠️ QUY TẮC QUAN TRỌNG:**
+Thay vì viết toàn bộ quy tắc vào đây, chúng tôi đã đóng gói hệ thống thiết kế này thành một Skill. 
+Bất cứ khi nào user yêu cầu "chuẩn hóa giao diện" (standardize UI) một màn hình mới, bạn **BẮT BUỘC PHẢI DÙNG CÔNG CỤ `view_file` ĐỂ ĐỌC FILE SKILL SAU ĐÂY TRƯỚC KHI CODE:**
+`E:\posa\.agents\skills\ui-standardization\SKILL.md`
+
+---
+
 ## ✅ Test Requirements
 - Python scripts: chạy `python run.py --test` trước khi commit
 - Luôn verify model connectivity trước khi dùng model mới

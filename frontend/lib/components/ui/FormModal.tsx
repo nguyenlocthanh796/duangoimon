@@ -15,7 +15,6 @@ import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useResponsive } from '../../hooks/useResponsive';
 import { colors, font } from '../../theme';
 import { shape } from '../../theme/shape';
-
 interface FormModalProps {
   visible: boolean;
   title: string;
@@ -87,7 +86,7 @@ export default function FormModal({
               <ScrollView
                 showsVerticalScrollIndicator={false}
                 keyboardShouldPersistTaps="handled"
-                contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 8 }}
+                contentContainerStyle={{ paddingHorizontal: isWide ? 32 : 4, paddingBottom: 8 }}
               >
                 {children}
               </ScrollView>
@@ -160,7 +159,7 @@ const styles = StyleSheet.create({
   cancelText: {
     ...font.buttonSmall,
     color: colors.text.secondary,
-    fontWeight: '700',
+    fontWeight: '600',
   },
   saveBtn: {
     flex: 2,
@@ -172,7 +171,7 @@ const styles = StyleSheet.create({
   saveText: {
     ...font.buttonSmall,
     color: '#fff',
-    fontWeight: '700',
+    fontWeight: '600',
   },
 
   // ── Bottom Sheet (iPad) ─────────────────────────────────────
@@ -206,8 +205,8 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.border.light,
   },
   sheetTitle: {
-    ...font.h3,
-    fontWeight: '800',
+    ...font.sectionTitle,
+    fontWeight: '600',
     color: colors.text.primary,
   },
   sheetSubtitle: {
@@ -248,7 +247,7 @@ const styles = StyleSheet.create({
   },
   phoneTitle: {
     ...font.bodyBold,
-    fontWeight: '800',
+    fontWeight: '600',
     color: '#fff',
   },
   phoneSubtitle: {

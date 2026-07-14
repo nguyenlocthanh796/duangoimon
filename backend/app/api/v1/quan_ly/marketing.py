@@ -1,9 +1,8 @@
 """Marketing Automation API — campaigns + birthday/loyalty triggers."""
 
-import uuid
-from datetime import datetime, timezone
+from datetime import datetime
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession

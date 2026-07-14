@@ -8,8 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth import get_current_user
 from app.core.database import get_db
-from app.core.rbac import require_role
-from app.models.supplier import PurchaseOrder, PurchaseOrderItem, Supplier
+from app.models.supplier import PurchaseOrder, Supplier
 
 router = APIRouter(prefix="/quan-ly/suppliers", tags=["quan-ly"])
 

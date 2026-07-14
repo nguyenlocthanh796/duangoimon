@@ -57,7 +57,7 @@ export default function SplitBillPanel({
       }}
     >
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Text style={{ ...font.h3, color: colors.text.primary }}>Chia hóa đơn</Text>
+        <Text style={{ ...font.sectionTitle, color: colors.text.primary }}>Chia hóa đơn</Text>
         <TouchableOpacity onPress={onCancel}>
           <Icon name="close" size={20} color={colors.icon.muted} />
         </TouchableOpacity>
@@ -92,7 +92,7 @@ export default function SplitBillPanel({
         style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
       >
         <Icon name="plus-circle" size={16} color={colors.brand.primary} />
-        <Text style={{ ...font.tab, color: colors.brand.primary }}>Thêm phương thức</Text>
+        <Text style={{ ...font.bodySmall, color: colors.brand.primary }}>Thêm phương thức</Text>
       </TouchableOpacity>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <Text style={{ ...font.caption, color: ok ? colors.status.success : colors.status.danger }}>
@@ -110,7 +110,7 @@ export default function SplitBillPanel({
         }}
       >
         <Text
-          style={{ ...font.h3, color: !ok || paying ? colors.text.muted : colors.text.inverse }}
+          style={{ ...font.sectionTitle, color: !ok || paying ? colors.text.muted : colors.text.inverse }}
         >
           {paying ? 'Đang xử lý...' : `Thanh toán (${formatPriceFull(sumPaid)})`}
         </Text>

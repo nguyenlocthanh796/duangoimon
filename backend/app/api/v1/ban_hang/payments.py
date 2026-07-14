@@ -1,3 +1,5 @@
+"""Ban-hang Payments API router."""
+
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Request

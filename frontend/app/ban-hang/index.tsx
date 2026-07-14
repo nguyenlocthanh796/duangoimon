@@ -186,9 +186,9 @@ export default function TableSelection() {
   const renderTableGrid = () => {
     if (loading)
       return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-          <ActivityIndicator size="large" color={colors.brand.primary} />
-          <Text style={{ ...font.bodySmall, color: colors.text.muted }}>Đang tải...</Text>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8}}>
+          <ActivityIndicator size="large" color={'#F97316'} />
+          <Text style={{ ...font.bodySmall, color: '#737373' }}>Đang tải...</Text>
         </View>
       );
     if (error)
@@ -198,15 +198,15 @@ export default function TableSelection() {
             flex: 1,
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 16,
-            paddingHorizontal: 16,
+            gap: 8,
+            paddingHorizontal: 12,
           }}
         >
           <View
             style={{
               width: 56,
               height: 56,
-              borderRadius: shape.radius.md,
+              borderRadius: 8,
               backgroundColor: colors.surface.danger,
               alignItems: 'center',
               justifyContent: 'center',
@@ -214,21 +214,21 @@ export default function TableSelection() {
           >
             <Icon name="cloud-off-outline" size={28} color={colors.text.danger} />
           </View>
-          <Text style={{ ...font.h3, color: colors.text.primary, textAlign: 'center' }}>
+          <Text style={{ ...font.sectionTitle, color: '#171717', textAlign: 'center' }}>
             Không thể kết nối
           </Text>
-          <Text style={{ ...font.caption, color: colors.text.muted, textAlign: 'center' }}>
+          <Text style={{ ...font.caption, color: '#737373', textAlign: 'center' }}>
             {error}
           </Text>
           <TouchableOpacity
             onPress={() => loadData()}
             style={{
-              paddingHorizontal: 20,
+              paddingHorizontal: 12,
               minHeight: 40,
               justifyContent: 'center',
               alignItems: 'center',
-              backgroundColor: colors.brand.primary,
-              borderRadius: shape.radius.md,
+              backgroundColor: '#F97316',
+              borderRadius: 8,
             }}
           >
             <Text style={{ ...font.buttonSmall, color: colors.text.inverse }}>Thử lại</Text>
@@ -254,8 +254,8 @@ export default function TableSelection() {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={() => loadData(true)}
-              tintColor={colors.brand.primary}
-              colors={[colors.brand.primary]}
+              tintColor={'#F97316'}
+              colors={['#F97316']}
             />
           }
           ListHeaderComponent={null}
@@ -271,28 +271,28 @@ export default function TableSelection() {
             </View>
           )}
           ListEmptyComponent={
-            <View style={{ paddingTop: 60, alignItems: 'center', gap: 12 }}>
+            <View style={{ paddingTop: 60, alignItems: 'center', gap: 8}}>
               <View
                 style={{
                   width: 64,
                   height: 64,
-                  borderRadius: shape.radius.md,
-                  backgroundColor: colors.surface.disabled,
+                  borderRadius: 8,
+                  backgroundColor: '#F5F5F5',
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
               >
                 <Icon name="table-furniture" size={32} color={colors.border.strong} />
               </View>
-              <Text style={{ ...font.h3, color: colors.text.primary }}>
+              <Text style={{ ...font.sectionTitle, color: '#171717' }}>
                 {tables.length === 0 ? 'Chưa có bàn nào' : 'Không tìm thấy bàn'}
               </Text>
               <Text
                 style={{
                   ...font.caption,
-                  color: colors.text.muted,
+                  color: '#737373',
                   textAlign: 'center',
-                  paddingHorizontal: 16,
+                  paddingHorizontal: 12,
                 }}
               >
                 {tables.length === 0
@@ -309,10 +309,10 @@ export default function TableSelection() {
   // iPad Landscape / Desktop: 62/38 Master-Detail Split Layout
   if (isSplitLayout) {
     return (
-      <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+      <View style={{ flex: 1, backgroundColor: '#FAFAFA' }}>
         <View style={{ flex: 1, flexDirection: 'row' }}>
           <View
-            style={{ flex: 62, borderRightWidth: 1, borderColor: colors.border.default }}
+            style={{ flex: 62, borderRightWidth: 1, borderColor: '#E5E5E5' }}
             onLayout={(e) => setLeftPanelWidth(e.nativeEvent.layout.width)}
           >
             {selectedTable ? (
@@ -324,10 +324,10 @@ export default function TableSelection() {
                   style={{
                     paddingTop: insets.top + 10,
                     paddingBottom: 14,
-                    paddingHorizontal: 16,
+                    paddingHorizontal: 12,
                     flexDirection: 'row',
                     alignItems: 'center',
-                    gap: 12,
+                    gap: 8,
                   }}
                 >
                   <TouchableOpacity
@@ -335,7 +335,7 @@ export default function TableSelection() {
                     style={{
                       width: 40,
                       height: 40,
-                      borderRadius: shape.radius.md,
+                      borderRadius: 8,
                       backgroundColor: 'rgba(255,255,255,0.18)',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -344,7 +344,7 @@ export default function TableSelection() {
                     <Icon name="arrow-left" size={20} color={colors.icon.inverse} />
                   </TouchableOpacity>
                   <View style={{ flex: 1, justifyContent: 'center' }}>
-                    <Text style={{ ...font.h3, color: colors.text.inverse }}>
+                    <Text style={{ ...font.sectionTitle, color: colors.text.inverse }}>
                       {selectedTable.name}
                     </Text>
                     <Text style={{ ...font.badge, color: 'rgba(255,255,255,0.80)', marginTop: 1 }}>
@@ -393,7 +393,7 @@ export default function TableSelection() {
             )}
           </View>
 
-          <View style={{ flex: 38, backgroundColor: colors.surface.card }}>
+          <View style={{ flex: 38, backgroundColor: '#FFFFFF' }}>
             {selectedTable ? (
               <CartPanel
                 cart={cart}
@@ -430,29 +430,29 @@ export default function TableSelection() {
                   flex: 1,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  backgroundColor: colors.surface.card,
+                  backgroundColor: '#FFFFFF',
                 }}
               >
                 <View
                   style={{
                     width: 80,
                     height: 80,
-                    borderRadius: shape.radius.md,
-                    backgroundColor: colors.surface.disabled,
+                    borderRadius: 8,
+                    backgroundColor: '#F5F5F5',
                     alignItems: 'center',
                     justifyContent: 'center',
                     marginBottom: 16,
                   }}
                 >
-                  <Icon name="cart-outline" size={40} color={colors.text.muted} />
+                  <Icon name="cart-outline" size={40} color={'#737373'} />
                 </View>
-                <Text style={{ ...font.h2, color: colors.text.primary, marginBottom: 4 }}>
+                <Text style={{ ...font.sectionTitle, color: '#171717', marginBottom: 4 }}>
                   Giỏ hàng
                 </Text>
                 <Text
                   style={{
                     ...font.bodySmall,
-                    color: colors.text.muted,
+                    color: '#737373',
                     textAlign: 'center',
                     paddingHorizontal: 40,
                   }}
@@ -488,7 +488,7 @@ export default function TableSelection() {
   return (
     <SafeAreaView
       edges={['left', 'right', 'bottom']}
-      style={{ flex: 1, backgroundColor: colors.surface.app }}
+      style={{ flex: 1, backgroundColor: '#FAFAFA' }}
     >
       <TableScreenHeader
         tablesCount={tables.length}

@@ -110,9 +110,7 @@ const stylesNormal = {
     justifyContent: 'center' as const,
   },
   value: {
-    ...font.h1,
-    fontSize: 26,
-    fontWeight: '700' as const,
+    ...font.statNumber,
     color: colors.text.primary,
     flex: 1,
     flexShrink: 1,
@@ -128,6 +126,7 @@ const stylesCompact = {
     borderWidth: 1,
     borderColor: colors.border.light,
     justifyContent: 'center' as const,
+    alignItems: 'center' as const,
   },
   trendBadge: {
     position: 'absolute' as const,
@@ -142,8 +141,8 @@ const stylesCompact = {
     backgroundColor: colors.surface.disabled,
     flexShrink: 0,
   },
-  trendBadgeText: { ...font.micro, fontSize: 8, fontWeight: '600' as const },
-  row1: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: 6 },
+  trendBadgeText: { ...font.micro, fontWeight: '600' as const },
+  row1: { flexDirection: 'row' as const, alignItems: 'center' as const, justifyContent: 'center' as const, gap: 6 },
   iconBg: {
     width: 30,
     height: 30,
@@ -152,17 +151,16 @@ const stylesCompact = {
     justifyContent: 'center' as const,
   },
   value: {
-    ...font.h2,
-    fontSize: 17,
-    fontWeight: '700' as const,
+    ...font.sectionTitle,
     color: colors.text.primary,
-    flex: 1,
     flexShrink: 1,
+    textAlign: 'center' as const,
   },
   label: {
     ...font.caption,
     color: colors.text.secondary,
     fontWeight: '500' as const,
     marginTop: 1,
+    textAlign: 'center' as const,
   },
 } as const;

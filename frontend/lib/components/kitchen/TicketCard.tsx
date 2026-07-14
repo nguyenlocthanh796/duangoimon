@@ -115,7 +115,7 @@ export default function TicketCard({
             <Icon name="table-furniture" size={18} color={colors.text.inverse} />
           </View>
           <View style={{ flexShrink: 1 }}>
-            <Text style={{ ...font.h3, color: colors.text.primary }}>{order.table_name}</Text>
+            <Text style={{ ...font.sectionTitle, color: colors.text.primary }}>{order.table_name}</Text>
             <Text style={{ ...font.badge, color: colors.text.muted }}>
               #{order.id.slice(-6).toUpperCase()}
             </Text>
@@ -152,7 +152,7 @@ export default function TicketCard({
             <Text
               style={{
                 ...font.micro,
-                fontWeight: '800',
+                fontWeight: '600',
                 color: colors.status.danger,
                 marginTop: 2,
                 letterSpacing: 1,
@@ -250,7 +250,7 @@ export default function TicketCard({
               }}
             >
               <Icon name="play" size={16} color={colors.brand.primary} />
-              <Text style={{ ...font.tab, color: colors.brand.primary }}>Bắt đầu làm</Text>
+              <Text style={{ ...font.bodySmall, color: colors.brand.primary }}>Bắt đầu làm</Text>
             </TouchableOpacity>
           )}
           <TouchableOpacity
@@ -269,7 +269,7 @@ export default function TicketCard({
             }}
           >
             <Icon name="check" size={16} color={colors.status.success} />
-            <Text style={{ ...font.tab, color: colors.status.success }}>Xong</Text>
+            <Text style={{ ...font.bodySmall, color: colors.status.success }}>Xong</Text>
           </TouchableOpacity>
         </View>
       )}

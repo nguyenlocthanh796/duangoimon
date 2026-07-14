@@ -1,6 +1,5 @@
 """Voucher + Promo Engine API."""
 
-import uuid
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -127,5 +126,5 @@ async def list_rules(
 ):
     query = select(PromoRule).order_by(PromoRule.name)
     page_result = await paginate(db, query, page.page, page.page_size)
-    page_result["items"] = [_rule_dict(r) for r in page_result["items"]]
+    page_result["items"] = [_promo_dict(r) for r in page_result["items"]]
     return page_result

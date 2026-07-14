@@ -6,7 +6,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
-  ActivityIndicator,
   RefreshControl,
 } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -108,15 +107,15 @@ export default function ReportsScreen() {
   const renderKpiPanel = () => (
     <View style={styles.panelBox}>
       <View style={styles.panelHeader}>
-        <Icon name="chart-box-outline" size={18} color={colors.brand.primary} />
+        <Icon name="chart-box-outline" size={18} color={'#F97316'} />
         <Text style={styles.panelHeaderText}>KPI</Text>
       </View>
-      <View style={{ alignItems: 'center', paddingVertical: 4 }}>
+      <View style={{ alignItems: 'center', paddingVertical: 8}}>
         <Text style={styles.panelStatValue}>{formatFullVND(totalRevenue)}</Text>
         <Text style={styles.panelStatLabel}>Tổng doanh thu</Text>
       </View>
       <View style={styles.panelDivider} />
-      <View style={{ flexDirection: 'row', gap: 12 }}>
+      <View style={{ flexDirection: 'row', gap: 12}}>
         <View style={{ flex: 1, alignItems: 'center' }}>
           <Text style={[styles.panelStatValue, { color: '#3B82F6' }]}>{totalOrders}</Text>
           <Text style={styles.panelStatLabel}>Đơn hàng</Text>
@@ -128,8 +127,8 @@ export default function ReportsScreen() {
         </View>
       </View>
       <View style={styles.panelDivider} />
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-        <Icon name="calendar" size={16} color={colors.text.muted} />
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16}}>
+        <Icon name="calendar" size={16} color={'#737373'} />
         <Text style={styles.panelLabel}>{data?.daily?.length ?? 0} ngày dữ liệu</Text>
       </View>
     </View>
@@ -144,8 +143,8 @@ export default function ReportsScreen() {
         onMenuPress={openSidebar}
         onBackPress={() => router.back()}
         right={
-          <TouchableOpacity onPress={onRefresh} style={[styles.iconBtn, { backgroundColor: colors.brand.primaryBg }]}>
-            <Icon name="refresh" size={18} color={colors.brand.primary} />
+          <TouchableOpacity onPress={onRefresh} style={[styles.iconBtn, { backgroundColor: '#F97316' }]}>
+            <Icon name="refresh" size={18} color={'#F97316'} />
           </TouchableOpacity>
         }
       />
@@ -177,7 +176,7 @@ export default function ReportsScreen() {
         <View style={{ flex: 1, flexDirection: 'row' }}>
           <View style={{ flex: 0.6 }}>
             <ScrollView showsVerticalScrollIndicator={false}
-              refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand.primary} />}
+              refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={'#F97316'} />}
             >
               {/* Summary Cards */}
               <View style={styles.summaryRow}>
@@ -196,8 +195,8 @@ export default function ReportsScreen() {
                   <Text style={[styles.summaryValue, { color: '#3B82F6' }]}>{totalOrders}</Text>
                 </View>
                 <View style={[styles.summaryCard]}>
-                  <View style={[styles.summaryIcon, { backgroundColor: '#FFF7ED' }]}>
-                    <Icon name="trending-up" size={18} color="#F97316" />
+                  <View style={[styles.summaryIcon, { backgroundColor: '#F97316' }]}>
+                    <Icon name="trending-up" size={18} color={'#F97316'} />
                   </View>
                   <Text style={styles.summaryLabel}>TB mỗi ngày</Text>
                   <Text style={[styles.summaryValue, { color: '#F97316' }]}>{formatVND(avgRevenuePerDay)}</Text>
@@ -207,7 +206,7 @@ export default function ReportsScreen() {
               {/* Bar Chart */}
               <View style={styles.section}>
                 <View style={styles.sectionHeader}>
-                  <Icon name="chart-bar" size={18} color={colors.brand.primary} />
+                  <Icon name="chart-bar" size={18} color={'#F97316'} />
                   <Text style={styles.sectionTitle}>Doanh thu theo ngày</Text>
                 </View>
                 {(data?.daily?.length ?? 0) === 0 ? (
@@ -230,12 +229,12 @@ export default function ReportsScreen() {
             </ScrollView>
           </View>
           <View style={styles.separator} />
-          <View style={{ flex: 0.4, backgroundColor: colors.surface.app, paddingTop: 8 }}>{renderKpiPanel()}</View>
+          <View style={{ flex: 0.4, backgroundColor: '#FAFAFA', paddingTop: 8 }}>{renderKpiPanel()}</View>
         </View>
       ) : (
         <ScrollView
           showsVerticalScrollIndicator={false}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand.primary} />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={'#F97316'} />}
         >
           {/* Summary Cards */}
           <View style={styles.summaryRow}>
@@ -254,8 +253,8 @@ export default function ReportsScreen() {
               <Text style={[styles.summaryValue, { color: '#3B82F6' }]}>{totalOrders}</Text>
             </View>
             <View style={[styles.summaryCard]}>
-              <View style={[styles.summaryIcon, { backgroundColor: '#FFF7ED' }]}>
-                <Icon name="trending-up" size={18} color="#F97316" />
+              <View style={[styles.summaryIcon, { backgroundColor: '#F97316' }]}>
+                <Icon name="trending-up" size={18} color={'#F97316'} />
               </View>
               <Text style={styles.summaryLabel}>TB mỗi ngày</Text>
               <Text style={[styles.summaryValue, { color: '#F97316' }]}>{formatVND(avgRevenuePerDay)}</Text>
@@ -265,7 +264,7 @@ export default function ReportsScreen() {
           {/* Bar Chart */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Icon name="chart-bar" size={18} color={colors.brand.primary} />
+              <Icon name="chart-bar" size={18} color={'#F97316'} />
               <Text style={styles.sectionTitle}>Doanh thu theo ngày</Text>
             </View>
             {(data?.daily?.length ?? 0) === 0 ? (
@@ -297,52 +296,52 @@ const CARD_SHADOW = {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface.app },
+  container: { flex: 1, backgroundColor: '#FAFAFA' },
 
-  iconBtn: { width: 36, height: 36, borderRadius: shape.radius.md, alignItems: 'center', justifyContent: 'center' },
+  iconBtn: { width: 36, height: 36, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
 
-  filterRow: { flexDirection: 'row', gap: 6, paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  chip: { paddingHorizontal: 14, paddingVertical: 7, borderRadius: shape.radius.full, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default },
-  chipActive: { backgroundColor: colors.brand.primary, borderColor: colors.brand.primary },
-  chipText: { ...font.badge, color: colors.text.muted },
-  chipTextActive: { color: '#fff', fontWeight: '700' },
+  filterRow: { flexDirection: 'row', gap: 12, paddingHorizontal: 12, paddingVertical: 32, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
+  chip: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#E5E5E5' },
+  chipActive: { backgroundColor: '#F97316', borderColor: '#F97316' },
+  chipText: { ...font.badge, color: '#737373' },
+  chipTextActive: { color: '#fff', fontWeight: '600' },
 
   /* Panel */
-  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: colors.border.light, gap: 12, boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3 },
-  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  panelHeaderText: { ...font.body, fontWeight: '700', color: colors.text.primary },
-  panelStatLabel: { ...font.caption, color: colors.text.muted, marginTop: 2 },
-  panelStatValue: { ...font.h2, fontWeight: '800', color: colors.text.primary },
-  panelDivider: { height: 1, backgroundColor: colors.border.light },
-  panelDividerV: { width: 1, backgroundColor: colors.border.light },
-  panelLabel: { ...font.caption, color: colors.text.muted },
+  panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12, boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3 },
+  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
+  panelHeaderText: { ...font.body, fontWeight: '600', color: '#171717' },
+  panelStatLabel: { ...font.caption, color: '#737373', marginTop: 2 },
+  panelStatValue: { ...font.sectionTitle, fontWeight: '600', color: '#171717' },
+  panelDivider: { height: 1, backgroundColor: '#F0F0F0' },
+  panelDividerV: { width: 1, backgroundColor: '#F0F0F0' },
+  panelLabel: { ...font.caption, color: '#737373' },
 
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8 },
-  loadingText: { ...font.bodySmall, color: colors.text.secondary },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16},
+  loadingText: { ...font.bodySmall, color: '#404040' },
 
-  summaryRow: { flexDirection: 'row', paddingHorizontal: 12, paddingTop: 14, gap: 8 },
+  summaryRow: { flexDirection: 'row', paddingHorizontal: 12, paddingTop: 14, gap: 16},
   summaryCard: {
-    flex: 1, backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 12,
-    borderWidth: 1, borderColor: colors.border.light, ...CARD_SHADOW,
+    flex: 1, backgroundColor: '#FFFFFF', borderRadius: 12, padding: 12,
+    borderWidth: 1, borderColor: '#F0F0F0', ...CARD_SHADOW,
   },
   summaryIcon: {
-    width: 32, height: 32, borderRadius: shape.radius.md,
+    width: 32, height: 32, borderRadius: 8,
     alignItems: 'center', justifyContent: 'center', marginBottom: 8,
   },
-  summaryLabel: { ...font.caption, color: colors.text.secondary, fontWeight: '500' },
-  summaryValue: { ...font.h3, marginTop: 4 },
+  summaryLabel: { ...font.caption, color: '#404040', fontWeight: '500' },
+  summaryValue: { ...font.sectionTitle, marginTop: 4 },
 
   section: {
-    backgroundColor: colors.surface.card, borderRadius: shape.radius.lg,
+    backgroundColor: '#FFFFFF', borderRadius: 12,
     marginHorizontal: 12, marginTop: 14, padding: 16, ...CARD_SHADOW,
   },
-  sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 14 },
-  sectionTitle: { ...font.h3, color: colors.text.primary },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 14 },
+  sectionTitle: { ...font.sectionTitle, color: '#171717' },
 
-  emptyBox: { alignItems: 'center', paddingVertical: 24, gap: 8 },
-  emptyText: { ...font.bodySmall, color: colors.text.secondary },
+  emptyBox: { alignItems: 'center', paddingVertical: 12, gap: 16},
+  emptyText: { ...font.bodySmall, color: '#404040' },
 
-  separator: { width: 1, backgroundColor: colors.border.light },
+  separator: { width: 1, backgroundColor: '#F0F0F0' },
 });
 
 

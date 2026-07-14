@@ -30,7 +30,7 @@ function DataTable({ columns, data, maxRows = 5 }: DataTableProps) {
       {/* Header */}
       <View style={dtStyles.headerRow}>
         {columns.map((col) => (
-          <View key={col.key} style={[dtStyles.headerCell, col.flex && { flex: col.flex }]}>
+          <View key={col.key} style={[dtStyles.headerCell, col.flex != null ? { flex: col.flex } : undefined]}>
             <Text
               style={[
                 dtStyles.headerText,
@@ -54,7 +54,7 @@ function DataTable({ columns, data, maxRows = 5 }: DataTableProps) {
                 key={col.key}
                 style={[
                   dtStyles.dataCell,
-                  col.flex && { flex: col.flex },
+                  col.flex != null ? { flex: col.flex } : undefined,
                   col.align === 'right' && dtStyles.cellRight,
                   col.align === 'center' && dtStyles.cellCenter,
                 ]}
@@ -98,15 +98,15 @@ const dtStyles = StyleSheet.create({
     backgroundColor: colors.brand.primaryBg,
     borderBottomWidth: 1,
     borderBottomColor: colors.border.default,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
+    paddingVertical: 6,
+    paddingHorizontal: 6,
   },
   headerCell: { flex: 1 },
   headerText: { ...font.tableHeader, color: colors.text.tableHeader },
   dataRow: {
     flexDirection: 'row',
-    paddingVertical: 10,
-    paddingHorizontal: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 6,
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: colors.border.light,
   },
@@ -128,6 +128,7 @@ interface TopProductsProps {
 }
 
 export function TopProductsList({ data, loading }: TopProductsProps) {
+  const { isWide } = useResponsive();
   return (
     <View style={styles.section}>
       <SectionHeader icon="chart-bar" title="Sản phẩm bán chạy" subtitle="Hôm nay" />
@@ -145,13 +146,13 @@ export function TopProductsList({ data, loading }: TopProductsProps) {
         <DataTable
           columns={[
             { key: 'rank', label: '#', flex: 0.4, align: 'center', render: (v) => (
-              <Text style={{ ...font.tableCell, fontWeight: '700', textAlign: 'center', color: (v <= 3) ? colors.brand.primary : colors.text.muted }}>
+              <Text style={{ ...font.tableCell, fontWeight: '600', textAlign: 'center', color: (v <= 3) ? colors.brand.primary : colors.text.muted }}>
                 {v}
               </Text>
             ) },
             { key: 'name', label: 'Tên món', flex: 2 },
             { key: 'quantity', label: 'SL', flex: 0.8, align: 'right', render: (v) => (
-              <Text style={{ ...font.tableCell, fontWeight: '700', color: colors.text.primary, textAlign: 'right' }}>{v}</Text>
+              <Text style={{ ...font.tableCell, fontWeight: '600', color: colors.text.primary, textAlign: 'right' }}>{v}</Text>
             ) },
           ]}
           data={(data ?? []).map((p, i) => ({ ...p, id: i, rank: i + 1 }))}
@@ -194,7 +195,7 @@ interface NavGridProps {
 
 export function NavigationGrid({ compact }: NavGridProps) {
   const router = useRouter();
-  const { width, isTabletLandscape } = useResponsive();
+  const { width, isTabletLandscape, isWide } = useResponsive();
 
   const numCols = isTabletLandscape ? 5 : compact ? (width < 360 ? 2 : 3) : 5;
   const cardWidth = width < 360 && compact ? '46%' : `${Math.floor(100 / numCols) - 1.5}%` as const;
@@ -244,6 +245,7 @@ interface LowStockWidgetProps {
 
 export function LowStockList({ items, loading }: LowStockWidgetProps) {
   const stockItems = items ?? [];
+  const { isWide } = useResponsive();
 
   if (loading) {
     return (
@@ -257,11 +259,7 @@ export function LowStockList({ items, loading }: LowStockWidgetProps) {
   }
   return (
     <View style={styles.section}>
-      <SectionHeader
-        icon="alert-circle-outline"
-        title="Tồn kho thấp"
-        subtitle={`${stockItems.length} mặt hàng`}
-      />
+      <SectionHeader icon="alert-circle-outline" title="Tồn kho thấp" subtitle={`${stockItems.length} mặt hàng`} />
       {stockItems.length === 0 ? (
         <EmptyBox icon="check-circle" text="Tồn kho ổn định" iconColor={colors.status.success} />
       ) : (
@@ -287,7 +285,7 @@ export function LowStockList({ items, loading }: LowStockWidgetProps) {
                 const r = row as any;
                 return (
                   <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 4 }}>
-                    <Text style={{ ...font.tableCell, fontWeight: '700', color: r._critical ? colors.status.danger : colors.status.warning }}>
+                    <Text style={{ ...font.tableCell, fontWeight: '600', color: r._critical ? colors.status.danger : colors.status.warning }}>
                       {r.current}
                     </Text>
                     <Text style={{ ...font.tableCell, color: colors.text.muted }}>
@@ -324,6 +322,7 @@ interface ActivitiesProps {
 
 export function RecentActivitiesList({ activities, loading }: ActivitiesProps) {
   const acts = activities ?? [];
+  const { isWide } = useResponsive();
 
   if (loading) {
     return (
@@ -376,6 +375,7 @@ interface RevenueChartProps {
 export function RevenueChart({ data, loading }: RevenueChartProps) {
   const values = data ?? [];
   const max = Math.max(...values.map((v) => v.value), 1);
+  const { isWide } = useResponsive();
 
   if (loading) {
     return (
@@ -428,7 +428,7 @@ function SectionHeader({
     <View style={styles.sectionHeader}>
       <View style={styles.sectionHeaderLeft}>
         <Icon name={iconName as any} size={compact ? 16 : 20} color={colors.text.muted} />
-        <Text style={[styles.sectionTitle, compact && { fontSize: 15, lineHeight: 20 }]}>
+        <Text style={[styles.sectionTitle, compact && font.bodyBold]}>
           {title}
         </Text>
       </View>
@@ -459,11 +459,15 @@ function EmptyBox({
 const styles = StyleSheet.create({
   section: {
     backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.lg,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: colors.border.light,
-    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+    borderRadius: 0,
+    borderLeftWidth: 0,
+    borderRightWidth: 0,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: colors.border.default,
+    padding: 6,
+    boxShadow: 'none',
+    elevation: 0,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -472,7 +476,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   sectionHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  sectionTitle: { ...font.body, fontWeight: '700', color: colors.text.primary },
+  sectionTitle: { ...font.body, fontWeight: '600', color: colors.text.primary },
   sectionSub: { ...font.caption, color: colors.text.secondary },
   emptyBox: { alignItems: 'center', paddingVertical: 24, gap: 8 },
   emptyText: { ...font.bodySmall, color: colors.text.secondary },
