@@ -6,11 +6,8 @@ export const ASSETS = {
   },
   images: {
     foodPlaceholder: require('../assets/images/webp/food_placeholder.webp'),
-    drinkPlaceholder: require('../assets/images/webp/drink_placeholder.webp'),
-    dessertPlaceholder: require('../assets/images/webp/dessert_placeholder.webp'),
     emptyStateMenu: require('../assets/images/webp/empty_state_menu.webp'),
     emptyStateOrders: require('../assets/images/webp/empty_state_orders.webp'),
-    errorState: require('../assets/images/webp/error_state.webp'),
     loadingFood: require('../assets/images/webp/loading_food.webp'),
     searchEmpty: require('../assets/images/webp/search_empty.webp'),
     // Category images
@@ -21,8 +18,5 @@ export const ASSETS = {
     categoryTraSua: require('../assets/images/webp/category_tra_sua.webp'),
     categorySoda: require('../assets/images/webp/category_soda.webp'),
     categoryKem: require('../assets/images/webp/category_kem.webp'),
-  },
-  illustrations: {
-    success: require('../assets/images/webp/success_check.webp'),
   },
 } as const;
