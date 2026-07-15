@@ -79,6 +79,9 @@ frontend/dist-test/
 frontend/.claude/
 frontend/CLAUDE.md
 
+# AI agent temporary scratch files
+frontend/SCRATCH_*
+
 # Standalone utility (not part of core project)
 vietqr-generator/
 duangoimon/
