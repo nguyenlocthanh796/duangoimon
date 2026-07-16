@@ -3,6 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font } from '../../theme';
 import { shape } from '../../theme/shape';
+import AppText from './AppText';
 
 export function SectionTitle({
   title,
@@ -20,8 +21,8 @@ export function SectionTitle({
       <View style={styles.left}>
         {icon && <Icon name={icon as any} size={18} color={colors.brand.primary} />}
         <View>
-          <Text style={styles.text}>{title}</Text>
-          {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+          <AppText variant="large" weight="bold">{title}</AppText>
+          {subtitle ? <AppText variant="small" style={{ marginTop: 2 }}>{subtitle}</AppText> : null}
         </View>
       </View>
       {right}
@@ -56,8 +57,6 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   left: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  text: { ...font.sectionTitle, color: colors.text.primary },
-  subtitle: { ...font.caption, color: colors.text.muted, marginTop: 2 },
   pill: {
     backgroundColor: colors.surface.card,
     borderRadius: shape.radius.md,

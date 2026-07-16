@@ -27,7 +27,7 @@ router = APIRouter()
 
 # ── Valid State Transitions ─────────────────────────────────────────────────────
 VALID_TRANSITIONS = {
-    "moi": ["gui_bep", "da_huy"],
+    "moi": ["gui_bep", "dang_lam", "da_huy"],
     "gui_bep": ["dang_lam", "da_huy"],
     "dang_lam": ["hoan_thanh", "da_huy"],
     "hoan_thanh": [],  # terminal

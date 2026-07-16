@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, Modal } from 'react-native';
+import { View, TextInput, TouchableOpacity, Modal } from 'react-native';
 import { colors, font } from '../../theme';
+import AppText from '../ui/AppText';
 
 interface NoteEditorProps {
   visible: boolean;
@@ -29,7 +30,7 @@ export default function NoteEditor({
             gap: 12,
           }}
         >
-          <Text style={{ ...font.bodyBold, color: colors.text.primary }}>Ghi chú món</Text>
+          <AppText variant="medium" weight="bold" color={colors.text.primary}>Ghi chú món</AppText>
           <TextInput
             value={noteText}
             onChangeText={onChangeText}
@@ -52,26 +53,26 @@ export default function NoteEditor({
               style={{
                 flex: 1,
                 height: 44,
-                borderRadius: 6,
+                borderRadius: 8,
                 backgroundColor: colors.surface.disabled,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
-              <Text style={{ ...font.buttonSmall, color: colors.text.secondary }}>Huỷ</Text>
+              <AppText variant="medium" color={colors.text.secondary}>Huỷ</AppText>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={onSave}
               style={{
                 flex: 1,
                 height: 44,
-                borderRadius: 6,
+                borderRadius: 8,
                 backgroundColor: colors.brand.primary,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
-              <Text style={{ ...font.buttonSmall, color: colors.text.inverse }}>Lưu</Text>
+              <AppText variant="medium" color={colors.text.inverse}>Lưu</AppText>
             </TouchableOpacity>
           </View>
         </View>

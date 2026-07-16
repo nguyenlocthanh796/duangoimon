@@ -166,27 +166,10 @@ export function TopProductsList({ data, loading }: TopProductsProps) {
 // ── Navigation (Expanded) ──
 
 const NAV_ITEMS = [
-  { title: 'Thực đơn', icon: 'silverware', route: '/quan-ly/menu' },
-  { title: 'Menu Tiếng Anh', icon: 'translate', route: '/quan-ly/menu-eng' },
-  { title: 'Công thức', icon: 'book-open-variant', route: '/quan-ly/recipes' },
-  { title: 'Nhân viên', icon: 'account-group', route: '/quan-ly/users' },
-  { title: 'Ca làm việc', icon: 'clock-outline', route: '/quan-ly/shifts' },
-  { title: 'Báo cáo', icon: 'chart-box-outline', route: '/quan-ly/reports' },
-  { title: 'BI Reports', icon: 'chart-timeline-variant', route: '/quan-ly/bi-reports' },
-  { title: 'Dự báo', icon: 'trending-up', route: '/quan-ly/forecast' },
-  { title: 'Kho hàng', icon: 'package-variant', route: '/quan-ly/stock' },
-  { title: 'Nhà cung cấp', icon: 'truck-delivery', route: '/quan-ly/suppliers' },
-  { title: 'Đơn đặt hàng', icon: 'clipboard-list', route: '/quan-ly/purchase-orders' },
-  { title: 'Bàn', icon: 'table-furniture', route: '/quan-ly/tables' },
-  { title: 'Khu vực', icon: 'map-marker', route: '/quan-ly/stations' },
-  { title: 'Đặt bàn', icon: 'calendar-check', route: '/quan-ly/booking' },
-  { title: 'Khách hàng', icon: 'account-star', route: '/quan-ly/customers' },
-  { title: 'Thẻ thành viên', icon: 'card-account-details', route: '/quan-ly/membership' },
-  { title: 'Khuyến mãi', icon: 'gift-outline', route: '/quan-ly/promo' },
-  { title: 'Marketing', icon: 'bullhorn', route: '/quan-ly/marketing' },
-  { title: 'Chi nhánh', icon: 'store-outline', route: '/quan-ly/branches' },
-  { title: 'Kiểm toán', icon: 'shield-check', route: '/quan-ly/audit' },
-  { title: 'Bảng điều khiển', icon: 'view-dashboard-outline', route: '/quan-ly/exec-dashboard' },
+  { title: 'Sản Phẩm & Kho', icon: 'package-variant-closed', route: '/quan-ly/products' },
+  { title: 'Khách Hàng & Marketing', icon: 'account-group', route: '/quan-ly/crm' },
+  { title: 'Báo Cáo & Phân Tích', icon: 'chart-bar', route: '/quan-ly/analytics' },
+  { title: 'Hệ Thống & Vận Hành', icon: 'cog-outline', route: '/quan-ly/system' },
 ];
 
 interface NavGridProps {
@@ -512,10 +495,10 @@ const navNormal = {
     paddingVertical: 20,
     paddingHorizontal: 8,
     backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.lg,
+    borderRadius: 0,
     borderWidth: 1,
     borderColor: colors.border.light,
-    boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+    boxShadow: 'none',
   },
   navIconWrap: {
     width: 56,
@@ -542,10 +525,10 @@ const navCompact = {
     paddingVertical: 12,
     paddingHorizontal: 4,
     backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.lg,
+    borderRadius: 0,
     borderWidth: 1,
     borderColor: colors.border.light,
-    boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+    boxShadow: 'none',
   },
   navIconWrap: {
     width: 40,

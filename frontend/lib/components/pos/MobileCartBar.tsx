@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, COLORS, font, formatPrice } from '../../theme';
 import { shape } from '../../theme/shape';
@@ -49,7 +49,7 @@ export default function MobileCartBar({
         style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12 }}
       >
         <View>
-          <MaterialIcons name="shopping-bag" size={30} color={colors.icon.default} />
+          <MaterialCommunityIcons name="shopping" size={30} color={colors.icon.default} />
           <View
             style={{
               position: 'absolute',
@@ -134,7 +134,7 @@ export default function MobileCartBar({
           }}
         >
           <Text style={{ ...font.button, color: colors.text.inverse }}>Thanh toán</Text>
-          <MaterialIcons name="keyboard-arrow-up" size={20} color={colors.text.inverse} />
+          <MaterialCommunityIcons name="chevron-up" size={20} color={colors.text.inverse} />
         </TouchableOpacity>
       </View>
     </View>

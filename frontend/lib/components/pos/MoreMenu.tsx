@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Modal } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { View, TouchableOpacity, ScrollView, Modal } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors, font } from '../../theme';
 import { palette } from '../../theme/colors';
 import { shape } from '../../theme/shape';
+import AppText from '../ui/AppText';
 
 interface MoreMenuProps {
   visible: boolean;
@@ -46,17 +47,17 @@ export default function MoreMenu({
             boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
           }}
         >
-          <Text
+          <AppText
+            variant="small"
+            color={colors.text.muted}
             style={{
-              ...font.label,
-              color: colors.text.muted,
               paddingHorizontal: 8,
               paddingVertical: 6,
               paddingBottom: 4,
             }}
           >
             Nghiệp vụ
-          </Text>
+          </AppText>
           {onSplitBill && (
             <TouchableOpacity
               onPress={() => {
@@ -82,9 +83,9 @@ export default function MoreMenu({
                   justifyContent: 'center',
                 }}
               >
-                <MaterialIcons name="call-split" size={16} color={colors.brand.primary} />
+                <MaterialCommunityIcons name="call-split" size={16} color={colors.brand.primary} />
               </View>
-              <Text style={{ ...font.body, color: colors.text.primary }}>Tách bill</Text>
+              <AppText variant="medium" color={colors.text.primary}>Tách bill</AppText>
             </TouchableOpacity>
           )}
           {onMergeBill && (
@@ -112,9 +113,9 @@ export default function MoreMenu({
                   justifyContent: 'center',
                 }}
               >
-                <MaterialIcons name="merge-type" size={16} color="#0284c7" />
+                <MaterialCommunityIcons name="call-merge" size={16} color="#0284c7" />
               </View>
-              <Text style={{ ...font.body, color: colors.text.primary }}>Gộp bill</Text>
+              <AppText variant="medium" color={colors.text.primary}>Gộp bill</AppText>
             </TouchableOpacity>
           )}
           {onMoveTable && (
@@ -142,9 +143,9 @@ export default function MoreMenu({
                   justifyContent: 'center',
                 }}
               >
-                <MaterialIcons name="move-to-inbox" size={16} color="#d97706" />
+                <MaterialCommunityIcons name="tray-arrow-down" size={16} color="#d97706" />
               </View>
-              <Text style={{ ...font.body, color: colors.text.primary }}>Chuyển bàn</Text>
+              <AppText variant="medium" color={colors.text.primary}>Chuyển bàn</AppText>
             </TouchableOpacity>
           )}
           {onSplitTable && (
@@ -172,9 +173,9 @@ export default function MoreMenu({
                   justifyContent: 'center',
                 }}
               >
-                <MaterialIcons name="call-split" size={16} color="#e53935" />
+                <MaterialCommunityIcons name="call-split" size={16} color="#e53935" />
               </View>
-              <Text style={{ ...font.body, color: colors.text.primary }}>Tách bàn</Text>
+              <AppText variant="medium" color={colors.text.primary}>Tách bàn</AppText>
             </TouchableOpacity>
           )}
           {onMergeTable && (
@@ -202,9 +203,9 @@ export default function MoreMenu({
                   justifyContent: 'center',
                 }}
               >
-                <MaterialIcons name="compare-arrows" size={16} color="#43a047" />
+                <MaterialCommunityIcons name="compare-horizontal" size={16} color="#43a047" />
               </View>
-              <Text style={{ ...font.body, color: colors.text.primary }}>Gộp bàn</Text>
+              <AppText variant="medium" color={colors.text.primary}>Gộp bàn</AppText>
             </TouchableOpacity>
           )}
         </View>

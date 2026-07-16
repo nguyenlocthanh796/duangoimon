@@ -10,10 +10,10 @@ from app.core.auth import get_current_user
 from app.core.database import get_db
 from app.models.ke_toan import Transaction, Invoice
 
-router = APIRouter(prefix="/ke-toan/dashboard", tags=["ke-toan"])
+router = APIRouter(prefix="/ke-toan", tags=["ke-toan"])
 
 
-@router.get("")
+@router.get("/dashboard")
 async def dashboard(
     db: AsyncSession = Depends(get_db),
     _user: dict = Depends(get_current_user),

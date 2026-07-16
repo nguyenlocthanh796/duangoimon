@@ -1,10 +1,11 @@
-import { View, Text, TouchableOpacity } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { View, TouchableOpacity } from 'react-native';
+
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, font } from '../../theme';
 import { shape } from '../../theme/shape';
 import { router } from 'expo-router';
+import AppText from '../ui/AppText';
 
 interface TableScreenHeaderProps {
   tablesCount: number;
@@ -26,23 +27,20 @@ export default function TableScreenHeader({
   const insets = useSafeAreaInsets();
   const btnSize = isWide ? 40 : 36;
   const iconSize = isWide ? 20 : 18;
-  const paddingV = isWide ? 10 : 8;
 
   return (
-    <LinearGradient
-      colors={colors.gradient.header as [string, string]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
+    <View
       style={{
-        paddingTop: insets.top + paddingV,
-        paddingBottom: paddingV,
+        paddingTop: insets.top,
+        height: insets.top + (isWide ? 56 : 52),
         paddingHorizontal: isWide ? 16 : 12,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        borderBottomLeftRadius: shape.radius.lg,
-        borderBottomRightRadius: shape.radius.lg,
-        boxShadow: '0 4px 12px rgba(249,115,22,0.4)',
+        backgroundColor: colors.surface.header,
+        borderBottomWidth: 1,
+        borderBottomColor: colors.border.default,
+        
         zIndex: 10,
       }}
     >
@@ -52,22 +50,22 @@ export default function TableScreenHeader({
           style={{
             width: btnSize,
             height: btnSize,
-            borderRadius: shape.radius.md,
-            backgroundColor: 'rgba(255,255,255,0.18)',
+            borderRadius: 8,
+            backgroundColor: 'transparent',
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <Icon name="menu" size={iconSize} color={colors.icon.inverse} />
+          <Icon name="menu" size={iconSize} color={colors.brand.primary} />
         </TouchableOpacity>
         <View>
-          <Text style={{ ...(isWide ? font.sectionTitle : font.bodyBold), color: colors.text.inverse, fontWeight: '600' }}>
+          <AppText variant={isWide ? "large" : "medium"} color={colors.text.primary} weight="bold">
             Sơ đồ bàn
-          </Text>
+          </AppText>
           {!isWide && (
-            <Text style={{ ...font.badge, color: 'rgba(255,255,255,0.80)', marginTop: 1 }}>
+            <AppText variant="small" color={colors.text.muted} style={{ marginTop: 1 }}>
               {tablesCount} bàn · {lastRefreshTime || ''}
-            </Text>
+            </AppText>
           )}
         </View>
       </View>
@@ -78,13 +76,13 @@ export default function TableScreenHeader({
           style={{
             width: btnSize,
             height: btnSize,
-            borderRadius: shape.radius.md,
-            backgroundColor: 'rgba(255,255,255,0.18)',
+            borderRadius: 8,
+            backgroundColor: '#FFF7ED',
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <Icon name="refresh" size={iconSize} color={colors.icon.inverse} />
+          <Icon name="refresh" size={iconSize} color={colors.brand.primary} />
         </TouchableOpacity>
 
         {onTakeaway ? (
@@ -96,16 +94,15 @@ export default function TableScreenHeader({
               gap: 6,
               paddingHorizontal: isWide ? 14 : 10,
               height: btnSize,
-              borderRadius: 99,
-              backgroundColor: colors.surface.card,
-              borderWidth: 1.5,
-              borderColor: colors.surface.card,
+              borderRadius: 8,
+              backgroundColor: colors.brand.primary,
+              borderWidth: 0,
             }}
           >
-            <Icon name="bag-personal" size={iconSize} color={colors.brand.primary} />
-            <Text style={{ ...(isWide ? font.button : font.button), color: colors.brand.primary }}>
+            <Icon name="bag-personal" size={iconSize} color={colors.text.inverse} />
+            <AppText variant="medium" color={colors.text.inverse}>
               Mang Về
-            </Text>
+            </AppText>
           </TouchableOpacity>
         ) : !isWide ? (
           <TouchableOpacity
@@ -118,17 +115,16 @@ export default function TableScreenHeader({
               gap: 6,
               paddingHorizontal: 10,
               height: btnSize,
-              borderRadius: 99,
-              backgroundColor: colors.surface.card,
-              borderWidth: 1.5,
-              borderColor: colors.surface.card,
+              borderRadius: 8,
+              backgroundColor: colors.brand.primary,
+              borderWidth: 0,
             }}
           >
-            <Icon name="bag-personal" size={iconSize} color={colors.brand.primary} />
-            <Text style={{ ...font.button, color: colors.brand.primary }}>Mang Về</Text>
+            <Icon name="bag-personal" size={iconSize} color={colors.text.inverse} />
+            <AppText variant="medium" color={colors.text.inverse}>Mang Về</AppText>
           </TouchableOpacity>
         ) : null}
       </View>
-    </LinearGradient>
+    </View>
   );
 }

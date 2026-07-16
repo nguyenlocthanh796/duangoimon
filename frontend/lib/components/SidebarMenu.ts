@@ -25,10 +25,38 @@ export const allMenuItems: Record<string, SidebarItem> = {
   },
   quanLy: {
     path: '/quan-ly',
-    icon: 'cog-outline',
-    label: 'Quản Lý',
-    description: 'Menu & nhân sự',
+    icon: 'home-outline',
+    label: 'Tổng Quan',
+    description: 'Dashboard',
     isActive: (segs) => segs[0] === 'quan-ly' && !segs[1],
+  },
+  products: {
+    path: '/quan-ly/products',
+    icon: 'package-variant-closed',
+    label: 'Sản Phẩm & Kho',
+    description: 'Thực đơn, kho hàng',
+    isActive: (segs) => segs[0] === 'quan-ly' && segs[1] === 'products',
+  },
+  crm: {
+    path: '/quan-ly/crm',
+    icon: 'account-group',
+    label: 'Khách & Marketing',
+    description: 'CRM & Khuyến mãi',
+    isActive: (segs) => segs[0] === 'quan-ly' && segs[1] === 'crm',
+  },
+  analytics: {
+    path: '/quan-ly/analytics',
+    icon: 'chart-bar',
+    label: 'Báo Cáo & Phân Tích',
+    description: 'Số liệu kinh doanh',
+    isActive: (segs) => segs[0] === 'quan-ly' && segs[1] === 'analytics',
+  },
+  system: {
+    path: '/quan-ly/system',
+    icon: 'cog-outline',
+    label: 'Hệ Thống & Vận Hành',
+    description: 'Nhân sự, chi nhánh',
+    isActive: (segs) => segs[0] === 'quan-ly' && segs[1] === 'system',
   },
   recipes: {
     path: '/quan-ly/recipes',
@@ -299,32 +327,15 @@ const keToanThueItems: SidebarItem[] = [allMenuItems.keToanHub];
 
 const quanLySubGroups: SidebarSubGroup[] = [
   {
-    label: 'Tổng Quan',
-    items: [allMenuItems.quanLy, allMenuItems.execDashboard, allMenuItems.audit],
-  },
-  {
-    label: 'Kho & SX',
+    label: 'Module Quản Lý',
     items: [
-      allMenuItems.quanLyMenu,
-      allMenuItems.recipes,
-      allMenuItems.stock,
-      allMenuItems.suppliers,
-      allMenuItems.purchaseOrders,
+      allMenuItems.quanLy,
+      allMenuItems.products,
+      allMenuItems.crm,
+      allMenuItems.analytics,
+      allMenuItems.system,
     ],
-  },
-  {
-    label: 'Khách Hàng',
-    items: [allMenuItems.customers, allMenuItems.membership, allMenuItems.booking],
-  },
-  { label: 'Marketing', items: [allMenuItems.marketing, allMenuItems.promo] },
-  {
-    label: 'Báo Cáo',
-    items: [allMenuItems.menuEng, allMenuItems.biReports, allMenuItems.forecast, allMenuItems.quanLyReports],
-  },
-  {
-    label: 'Vận Hành',
-    items: [allMenuItems.shifts, allMenuItems.stations, allMenuItems.branches, allMenuItems.quanLyTables, allMenuItems.quanLyUsers],
-  },
+  }
 ];
 
 export const menuByRole: Record<string, SidebarGroup[]> = {

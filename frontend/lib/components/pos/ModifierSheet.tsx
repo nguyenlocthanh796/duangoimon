@@ -1,7 +1,6 @@
 import React, { useRef, useMemo, useEffect, useCallback } from 'react';
 import {
   View,
-  Text,
   TouchableOpacity,
   ScrollView,
   TextInput,
@@ -9,12 +8,13 @@ import {
   StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import BottomSheet, { BottomSheetTextInput, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { COLORS, colors, palette, font, formatPrice } from '../../theme';
 import { shape } from '../../theme/shape';
 import { MenuItem, CartItem } from './types';
+import AppText from '../ui/AppText';
 
 const QUICK_NOTES = ['Ít đá', 'Nhiều đá', 'Không đá', 'Ít ngọt', 'Không đường', 'Nước béo'];
 
@@ -90,10 +90,10 @@ export default function ModifierSheet({
           }}
         >
           <View style={{ flex: 1 }}>
-            <Text style={{ ...font.sectionTitle, color: colors.text.primary, marginBottom: 4 }}>
+            <AppText variant="large" color={colors.text.primary} style={{ marginBottom: 4 }}>
               {modalItem?.name}
-            </Text>
-            <Text style={{ ...font.price, color: COLORS.primary }}>{formatPrice(modalPrice)}</Text>
+            </AppText>
+            <AppText variant="large" weight="bold" color={COLORS.primary}>{formatPrice(modalPrice)}</AppText>
           </View>
           <TouchableOpacity
             onPress={onClose}
@@ -106,7 +106,7 @@ export default function ModifierSheet({
               justifyContent: 'center',
             }}
           >
-            <MaterialIcons name="close" size={20} color={colors.text.body} />
+            <MaterialCommunityIcons name="close" size={20} color={colors.text.body} />
           </TouchableOpacity>
         </View>
 
@@ -124,17 +124,17 @@ export default function ModifierSheet({
               marginBottom: 16,
             }}
           >
-            <Text
+            <AppText
+              variant="base"
+              color={colors.text.secondary}
               style={{
-                ...font.label,
                 textTransform: 'uppercase',
                 letterSpacing: 1.2,
-                color: colors.text.secondary,
                 marginBottom: 12,
               }}
             >
               Số lượng
-            </Text>
+            </AppText>
             <View
               style={{
                 flexDirection: 'row',
@@ -156,18 +156,18 @@ export default function ModifierSheet({
                   justifyContent: 'center',
                 }}
               >
-                <MaterialIcons name="remove" size={22} color={COLORS.primary} />
+                <MaterialCommunityIcons name="minus" size={22} color={COLORS.primary} />
               </TouchableOpacity>
-              <Text
+              <AppText
+                variant="large"
+                color={colors.text.primary}
                 style={{
-                  ...font.priceLarge,
-                  color: colors.text.primary,
                   width: 60,
                   textAlign: 'center',
                 }}
               >
                 {modalQty}
-              </Text>
+              </AppText>
               <TouchableOpacity
                 onPress={() => setModalQty((q) => q + 1)}
                 style={{
@@ -181,7 +181,7 @@ export default function ModifierSheet({
                   justifyContent: 'center',
                 }}
               >
-                <MaterialIcons name="add" size={22} color={COLORS.primary} />
+                <MaterialCommunityIcons name="plus" size={22} color={COLORS.primary} />
               </TouchableOpacity>
             </View>
           </View>
@@ -189,17 +189,17 @@ export default function ModifierSheet({
           {/* Sizes */}
           {modalItem && modalItem.sizes && modalItem.sizes.length > 0 && (
             <View style={{ marginBottom: 16 }}>
-              <Text
+              <AppText
+                variant="base"
+                color={COLORS.muted}
                 style={{
-                  ...font.label,
                   textTransform: 'uppercase',
                   letterSpacing: 1.2,
-                  color: COLORS.muted,
                   marginBottom: 10,
                 }}
               >
                 Kích thước
-              </Text>
+              </AppText>
               <View style={{ flexDirection: 'row', gap: 8 }}>
                 {(() => {
                   const allSizes = [{ name: 'M', price: modalItem.price }, ...modalItem.sizes];
@@ -227,20 +227,20 @@ export default function ModifierSheet({
                           minHeight: 44,
                         }}
                       >
-                        <Text
-                          style={{ ...font.price, color: sel ? COLORS.primary : colors.text.body }}
+                        <AppText
+                          variant="large"
+                          weight="bold"
+                          color={sel ? COLORS.primary : colors.text.body}
                         >
                           Size {s.name}
-                        </Text>
-                        <Text
-                          style={{
-                            ...font.caption,
-                            marginTop: 4,
-                            color: sel ? colors.text.brandDark : COLORS.muted,
-                          }}
+                        </AppText>
+                        <AppText
+                          variant="small"
+                          color={sel ? colors.text.brandDark : COLORS.muted}
+                          style={{ marginTop: 4 }}
                         >
                           {deltaText}
-                        </Text>
+                        </AppText>
                         {sel && (
                           <View
                             style={{
@@ -256,7 +256,7 @@ export default function ModifierSheet({
                               justifyContent: 'center',
                             }}
                           >
-                            <MaterialIcons name="check" size={14} color={colors.text.inverse} />
+                            <MaterialCommunityIcons name="check" size={14} color={colors.text.inverse} />
                           </View>
                         )}
                       </TouchableOpacity>
@@ -270,17 +270,17 @@ export default function ModifierSheet({
           {/* Toppings */}
           {(modalItem?.toppings?.length ?? 0) > 0 && (
             <View style={{ marginBottom: 16 }}>
-              <Text
+              <AppText
+                variant="base"
+                color={colors.text.secondary}
                 style={{
-                  ...font.label,
                   textTransform: 'uppercase',
                   letterSpacing: 1.2,
-                  color: colors.text.secondary,
                   marginBottom: 10,
                 }}
               >
                 Topping
-              </Text>
+              </AppText>
               <View style={{ gap: 8 }}>
                 {modalItem?.toppings?.map((t) => {
                   const sel = modalToppings.includes(t.name);
@@ -313,22 +313,20 @@ export default function ModifierSheet({
                           }}
                         >
                           {sel && (
-                            <MaterialIcons name="check" size={14} color={colors.text.inverse} />
+                            <MaterialCommunityIcons name="check" size={14} color={colors.text.inverse} />
                           )}
                         </View>
-                        <Text
-                          style={{
-                            ...font.bodySmall,
-                            fontWeight: '600',
-                            color: sel ? colors.text.primary : colors.text.body,
-                          }}
+                        <AppText
+                          variant="medium"
+                          color={sel ? colors.text.primary : colors.text.body}
+                          weight="bold"
                         >
                           {t.name}
-                        </Text>
+                        </AppText>
                       </View>
-                      <Text style={{ ...font.buttonSmall, color: colors.text.secondary }}>
+                      <AppText variant="medium" color={colors.text.secondary}>
                         +{formatPrice(t.price)}
-                      </Text>
+                      </AppText>
                     </TouchableOpacity>
                   );
                 })}
@@ -338,17 +336,17 @@ export default function ModifierSheet({
 
           {/* Notes */}
           <View style={{ marginBottom: 12 }}>
-            <Text
+            <AppText
+              variant="base"
+              color={colors.text.secondary}
               style={{
-                ...font.label,
                 textTransform: 'uppercase',
                 letterSpacing: 1.2,
-                color: colors.text.secondary,
                 marginBottom: 10,
               }}
             >
               Ghi chú cho bếp
-            </Text>
+            </AppText>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
               {QUICK_NOTES.map((q) => {
                 const active = modalNote.includes(q);
@@ -379,21 +377,18 @@ export default function ModifierSheet({
                       borderColor: active ? colors.border.brand : 'transparent',
                     }}
                   >
-                    <Text
-                      style={{
-                        ...font.bodySmall,
-                        color: active ? COLORS.primary : colors.text.body,
-                      }}
+                    <AppText
+                      variant="small"
+                      color={active ? COLORS.primary : colors.text.body}
                     >
                       {q}
-                    </Text>
+                    </AppText>
                   </TouchableOpacity>
                 );
               })}
             </View>
             <View style={{ position: 'relative' }}>
-              <MaterialIcons
-                name="edit-note"
+              <MaterialCommunityIcons name="square-edit-outline"
                 size={18}
                 color={colors.text.placeholder}
                 style={{ position: 'absolute', left: 12, top: 14, zIndex: 1 }}
@@ -440,20 +435,19 @@ export default function ModifierSheet({
               style={{
                 flex: 1,
                 paddingVertical: 14,
-                borderRadius: 99,
+                borderRadius: 8,
                 backgroundColor: colors.surface.disabled,
                 alignItems: 'center',
               }}
             >
-              <Text style={{ ...font.button, color: colors.text.body }}>Hủy</Text>
+              <AppText variant="medium" color={colors.text.body}>Hủy</AppText>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={isEditMode ? onSave : onAdd}
               style={{
                 flex: 2.5,
-                borderRadius: 99,
+                borderRadius: 8,
                 overflow: 'hidden',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
               }}
             >
               <LinearGradient
@@ -468,18 +462,18 @@ export default function ModifierSheet({
                   borderTopWidth: 1,
                   borderWidth: 1,
                   borderColor: 'rgba(249,115,22,0.4)',
-                  borderRadius: shape.radius.md,
+                  borderRadius: 8,
                   width: '100%',
                 }}
               >
-                <MaterialIcons
-                  name={isEditMode ? 'edit' : 'add-shopping-cart'}
+                <MaterialCommunityIcons
+                  name={isEditMode ? 'pencil' : 'cart-plus'}
                   size={18}
                   color={colors.text.inverse}
                 />
-                <Text style={{ color: colors.text.inverse, ...font.button }}>
+                <AppText variant="medium" color={colors.text.inverse}>
                   {isEditMode ? 'Cập nhật' : 'Thêm vào giỏ'} · {formatPrice(modalPrice * modalQty)}
-                </Text>
+                </AppText>
               </LinearGradient>
             </TouchableOpacity>
           </View>

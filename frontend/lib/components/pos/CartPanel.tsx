@@ -1,8 +1,7 @@
 import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Modal, Alert } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { View, ScrollView, TouchableOpacity, Modal, Alert } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors, font, formatPrice } from '../../theme';
 import { shape } from '../../theme/shape';
 import { CartItem } from './types';
@@ -13,6 +12,7 @@ import MoveTableModal from './MoveTableModal';
 import CartSummary from './CartSummary';
 import CartMainActions from './CartMainActions';
 import CartSplitActions from './CartSplitActions';
+import AppText from '../ui/AppText';
 
 interface CartPanelProps {
   cart: CartItem[];
@@ -192,21 +192,21 @@ export default function CartPanel({
             marginTop: 40,
           }}
         >
-          <MaterialIcons name="shopping-basket" size={48} color={colors.icon.muted} />
-          <Text style={{ ...font.body, color: colors.text.secondary }}>Giỏ hàng trống</Text>
+          <MaterialCommunityIcons name="basket" size={48} color={colors.icon.muted} />
+          <AppText variant="medium" color={colors.text.secondary}>Giỏ hàng trống</AppText>
           <TouchableOpacity
             onPress={() => setCartSheet(false)}
             style={{
               paddingHorizontal: 20,
               paddingVertical: 10,
-              borderRadius: shape.radius.md,
-              backgroundColor: colors.brand.primaryBg,
-              borderWidth: 1,
-              borderColor: colors.border.brand,
-            }}
-          >
-            <Text style={{ ...font.button, color: colors.text.brand }}>Thêm món ngay</Text>
-          </TouchableOpacity>
+            borderRadius: 8,
+            backgroundColor: colors.brand.primaryBg,
+            borderWidth: 1,
+            borderColor: colors.border.brand,
+          }}
+        >
+          <AppText variant="medium" color={colors.text.brand}>Thêm món ngay</AppText>
+        </TouchableOpacity>
         </View>
       );
     }
@@ -221,7 +221,7 @@ export default function CartPanel({
             <>
               {(sent.length > 0 || cancelled.length > 0) && (
                 <View style={{ paddingHorizontal: 4, paddingBottom: 4 }}>
-                  <Text style={{ ...font.bodySmall, color: colors.brand.primary }}>Món mới</Text>
+                  <AppText variant="base" color={colors.brand.primary}>Món mới</AppText>
                 </View>
               )}
               {unsent.map((item) => (
@@ -234,7 +234,7 @@ export default function CartPanel({
             <>
               {(unsent.length > 0 || cancelled.length > 0) && (
                 <View style={{ paddingHorizontal: 4, paddingVertical: 4 }}>
-                  <Text style={{ ...font.bodySmall, color: '#16a34a' }}>Đã gửi bếp</Text>
+                  <AppText variant="base" color="#16a34a">Đã gửi bếp</AppText>
                 </View>
               )}
               {sent.map((item) => (
@@ -246,7 +246,7 @@ export default function CartPanel({
           {cancelled.length > 0 && (
             <>
               <View style={{ paddingHorizontal: 4, paddingVertical: 4 }}>
-                <Text style={{ ...font.bodySmall, color: '#dc2626' }}>Đã huỷ</Text>
+                <AppText variant="base" color="#dc2626">Đã huỷ</AppText>
               </View>
               {cancelled.map((item) => (
                 <CartItemRow key={item.cartItemId} {...itemRowProps(item)} />
@@ -377,17 +377,18 @@ export default function CartPanel({
 
   const content = (
     <>
-      <LinearGradient
-        colors={colors.gradient.header as [string, string]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
+      <View
         style={{
-          paddingTop: isWide ? paddingV : insets.top + paddingV,
-          paddingBottom: isWide ? paddingV : paddingV + 4,
+          paddingTop: isWide ? 10 : insets.top,
+          height: isWide ? 56 : insets.top + 52,
           paddingHorizontal: paddingH,
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
+          backgroundColor: colors.surface.header,
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border.default,
+          boxShadow: '0 1px 4px rgba(15,23,42,0.06)',
         }}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -395,21 +396,20 @@ export default function CartPanel({
             <TouchableOpacity
               onPress={() => setCartSheet(false)}
               style={{
-                width: btnSize,
                 height: btnSize,
-                borderRadius: shape.radius.md,
-                backgroundColor: 'rgba(255,255,255,0.18)',
+                borderRadius: 8,
+                backgroundColor: colors.surface.disabled,
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginRight: 2,
               }}
             >
-              <MaterialIcons name="close" size={iconSize} color={colors.icon.inverse} />
+              <MaterialCommunityIcons name="close" size={iconSize} color={colors.icon.default} />
             </TouchableOpacity>
           )}
-          <Text style={{ ...(isWide ? font.sectionTitle : font.bodyBold), color: colors.text.inverse, fontWeight: '600' }}>
+          <AppText variant={isWide ? "large" : "medium"} color={colors.text.primary} weight="bold">
             Giỏ hàng
-          </Text>
+          </AppText>
           {itemCount > 0 && (
             <View
               style={{
@@ -419,9 +419,9 @@ export default function CartPanel({
                 borderRadius: 4,
               }}
             >
-              <Text style={{ ...font.buttonSmall, color: colors.text.inverse }}>
+              <AppText variant="medium" color={colors.brand.primary} weight="bold">
                 {itemCount} món
-              </Text>
+              </AppText>
             </View>
           )}
         </View>
@@ -431,35 +431,35 @@ export default function CartPanel({
             style={{
               width: btnSize,
               height: btnSize,
-              borderRadius: shape.radius.md,
-              backgroundColor: 'rgba(255,255,255,0.18)',
+              borderRadius: 8,
+              backgroundColor: colors.surface.disabled,
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <MaterialIcons name="more-horiz" size={iconSize} color={colors.icon.inverse} />
+            <MaterialCommunityIcons name="dots-horizontal" size={iconSize} color={colors.icon.default} />
           </TouchableOpacity>
         )}
-      </LinearGradient>
+      </View>
 
       <View style={{ flex: 1, backgroundColor: colors.surface.card }}>
         {cart.length === 0 ? (
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16 }}>
-            <MaterialIcons name="shopping-basket" size={48} color={colors.icon.muted} />
-            <Text style={{ ...font.body, color: colors.text.secondary }}>Giỏ hàng trống</Text>
+            <MaterialCommunityIcons name="basket" size={48} color={colors.icon.muted} />
+            <AppText variant="medium" color={colors.text.secondary}>Giỏ hàng trống</AppText>
             {!isWide && (
               <TouchableOpacity
                 onPress={() => setCartSheet(false)}
                 style={{
                   paddingHorizontal: 20,
                   paddingVertical: 10,
-                  borderRadius: shape.radius.md,
+                  borderRadius: 8,
                   backgroundColor: colors.brand.primaryBg,
                   borderWidth: 1,
                   borderColor: colors.border.brand,
                 }}
               >
-                <Text style={{ ...font.button, color: colors.text.brand }}>Thêm món ngay</Text>
+                <AppText variant="medium" color={colors.text.brand}>Thêm món ngay</AppText>
               </TouchableOpacity>
             )}
           </View>

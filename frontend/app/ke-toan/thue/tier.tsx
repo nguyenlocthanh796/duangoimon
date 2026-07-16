@@ -1,10 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { TableSkeleton } from '../../../lib/components/ui/Skeleton';
 import {
   View,
-  Text,
   ScrollView,
-  ActivityIndicator,
   Alert,
   RefreshControl,
   StyleSheet,
@@ -12,29 +9,32 @@ import {
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api } from '../../../lib/api';
-import { colors, font, shape } from '../../../lib/theme';
+import { colors } from '../../../lib/theme';
+import AppText from '../../../lib/components/ui/AppText';
 import { useSidebar } from '../../../lib/context/SidebarContext';
 import { useRouter } from 'expo-router';
 import { useResponsive } from '../../../lib/hooks/useResponsive';
-import UnifiedHeader from '../../../lib/components/ui/UnifiedHeader';
-import ScreenContainer from '../../../lib/components/ui/ScreenContainer';
 import BranchPeriodFilter from '../../../lib/components/ke-toan/BranchPeriodFilter';
 import EmptyState from '../../../lib/components/ui/EmptyState';
 import { useAuth } from '../../../lib/context/AuthContext';
+import ScreenLayout from '../../../lib/components/layout/ScreenLayout';
+import SectionBlock from '../../../lib/components/layout/SectionBlock';
+import { TableSkeleton } from '../../../lib/components/ui/Skeleton';
+import ResponsiveGrid from '../../../lib/components/layout/ResponsiveGrid';
 
 type Severity = 'success' | 'warning' | 'danger' | 'critical';
 
 const TIER_META: Record<string, { label: string; color: string; method: string }> = {
-  N1: { label: 'Nhóm 1 — Miễn thuế', color: '#059669', method: 'Miễn GTGT/TNCN (S1a)' },
-  N2: { label: 'Nhóm 2 — Tỷ lệ ngành', color: '#2563EB', method: 'Tỷ lệ 1%/0.5% (S2a)' },
-  N3: { label: 'Nhóm 3 — Lợi nhuận', color: '#D97706', method: 'Kê khai theo lợi nhuận 17%' },
-  N4: { label: 'Nhóm 4 — Lợi nhuận', color: '#DC2626', method: 'Kê khai theo lợi nhuận 20%' },
+  N1: { label: 'Nhóm 1 — Miễn thuế', color: colors.status.success, method: 'Miễn GTGT/TNCN (S1a)' },
+  N2: { label: 'Nhóm 2 — Tỷ lệ ngành', color: colors.brand.primary, method: 'Tỷ lệ 1%/0.5% (S2a)' },
+  N3: { label: 'Nhóm 3 — Lợi nhuận', color: colors.status.warning, method: 'Kê khai theo lợi nhuận 17%' },
+  N4: { label: 'Nhóm 4 — Lợi nhuận', color: colors.status.danger, method: 'Kê khai theo lợi nhuận 20%' },
 };
 
 const SEVERITY_COLOR: Record<Severity, string> = {
-  success: '#16A34A',
-  warning: '#D97706',
-  danger: '#DC2626',
+  success: colors.status.success,
+  warning: colors.status.warning,
+  danger: colors.status.danger,
   critical: '#7F1D1D',
 };
 
@@ -58,40 +58,36 @@ export default function TierDashboard() {
   const router = useRouter();
   const { isWide } = useResponsive();
   const { branchId } = useAuth();
+  
   const [profileId, setProfileId] = useState<string | null>(null);
   const [status, setStatus] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [patching, setPatching] = useState(false);
 
-  const load = useCallback(
-    async (isRefresh = false) => {
-      if (!branchId) return;
-      if (isRefresh) setRefreshing(true);
-      else setLoading(true);
-      try {
-        const profiles = await api.getTaxProfiles(branchId);
-        if (profiles.length === 0) {
-          setStatus(null);
-          setProfileId(null);
-          return;
-        }
-        setProfileId(profiles[0].id);
-        const st = await api.getTaxProfileStatus(profiles[0].id);
-        setStatus(st);
-      } catch (e: any) {
-        Alert.alert('Lỗi', e?.message || 'Không tải được phân tầng');
-      } finally {
-        setLoading(false);
-        setRefreshing(false);
+  const load = useCallback(async (isRefresh = false) => {
+    if (!branchId) return;
+    if (isRefresh) setRefreshing(true);
+    else setLoading(true);
+    try {
+      const profiles = await api.getTaxProfiles(branchId);
+      if (profiles.length === 0) {
+        setStatus(null);
+        setProfileId(null);
+        return;
       }
-    },
-    [branchId]
-  );
+      setProfileId(profiles[0].id);
+      const st = await api.getTaxProfileStatus(profiles[0].id);
+      setStatus(st);
+    } catch (e: any) {
+      Alert.alert('Lỗi', e?.message || 'Không tải được phân tầng');
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, [branchId]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  useEffect(() => { load(); }, [load]);
 
   const handleToggleMethod = async () => {
     if (!profileId) return;
@@ -111,52 +107,57 @@ export default function TierDashboard() {
 
   const pct = status ? Math.min(100, status.pct_of_1ty) : 0;
   const meta = status ? TIER_META[status.tier] : null;
-  const severity: Severity =
-    pct >= 100 ? 'critical' : pct >= 90 ? 'danger' : pct >= 80 ? 'warning' : 'success';
+  const severity: Severity = pct >= 100 ? 'critical' : pct >= 90 ? 'danger' : pct >= 80 ? 'warning' : 'success';
   const nearThreshold = status && status.pct_of_1ty >= 80;
 
+  const hPad = 16;
+
   return (
-    <ScreenContainer compact>
-      <UnifiedHeader icon="chart-bell-curve" 
-        title="Phân Tầng HKD"
-        subtitle="Nhóm 1–4 & cảnh báo doanh thu"
-        onBackPress={() => router.push('/ke-toan')}
-        backLabel="Tổng quan"
-        compact={isWide}
-      />
-      <BranchPeriodFilter branchId={branchId ?? ''} onBranchChange={() => {}} />
+    <ScreenLayout
+      icon="chart-bell-curve"
+      title="Phân Tầng HKD"
+      subtitle="Nhóm 1–4 & cảnh báo doanh thu"
+      onBackPress={() => router.push('/ke-toan')}
+      compactHeader={isWide}
+    >
+      <View style={{ backgroundColor: colors.surface.app, paddingBottom: 16 }}>
+        <BranchPeriodFilter branchId={branchId ?? ''} onBranchChange={() => {}} />
+      </View>
+
       {loading ? (
-        <View style={styles.loadingBox}>
+        <View style={{ flex: 1, justifyContent: 'center' }}>
           <TableSkeleton rowCount={5} />
         </View>
       ) : status ? (
         <ScrollView
-          contentContainerStyle={styles.scroll}
+          contentContainerStyle={{ paddingBottom: 40 }}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
               onRefresh={() => load(true)}
-              tintColor={'#F97316'}
+              tintColor={colors.brand.primary}
             />
           }
         >
           {/* Tier badge */}
-          <View style={[styles.tierCard, { borderColor: meta!.color }]}>
-            <View style={[styles.tierIcon, { backgroundColor: meta!.color }]}>
-              <Icon name="chart-bell-curve" size={22} color="#fff" />
+          <SectionBlock style={{ marginBottom: 12 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+              <View style={[styles.tierIcon, { backgroundColor: meta!.color }]}>
+                <Icon name="chart-bell-curve" size={24} color="#fff" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <AppText variant="large" weight="bold" color={meta!.color}>{meta!.label}</AppText>
+                <AppText variant="base" color={colors.text.muted}>{meta!.method}</AppText>
+              </View>
             </View>
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.tierName, { color: meta!.color }]}>{meta!.label}</Text>
-              <Text style={styles.tierMethod}>{meta!.method}</Text>
-            </View>
-          </View>
+          </SectionBlock>
 
           {/* Accumulated vs 1 tỷ */}
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Doanh thu lũy kế năm</Text>
-            <Text style={[styles.bigNumber, { color: SEVERITY_COLOR[severity] }]}>
+          <SectionBlock style={{ marginBottom: 12 }}>
+            <AppText variant="medium" weight="bold">Doanh thu lũy kế năm</AppText>
+            <AppText variant="large" weight="bold" color={SEVERITY_COLOR[severity]} style={{ marginVertical: 8 }}>
               {formatVND(status.revenue_ytd)}
-            </Text>
+            </AppText>
             <View style={styles.barTrack}>
               <View
                 style={[
@@ -167,24 +168,24 @@ export default function TierDashboard() {
               <View style={styles.barMarker} />
             </View>
             <View style={styles.barLegend}>
-              <Text style={styles.barLegendText}>0</Text>
-              <Text style={[styles.barLegendText, { color: '#DC2626' }]}>
+              <AppText variant="small" color={colors.text.muted}>0</AppText>
+              <AppText variant="small" color={colors.status.danger}>
                 Ngưỡng 1 tỷ
-              </Text>
+              </AppText>
             </View>
             <View style={[styles.sevBadge, { backgroundColor: SEVERITY_COLOR[severity] }]}>
-              <Text style={styles.sevText}>
+              <AppText variant="base" weight="bold" color="#fff">
                 {pct.toFixed(1)}% · {SEVERITY_LABEL[severity]}
-              </Text>
+              </AppText>
             </View>
-          </View>
+          </SectionBlock>
 
           {/* Method switch */}
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>Phương pháp tính thuế</Text>
-            <Text style={styles.methodValue}>
+          <SectionBlock style={{ marginBottom: 12 }}>
+            <AppText variant="medium" weight="bold">Phương pháp tính thuế</AppText>
+            <AppText variant="medium" weight="bold" style={{ marginVertical: 8 }}>
               {METHOD_LABEL[status.tax_method] || status.tax_method}
-            </Text>
+            </AppText>
             <TouchableOpacity
               style={styles.switchBtn}
               onPress={handleToggleMethod}
@@ -192,27 +193,36 @@ export default function TierDashboard() {
               activeOpacity={0.85}
             >
               <Icon name="swap-horizontal" size={18} color="#fff" />
-              <Text style={styles.switchText}>
+              <AppText variant="medium" weight="bold" color="#fff">
                 {patching ? 'Đang cập nhật...' : 'Chuyển đổi phương pháp'}
-              </Text>
+              </AppText>
             </TouchableOpacity>
-          </View>
+          </SectionBlock>
 
-          {/* Threshold alert (driven by backend pct_of_1ty >= 80, no hardcoded band) */}
+          {/* Threshold alert */}
           {nearThreshold && (
-            <View style={styles.alertBox}>
-              <Icon name="alert-circle" size={20} color={SEVERITY_COLOR[severity]} />
-              <Text style={[styles.alertText, { color: SEVERITY_COLOR[severity] }]}>
-                Doanh thu đã vượt 80% ngưỡng 1 tỷ. Cảnh báo chuyển đổi đã{' '}
-                {status.threshold_alert_sent ? 'được gửi' : 'CHƯA gửi'}.
-              </Text>
-            </View>
+            <SectionBlock style={{ backgroundColor: '#FEF2F2', borderColor: '#FECACA', marginBottom: 12 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}>
+                <Icon name="alert-circle" size={24} color={SEVERITY_COLOR[severity]} />
+                <AppText variant="base" color={SEVERITY_COLOR[severity]} style={{ flex: 1, lineHeight: 22 }}>
+                  Doanh thu đã vượt 80% ngưỡng 1 tỷ. Cảnh báo chuyển đổi đã{' '}
+                  {status.threshold_alert_sent ? 'được gửi' : 'CHƯA gửi'}.
+                </AppText>
+              </View>
+            </SectionBlock>
           )}
 
-          <View style={styles.kvRow}>
-            <KV label="MST" value={status.tax_code} />
-            <KV label="Tên HKD" value={status.legal_name} />
-          </View>
+          {/* KV Info */}
+          <ResponsiveGrid mobileCols={2} gap={16}>
+            <SectionBlock>
+              <AppText variant="small" color={colors.text.muted}>MST</AppText>
+              <AppText variant="base" weight="bold" style={{ marginTop: 4 }}>{status.tax_code}</AppText>
+            </SectionBlock>
+            <SectionBlock>
+              <AppText variant="small" color={colors.text.muted}>Tên HKD</AppText>
+              <AppText variant="base" weight="bold" style={{ marginTop: 4 }}>{status.legal_name}</AppText>
+            </SectionBlock>
+          </ResponsiveGrid>
         </ScrollView>
       ) : (
         <View style={{ flex: 1, justifyContent: 'center' }}>
@@ -222,114 +232,52 @@ export default function TierDashboard() {
           />
         </View>
       )}
-    </ScreenContainer>
-  );
-}
-
-function KV({ label, value }: { label: string; value: string }) {
-  return (
-    <View style={styles.kvBox}>
-      <Text style={styles.kvLabel}>{label}</Text>
-      <Text style={styles.kvValue}>{value}</Text>
-    </View>
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FAFAFA' },
-  loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  scroll: { padding: 16, gap: 12 },
-  tierCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    borderWidth: 1.5,
-    padding: 16,
-    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-    elevation: 3,
-  },
   tierIcon: {
-    width: 44,
-    height: 44,
+    width: 48,
+    height: 48,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  tierName: { ...font.body, fontWeight: '400' },
-  tierMethod: { ...font.caption, color: '#737373', marginTop: 2 },
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#F0F0F0',
-    gap: 16,
-  },
-  cardTitle: { ...font.body, fontWeight: '400', color: '#171717' },
-  bigNumber: { ...font.sectionTitle, color: '#171717', fontWeight: '600' },
   barTrack: {
-    height: 14,
-    backgroundColor: '#F5F5F5',
-    borderRadius: 999,
+    height: 16,
+    backgroundColor: colors.surface.app,
+    borderRadius: 8,
     overflow: 'hidden',
     position: 'relative',
-    marginTop: 6,
+    marginTop: 8,
   },
-  barFill: { position: 'absolute', left: 0, top: 0, bottom: 0, borderRadius: 999},
+  barFill: { position: 'absolute', left: 0, top: 0, bottom: 0, borderRadius: 8 },
   barMarker: {
     position: 'absolute',
     right: 0,
-    top: -3,
-    bottom: -3,
+    top: -4,
+    bottom: -4,
     width: 2,
-    backgroundColor: '#DC2626',
+    backgroundColor: colors.status.danger,
   },
-  barLegend: { flexDirection: 'row', justifyContent: 'space-between' },
-  barLegendText: { ...font.caption, color: '#737373' },
+  barLegend: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 },
   sevBadge: {
     alignSelf: 'flex-start',
-    marginTop: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    borderRadius: 999,
+    marginTop: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
   },
-  sevText: { ...font.caption, color: '#fff', fontWeight: '400' },
-  methodValue: { ...font.body, color: '#171717', fontWeight: '400' },
   switchBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 16,
-    marginTop: 4,
-    paddingVertical: 12,
+    gap: 6,
+    marginTop: 8,
+    height: 36,
+    paddingHorizontal: 16,
     borderRadius: 8,
-    backgroundColor: '#F97316',
+    backgroundColor: colors.brand.primary,
   },
-  switchText: { ...font.button, color: '#fff', fontWeight: '600' },
-  alertBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 32,
-    backgroundColor: '#DC2626',
-    borderRadius: 8,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#FECACA',
-  },
-  alertText: { ...font.bodySmall, flex: 1, fontWeight: '400' },
-  kvRow: { flexDirection: 'row', gap: 12 },
-  kvBox: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#F0F0F0',
-  },
-  kvLabel: { ...font.caption, color: '#737373', fontWeight: '400' },
-  kvValue: { ...font.body, color: '#171717', marginTop: 4, fontWeight: '400' },
 });
-
-

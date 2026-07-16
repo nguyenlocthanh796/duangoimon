@@ -3,6 +3,7 @@ import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font } from '../../theme';
 import { shape } from '../../theme/shape';
 import SkeletonBox from '../ui/SkeletonBox';
+import AppText from '../ui/AppText';
 
 interface StatCardProps {
   label: string;
@@ -44,10 +45,10 @@ export default function StatCard({
             size={compact ? 7 : 12}
             color={growth! >= 0 ? colors.status.success : colors.status.danger}
           />
-          <Text style={s.trendBadgeText}>
+          <AppText variant="small" weight="bold" color={colors.text.primary}>
             {growth! >= 0 ? '+' : ''}
             {growth}%
-          </Text>
+          </AppText>
         </View>
       )}
 
@@ -59,21 +60,30 @@ export default function StatCard({
         {loading ? (
           <SkeletonBox w={'60%'} h={compact ? 24 : 32} />
         ) : (
-          <Text
-            style={s.value}
+          <AppText
+            variant="large"
+            weight="bold"
+            color={colors.text.primary}
             numberOfLines={1}
             adjustsFontSizeToFit
             minimumFontScale={0.55}
+            style={{ flex: 1, flexShrink: 1, textAlign: compact ? 'center' : 'left' }}
           >
             {value}
-          </Text>
+          </AppText>
         )}
       </View>
 
       {/* Row 2: Label */}
-      <Text style={s.label} numberOfLines={1}>
+      <AppText
+        variant={compact ? 'small' : 'base'}
+        weight={compact ? 'normal' : 'bold'}
+        color={colors.text.secondary}
+        numberOfLines={1}
+        style={{ marginTop: compact ? 1 : 4, textAlign: compact ? 'center' : 'left' }}
+      >
         {label}
-      </Text>
+      </AppText>
     </View>
   );
 }
@@ -81,7 +91,7 @@ export default function StatCard({
 const stylesNormal = {
   card: {
     backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.lg,
+    borderRadius: 0,
     padding: 16,
     borderWidth: 1,
     borderColor: colors.border.light,
@@ -121,7 +131,7 @@ const stylesNormal = {
 const stylesCompact = {
   card: {
     backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.md,
+    borderRadius: 0,
     padding: 4,
     borderWidth: 1,
     borderColor: colors.border.light,

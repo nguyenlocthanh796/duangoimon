@@ -12,10 +12,10 @@ from app.models.ban_hang import Order, OrderItem, Product, Table
 from app.models.ke_toan import Transaction
 from app.models.quan_ly import Inventory
 
-router = APIRouter(prefix="/quan-ly/dashboard", tags=["quan-ly"])
+router = APIRouter(prefix="/quan-ly", tags=["quan-ly"])
 
 
-@router.get("")
+@router.get("/dashboard")
 async def dashboard_stats(
     db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)
 ):

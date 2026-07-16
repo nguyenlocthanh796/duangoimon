@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import AppText from '../ui/AppText';
 import Svg, { Circle, Path, G, Text as SvgText, Rect, Line } from 'react-native-svg';
 import { colors, font } from '../../theme';
 import { shape } from '../../theme/shape';
@@ -281,20 +282,20 @@ export function StatChartCard({
     <View style={sccStyles.card}>
       <View style={sccStyles.top}>
         <View style={{ flex: 1 }}>
-          <Text style={sccStyles.title}>{title}</Text>
-          <Text style={[sccStyles.value, { color }]} numberOfLines={1}>
+          <AppText variant="small" style={sccStyles.title}>{title}</AppText>
+          <AppText variant="large" weight="bold" style={[sccStyles.value, { color }]} numberOfLines={1}>
             {value}
-          </Text>
+          </AppText>
           {trend !== undefined && (
-            <Text
+            <AppText variant="small"
               style={[
                 sccStyles.trend,
                 { color: isUp ? colors.status.success : colors.status.danger },
               ]}
             >
               {isUp ? '\u2191' : '\u2193'} {Math.abs(trend)}%{' '}
-              <Text style={sccStyles.trendLabel}>so v\u1edbi k\u1ef3 tr\u01b0\u1edbc</Text>
-            </Text>
+              <AppText variant="small" style={sccStyles.trendLabel}>so v\u1edbi k\u1ef3 tr\u01b0\u1edbc</AppText>
+            </AppText>
           )}
         </View>
         {chartData && chartData.length > 0 && (
@@ -309,7 +310,7 @@ export function StatChartCard({
           </View>
         )}
       </View>
-      {subtitle && <Text style={sccStyles.subtitle}>{subtitle}</Text>}
+      {subtitle && <AppText variant="small" style={sccStyles.subtitle}>{subtitle}</AppText>}
     </View>
   );
 }
@@ -317,7 +318,8 @@ export function StatChartCard({
 const sccStyles = StyleSheet.create({
   card: {
     backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.lg,
+    borderRadius: 0,
+    borderBottomWidth: 1,
     padding: 16,
     borderWidth: 1,
     borderColor: colors.border.light,
@@ -354,9 +356,9 @@ export function QuickTable({ columns, data, maxRows = 5 }: QuickTableProps) {
       <View style={qtStyles.headerRow}>
         {columns.map((col) => (
           <View key={col.key} style={[qtStyles.headerCell, col.width != null ? { width: col.width } : undefined]}>
-            <Text style={qtStyles.headerText} numberOfLines={1}>
+            <AppText variant="small" weight="bold" style={qtStyles.headerText} numberOfLines={1}>
               {col.label}
-            </Text>
+            </AppText>
           </View>
         ))}
       </View>
@@ -381,9 +383,9 @@ export function QuickTable({ columns, data, maxRows = 5 }: QuickTableProps) {
                 {col.render ? (
                   col.render(val, row)
                 ) : (
-                  <Text style={qtStyles.dataText} numberOfLines={1}>
+                  <AppText variant="base" style={qtStyles.dataText} numberOfLines={1}>
                     {val ?? '—'}
-                  </Text>
+                  </AppText>
                 )}
               </View>
             );
@@ -392,7 +394,7 @@ export function QuickTable({ columns, data, maxRows = 5 }: QuickTableProps) {
       ))}
       {rows.length === 0 && (
         <View style={qtStyles.empty}>
-          <Text style={qtStyles.emptyText}>Chưa có dữ liệu</Text>
+          <AppText variant="small" style={qtStyles.emptyText}>Chưa có dữ liệu</AppText>
         </View>
       )}
     </View>
@@ -401,7 +403,8 @@ export function QuickTable({ columns, data, maxRows = 5 }: QuickTableProps) {
 
 const qtStyles = StyleSheet.create({
   wrap: {
-    borderRadius: shape.radius.lg,
+    borderRadius: 0,
+    borderBottomWidth: 1,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: colors.border.light,
@@ -449,15 +452,15 @@ export function QuickTableSummary({
           const total = data.reduce((acc, row) => acc + (Number(row[col.key]) || 0), 0);
           return (
             <View key={col.key} style={[qtsStyles.cell, col.width != null ? { width: col.width } : undefined]}>
-              <Text style={qtsStyles.value} numberOfLines={1}>
+              <AppText variant="base" weight="bold" style={qtsStyles.value} numberOfLines={1}>
                 {Intl.NumberFormat('vi-VN').format(total)}
-              </Text>
+              </AppText>
             </View>
           );
         }
         return (
           <View key={col.key} style={[qtsStyles.cell, col.width != null ? { width: col.width } : undefined]}>
-            <Text style={qtsStyles.label}>{col.key === 'label' ? 'Tổng' : ''}</Text>
+            <AppText variant="small" weight="bold" style={qtsStyles.label}>{col.key === 'label' ? 'Tổng' : ''}</AppText>
           </View>
         );
       })}

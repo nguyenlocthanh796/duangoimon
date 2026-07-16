@@ -1,5 +1,4 @@
 import { View, Text } from 'react-native';
-import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font } from '../../theme';
 import { shape } from '../../theme/shape';
 

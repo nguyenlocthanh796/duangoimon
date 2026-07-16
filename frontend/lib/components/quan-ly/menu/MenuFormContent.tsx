@@ -1,6 +1,5 @@
 import { View, Text, TextInput, TouchableOpacity, ScrollView, Switch } from 'react-native';
 import { StyleSheet } from 'react-native';
-import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font } from '../../../theme';
 
 const CATEGORIES = ['Đồ ăn', 'Đồ uống', 'Tráng miệng', 'Snack', 'Khác'];

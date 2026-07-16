@@ -13,10 +13,10 @@ class RequestIDMiddleware(BaseHTTPMiddleware):
         request_id = str(uuid.uuid4())[:8]
         request.state.request_id = request_id
 
-        logger.info("[%s] → %s %s", request_id, request.method, request.url.path)
+        logger.info("[%s] -> %s %s", request_id, request.method, request.url.path)
 
         response = await call_next(request)
         response.headers["X-Request-ID"] = request_id
 
-        logger.info("[%s] ← %s", request_id, response.status_code)
+        logger.info("[%s] <- %s", request_id, response.status_code)
         return response

@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { TableSkeleton } from '../../../lib/components/ui/Skeleton';
 import {
   View,
-  Text,
   ScrollView,
   ActivityIndicator,
   Alert,
@@ -12,16 +10,16 @@ import {
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api } from '../../../lib/api';
-import { colors, font, shape } from '../../../lib/theme';
+import { colors } from '../../../lib/theme';
+import AppText from '../../../lib/components/ui/AppText';
 import { useSidebar } from '../../../lib/context/SidebarContext';
 import { useRouter } from 'expo-router';
 import { useResponsive } from '../../../lib/hooks/useResponsive';
-import UnifiedHeader from '../../../lib/components/ui/UnifiedHeader';
-import ScreenContainer from '../../../lib/components/ui/ScreenContainer';
 import BranchPeriodFilter from '../../../lib/components/ke-toan/BranchPeriodFilter';
 import { useAuth } from '../../../lib/context/AuthContext';
-import FAB from '../../../lib/components/ui/FAB';
-import { colHeader } from '../../../lib/theme/dataText';
+import ScreenLayout from '../../../lib/components/layout/ScreenLayout';
+import SectionBlock from '../../../lib/components/layout/SectionBlock';
+import { TableSkeleton } from '../../../lib/components/ui/Skeleton';
 
 const FORMS = [
   { key: '01-cnkd', label: '01/CNKD — Nhóm 2–4 (GTGT/TNCN)' },
@@ -35,34 +33,27 @@ export default function DeclarationScreen() {
   const router = useRouter();
   const { isWide } = useResponsive();
   const { branchId } = useAuth();
+  
   const [period, setPeriod] = useState(formatDate(new Date(2026, 6, 1).toISOString()));
   const [form, setForm] = useState('01-cnkd');
   const [xml, setXml] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const load = useCallback(
-    async (isRefresh = false) => {
-      if (isRefresh) setRefreshing(true);
-      else setLoading(true);
-      try {
-        if (!branchId) return;
-        const data = await api.getTaxDeclarationXml(form, branchId, period);
-        setXml(data);
-      } catch (e: any) {
-        Alert.alert('Lỗi', e?.message || 'Không xuất được tờ khai');
-      } finally {
-        setLoading(false);
-        setRefreshing(false);
-      }
-    },
-    [branchId, period, form]
-  );
+  const load = useCallback(async (isRefresh = false) => {
+    if (!branchId) return;
+    setLoading(true);
+    try {
+      const data = await api.getTaxDeclarationXml(form, branchId, period);
+      setXml(data);
+    } catch (e: any) {
+      Alert.alert('Lỗi', e?.message || 'Không xuất được tờ khai');
+    } finally {
+      setLoading(false);
+    }
+  }, [branchId, period, form]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  useEffect(() => { load(); }, [load]);
 
   const submit = async () => {
     setSubmitting(true);
@@ -77,85 +68,90 @@ export default function DeclarationScreen() {
     }
   };
 
+  const hPad = 16;
+
   return (
-    <ScreenContainer compact>
-      <UnifiedHeader icon="file-document-edit" 
-        title="Kê Khai Thuế"
-        subtitle="Xuất XML chuẩn Tổng cục Thuế"
-        onBackPress={() => router.push('/ke-toan')}
-        backLabel="Tổng quan"
-        compact={isWide}
-      />
-      <BranchPeriodFilter
-        branchId={branchId ?? ''}
-        onBranchChange={() => {}}
-        period={period}
-        onPeriodChange={setPeriod}
-        form={form}
-        onFormChange={setForm}
-        formOptions={FORMS}
-      />
+    <ScreenLayout
+      icon="file-document-edit"
+      title="Kê Khai Thuế"
+      subtitle="Xuất XML chuẩn Tổng cục Thuế"
+      onBackPress={() => router.push('/ke-toan')}
+      compactHeader={isWide}
+      headerRight={
+        <TouchableOpacity
+          style={styles.submitBtnHeader}
+          onPress={submit}
+          disabled={submitting}
+        >
+          {submitting ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Icon name="send" size={18} color="#fff" />
+          )}
+          {isWide && (
+            <AppText variant="medium" weight="bold" color="#fff">
+              Ký & Gửi T-VAN
+            </AppText>
+          )}
+        </TouchableOpacity>
+      }
+    >
+      <View style={{ backgroundColor: colors.surface.app, paddingBottom: 16 }}>
+        <BranchPeriodFilter
+          branchId={branchId ?? ''}
+          onBranchChange={() => {}}
+          period={period}
+          onPeriodChange={setPeriod}
+          form={form}
+          onFormChange={setForm}
+          formOptions={FORMS}
+        />
+      </View>
 
       {loading ? (
-        <View style={styles.loadingBox}>
+        <View style={{ flex: 1, justifyContent: 'center' }}>
           <TableSkeleton rowCount={5} />
         </View>
       ) : (
         <ScrollView
-          contentContainerStyle={styles.scroll}
+          contentContainerStyle={{ paddingBottom: 40 }}
           refreshControl={
             <RefreshControl
               refreshing={loading}
-              onRefresh={load}
-              tintColor={'#F97316'}
+              onRefresh={() => load(true)}
+              tintColor={colors.brand.primary}
             />
           }
         >
-          <Text style={styles.xmlTitle}>Xem trước XML ({form})</Text>
-          <View style={styles.xmlBox}>
-            <Text style={styles.xmlText} selectable>
-              {xml || '—'}
-            </Text>
-          </View>
-          {isWide ? (
-            <TouchableOpacity style={styles.submitBtn} onPress={submit} disabled={submitting}>
-              <Icon name="send" size={18} color={colors.text.inverse} />
-              <Text style={styles.submitText}>
-                {submitting ? 'Đang gửi...' : 'Ký & Gửi T-VAN (stub)'}
-              </Text>
-            </TouchableOpacity>
-          ) : (
-            <View style={styles.mobileSpacer} />
-          )}
+          <SectionBlock style={{ backgroundColor: colors.text.primary, borderColor: colors.text.primary, padding: 0, marginBottom: 16 }}>
+            <View style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.1)' }}>
+              <AppText variant="medium" weight="bold" color="#fff">Xem trước XML ({form})</AppText>
+            </View>
+            <ScrollView style={styles.xmlBox} nestedScrollEnabled>
+              <AppText variant="small" color={colors.border.default} style={{ fontFamily: 'monospace' }} selectable>
+                {xml || '—'}
+              </AppText>
+            </ScrollView>
+          </SectionBlock>
         </ScrollView>
       )}
-    </ScreenContainer>
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FAFAFA' },
-  loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  scroll: { padding: 16, gap: 12, paddingBottom: 100 },
-  xmlTitle: { ...colHeader },
-  xmlBox: {
-    backgroundColor: '#0F172A',
-    borderRadius: 8,
-    padding: 14,
-    maxHeight: 360,
-  },
-  xmlText: { ...font.caption, color: '#E2E8F0', fontFamily: 'monospace' },
-  submitBtn: {
+  submitBtnHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 16,
-    backgroundColor: '#F97316',
+    gap: 6,
+    paddingHorizontal: 16,
+    height: 36,
     borderRadius: 8,
-    paddingVertical: 12,
+    backgroundColor: colors.brand.primary,
   },
-  submitText: { ...font.buttonSmall, color: colors.text.inverse, fontWeight: '600' },
-  mobileSpacer: { height: 80 },
+  xmlBox: {
+    padding: 16,
+    maxHeight: 400,
+  },
 });
-
-

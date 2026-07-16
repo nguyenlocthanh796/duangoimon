@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, TextInput, Modal, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font } from '../../theme';
 import { request } from '../../api/client';
 

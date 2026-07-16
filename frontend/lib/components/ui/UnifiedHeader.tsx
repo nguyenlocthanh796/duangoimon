@@ -46,9 +46,10 @@ export default function UnifiedHeader({
         styles.header,
         compact ? styles.headerCompact : styles.headerDefault,
         {
-          paddingTop: compact ? 8 + insets.top : insets.top + 10,
-          paddingBottom: compact ? 4 : 12,
+          paddingTop: insets.top,
+          height: insets.top + (isWide ? 56 : 52),
           paddingHorizontal: isWide ? shape.spacing.xl : shape.spacing.md,
+          justifyContent: 'center',
         },
       ]}
     >
@@ -66,12 +67,10 @@ export default function UnifiedHeader({
           ) : onMenuPress ? (
             <TouchableOpacity
               onPress={onMenuPress}
-              style={styles.menuBtn}
+              style={[styles.menuBtn, !isWide && { marginLeft: -8 }]}
               accessibilityLabel="Mở menu"
             >
-              <View style={styles.iconWrap}>
-                <Icon name="menu" size={20} color={colors.brand.primary} />
-              </View>
+              <Icon name="menu" size={24} color={colors.brand.primary} />
             </TouchableOpacity>
           ) : null
         )}

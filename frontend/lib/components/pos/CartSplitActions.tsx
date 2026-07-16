@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { colors, font } from '../../theme';
 import { shape } from '../../theme/shape';
 import { CartItem } from './types';
+import AppText from '../ui/AppText';
 
 interface CartSplitActionsProps {
   cart: CartItem[];
@@ -30,26 +31,26 @@ export default function CartSplitActions({
           style={{
             flex: 1,
             height: 48,
-            borderRadius: shape.radius.md,
+            borderRadius: 8,
             backgroundColor: colors.surface.disabled,
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <Text style={{ ...font.buttonSmall, color: colors.text.secondary }}>CHỌN HẾT</Text>
+          <AppText variant="medium" color={colors.text.secondary}>CHỌN HẾT</AppText>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={onDeselectAll}
           style={{
             flex: 1,
             height: 48,
-            borderRadius: shape.radius.md,
+            borderRadius: 8,
             backgroundColor: colors.surface.disabled,
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <Text style={{ ...font.buttonSmall, color: colors.text.secondary }}>BỎ HẾT</Text>
+          <AppText variant="medium" color={colors.text.secondary}>BỎ HẾT</AppText>
         </TouchableOpacity>
       </View>
       <View style={{ flexDirection: 'row', gap: 10 }}>
@@ -58,13 +59,13 @@ export default function CartSplitActions({
           style={{
             flex: 1,
             height: 48,
-            borderRadius: shape.radius.md,
+            borderRadius: 8,
             backgroundColor: colors.surface.disabled,
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <Text style={{ ...font.buttonSmall, color: colors.text.secondary }}>HUỶ</Text>
+          <AppText variant="medium" color={colors.text.secondary}>HUỶ</AppText>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={onConfirmSplit}
@@ -72,20 +73,18 @@ export default function CartSplitActions({
           style={{
             flex: 1.5,
             height: 48,
-            borderRadius: shape.radius.md,
+            borderRadius: 8,
             backgroundColor: hasSelection ? colors.brand.primary : colors.surface.disabled,
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <Text
-            style={{
-              ...font.buttonSmall,
-              color: hasSelection ? colors.text.inverse : colors.text.muted,
-            }}
+          <AppText
+            variant="medium"
+            color={hasSelection ? colors.text.inverse : colors.text.muted}
           >
             TÁCH ({selectedItems.size})
-          </Text>
+          </AppText>
         </TouchableOpacity>
       </View>
     </View>

@@ -62,9 +62,7 @@ export default function KanbanColumn({
         </View>
         <View
           style={{
-            width: 22,
-            height: 22,
-            borderRadius: 11,
+            width: 24, height: 24, borderRadius: 6,
             backgroundColor: col.dotColor,
             alignItems: 'center',
             justifyContent: 'center',

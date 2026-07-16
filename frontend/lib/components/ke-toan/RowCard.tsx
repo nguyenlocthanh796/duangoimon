@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font, shape } from '../../theme';
+import AppText from '../ui/AppText';
 
 export interface RowCardProps {
   title: string;
@@ -25,18 +26,18 @@ const RowCard = React.memo(
             <Icon name={leftIcon as any} size={20} color={leftIconColor || colors.icon.muted} />
           </View>
         )}
-        <View style={{ flex: 1, marginLeft: leftIcon ? 10 : 0 }}>
-          <Text style={styles.title} numberOfLines={1}>
+        <View style={{ flex: 1, marginLeft: leftIcon ? 6 : 0 }}>
+          <AppText variant="base" style={styles.title} numberOfLines={1}>
             {title}
-          </Text>
+          </AppText>
           {subtitle && (
-            <Text style={styles.subtitle} numberOfLines={1}>
+            <AppText variant="small" style={styles.subtitle} numberOfLines={1}>
               {subtitle}
-            </Text>
+            </AppText>
           )}
           {actions}
         </View>
-        {right}
+        <View style={styles.rightWrap}>{right}</View>
       </Wrapper>
     );
   }
@@ -49,20 +50,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.md,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: colors.border.light,
-    minHeight: 52,
+    borderRadius: 0,
+    paddingVertical: 8,
+    paddingLeft: 8,
+    paddingRight: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.default,
+    minHeight: 44,
   },
   iconWrap: {
-    width: 38,
-    height: 38,
-    borderRadius: shape.radius.md,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     backgroundColor: colors.surface.disabled,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  title: { ...font.body, fontWeight: '400', color: colors.text.primary },
-  subtitle: { ...font.caption, color: colors.text.muted, marginTop: 2 },
+  title: { color: colors.text.primary },
+  subtitle: { color: colors.text.muted, marginTop: 2 },
+  rightWrap: {
+    marginLeft: 12,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+  },
 });

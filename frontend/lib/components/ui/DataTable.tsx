@@ -1,4 +1,5 @@
 import React from 'react';
+import AppText from './AppText';
 import {
   View,
   Text,
@@ -106,9 +107,10 @@ function DataTableComponent<T>(props: DataTableProps<T>) {
 
   const { isWide } = useResponsive();
 
-  const sorted = sortKey ? applySort(data, sortKey, sortDir ?? 'asc', columns) : data;
+  const safeData = Array.isArray(data) ? data : [];
+  const sorted = sortKey ? applySort(safeData, sortKey, sortDir ?? 'asc', columns) : safeData;
 
-  const allIds = data.map(getRowId);
+  const allIds = safeData.map(getRowId);
   const selSet = new Set(selectedIds ?? []);
   const allSelected = selectable && allIds.length > 0 && allIds.every((id) => selSet.has(id));
 
@@ -138,7 +140,7 @@ function DataTableComponent<T>(props: DataTableProps<T>) {
         <TableSkeleton rowCount={7} />
       );
     }
-    if (data.length === 0) {
+    if (safeData.length === 0) {
       return <EmptyState icon={emptyIcon} title={emptyTitle} subtitle={emptySubtitle} />;
     }
     return (
@@ -165,7 +167,7 @@ function DataTableComponent<T>(props: DataTableProps<T>) {
             const id = getRowId(row);
             const selected = selSet.has(id);
             return (
-              <View>
+              <View style={{ flexDirection: 'row', alignItems: 'stretch', backgroundColor: colors.surface.card }}>
                 {selectable && (
                   <TouchableOpacity
                     style={styles.mobileSelRow}
@@ -173,14 +175,16 @@ function DataTableComponent<T>(props: DataTableProps<T>) {
                     activeOpacity={0.7}
                   >
                     <CheckCircle selected={selected} />
-                    <Text style={styles.mobileSelText}>Chon dong nay</Text>
+
                   </TouchableOpacity>
                 )}
-                {renderMobileCard ? (
-                  renderMobileCard(row, { selected, onToggle: () => toggleRow(id) })
-                ) : (
-                  <DefaultMobileCard columns={columns} row={row} compact={compact} />
-                )}
+                <View style={{ flex: 1, overflow: 'hidden' }}>
+                  {renderMobileCard ? (
+                    renderMobileCard(row, { selected, onToggle: () => toggleRow(id) })
+                  ) : (
+                    <DefaultMobileCard columns={columns} row={row} compact={compact} />
+                  )}
+                </View>
               </View>
             );
           }}
@@ -225,9 +229,9 @@ function DataTableComponent<T>(props: DataTableProps<T>) {
         ]}
       >
         <View style={styles.headInner}>
-          <Text style={[styles.headText, active && styles.headTextActive, compact && styles.headTextCompact]} numberOfLines={1}>
+          <AppText variant="small" style={[styles.headText, active && styles.headTextActive, compact && styles.headTextCompact]} numberOfLines={1}>
             {col.title}
-          </Text>
+          </AppText>
           {col.sortable && (
             <Icon
               name={
@@ -429,9 +433,9 @@ function FilterPill({
               setOpen(false);
             }}
           >
-            <Text style={[styles.filterItemText, !value && styles.filterItemTextActive]}>
+            <AppText variant="small" style={[styles.filterItemText, !value && styles.filterItemTextActive]}>
               Tất cả
-            </Text>
+            </AppText>
           </TouchableOpacity>
           {options.map((o) => (
             <TouchableOpacity
@@ -442,11 +446,11 @@ function FilterPill({
                 setOpen(false);
               }}
             >
-              <Text
+              <AppText
                 style={[styles.filterItemText, value === o.value && styles.filterItemTextActive]}
               >
                 {o.label}
-              </Text>
+              </AppText>
             </TouchableOpacity>
           ))}
         </View>
@@ -474,7 +478,7 @@ function BulkBar({
       <TouchableOpacity onPress={onClear} style={styles.bulkClear} activeOpacity={0.7}>
         <Icon name="close-circle" size={18} color={colors.text.muted} />
       </TouchableOpacity>
-      <Text style={styles.bulkCount}>Đã chọn {count}</Text>
+      <AppText variant="base" style={styles.bulkCount}>Đã chọn {count}</AppText>
       <View style={{ flex: 1 }} />
       {actions.map((a, i) => (
         <TouchableOpacity
@@ -484,7 +488,7 @@ function BulkBar({
           activeOpacity={0.8}
         >
           <Icon name={a.icon as any} size={16} color="#fff" />
-          <Text style={styles.bulkBtnText}>{a.label}</Text>
+          <AppText variant="medium" style={styles.bulkBtnText}>{a.label}</AppText>
         </TouchableOpacity>
       ))}
     </View>
@@ -493,7 +497,7 @@ function BulkBar({
 
 function safeRender(node: React.ReactNode) {
   if (React.isValidElement(node)) return node;
-  return <Text style={font.body}>{node}</Text>;
+  return <AppText variant="base">{node}</AppText>;
 }
 
 function DefaultMobileCard<T>({ columns, row, compact }: { columns: Column<T>[]; row: T; compact?: boolean }) {
@@ -505,7 +509,7 @@ function DefaultMobileCard<T>({ columns, row, compact }: { columns: Column<T>[];
     <View style={[styles.mobileCard, cardPadStyle]}>
       {columns.map((col) => (
         <View key={col.key} style={[styles.mobileCardRow, rowGapStyle]}>
-          <Text style={styles.mobileCardLabel}>{col.title}</Text>
+          <AppText variant="small" style={styles.mobileCardLabel}>{col.title}</AppText>
           <View style={{ flex: 1, alignItems: 'flex-end' }}>{safeRender(col.render(row))}</View>
         </View>
       ))}
@@ -516,8 +520,8 @@ function DefaultMobileCard<T>({ columns, row, compact }: { columns: Column<T>[];
 function EmptyState({ icon, title, subtitle }: { icon: string; title: string; subtitle: string }) {
   return (
     <View style={styles.emptyBox}>
-      <Icon name={icon as any} size={48} color={colors.text.muted} /><Text style={[font.body, { color: colors.text.muted, marginTop: 8, textAlign: 'center' }]}>{title}</Text>
-      {!!subtitle && <Text style={[font.caption, { color: colors.text.muted, marginTop: 4, textAlign: 'center' }]}>{subtitle}</Text>}
+      <Icon name={icon as any} size={48} color={colors.text.muted} /><AppText variant="base" style={[ { color: colors.text.muted, marginTop: 8, textAlign: 'center' }]}>{title}</AppText>
+      {!!subtitle && <AppText variant="small" style={[ { color: colors.text.muted, marginTop: 4, textAlign: 'center' }]}>{subtitle}</AppText>}
     </View>
   );
 }
@@ -610,7 +614,7 @@ const styles = StyleSheet.create({
   loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 40 },
   emptyBox: {
     flex: 1,
-    justifyContent: 'center',
+          justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 60,
     paddingHorizontal: 24,
@@ -618,9 +622,9 @@ const styles = StyleSheet.create({
   // wide
   headRow: {
     flexDirection: 'row',
-    backgroundColor: colors.surface.tableHeader,
-    borderBottomWidth: 2,
-    borderBottomColor: colors.border.brand,
+    backgroundColor: colors.surface.card,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.default,
     minHeight: 44,
   },
   headCell: { paddingVertical: 12, paddingHorizontal: 12, justifyContent: 'center' },
@@ -634,16 +638,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.surface.card,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border.light,
+    borderBottomColor: colors.border.default,
     minHeight: 48,
   },
   bodyRowCompact: {
     minHeight: 44,
   },
-  bodyRowAlt: { backgroundColor: colors.surface.tableRowAlt },
+  bodyRowAlt: { }, // removed alt background for flat design
   bodyRowHover: { backgroundColor: colors.surface.tableRowHover },
   bodyRowClickable: { cursor: 'pointer' },
-  bodyRowSelected: { backgroundColor: colors.brand.primaryBg, borderLeftWidth: 3, borderLeftColor: colors.brand.primary },
+  bodyRowSelected: { backgroundColor: colors.brand.primaryBg },
   cell: { paddingVertical: 12, paddingHorizontal: 12, justifyContent: 'center' },
   cellCompact: {
     paddingVertical: 8,
@@ -651,9 +655,9 @@ const styles = StyleSheet.create({
   },
   footerRow: {
     flexDirection: 'row',
-    backgroundColor: colors.surface.tableRowAlt,
-    borderTopWidth: 2,
-    borderTopColor: colors.border.brand,
+    backgroundColor: colors.surface.card,
+    borderTopWidth: 1,
+    borderTopColor: colors.border.default,
     minHeight: 44,
   },
   footCell: { paddingVertical: 12, paddingHorizontal: 12, justifyContent: 'center' },
@@ -720,22 +724,23 @@ const styles = StyleSheet.create({
   },
   bulkBtnText: { ...font.buttonSmall, color: '#fff', fontWeight: '600' },
   // mobile
-  mobileList: { paddingHorizontal: 0, gap: 4, paddingBottom: 100, paddingTop: 0 },
+  mobileList: { paddingHorizontal: 0, gap: 0, paddingBottom: 100, paddingTop: 0 },
   mobileCard: {
     backgroundColor: colors.surface.card,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: colors.border.light,
-    borderLeftWidth: 3,
-    borderLeftColor: colors.border.brand,
+    padding: 6,
+    borderTopWidth: 0,
+    borderBottomWidth: 1,
+    borderLeftWidth: 0,
+    borderRightWidth: 0,
+    borderColor: colors.border.default,
     gap: 8,
   },
   mobileCardCompact: {
-    padding: 10,
+    padding: 6,
     gap: 4,
   },
   mobileCardRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   mobileCardLabel: { ...font.caption, color: colors.text.muted, fontWeight: '600', minWidth: 90 },
-  mobileSelRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 6 },
+  mobileSelRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingLeft: 12, paddingRight: 4, paddingVertical: 4 },
   mobileSelText: { ...font.caption, color: colors.text.muted },
 });

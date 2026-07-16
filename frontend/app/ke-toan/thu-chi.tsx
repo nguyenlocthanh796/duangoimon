@@ -1,31 +1,28 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
-  Text,
   TouchableOpacity,
   StyleSheet,
   Alert,
-  
-  RefreshControl,
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api, Transaction } from '../../lib/api';
 import { colors, font } from '../../lib/theme';
-import { shape } from '../../lib/theme/shape';
+import AppText from '../../lib/components/ui/AppText';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useRouter } from 'expo-router';
 import { useResponsive } from '../../lib/hooks/useResponsive';
-import UnifiedHeader from '../../lib/components/ui/UnifiedHeader';
 import RowCard from '../../lib/components/ke-toan/RowCard';
-import EmptyState from '../../lib/components/ui/EmptyState';
 import FormModal from '../../lib/components/ui/FormModal';
-import FAB from '../../lib/components/ui/FAB';
-import ScreenContainer from '../../lib/components/ui/ScreenContainer';
+import ScreenLayout from '../../lib/components/layout/ScreenLayout';
+import SectionBlock from '../../lib/components/layout/SectionBlock';
+import ResponsiveGrid from '../../lib/components/layout/ResponsiveGrid';
 import TransactionFormContent, {
   TransactionFormValues,
 } from '../../lib/components/ke-toan/TransactionFormContent';
 import DataTable, { Column } from '../../lib/components/ui/DataTable';
-import { useSortState, sumBy, formatVND } from '../../lib/components/ui/tableUtils';
+import SwipeableRow from '../../lib/components/ui/SwipeableRow';
+import { useSortState, formatVND } from '../../lib/components/ui/tableUtils';
 import { toCsv, downloadText } from '../../lib/api/csvExport';
 
 type FilterType = null | 'thu' | 'chi';
@@ -36,7 +33,8 @@ export default function ThuChiScreen() {
   const { openSidebar } = useSidebar();
   const router = useRouter();
   const { isWide } = useResponsive();
-  const hPad = isWide ? 16 : 4; // mobile: minimal padding for max space
+  const hPad = 16; 
+
   const [txs, setTxs] = useState<Transaction[]>([]);
   const [filter, setFilter] = useState<FilterType>(null);
   const [loading, setLoading] = useState(false);
@@ -73,6 +71,7 @@ export default function ThuChiScreen() {
   useEffect(() => {
     loadTxs();
   }, [loadTxs]);
+
   useEffect(() => {
     setSelectedIds([]);
   }, [filter]);
@@ -154,7 +153,7 @@ export default function ThuChiScreen() {
       width: 110,
       sortable: true,
       sortValue: (t) => t.created_at || '',
-      render: (t) => <Text style={styles.cellText}>{formatDate(t.created_at)}</Text>,
+      render: (t) => <AppText variant="base">{formatDate(t.created_at)}</AppText>,
     },
     {
       key: 'type',
@@ -166,21 +165,13 @@ export default function ThuChiScreen() {
       render: (t) => {
         const thu = t.type === 'thu';
         return (
-          <View
-            style={[
-              styles.badge,
-              { backgroundColor: (thu ? '#16A34A' : '#DC2626') + '1A' },
-            ]}
+          <AppText
+            variant="small"
+            weight="bold"
+            style={{ color: thu ? colors.status.success : colors.status.danger }}
           >
-            <Text
-              style={[
-                styles.badgeText,
-                { color: thu ? '#16A34A' : '#DC2626' },
-              ]}
-            >
-              {thu ? 'Thu' : 'Chi'}
-            </Text>
-          </View>
+            {thu ? 'Thu' : 'Chi'}
+          </AppText>
         );
       },
     },
@@ -191,9 +182,9 @@ export default function ThuChiScreen() {
       sortable: true,
       sortValue: (t) => t.category || '',
       render: (t) => (
-        <Text style={styles.cellText} numberOfLines={1}>
+        <AppText variant="base" numberOfLines={1}>
           {t.category || '—'}
-        </Text>
+        </AppText>
       ),
     },
     {
@@ -206,15 +197,13 @@ export default function ThuChiScreen() {
       render: (t) => {
         const thu = t.type === 'thu';
         return (
-          <Text
-            style={[
-              styles.cellAmount,
-              { color: thu ? '#16A34A' : '#DC2626' },
-            ]}
+          <AppText
+            variant="base"
+            style={{ color: thu ? colors.status.success : colors.status.danger }}
           >
             {thu ? '+' : '-'}
             {formatAmount(t.amount)}
-          </Text>
+          </AppText>
         );
       },
     },
@@ -223,9 +212,9 @@ export default function ThuChiScreen() {
       title: 'Ghi chú',
       flex: 1.4,
       render: (t) => (
-        <Text style={[styles.cellText, { color: '#737373' }]} numberOfLines={1}>
+        <AppText variant="base" style={{ color: colors.text.muted }} numberOfLines={1}>
           {t.note?.trim() || '—'}
-        </Text>
+        </AppText>
       ),
     },
     {
@@ -248,7 +237,7 @@ export default function ThuChiScreen() {
             }}
             activeOpacity={0.7}
           >
-            <Icon name="pencil-outline" size={18} color={'#737373'} />
+            <Icon name="pencil-outline" size={18} color={colors.text.muted} />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.iconBtn}
@@ -271,7 +260,7 @@ export default function ThuChiScreen() {
             }}
             activeOpacity={0.7}
           >
-            <Icon name="trash-can-outline" size={18} color={'#DC2626'} />
+            <Icon name="trash-can-outline" size={18} color={colors.status.danger} />
           </TouchableOpacity>
         </View>
       ),
@@ -283,16 +272,16 @@ export default function ThuChiScreen() {
       key: 'label',
       title: '',
       flex: 1,
-      content: <Text style={styles.footerLabel}>Tổng cộng</Text>,
+      content: <AppText variant="base" weight="bold">Tổng cộng</AppText>,
     },
     {
       key: 'thu',
       align: 'right' as const,
       width: 130,
       content: (
-        <Text style={[styles.footerValue, { color: '#16A34A' }]}>
+        <AppText variant="base" style={{ color: colors.status.success }}>
           {formatVND(totalThu)}
-        </Text>
+        </AppText>
       ),
     },
     {
@@ -300,109 +289,105 @@ export default function ThuChiScreen() {
       align: 'right' as const,
       width: 130,
       content: (
-        <Text
-          style={[
-            styles.footerValue,
-            { color: totalThu - totalChi >= 0 ? '#16A34A' : '#DC2626' },
-          ]}
+        <AppText
+          variant="base"
+          style={{ color: totalThu - totalChi >= 0 ? colors.status.success : colors.status.danger }}
         >
           {formatVND(totalThu - totalChi)}
-        </Text>
+        </AppText>
       ),
     },
   ];
 
   const renderMobileCard = (t: Transaction, opts: { selected: boolean; onToggle: () => void }) => (
-    <RowCard
-      leftIcon={t.type === 'thu' ? 'arrow-bottom-left' : 'arrow-top-right'}
-      leftIconColor={t.type === 'thu' ? '#16A34A' : '#DC2626'}
-      title={t.note?.trim() ? t.note : t.category || 'Không ghi chú'}
-      subtitle={`${formatDate(t.created_at)} · ${t.category || 'Khác'}`}
-      right={
-        <Text
-          style={[
-            styles.cellAmount,
-            { color: t.type === 'thu' ? '#16A34A' : '#DC2626' },
-          ]}
-        >
-          {t.type === 'thu' ? '+' : '-'}
-          {formatAmount(t.amount)}
-        </Text>
-      }
-      actions={
-        <View style={styles.tcCardActions}>
-          <TouchableOpacity
-            style={styles.tcActionBtn}
-            onPress={() => {
-              setForm({
-                type: t.type as any,
-                amount: String(t.amount),
-                category: t.category || 'Bán hàng',
-                note: t.note || '',
-              });
-              setModalVisible(true);
-            }}
-            activeOpacity={0.7}
-          >
-            <Icon name="pencil-outline" size={16} color={'#F97316'} />
-            <Text style={styles.tcActionText}>Sửa</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.tcActionBtn, styles.tcActionDanger]}
-            onPress={() =>
-              Alert.alert('Xóa', 'Xác nhận xóa giao dịch này?', [
-                { text: 'Hủy', style: 'cancel' },
-                {
-                  text: 'Xóa',
-                  style: 'destructive',
-                  onPress: async () => {
-                    try {
-                      await api.bulkDeleteTransactions([t.id]);
-                      await loadTxs();
-                    } catch {
-                      Alert.alert('Lỗi', 'Xóa thất bại');
-                    }
-                  },
+    <SwipeableRow
+      rightActions={[
+        {
+          key: 'edit',
+          label: 'Sửa',
+          icon: 'pencil-outline',
+          color: colors.brand.primary,
+          onPress: () => {
+            setForm({
+              type: t.type as any,
+              amount: String(t.amount),
+              category: t.category || 'Bán hàng',
+              note: t.note || '',
+            });
+            setModalVisible(true);
+          }
+        },
+        {
+          key: 'delete',
+          label: 'Xóa',
+          icon: 'trash-can-outline',
+          color: colors.status.danger,
+          onPress: () => {
+            Alert.alert('Xóa', 'Xác nhận xóa giao dịch này?', [
+              { text: 'Hủy', style: 'cancel' },
+              {
+                text: 'Xóa',
+                style: 'destructive',
+                onPress: async () => {
+                  try {
+                    await api.bulkDeleteTransactions([t.id]);
+                    await loadTxs();
+                  } catch {
+                    Alert.alert('Lỗi', 'Xóa thất bại');
+                  }
                 },
-              ])
-            }
-            activeOpacity={0.7}
+              },
+            ]);
+          }
+        }
+      ]}
+    >
+      <RowCard
+        leftIcon={t.type === 'thu' ? 'arrow-bottom-left' : 'arrow-top-right'}
+        leftIconColor={t.type === 'thu' ? colors.status.success : colors.status.danger}
+        title={t.note?.trim() ? t.note : t.category || 'Không ghi chú'}
+        subtitle={`${formatDate(t.created_at)} · ${t.category || 'Khác'}`}
+        right={
+          <AppText
+            variant="base"
+            style={{ color: t.type === 'thu' ? colors.status.success : colors.status.danger }}
           >
-            <Icon name="trash-can-outline" size={16} color={'#DC2626'} />
-            <Text style={[styles.tcActionText, { color: '#DC2626' }]}>Xóa</Text>
-          </TouchableOpacity>
-        </View>
-      }
-    />
+            {t.type === 'thu' ? '+' : '-'}
+            {formatAmount(t.amount)}
+          </AppText>
+        }
+      />
+    </SwipeableRow>
   );
 
   return (
-    <ScreenContainer compact>
-      <UnifiedHeader icon="swap-vertical" 
-        title="Thu Chi"
-        subtitle="Quản lý thu chi kế toán"
-        onBackPress={() => router.push('/ke-toan')}
-        backLabel="Tổng quan"
-        compact={isWide}
-        right={
-          <View style={styles.headerActions}>
-            <TouchableOpacity
-              onPress={exportCsv}
-              style={styles.headerCsv}
-              accessibilityLabel="Xuất CSV"
-            >
-              <Icon name="file-delimited" size={18} color="#fff" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={openCreate}
-              style={styles.headerAdd}
-              accessibilityLabel="Thêm giao dịch"
-            >
-              <Icon name="plus" size={20} color="#fff" />
-            </TouchableOpacity>
-          </View>
-        }
-      />
+    <ScreenLayout
+      icon="swap-vertical"
+      title="Thu Chi"
+      subtitle="Quản lý thu chi kế toán"
+      onBackPress={() => router.push('/ke-toan')}
+      backLabel="Tổng quan"
+      compactHeader={isWide}
+      scrollable={false}
+      headerRight={
+        <View style={styles.headerActions}>
+          <TouchableOpacity
+            onPress={exportCsv}
+            style={styles.headerCsv}
+            accessibilityLabel="Xuất CSV"
+          >
+            <Icon name="file-delimited" size={18} color="#fff" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={openCreate}
+            style={styles.headerAdd}
+            accessibilityLabel="Thêm giao dịch"
+          >
+            <Icon name="plus" size={20} color="#fff" />
+          </TouchableOpacity>
+        </View>
+      }
+    >
       <View style={[styles.filterRow, { paddingHorizontal: hPad }]}>
         {([null, 'thu', 'chi'] as FilterType[]).map((f) => (
           <TouchableOpacity
@@ -414,51 +399,52 @@ export default function ThuChiScreen() {
               <Icon
                 name="arrow-bottom-left"
                 size={14}
-                color={filter === f ? '#fff' : '#16A34A'}
+                color={filter === f ? '#fff' : colors.status.success}
               />
             ) : null}
             {f === 'chi' ? (
               <Icon
                 name="arrow-top-right"
                 size={14}
-                color={filter === f ? '#fff' : '#DC2626'}
+                color={filter === f ? '#fff' : colors.status.danger}
               />
             ) : null}
-            <Text style={[styles.chipText, filter === f && styles.chipTextActive]}>
+            <AppText variant="base" style={[styles.chipText, filter === f && styles.chipTextActive]}>
               {f ? (f === 'thu' ? 'Thu' : 'Chi') : 'Tất cả'}
-            </Text>
+            </AppText>
           </TouchableOpacity>
         ))}
       </View>
 
-      {/* KPI strip */}
-      <View style={[styles.kpiStrip, { marginHorizontal: hPad }]}>
-        <View style={styles.kpiBox}>
-          <Text style={styles.kpiLabel}>Tổng Thu</Text>
-          <Text style={[styles.kpiValue, { color: '#16A34A' }]}>
-            {formatAmount(totalThu)}
-          </Text>
-        </View>
-        <View style={styles.kpiDivider} />
-        <View style={styles.kpiBox}>
-          <Text style={styles.kpiLabel}>Tổng Chi</Text>
-          <Text style={[styles.kpiValue, { color: '#DC2626' }]}>
-            {formatAmount(totalChi)}
-          </Text>
-        </View>
-        <View style={styles.kpiDivider} />
-        <View style={styles.kpiBox}>
-          <Text style={styles.kpiLabel}>Thực tế</Text>
-          <Text
-            style={[
-              styles.kpiValue,
-              { color: totalThu - totalChi >= 0 ? '#16A34A' : '#DC2626' },
-            ]}
-          >
-            {formatAmount(totalThu - totalChi)}
-          </Text>
-        </View>
-      </View>
+      <SectionBlock>
+        <ResponsiveGrid mobileCols={3} minColWidth={100} gap={8}>
+          <View style={styles.kpiBox}>
+            <AppText variant="small" style={styles.kpiLabel}>Tổng Thu</AppText>
+            <AppText variant="medium" weight="bold" style={[styles.kpiValue, { color: colors.status.success }]}>
+              {formatAmount(totalThu)}
+            </AppText>
+          </View>
+          <View style={styles.kpiBox}>
+            <AppText variant="small" style={styles.kpiLabel}>Tổng Chi</AppText>
+            <AppText variant="medium" weight="bold" style={[styles.kpiValue, { color: colors.status.danger }]}>
+              {formatAmount(totalChi)}
+            </AppText>
+          </View>
+          <View style={styles.kpiBox}>
+            <AppText variant="small" style={styles.kpiLabel}>Thực tế</AppText>
+            <AppText
+              variant="medium"
+              weight="bold"
+              style={[
+                styles.kpiValue,
+                { color: totalThu - totalChi >= 0 ? colors.status.success : colors.status.danger },
+              ]}
+            >
+              {formatAmount(totalThu - totalChi)}
+            </AppText>
+          </View>
+        </ResponsiveGrid>
+      </SectionBlock>
 
       <View style={{ flex: 1 }}>
         <DataTable<Transaction>
@@ -490,7 +476,6 @@ export default function ThuChiScreen() {
         />
       </View>
 
-
       <FormModal
         visible={modalVisible}
         title="Thêm giao dịch"
@@ -502,12 +487,11 @@ export default function ThuChiScreen() {
       >
         <TransactionFormContent initial={form} onChange={(v) => setForm(v)} />
       </FormModal>
-    </ScreenContainer>
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FAFAFA' },
   headerAdd: {
     width: 42,
     height: 42,
@@ -527,81 +511,39 @@ const styles = StyleSheet.create({
   },
   filterRow: {
     flexDirection: 'row',
-    gap: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#FAFAFA',
+    gap: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    backgroundColor: colors.surface.app,
   },
   chip: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 16,
-    borderRadius: 999,
-    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    gap: 6,
+    paddingHorizontal: 16,
+    height: 36,
+    borderRadius: 8,
+    backgroundColor: colors.text.inverse,
     borderWidth: 1,
-    borderColor: '#E5E5E5',
-    minHeight: 40,
+    borderColor: colors.border.default,
   },
-  chipActive: { backgroundColor: '#F97316', borderColor: '#F97316' },
-  chipText: { ...font.caption, color: '#737373', fontWeight: '600' },
+  chipActive: { backgroundColor: colors.brand.primary, borderColor: colors.brand.primary },
+  chipText: { color: colors.text.muted, fontSize: 16 },
   chipTextActive: { color: '#fff' },
-  kpiStrip: {
-    flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
-    marginHorizontal: 8,
-    borderRadius: 12,
-    paddingVertical: 12,
-    borderWidth: 1,
-    borderColor: '#F0F0F0',
-    boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
-    elevation: 2,
-  },
-  kpiBox: { flex: 1, alignItems: 'center' },
-  kpiLabel: { ...font.caption, color: '#737373', fontWeight: '400' },
-  kpiValue: { ...font.body, fontWeight: '400', marginTop: 2 },
-  kpiDivider: { width: 1, backgroundColor: '#F0F0F0' },
-  cellText: { ...font.body, color: '#171717' },
-  cellAmount: { ...font.body, fontWeight: '400' },
-  badge: { paddingHorizontal: 32, paddingVertical: 8, borderRadius: 12, alignSelf: 'center' },
-  badgeText: { ...font.body, fontWeight: '400' },
+  kpiBox: { flex: 1, alignItems: 'flex-start' },
+  kpiLabel: { color: colors.text.muted },
+  kpiValue: { marginTop: 2 },
   actionRow: { flexDirection: 'row', gap: 12, justifyContent: 'center' },
   iconBtn: {
     width: 32,
     height: 32,
     borderRadius: 8,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: colors.surface.app,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#F0F0F0',
+    borderColor: colors.border.default,
   },
-  footerLabel: { ...font.bodySmall, fontWeight: '400', color: '#171717' },
-  footerValue: { ...font.bodySmall, fontWeight: '400' },
-  loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
-  loadingText: { ...font.bodySmall, color: '#737373' },
-  tcCardActions: {
-    flexDirection: 'row',
-    gap: 16,
-    marginTop: 10,
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#F0F0F0',
-  },
-  tcActionBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    borderRadius: 4,
-    backgroundColor: '#f0f4ff',
-    borderWidth: 1,
-    borderColor: '#dbeafe',
-  },
-  tcActionDanger: { backgroundColor: '#fef2f2', borderColor: '#fee2e2' },
-  tcActionText: { ...font.caption, color: '#F97316', fontWeight: '600' },
 });
-
-

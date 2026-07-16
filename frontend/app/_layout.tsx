@@ -18,6 +18,7 @@ import {
   BeVietnamPro_600SemiBold,
   BeVietnamPro_700Bold,
 } from '@expo-google-fonts/be-vietnam-pro';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import * as SplashScreen from 'expo-splash-screen';
 
 SplashScreen.preventAutoHideAsync();
@@ -79,6 +80,7 @@ export default function RootLayout() {
     BeVietnamPro_500Medium,
     BeVietnamPro_600SemiBold,
     BeVietnamPro_700Bold,
+    'material-community': require('../assets/fonts/MaterialCommunityIcons.ttf'),
   });
 
   useEffect(() => {

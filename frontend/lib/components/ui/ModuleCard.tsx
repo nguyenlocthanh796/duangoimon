@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font } from '../../theme';
 import { shape } from '../../theme/shape';
+import FlatCard from './FlatCard';
+import AppText from './AppText';
 
 interface ModuleCardProps {
   icon: string;
@@ -17,56 +19,49 @@ export default function ModuleCard({ icon, title, description, badge, onPress }:
   const [hovered, setHovered] = useState(false);
   return (
     <TouchableOpacity
-      style={[styles.card, hovered && styles.cardHover]}
       onPress={onPress}
       activeOpacity={0.85}
       {...(Platform.OS === 'web'
         ? { onHoverIn: () => setHovered(true), onHoverOut: () => setHovered(false) }
         : {})}
     >
-      <View style={styles.topRow}>
-        <View style={[styles.iconWrap, hovered && styles.iconWrapHover]}>
-          <Icon name={icon as any} size={24} color={colors.brand.primary} />
-        </View>
-        {badge && (
-          <View style={[styles.badge, { backgroundColor: badge.bg }]}>
-            <Text style={[styles.badgeText, { color: badge.color }]}>{badge.text}</Text>
+      <FlatCard edgeToEdge={false} style={[styles.card, hovered && styles.cardHover]}>
+        <View style={styles.topRow}>
+          <View style={[styles.iconWrap, hovered && styles.iconWrapHover]}>
+            <Icon name={icon as any} size={24} color={colors.brand.primary} />
           </View>
+          {badge && (
+            <View style={[styles.badge, { backgroundColor: badge.bg }]}>
+              <AppText variant="small" weight="bold" color={badge.color}>{badge.text}</AppText>
+            </View>
+          )}
+        </View>
+        <AppText variant="medium" weight="bold" numberOfLines={2}>
+          {title}
+        </AppText>
+        {description && (
+          <AppText variant="small" color={colors.text.muted} numberOfLines={2} style={{ marginTop: -4 }}>
+            {description}
+          </AppText>
         )}
-      </View>
-      <Text style={styles.title} numberOfLines={2}>
-        {title}
-      </Text>
-      {description && (
-        <Text style={styles.desc} numberOfLines={2}>
-          {description}
-        </Text>
-      )}
-      <View style={styles.cta}>
-        <Text style={styles.ctaText}>Mở</Text>
-        <Icon name="chevron-right" size={16} color={colors.brand.primary} />
-      </View>
+        <View style={styles.cta}>
+          <AppText variant="small" weight="bold" color={colors.brand.primary}>MỞ</AppText>
+          <Icon name="chevron-right" size={16} color={colors.brand.primary} />
+        </View>
+      </FlatCard>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.lg,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: colors.border.light,
     gap: 10,
-    boxShadow: "0px 2px 8px rgba(0,0,0,0.06)",
-    elevation: 3,
     minHeight: 132,
+    borderWidth: 1, // Add full border back since it's a grid item maybe? Wait, edgeToEdge removes side borders.
+    // If it's a grid item, we might want to keep the edgeToEdge=false behavior, but let FlatCard handle standard flat style.
   },
   cardHover: {
     borderColor: colors.brand.primary,
-    boxShadow: '0 0 14px rgba(249,115,22,0.18)',
-    elevation: 8,
-    transform: [{ translateY: -2 }] as any,
   },
   topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   iconWrap: {
@@ -78,10 +73,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconWrapHover: { backgroundColor: colors.brand.primary + '1A' },
-  badge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: shape.radius.full },
-  badgeText: { ...font.micro, fontWeight: '600' },
-  title: { ...font.bodyBold, color: colors.text.primary, fontWeight: '600' },
-  desc: { ...font.caption, color: colors.text.muted, marginTop: -4 },
+  badge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
   cta: { flexDirection: 'row', alignItems: 'center', gap: 2, marginTop: 'auto' },
-  ctaText: { ...font.caption, color: colors.brand.primary, fontWeight: '600' },
 });

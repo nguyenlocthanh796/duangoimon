@@ -1,10 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { TableSkeleton } from '../../../lib/components/ui/Skeleton';
 import {
   View,
-  Text,
   ScrollView,
-  ActivityIndicator,
   Alert,
   RefreshControl,
   StyleSheet,
@@ -15,17 +12,17 @@ import {
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api as taxApi } from '../../../lib/api';
 import { toCsv, downloadText } from '../../../lib/api/csvExport';
-import { colors, font, shape } from '../../../lib/theme';
+import { colors } from '../../../lib/theme';
+import AppText from '../../../lib/components/ui/AppText';
 import { useSidebar } from '../../../lib/context/SidebarContext';
 import { useRouter } from 'expo-router';
 import { useResponsive } from '../../../lib/hooks/useResponsive';
-import UnifiedHeader from '../../../lib/components/ui/UnifiedHeader';
-import ScreenContainer from '../../../lib/components/ui/ScreenContainer';
 import BranchPeriodFilter from '../../../lib/components/ke-toan/BranchPeriodFilter';
-import RowCard from '../../../lib/components/ke-toan/RowCard';
 import StatusBadge from '../../../lib/components/ke-toan/StatusBadge';
 import type { SeverityKey } from '../../../lib/components/ke-toan/StatusBadge';
 import { useAuth } from '../../../lib/context/AuthContext';
+import ScreenLayout from '../../../lib/components/layout/ScreenLayout';
+import { TableSkeleton } from '../../../lib/components/ui/Skeleton';
 
 const WALLETS = ['bank', 'momo', 'zalopay', 'vnpay'];
 
@@ -33,36 +30,33 @@ export default function BankAccountsScreen() {
   const { openSidebar } = useSidebar();
   const router = useRouter();
   const { isWide } = useResponsive();
-  const hPad = isWide ? 16 : 4;
+  const hPad = 16;
   const { branchId } = useAuth();
+  
   const [accounts, setAccounts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ bank_name: '', account_number: '', wallet_type: 'bank' });
   const [submitting, setSubmitting] = useState(false);
 
-  const load = useCallback(
-    async (isRefresh = false) => {
-      if (!branchId) return;
-      if (isRefresh) setRefreshing(true);
-      else setLoading(true);
-      try {
-        const data = await taxApi.getTaxBankAccounts(branchId);
-        setAccounts(data);
-      } catch (e: any) {
-        Alert.alert('Lỗi', e?.message || 'Không tải được tài khoản');
-      } finally {
-        setLoading(false);
-        setRefreshing(false);
-      }
-    },
-    [branchId]
-  );
+  const load = useCallback(async (isRefresh = false) => {
+    if (!branchId) return;
+    if (isRefresh) setRefreshing(true);
+    else setLoading(true);
+    try {
+      const data = await taxApi.getTaxBankAccounts(branchId);
+      setAccounts(data);
+    } catch (e: any) {
+      Alert.alert('Lỗi', e?.message || 'Không tải được tài khoản');
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, [branchId]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  useEffect(() => { load(); }, [load]);
 
   const submit = async () => {
     if (!branchId) return;
@@ -105,34 +99,35 @@ export default function BankAccountsScreen() {
     s === 'da_thong_bao' ? 'Đã thông báo' : s === 'tu_choi' ? 'Từ chối' : 'Chờ';
 
   return (
-    <ScreenContainer compact>
-      <UnifiedHeader icon="bank" 
-        title="TK Ngân Hàng"
-        subtitle="01/BK-STK — Thông báo tài khoản (TT18 §5)"
-        onBackPress={() => router.push('/ke-toan')}
-        backLabel="Tổng quan"
-        compact={isWide}
-        right={
-          <View style={styles.headerActions}>
-            <TouchableOpacity
-              style={styles.csvBtn}
-              onPress={exportCsv}
-              disabled={accounts.length === 0}
-            >
-              <Icon name="file-delimited" size={18} color={colors.text.inverse} />
-              <Text style={styles.csvText}>CSV</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.addBtn} onPress={() => setShowForm(true)}>
-              <Icon name="plus" size={18} color={colors.text.inverse} />
-              <Text style={styles.addBtnText}>Thêm</Text>
-            </TouchableOpacity>
-          </View>
-        }
-      />
-      <BranchPeriodFilter branchId={branchId ?? ''} onBranchChange={() => {}} />
+    <ScreenLayout
+      icon="bank"
+      title="TK Ngân Hàng"
+      subtitle="01/BK-STK — Thông báo tài khoản (TT18 §5)"
+      onBackPress={() => router.push('/ke-toan')}
+      compactHeader={isWide}
+      headerRight={
+        <View style={styles.headerActions}>
+          <TouchableOpacity
+            style={styles.csvBtn}
+            onPress={exportCsv}
+            disabled={accounts.length === 0}
+          >
+            <Icon name="file-delimited" size={18} color={colors.text.inverse} />
+            {isWide && <AppText variant="small" weight="bold" color="#fff" style={{ marginLeft: 6 }}>CSV</AppText>}
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.addBtn} onPress={() => setShowForm(true)}>
+            <Icon name="plus" size={18} color={colors.text.inverse} />
+            <AppText variant="medium" weight="bold" color="#fff" style={{ marginLeft: 6 }}>Thêm</AppText>
+          </TouchableOpacity>
+        </View>
+      }
+    >
+      <View style={{ backgroundColor: colors.surface.app, paddingBottom: 16 }}>
+        <BranchPeriodFilter branchId={branchId ?? ''} onBranchChange={() => {}} />
+      </View>
 
       {loading ? (
-        <View style={styles.loadingBox}>
+        <View style={{ flex: 1, justifyContent: 'center' }}>
           <TableSkeleton rowCount={5} />
         </View>
       ) : (
@@ -141,30 +136,34 @@ export default function BankAccountsScreen() {
           keyExtractor={(i) => i.id}
           numColumns={isWide ? 2 : 1}
           key={isWide ? 'w' : 'n'}
-          contentContainerStyle={[styles.list, { paddingHorizontal: hPad }]}
+          contentContainerStyle={{ paddingBottom: 100 }}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
               onRefresh={() => load(true)}
-              tintColor={'#F97316'}
+              tintColor={colors.brand.primary}
             />
           }
           ListEmptyComponent={
-            <View style={styles.loadingBox}>
-              <Text style={[font.bodySmall, { color: '#737373' }]}>Chưa có tài khoản</Text>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 40 }}>
+              <AppText variant="base" color={colors.text.muted}>Chưa có tài khoản</AppText>
             </View>
           }
           renderItem={({ item }) => (
-            <RowCard
-              title={`${item.bank_name} · ${item.wallet_type.toUpperCase()}`}
-              subtitle={`${item.account_number}`}
-              right={
-                <StatusBadge
-                  label={statusLabel(item.form_status)}
-                  severity={statusSeverity(item.form_status)}
-                />
-              }
-            />
+            <View style={[styles.mRow, isWide && { flex: 1, margin: 8, borderBottomWidth: 0, borderWidth: 1, borderColor: colors.border.default }]}>
+              <View style={{ flex: 1 }}>
+                <AppText variant="base" weight="bold" color={colors.text.primary} style={{ marginBottom: 4 }}>
+                  {item.bank_name} · {item.wallet_type.toUpperCase()}
+                </AppText>
+                <AppText variant="small" color={colors.text.muted}>
+                  {item.account_number}
+                </AppText>
+              </View>
+              <StatusBadge
+                label={statusLabel(item.form_status)}
+                severity={statusSeverity(item.form_status)}
+              />
+            </View>
           )}
         />
       )}
@@ -172,21 +171,27 @@ export default function BankAccountsScreen() {
       {showForm && (
         <View style={styles.modal}>
           <View style={styles.modalCard}>
-            <Text style={styles.modalTitle}>Thêm tài khoản (01/BK-STK)</Text>
+            <AppText variant="h3" weight="bold" style={{ marginBottom: 16 }}>Thêm tài khoản (01/BK-STK)</AppText>
+            
+            <AppText variant="small" color={colors.text.muted} style={{ marginBottom: 8 }}>Tên ngân hàng / ví</AppText>
             <TextInput
               style={styles.field}
-              placeholder="Tên ngân hàng/ví"
-              placeholderTextColor={'#737373'}
+              placeholder="VD: Vietcombank"
+              placeholderTextColor={colors.text.muted}
               value={form.bank_name}
               onChangeText={(t) => setForm({ ...form, bank_name: t })}
             />
+            
+            <AppText variant="small" color={colors.text.muted} style={{ marginBottom: 8, marginTop: 12 }}>Số tài khoản</AppText>
             <TextInput
               style={styles.field}
-              placeholder="Số tài khoản"
-              placeholderTextColor={'#737373'}
+              placeholder="Nhập số tài khoản"
+              placeholderTextColor={colors.text.muted}
               value={form.account_number}
               onChangeText={(t) => setForm({ ...form, account_number: t })}
             />
+
+            <AppText variant="small" color={colors.text.muted} style={{ marginBottom: 8, marginTop: 16 }}>Loại ví</AppText>
             <View style={styles.walletRow}>
               {WALLETS.map((w) => (
                 <TouchableOpacity
@@ -194,115 +199,111 @@ export default function BankAccountsScreen() {
                   style={[styles.walletChip, form.wallet_type === w && styles.walletChipActive]}
                   onPress={() => setForm({ ...form, wallet_type: w })}
                 >
-                  <Text
-                    style={[styles.walletText, form.wallet_type === w && styles.walletTextActive]}
-                  >
-                    {w}
-                  </Text>
+                  <AppText variant="small" weight="bold" color={form.wallet_type === w ? '#fff' : colors.text.muted}>
+                    {w.toUpperCase()}
+                  </AppText>
                 </TouchableOpacity>
               ))}
             </View>
+
             <View style={styles.modalActions}>
               <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowForm(false)}>
-                <Text style={styles.cancelText}>Huỷ</Text>
+                <AppText variant="medium" color={colors.text.primary}>Huỷ</AppText>
               </TouchableOpacity>
               <TouchableOpacity style={styles.saveBtn} onPress={submit} disabled={submitting}>
-                <Text style={styles.saveText}>
+                <AppText variant="medium" weight="bold" color="#fff">
                   {submitting ? 'Đang lưu...' : 'Lưu & Thông báo'}
-                </Text>
+                </AppText>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       )}
-    </ScreenContainer>
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FAFAFA' },
-  headerActions: { flexDirection: 'row', alignItems: 'center', gap: 16},
+  headerActions: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   csvBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    height: 44,
+    height: 40,
+    minWidth: 40,
+    justifyContent: 'center',
     paddingHorizontal: 12,
     borderRadius: 8,
-    backgroundColor: 'rgba(255,255,255,0.18)',
+    backgroundColor: 'rgba(255,255,255,0.2)',
   },
-  csvText: { ...font.buttonSmall, fontWeight: '600', color: colors.text.inverse },
   addBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
     paddingHorizontal: 12,
-    height: 44,
+    height: 40,
     borderRadius: 8,
-    backgroundColor: '#F97316',
+    backgroundColor: colors.brand.primary,
   },
-  addBtnText: { ...font.buttonSmall, fontWeight: '600', color: colors.text.inverse },
-  loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  list: { padding: 16, gap: 12 },
+  mRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    backgroundColor: colors.text.inverse,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.default,
+  },
   modal: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(15,23,42,0.5)',
+    backgroundColor: 'rgba(15,23,42,0.6)',
     justifyContent: 'center',
     padding: 24,
     zIndex: 10,
   },
   modalCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 20,
-    gap: 12,
+    backgroundColor: colors.text.inverse,
+    borderRadius: 8,
+    padding: 24,
   },
-  modalTitle: { ...font.bodyBold, color: '#171717' },
   field: {
-    backgroundColor: '#FAFAFA',
+    backgroundColor: colors.surface.app,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#E5E5E5',
-    paddingHorizontal: 12,
-    height: 46,
-    ...font.body,
-    color: '#171717',
+    borderColor: colors.border.default,
+    paddingHorizontal: 16,
+    height: 48,
+    fontSize: 16,
+    color: colors.text.primary,
   },
-  walletRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 16},
+  walletRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   walletChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 16,
-    borderRadius: 999,
-    backgroundColor: '#F5F5F5',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 8,
+    backgroundColor: colors.surface.app,
     borderWidth: 1,
-    borderColor: '#E5E5E5',
+    borderColor: colors.border.default,
   },
-  walletChipActive: { backgroundColor: '#F97316', borderColor: '#F97316' },
-  walletText: { ...font.caption, color: '#737373', fontWeight: '600' },
-  walletTextActive: { color: '#fff' },
-  modalActions: { flexDirection: 'row', gap: 12, marginTop: 4 },
+  walletChipActive: { backgroundColor: colors.brand.primary, borderColor: colors.brand.primary },
+  modalActions: { flexDirection: 'row', gap: 12, marginTop: 24 },
   cancelBtn: {
     flex: 1,
-    height: 46,
+    height: 48,
     borderRadius: 8,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: colors.surface.app,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cancelText: { ...font.buttonSmall, color: '#737373', fontWeight: '600' },
   saveBtn: {
-    flex: 1,
-    height: 46,
+    flex: 2,
+    height: 48,
     borderRadius: 8,
-    backgroundColor: '#F97316',
+    backgroundColor: colors.brand.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  saveText: { ...font.buttonSmall, color: colors.text.inverse, fontWeight: '600' },
 });
-
-

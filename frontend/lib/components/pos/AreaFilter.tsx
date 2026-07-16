@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, TouchableOpacity, ScrollView } from 'react-native';
 import { colors, font } from '../../theme';
+import AppText from '../ui/AppText';
 
 interface AreaFilterProps {
   areas: string[];
@@ -25,12 +26,12 @@ export default function AreaFilter({ areas, selectedArea, onSelectArea }: AreaFi
       contentContainerStyle={{
         paddingHorizontal: 12,
         paddingVertical: 8,
-        gap: 8,
         alignItems: 'center',
       }}
     >
-      {areas.map((areaName) => {
+      {areas.map((areaName, index) => {
         const isSelected = selectedArea === areaName;
+        const isLast = index === areas.length - 1;
         return (
           <TouchableOpacity
             key={areaName}
@@ -41,14 +42,18 @@ export default function AreaFilter({ areas, selectedArea, onSelectArea }: AreaFi
               justifyContent: 'center',
               alignItems: 'center',
               borderRadius: 8,
+              marginRight: isLast ? 0 : 8,
               backgroundColor: isSelected ? colors.brand.primary : colors.surface.disabled,
+              borderWidth: 1,
+              borderColor: isSelected ? colors.brand.primary : colors.border.default,
             }}
           >
-            <Text
-              style={{ ...font.bodySmall, color: isSelected ? colors.text.inverse : colors.text.body }}
+            <AppText
+              variant="medium"
+              color={isSelected ? colors.text.inverse : colors.text.primary}
             >
               {areaName}
-            </Text>
+            </AppText>
           </TouchableOpacity>
         );
       })}

@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { View, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { Image } from 'expo-image';
 import { Swipeable } from 'react-native-gesture-handler';
-import { MaterialIcons, MaterialCommunityIcons as Icon } from '@expo/vector-icons';
+import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font, formatPrice } from '../../theme';
 import { shape } from '../../theme/shape';
+import AppText from '../ui/AppText';
 import { CartItem } from './types';
 
 const NO_NOTE_CATS = ['do-uong', 'khai-vi'];
@@ -129,7 +130,7 @@ export default function CartItemRow({
           }}
         >
           <Icon name={item.selected ? 'check-circle' : 'circle-outline'} size={22} color="#fff" />
-          <Text style={{ ...font.badge, color: '#fff', marginTop: 2 }}>Chọn</Text>
+          <AppText variant="small" color="#fff" style={{ marginTop: 2 }}>Chọn</AppText>
         </TouchableOpacity>
       );
     } else if (isKitchenLocked) {
@@ -151,8 +152,8 @@ export default function CartItemRow({
                 marginLeft: 8,
               }}
             >
-              <MaterialIcons name="swap-horiz" size={20} color="#fff" />
-              <Text style={{ ...font.badge, color: '#fff', marginTop: 2 }}>Chuyển</Text>
+              <Icon name="swap-horizontal" size={20} color="#fff" />
+              <AppText variant="small" color="#fff" style={{ marginTop: 2 }}>Chuyển</AppText>
             </TouchableOpacity>
           )}
           <TouchableOpacity
@@ -170,8 +171,8 @@ export default function CartItemRow({
               marginLeft: 8,
             }}
           >
-            <MaterialIcons name="block" size={20} color="#fff" />
-            <Text style={{ ...font.badge, color: '#fff', marginTop: 2 }}>Huỷ</Text>
+            <Icon name="cancel" size={20} color="#fff" />
+            <AppText variant="small" color="#fff" style={{ marginTop: 2 }}>Huỷ</AppText>
           </TouchableOpacity>
         </View>
       );
@@ -192,8 +193,8 @@ export default function CartItemRow({
             marginLeft: 8,
           }}
         >
-          <MaterialIcons name="delete-outline" size={22} color="#fff" />
-          <Text style={{ ...font.badge, color: '#fff', marginTop: 2 }}>Xoá</Text>
+          <Icon name="trash-can-outline" size={22} color="#fff" />
+          <AppText variant="small" color="#fff" style={{ marginTop: 2 }}>Xoá</AppText>
         </TouchableOpacity>
       );
     }
@@ -211,10 +212,11 @@ export default function CartItemRow({
           : isKitchenLocked
             ? '#fafafa'
             : colors.surface.card,
-        borderWidth: 1,
+        borderWidth: 0,
+        borderBottomWidth: 1,
         borderColor: isCancelled ? '#fecaca' : isKitchenLocked ? '#e5e5e5' : colors.border.default,
-        borderRadius: shape.radius.md,
-        marginBottom: 4,
+        borderRadius: 0,
+        marginBottom: 0,
         opacity: isCancelled ? 0.7 : 1,
       }}
     >
@@ -254,7 +256,7 @@ export default function CartItemRow({
                 borderBottomRightRadius: 6,
               }}
             >
-              <Text style={{ ...font.badge, color: '#fff' }}>x{item.qty}</Text>
+              <AppText variant="small" color="#fff">x{item.qty}</AppText>
             </View>
           )}
           {isKitchenLocked && !isCancelled && (
@@ -279,21 +281,23 @@ export default function CartItemRow({
         </View>
 
         <View style={{ flex: 1, justifyContent: 'space-between', paddingVertical: 1 }}>
-          <Text
-            style={{ ...font.body, color: isCancelled ? colors.text.muted : colors.text.primary }}
+          <AppText
+            variant="medium"
+            color={isCancelled ? colors.text.muted : colors.text.primary}
             numberOfLines={1}
           >
             {item.name}
-          </Text>
-          <Text style={{ ...font.caption, color: colors.text.muted }} numberOfLines={1}>
+          </AppText>
+          <AppText variant="small" color={colors.text.muted} numberOfLines={1}>
             {mods ? `${mods} · ` : ''}
             {item.qty > 1 ? `${formatPrice(unitPrice)} x ${item.qty}` : formatPrice(unitPrice)}
-          </Text>
-          <Text
-            style={{ ...font.label, color: isCancelled ? colors.text.muted : colors.brand.primary }}
+          </AppText>
+          <AppText
+            variant="base"
+            color={isCancelled ? colors.text.muted : colors.brand.primary}
           >
             {formatPrice(totalPrice)}
-          </Text>
+          </AppText>
         </View>
 
         <View style={{ alignItems: 'flex-end', justifyContent: 'space-between', gap: 4 }}>
@@ -309,7 +313,7 @@ export default function CartItemRow({
                   borderColor: '#fecaca',
                 }}
               >
-                <Text style={{ ...font.badge, color: '#dc2626' }}>Đã huỷ</Text>
+                <AppText variant="small" color="#dc2626">Đã huỷ</AppText>
               </View>
             ) : isKitchenLocked ? (
               <View
@@ -322,9 +326,9 @@ export default function CartItemRow({
                   borderColor: '#bbf7d0',
                 }}
               >
-                <Text style={{ ...font.badge, color: '#16a34a' }}>
+                <AppText variant="small" color="#16a34a">
                   Đã gửi bếp{` (Lần ${item.orderRound || 1})`}
-                </Text>
+                </AppText>
               </View>
             ) : (
               <TouchableOpacity
@@ -339,14 +343,14 @@ export default function CartItemRow({
                   borderColor: isTakeaway ? colors.border.brand : '#bae6fd',
                 }}
               >
-                <Text style={{ ...font.badge, color: isTakeaway ? colors.text.brand : '#0284c7' }}>
+                <AppText variant="small" color={isTakeaway ? colors.text.brand : '#0284c7'}>
                   {isTakeaway ? 'Mang về' : 'Tại bàn'}
-                </Text>
+                </AppText>
               </TouchableOpacity>
             )}
             {!isCancelled && !isQtyEditing && (
               <TouchableOpacity onPress={() => onEditNote?.(item.cartItemId)} hitSlop={8}>
-                <MaterialIcons name="edit-note" size={16} color={colors.icon.muted} />
+                <Icon name="square-edit-outline" size={16} color={colors.icon.muted} />
               </TouchableOpacity>
             )}
           </View>
@@ -380,8 +384,7 @@ export default function CartItemRow({
                   borderColor: colors.border.default,
                 }}
               >
-                <MaterialIcons
-                  name="remove"
+                <Icon name="minus"
                   size={16}
                   color={item.qty <= 1 ? colors.border.strong : colors.text.secondary}
                 />
@@ -414,16 +417,13 @@ export default function CartItemRow({
                   }}
                   style={{ flex: 1, alignItems: 'center' }}
                 >
-                  <Text
-                    style={{
-                      ...font.body,
-                      color: colors.text.primary,
-                      textAlign: 'center',
-                      width: 36,
-                    }}
+                  <AppText
+                    variant="medium"
+                    color={colors.text.primary}
+                    style={{ textAlign: 'center', width: 36 }}
                   >
                     {item.qty}
-                  </Text>
+                  </AppText>
                 </TouchableOpacity>
               )}
 
@@ -440,7 +440,7 @@ export default function CartItemRow({
                   justifyContent: 'center',
                 }}
               >
-                <MaterialIcons name="add" size={16} color={colors.brand.primary} />
+                <Icon name="plus" size={16} color={colors.brand.primary} />
               </TouchableOpacity>
             </View>
           )}
@@ -459,8 +459,8 @@ export default function CartItemRow({
             gap: 4,
           }}
         >
-          <MaterialIcons name="info-outline" size={12} color="#dc2626" />
-          <Text style={{ ...font.badge, color: '#dc2626' }}>Lý do: {item.cancelReason}</Text>
+          <Icon name="information-outline" size={12} color="#dc2626" />
+          <AppText variant="small" color="#dc2626">Lý do: {item.cancelReason}</AppText>
         </View>
       )}
 
@@ -481,13 +481,10 @@ export default function CartItemRow({
           }}
         >
           <Icon name="information-outline" size={14} color="#d97706" />
-          <Text
-            style={{ ...font.caption, color: '#92400e', flex: 1, lineHeight: 16 }}
-            numberOfLines={3}
-          >
+          <AppText variant="small" color="#92400e" style={{ flex: 1, lineHeight: 16 }} numberOfLines={3}>
             {item.note}
-          </Text>
-          <MaterialIcons name="edit" size={12} color="#d97706" style={{ marginTop: 2 }} />
+          </AppText>
+          <Icon name="pencil" size={12} color="#d97706" style={{ marginTop: 2 }} />
         </TouchableOpacity>
       ) : null}
     </TouchableOpacity>

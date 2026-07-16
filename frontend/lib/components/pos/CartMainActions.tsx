@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { colors, font } from '../../theme';
 import { shape } from '../../theme/shape';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { haptic } from '../../haptic';
+import AppText from '../ui/AppText';
 
 interface CartMainActionsProps {
   hasUnsentItems: boolean;
@@ -36,7 +37,7 @@ export default function CartMainActions({
           onPress={onPrintTemporary}
           style={{
             height: 46,
-            borderRadius: shape.radius.md,
+            borderRadius: 8,
             backgroundColor: colors.surface.disabled,
             borderWidth: 1,
             borderColor: colors.border.default,
@@ -46,8 +47,8 @@ export default function CartMainActions({
             gap: 8,
           }}
         >
-          <MaterialIcons name="print" size={18} color={colors.text.secondary} />
-          <Text style={{ ...font.buttonSmall, color: colors.text.secondary }}>IN TẠM TÍNH</Text>
+          <MaterialCommunityIcons name="printer" size={18} color={colors.text.secondary} />
+          <AppText variant="medium" color={colors.text.secondary}>IN TẠM TÍNH</AppText>
         </TouchableOpacity>
       )}
 
@@ -58,7 +59,7 @@ export default function CartMainActions({
           style={{
             flex: 1,
             height: 50,
-            borderRadius: shape.radius.md,
+            borderRadius: 8,
             backgroundColor: hasUnsentItems ? colors.brand.primaryBg : colors.surface.disabled,
             borderWidth: 1.5,
             borderColor: hasUnsentItems ? colors.border.brand : colors.border.default,
@@ -66,14 +67,12 @@ export default function CartMainActions({
             justifyContent: 'center',
           }}
         >
-          <Text
-            style={{
-              ...font.buttonSmall,
-              color: hasUnsentItems ? colors.text.brand : colors.text.muted,
-            }}
+          <AppText
+            variant="medium"
+            color={hasUnsentItems ? colors.text.brand : colors.text.muted}
           >
             GỬI BẾP
-          </Text>
+          </AppText>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => { haptic.impact('light'); onSaveTable(); }}
@@ -81,7 +80,7 @@ export default function CartMainActions({
           style={{
             flex: 1,
             height: 50,
-            borderRadius: shape.radius.md,
+            borderRadius: 8,
             backgroundColor: colors.brand.primaryBg,
             borderWidth: 1.5,
             borderColor: colors.border.brand,
@@ -89,7 +88,7 @@ export default function CartMainActions({
             justifyContent: 'center',
           }}
         >
-          <Text style={{ ...font.buttonSmall, color: colors.text.brand }}>LƯU HĐ</Text>
+          <AppText variant="medium" color={colors.text.brand}>LƯU HĐ</AppText>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => { haptic.impact('medium'); onPay(); }}
@@ -97,7 +96,7 @@ export default function CartMainActions({
           style={{
             flex: 1.5,
             height: 50,
-            borderRadius: shape.radius.md,
+            borderRadius: 8,
             backgroundColor: colors.brand.primary,
             alignItems: 'center',
             justifyContent: 'center',
@@ -108,7 +107,7 @@ export default function CartMainActions({
           {submitting ? (
             <ActivityIndicator size="small" color={colors.text.inverse} />
           ) : (
-            <Text style={{ ...font.button, color: colors.text.inverse }}>THANH TOÁN</Text>
+            <AppText variant="medium" weight="bold" color={colors.text.inverse}>THANH TOÁN</AppText>
           )}
         </TouchableOpacity>
       </View>

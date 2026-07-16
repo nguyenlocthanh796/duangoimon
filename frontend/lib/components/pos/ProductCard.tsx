@@ -1,11 +1,12 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font } from '../../theme/index';
 import { formatPrice } from '../../utils/format';
 import { shape } from '../../theme/shape';
 import { MenuItem } from './types';
+import AppText from '../ui/AppText';
 import { ASSETS } from '../../assets';
 import { ImageSourcePropType } from 'react-native';
 
@@ -46,7 +47,7 @@ export default function ProductCard({
       style={{
         width: cardSize,
         height: cardSize,
-        borderRadius: shape.radius.md,
+        borderRadius: 0, // Flat design
         overflow: 'hidden',
         backgroundColor: colors.surface.card,
         borderWidth: StyleSheet.hairlineWidth,
@@ -76,19 +77,20 @@ export default function ProductCard({
           paddingHorizontal: 8,
           alignItems: 'center',
           justifyContent: 'center',
-          borderBottomLeftRadius: shape.radius.md,
-          borderBottomRightRadius: shape.radius.md,
+          borderRadius: 0,
         }}
       >
-        <Text
-          style={{ ...font.bodySmall, color: '#FFFFFF', textAlign: 'center', marginBottom: 3 }}
+        <AppText
+          variant="base"
+          color="#FFFFFF"
+          style={{ textAlign: 'center', marginBottom: 3 }}
           numberOfLines={1}
         >
           {item.name}
-        </Text>
-        <Text style={{ ...font.label, color: '#FDBA74', textAlign: 'center' }}>
+        </AppText>
+        <AppText variant="small" color="#FDBA74" style={{ textAlign: 'center' }}>
           {formatPrice(item.price)}
-        </Text>
+        </AppText>
       </View>
 
       {/* In Cart Count Badge (Top Left) */}
@@ -105,31 +107,24 @@ export default function ProductCard({
             zIndex: 5,
           }}
         >
-          <Text style={{ color: colors.text.inverse, ...font.badge }}>{inCartCount}</Text>
+          <AppText variant="small" weight="bold" color={colors.text.inverse}>
+              {inCartCount}
+            </AppText>
         </View>
       )}
 
-      {/* Options Button (Top Right) - Opens Modifier Modal */}
+      {/* Settings/Info button to trigger modifiers */}
       {hasModifiers && (
         <TouchableOpacity
-          onPress={(e) => {
-            e.stopPropagation(); // Stop parent onPress (quick add)
-            onPress();
-          }}
-          activeOpacity={0.7}
+          onPress={onPress}
+          hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
           style={{
             position: 'absolute',
-            top: 8,
-            right: 8,
-            backgroundColor: 'rgba(0, 0, 0, 0.65)',
-            width: 36,
-            height: 36,
-            borderRadius: 18,
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderWidth: 1,
-            borderColor: 'rgba(255, 255, 255, 0.3)',
-            zIndex: 10,
+            top: 4,
+            right: 4,
+            padding: 4,
+            backgroundColor: 'rgba(0,0,0,0.4)',
+            borderRadius: 8,
           }}
         >
           <Icon name="tune" size={15} color="#FFFFFF" />

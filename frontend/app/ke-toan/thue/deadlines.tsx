@@ -1,26 +1,22 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { TableSkeleton } from '../../../lib/components/ui/Skeleton';
 import {
   View,
-  Text,
-  ScrollView,
-  ActivityIndicator,
   Alert,
-  RefreshControl,
   StyleSheet,
 } from 'react-native';
-import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api } from '../../../lib/api';
-import { colors, font, shape } from '../../../lib/theme';
+import { colors } from '../../../lib/theme';
+import AppText from '../../../lib/components/ui/AppText';
 import { useSidebar } from '../../../lib/context/SidebarContext';
 import { useRouter } from 'expo-router';
 import { useResponsive } from '../../../lib/hooks/useResponsive';
-import UnifiedHeader from '../../../lib/components/ui/UnifiedHeader';
-import ScreenContainer from '../../../lib/components/ui/ScreenContainer';
 import BranchPeriodFilter from '../../../lib/components/ke-toan/BranchPeriodFilter';
 import DataTable, { Column } from '../../../lib/components/ui/DataTable';
 import { useSortState } from '../../../lib/components/ui/tableUtils';
 import { useAuth } from '../../../lib/context/AuthContext';
+import ScreenLayout from '../../../lib/components/layout/ScreenLayout';
+import { TableSkeleton } from '../../../lib/components/ui/Skeleton';
+import SwipeableRow from '../../../lib/components/ui/SwipeableRow';
 
 interface Deadline {
   id: string;
@@ -42,11 +38,11 @@ function daysLeft(due: string): number {
 }
 
 function urgencyColor(days: number): string {
-  if (days <= 1) return '#DC2626';
-  if (days <= 3) return '#F97316';
-  if (days <= 7) return '#D97706';
+  if (days <= 1) return colors.status.danger;
+  if (days <= 3) return colors.brand.primary;
+  if (days <= 7) return colors.status.warning;
   if (days <= 14) return '#CA8A04';
-  return '#16A34A';
+  return colors.status.success;
 }
 
 export default function DeadlineScreen() {
@@ -61,24 +57,21 @@ export default function DeadlineScreen() {
   const [submitting, setSubmitting] = useState(false);
   const sort = useSortState('due_date', 'asc');
 
-  const load = useCallback(
-    async (isRefresh = false) => {
-      if (!branchId) return;
-      if (isRefresh) setRefreshing(true);
-      else setLoading(true);
-      try {
-        const data = await api.getTaxDeadlines(branchId);
-        const sorted = [...data].sort((a, b) => daysLeft(a.due_date) - daysLeft(b.due_date));
-        setDeadlines(sorted);
-      } catch (e: any) {
-        Alert.alert('Lỗi', e?.message || 'Không tải được lịch nộp');
-      } finally {
-        setLoading(false);
-        setRefreshing(false);
-      }
-    },
-    [branchId]
-  );
+  const load = useCallback(async (isRefresh = false) => {
+    if (!branchId) return;
+    if (isRefresh) setRefreshing(true);
+    else setLoading(true);
+    try {
+      const data = await api.getTaxDeadlines(branchId);
+      const sorted = [...data].sort((a, b) => daysLeft(a.due_date) - daysLeft(b.due_date));
+      setDeadlines(sorted);
+    } catch (e: any) {
+      Alert.alert('Lỗi', e?.message || 'Không tải được lịch nộp');
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, [branchId]);
 
   useEffect(() => { load(); }, [load]);
   useEffect(() => { setSelectedIds([]); }, [branchId]);
@@ -106,9 +99,9 @@ export default function DeadlineScreen() {
       sortable: true,
       sortValue: (d) => d.form,
       render: (d) => (
-        <Text style={styles.cellBold} numberOfLines={1}>
+        <AppText variant="base" weight="bold" numberOfLines={1}>
           {d.form}
-        </Text>
+        </AppText>
       ),
     },
     {
@@ -118,9 +111,9 @@ export default function DeadlineScreen() {
       sortable: true,
       sortValue: (d) => d.period_type,
       render: (d) => (
-        <Text style={styles.cellText} numberOfLines={1}>
+        <AppText variant="base" numberOfLines={1}>
           {d.period_type}
-        </Text>
+        </AppText>
       ),
     },
     {
@@ -129,7 +122,7 @@ export default function DeadlineScreen() {
       width: 110,
       sortable: true,
       sortValue: (d) => d.due_date,
-      render: (d) => <Text style={styles.cellText}>{d.due_date.slice(0, 10)}</Text>,
+      render: (d) => <AppText variant="base">{d.due_date.slice(0, 10)}</AppText>,
     },
     {
       key: 'days',
@@ -143,7 +136,7 @@ export default function DeadlineScreen() {
         const c = urgencyColor(left);
         return (
           <View style={[styles.leftBadge, { backgroundColor: c }]}>
-            <Text style={styles.leftText}>{left > 0 ? `${left} ngày` : 'Quá hạn'}</Text>
+            <AppText variant="base" weight="bold" color="#fff">{left > 0 ? `${left} ngày` : 'Quá hạn'}</AppText>
           </View>
         );
       },
@@ -166,10 +159,10 @@ export default function DeadlineScreen() {
                 key={lvl}
                 style={[
                   styles.levelDot,
-                  { backgroundColor: ok ? '#16A34A' : '#F5F5F5' },
+                  { backgroundColor: ok ? colors.status.success : colors.surface.app },
                 ]}
               >
-                <Text style={styles.levelText}>{lvl}</Text>
+                <AppText variant="small" weight="bold" color={ok ? '#fff' : colors.text.muted}>{lvl}</AppText>
               </View>
             );
           })}
@@ -185,12 +178,12 @@ export default function DeadlineScreen() {
       sortValue: (d) => (d.submitted ? 1 : 0),
       render: (d) =>
         d.submitted ? (
-          <View style={[styles.badge, { backgroundColor: '#16A34A' + '1A' }]}>
-            <Text style={[styles.badgeText, { color: '#16A34A' }]}>Đã nộp</Text>
+          <View style={[styles.badge, { backgroundColor: colors.status.success + '1A' }]}>
+            <AppText variant="small" weight="bold" style={{ color: colors.status.success }}>Đã nộp</AppText>
           </View>
         ) : (
-          <View style={[styles.badge, { backgroundColor: '#D97706' + '1A' }]}>
-            <Text style={[styles.badgeText, { color: '#D97706' }]}>Chưa nộp</Text>
+          <View style={[styles.badge, { backgroundColor: colors.status.warning + '1A' }]}>
+            <AppText variant="small" weight="bold" style={{ color: colors.status.warning }}>Chưa nộp</AppText>
           </View>
         ),
     },
@@ -200,54 +193,57 @@ export default function DeadlineScreen() {
     const left = daysLeft(d.due_date);
     const c = urgencyColor(left);
     const sent = [d.reminded_14, d.reminded_7, d.reminded_3, d.reminded_1].filter(Boolean).length;
+    
     return (
-      <View style={[styles.deadCard, { borderLeftColor: c }]}>
-        <View style={[styles.deadDot, { backgroundColor: c }]} />
-        <View style={{ flex: 1 }}>
-          <Text style={styles.deadForm}>{d.form}</Text>
-          <Text style={styles.deadMeta}>
-            {d.period_type} · đến hạn {d.due_date.slice(0, 10)}
-          </Text>
-          <View style={styles.progressRow}>
-            {[14, 7, 3, 1].map((lvl) => {
-              const ok =
-                (lvl === 14 && d.reminded_14) ||
-                (lvl === 7 && d.reminded_7) ||
-                (lvl === 3 && d.reminded_3) ||
-                (lvl === 1 && d.reminded_1);
-              return (
-                <View
-                  key={lvl}
-                  style={[
-                    styles.levelDot,
-                    { backgroundColor: ok ? '#16A34A' : '#F5F5F5' },
-                  ]}
-                >
-                  <Text style={styles.levelText}>{lvl}</Text>
-                </View>
-              );
-            })}
+      <SwipeableRow rightActions={[]}>
+        <View style={[styles.mRow, { borderLeftColor: c, borderLeftWidth: 4 }]}>
+          <View style={{ flex: 1, paddingRight: 12 }}>
+            <AppText variant="base" weight="bold">{d.form}</AppText>
+            <AppText variant="small" color={colors.text.muted}>
+              {d.period_type} · đến hạn {d.due_date.slice(0, 10)}
+            </AppText>
+            <View style={[styles.progressRow, { justifyContent: 'flex-start' }]}>
+              {[14, 7, 3, 1].map((lvl) => {
+                const ok =
+                  (lvl === 14 && d.reminded_14) ||
+                  (lvl === 7 && d.reminded_7) ||
+                  (lvl === 3 && d.reminded_3) ||
+                  (lvl === 1 && d.reminded_1);
+                return (
+                  <View
+                    key={lvl}
+                    style={[
+                      styles.levelDot,
+                      { backgroundColor: ok ? colors.status.success : colors.surface.app },
+                    ]}
+                  >
+                    <AppText variant="small" weight="bold" color={ok ? '#fff' : colors.text.muted}>{lvl}</AppText>
+                  </View>
+                );
+              })}
+            </View>
+            <AppText variant="small" color={colors.text.muted}>{sent}/4 cấp cảnh báo đã gửi</AppText>
           </View>
-          <Text style={styles.remindText}>{sent}/4 cấp cảnh báo đã gửi</Text>
+          <View style={[styles.leftBadge, { backgroundColor: c }]}>
+            <AppText variant="base" weight="bold" color="#fff">{left > 0 ? `${left} ngày` : 'Quá hạn'}</AppText>
+          </View>
         </View>
-        <View style={[styles.leftBadge, { backgroundColor: c }]}>
-          <Text style={styles.leftText}>{left > 0 ? `${left} ngày` : 'Quá hạn'}</Text>
-        </View>
-      </View>
+      </SwipeableRow>
     );
   };
 
   return (
-    <ScreenContainer compact>
-      <UnifiedHeader icon="calendar-alert"
-        title="Hạn Nộp & Cảnh Báo"
-        subtitle="Lịch nộp thuế & leo thang (TT18 §5)"
-        onBackPress={() => router.push('/ke-toan')}
-        backLabel="Tổng quan"
-        compact={isWide}
-      />
-      <BranchPeriodFilter branchId={branchId ?? ''} onBranchChange={() => {}} />
-
+    <ScreenLayout
+      icon="calendar-alert"
+      title="Hạn Nộp & Cảnh Báo"
+      subtitle="Lịch nộp thuế & leo thang (TT18 §5)"
+      onBackPress={() => router.push('/ke-toan')}
+      compactHeader={isWide}
+    >
+      <View style={{ backgroundColor: colors.surface.app, paddingBottom: 16 }}>
+        <BranchPeriodFilter branchId={branchId ?? ''} onBranchChange={() => {}} />
+      </View>
+      
       {loading ? (
         <View style={styles.loadingBox}>
           <TableSkeleton rowCount={5} />
@@ -282,45 +278,29 @@ export default function DeadlineScreen() {
           />
         </View>
       )}
-    </ScreenContainer>
+    </ScreenLayout>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FAFAFA' },
-  loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingTop: 60 },
-  cellText: { ...font.body, color: '#171717' },
-  cellBold: { ...font.bodyBold, color: '#171717' },
-  leftBadge: { paddingHorizontal: 12, paddingVertical: 16, borderRadius: 8},
-  leftText: { ...font.buttonSmall, color: '#fff', fontWeight: '400' },
-  progressRow: { flexDirection: 'row', gap: 12, marginTop: 8, justifyContent: 'center' },
+  loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  leftBadge: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 8 },
+  progressRow: { flexDirection: 'row', gap: 8, marginTop: 8, marginBottom: 8, justifyContent: 'center' },
   levelDot: {
-    width: 28,
-    height: 28,
-    borderRadius: 999,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  levelText: { ...font.caption, color: '#fff', fontWeight: '400' },
-  badge: { paddingHorizontal: 32, paddingVertical: 8, borderRadius: 12, alignSelf: 'center' },
-  badgeText: { ...font.badge, fontWeight: '400' },
-  remindText: { ...font.caption, color: '#737373', marginTop: 4 },
-  deadCard: {
+  badge: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, alignSelf: 'center' },
+  mRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    padding: 14,
-    marginHorizontal: 16,
-    marginVertical: 4,
-    borderWidth: 1,
-    borderColor: '#F0F0F0',
-    borderLeftWidth: 4,
-    gap: 12,
+    backgroundColor: colors.text.inverse,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.default,
   },
-  deadDot: { width: 8, height: 8, borderRadius: 12},
-  deadForm: { ...font.bodyBold, color: '#171717' },
-  deadMeta: { ...font.bodySmall, color: '#737373', marginTop: 2 },
 });
-
-

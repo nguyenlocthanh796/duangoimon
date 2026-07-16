@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
+import AppText from '../ui/AppText';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font, palette } from '../../theme';
 import { shape } from '../../theme/shape';
@@ -54,16 +55,15 @@ export default function TicketCard({
     <View
       style={{
         backgroundColor: colors.surface.card,
-        borderRadius: shape.radius.lg,
+        borderRadius: shape.radius.md,
         marginBottom: 12,
-        borderWidth: 1.5,
+        borderWidth: 1,
         borderColor: isUrgent
           ? palette.red[300]
           : isDone
             ? colors.border.success
             : colors.border.default,
         overflow: 'hidden',
-        boxShadow: isDone ? '0px 2px 8px rgba(15,23,42,0.03)' : '0px 2px 8px rgba(15,23,42,0.08)',
         opacity: isDone ? 0.75 : 1,
       }}
     >
@@ -115,10 +115,10 @@ export default function TicketCard({
             <Icon name="table-furniture" size={18} color={colors.text.inverse} />
           </View>
           <View style={{ flexShrink: 1 }}>
-            <Text style={{ ...font.sectionTitle, color: colors.text.primary }}>{order.table_name}</Text>
-            <Text style={{ ...font.badge, color: colors.text.muted }}>
+            <AppText variant="medium" weight="bold" color={colors.text.primary}>{order.table_name}</AppText>
+            <AppText variant="small" color={colors.text.muted}>
               #{order.id.slice(-6).toUpperCase()}
-            </Text>
+            </AppText>
           </View>
         </View>
 
@@ -135,31 +135,28 @@ export default function TicketCard({
                   : colors.brand.primaryBg,
             }}
           >
-            <Text
-              style={{
-                ...font.caption,
-                color: isUrgent
+            <AppText
+              variant="small"
+              color={
+                isUrgent
                   ? colors.status.danger
                   : isDone
                     ? colors.status.success
-                    : colors.brand.primary,
-              }}
+                    : colors.brand.primary
+              }
             >
               {getElapsed(order.created_at)}
-            </Text>
+            </AppText>
           </View>
           {isUrgent && (
-            <Text
-              style={{
-                ...font.micro,
-                fontWeight: '600',
-                color: colors.status.danger,
-                marginTop: 2,
-                letterSpacing: 1,
-              }}
+            <AppText
+              variant="small"
+              weight="bold"
+              color={colors.status.danger}
+              style={{ marginTop: 2, letterSpacing: 1 }}
             >
               QUÁ HẠN
-            </Text>
+            </AppText>
           )}
         </View>
       </View>
@@ -181,25 +178,25 @@ export default function TicketCard({
                   marginTop: 1,
                 }}
               >
-                <Text style={{ ...font.caption, color: colors.brand.primary }}>
+                <AppText variant="small" weight="bold" color={colors.brand.primary}>
                   ×{item.quantity}
-                </Text>
+                </AppText>
               </View>
               <View style={{ flex: 1 }}>
-                <Text style={{ ...font.bodySmall, color: colors.text.primary }}>
+                <AppText variant="base" color={colors.text.primary}>
                   {item.product_name}
-                </Text>
+                </AppText>
                 {item.note && (
-                  <Text style={{ ...font.caption, color: palette.amber[600], marginTop: 2 }}>
+                  <AppText variant="small" color={palette.amber[600]} style={{ marginTop: 2 }}>
                     📝 {item.note}
-                  </Text>
+                  </AppText>
                 )}
                 {item.options && Object.keys(item.options).length > 0 && (
-                  <Text style={{ ...font.badge, color: colors.text.muted, marginTop: 1 }}>
+                  <AppText variant="small" color={colors.text.muted} style={{ marginTop: 1 }}>
                     {Object.entries(item.options)
                       .map(([k, v]) => `${k}: ${v}`)
                       .join(' · ')}
-                  </Text>
+                  </AppText>
                 )}
               </View>
             </View>
@@ -217,7 +214,7 @@ export default function TicketCard({
             borderTopColor: palette.amber[200],
           }}
         >
-          <Text style={{ ...font.caption, color: palette.amber[800] }}>📋 {order.note}</Text>
+          <AppText variant="small" color={palette.amber[800]}>📋 {order.note}</AppText>
         </View>
       )}
 
@@ -242,7 +239,7 @@ export default function TicketCard({
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: 6,
-                minHeight: 44,
+                height: 36,
                 borderRadius: shape.radius.md,
                 backgroundColor: colors.brand.primaryBg,
                 borderWidth: 1,
@@ -250,7 +247,7 @@ export default function TicketCard({
               }}
             >
               <Icon name="play" size={16} color={colors.brand.primary} />
-              <Text style={{ ...font.bodySmall, color: colors.brand.primary }}>Bắt đầu làm</Text>
+              <AppText variant="medium" color={colors.brand.primary}>Bắt đầu làm</AppText>
             </TouchableOpacity>
           )}
           <TouchableOpacity
@@ -261,7 +258,7 @@ export default function TicketCard({
               alignItems: 'center',
               justifyContent: 'center',
               gap: 6,
-              minHeight: 44,
+              height: 36,
               borderRadius: shape.radius.md,
               backgroundColor: colors.status.successBg,
               borderWidth: 1,
@@ -269,7 +266,7 @@ export default function TicketCard({
             }}
           >
             <Icon name="check" size={16} color={colors.status.success} />
-            <Text style={{ ...font.bodySmall, color: colors.status.success }}>Xong</Text>
+            <AppText variant="medium" color={colors.status.success}>Xong</AppText>
           </TouchableOpacity>
         </View>
       )}

@@ -25,12 +25,15 @@ import ProductGrid from '../../lib/components/pos/ProductGrid';
 import CartPanel from '../../lib/components/pos/CartPanel';
 import ModifierSheet from '../../lib/components/pos/ModifierSheet';
 import AreaFilter from '../../lib/components/pos/AreaFilter';
+import OrderHeader from '../../lib/components/pos/OrderHeader';
 import type { Table, TableStatus } from '../../lib/components/pos/TableCard';
 
 export default function TableSelection() {
   const { openSidebar } = useSidebar();
+  const gutter = 0; // Flat Grid style
+  const hPad = 0;
   const insets = useSafeAreaInsets();
-  const { isWide, isLandscape, width, breakpoint, containerWidth, gutter, hPad } = useResponsive();
+  const { isWide, isLandscape, width, breakpoint, containerWidth } = useResponsive();
   const [selectedTable, setSelectedTable] = useState<{ id: string; name: string } | null>(null);
   const [tables, setTables] = useState<Table[]>([]);
   const [loading, setLoading] = useState(true);
@@ -247,7 +250,7 @@ export default function TableSelection() {
           columnWrapperStyle={{ gap: gutter, justifyContent: 'center' }}
           contentContainerStyle={{
             paddingHorizontal: hPad,
-            paddingTop: 12,
+            paddingTop: 0,
             paddingBottom: 32 + insets.bottom,
           }}
           refreshControl={
@@ -260,7 +263,7 @@ export default function TableSelection() {
           }
           ListHeaderComponent={null}
           renderItem={({ item }) => (
-            <View style={{ width: cardWidth, marginBottom: 10 }}>
+            <View style={{ width: cardWidth }}>
               <TableCard
                 table={item}
                 selected={selectedTable?.id === item.id}
@@ -317,41 +320,14 @@ export default function TableSelection() {
           >
             {selectedTable ? (
               <>
-                <LinearGradient
-                  colors={colors.gradient.header as [string, string]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={{
-                    paddingTop: insets.top + 10,
-                    paddingBottom: 14,
-                    paddingHorizontal: 12,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: 8,
-                  }}
-                >
-                  <TouchableOpacity
-                    onPress={() => setSelectedTable(null)}
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 8,
-                      backgroundColor: 'rgba(255,255,255,0.18)',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Icon name="arrow-left" size={20} color={colors.icon.inverse} />
-                  </TouchableOpacity>
-                  <View style={{ flex: 1, justifyContent: 'center' }}>
-                    <Text style={{ ...font.sectionTitle, color: colors.text.inverse }}>
-                      {selectedTable.name}
-                    </Text>
-                    <Text style={{ ...font.badge, color: 'rgba(255,255,255,0.80)', marginTop: 1 }}>
-                      {menuProducts.length} món · {itemCount} đã chọn
-                    </Text>
-                  </View>
-                </LinearGradient>
+                <OrderHeader
+                  tableName={selectedTable.name}
+                  itemsCount={itemCount}
+                  productsCount={menuProducts.length}
+                  isWide={isWide}
+                  onClose={() => setSelectedTable(null)}
+                  onOpenSidebar={openSidebar}
+                />
                 <CategoryTabs
                   activeCategory={activeCategory}
                   onSelectCategory={setActiveCategory}

@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
 import { Image } from 'expo-image';
 import { colors, font } from '../../theme/index';
 import { MenuItem } from './types';
 import ProductCard from './ProductCard';
+import AppText from '../ui/AppText';
 import { Breakpoint } from '../../hooks/useResponsive';
 import { ASSETS } from '../../assets';
 
@@ -65,7 +66,7 @@ export default function ProductGrid({
           style={{ width: 120, height: 120 }}
           contentFit="contain"
         />
-        <Text style={{ color: colors.text.muted, ...font.bodySmall }}>Đang tải thực đơn...</Text>
+        <AppText variant="base" color={colors.text.muted}>Đang tải thực đơn...</AppText>
       </View>
     );
   }
@@ -78,7 +79,7 @@ export default function ProductGrid({
           style={{ width: 120, height: 120 }}
           contentFit="contain"
         />
-        <Text style={{ color: colors.text.muted, ...font.bodySmall }}>Không có món nào</Text>
+        <AppText variant="base" color={colors.text.muted}>Không có món nào</AppText>
       </View>
     );
   }

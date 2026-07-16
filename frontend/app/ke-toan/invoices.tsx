@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  
   RefreshControl,
   TextInput,
 } from 'react-native';
@@ -14,12 +13,11 @@ import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api, Invoice } from '../../lib/api';
 import { useAuth } from '../../lib/context/AuthContext';
 import { colors, font, shape } from '../../lib/theme';
+import AppText from '../../lib/components/ui/AppText';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
-import UnifiedHeader from '../../lib/components/ui/UnifiedHeader';
 import FormModal from '../../lib/components/ui/FormModal';
 import FAB from '../../lib/components/ui/FAB';
-import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import EmptyState from '../../lib/components/ui/EmptyState';
 import SwipeableRow, { type SwipeAction } from '../../lib/components/ui/SwipeableRow';
 import InvoiceFormContent from '../../lib/components/ke-toan/InvoiceFormContent';
@@ -27,7 +25,9 @@ import BillDetailModal from '../../lib/components/ke-toan/BillDetailModal';
 import StatusBadge, { type SeverityKey } from '../../lib/components/ke-toan/StatusBadge';
 import DataTable, { Column } from '../../lib/components/ui/DataTable';
 import { useSortState, sumBy, formatVND } from '../../lib/components/ui/tableUtils';
-
+import ScreenLayout from '../../lib/components/layout/ScreenLayout';
+import SectionBlock from '../../lib/components/layout/SectionBlock';
+import ResponsiveGrid from '../../lib/components/layout/ResponsiveGrid';
 type PaidOrder = { id: string; table_name?: string; total?: number; created_at?: string };
 const STATUS_LABEL: Record<string, string> = { moi: 'Mới', da_xuat: 'Đã xuất', huy: 'Hủy' };
 const STATUS_SEVERITY: Record<string, SeverityKey> = {
@@ -49,13 +49,12 @@ const INITIAL_FORM: InvoiceFormState = {
 };
 const formatAmount = (n: number) => n.toLocaleString('vi-VN') + '₫';
 const formatDate = (iso: string | null) => (iso ? iso.slice(0, 10) : '');
-
 export default function InvoicesScreen() {
   const router = useRouter();
   const { openSidebar } = useSidebar();
   const { branchId } = useAuth();
   const { isWide } = useResponsive();
-  const hPad = isWide ? 16 : 4;
+  const hPad = 16;
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -70,7 +69,6 @@ export default function InvoicesScreen() {
   const [selectFilter, setSelectFilter] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'moi' | 'da_xuat' | 'huy'>('all');
   const sort = useSortState('created_at', 'desc');
-
   const load = useCallback(
     async (isRefresh = false) => {
       if (!branchId) return;
@@ -88,9 +86,7 @@ export default function InvoicesScreen() {
     },
     [branchId]
   );
-
   useEffect(() => { load(); }, [load]);
-
   const filtered = useMemo(() => {
     let list = invoices;
     if (filter !== 'all') list = list.filter((i) => i.status === filter);
@@ -105,13 +101,11 @@ export default function InvoicesScreen() {
     }
     return list;
   }, [invoices, filter, selectFilter, query]);
-
   const totals = useMemo(() => {
     const totalAmount = sumBy(filtered, (i: Invoice) => i.total_amount);
     const totalVat = sumBy(filtered, (i: Invoice) => i.vat_amount ?? 0);
     return { totalAmount, totalVat };
   }, [filtered]);
-
   const deleteInvoice = async (id: string) => {
     try {
       await api.deleteInvoice(id);
@@ -120,17 +114,15 @@ export default function InvoicesScreen() {
       Alert.alert('Lỗi', e?.message || 'Xóa thất bại');
     }
   };
-
   const getSwipeActions = (inv: Invoice): SwipeAction[] => [
     {
       key: 'delete',
       label: 'Xóa',
       icon: 'delete',
-      color: '#DC2626',
+      color: colors.status.danger,
       onPress: () => deleteInvoice(inv.id),
     },
   ];
-
   const openForm = async () => {
     setForm(INITIAL_FORM);
     setErrors({});
@@ -145,7 +137,6 @@ export default function InvoicesScreen() {
       setOrdersLoading(false);
     }
   };
-
   const submitForm = async () => {
     const errs: Record<string, string> = {};
     if (!form.order_id) errs.order_id = 'Chọn đơn hàng';
@@ -166,7 +157,6 @@ export default function InvoicesScreen() {
       Alert.alert('Lỗi', e?.message || 'Tạo hóa đơn thất bại');
     }
   };
-
   const columns: Column<Invoice>[] = [
     {
       key: 'invoice_number',
@@ -174,7 +164,7 @@ export default function InvoicesScreen() {
       width: 130,
       sortable: true,
       sortValue: (i) => i.invoice_number || '',
-      render: (i) => <Text style={styles.cellBold} numberOfLines={1}>{i.invoice_number || '—'}</Text>,
+      render: (i) => <AppText variant="base" weight="bold" numberOfLines={1}>{i.invoice_number || '—'}</AppText>,
     },
     {
       key: 'created_at',
@@ -182,7 +172,7 @@ export default function InvoicesScreen() {
       width: 100,
       sortable: true,
       sortValue: (i) => i.created_at || '',
-      render: (i) => <Text style={styles.cellText}>{formatDate(i.created_at)}</Text>,
+      render: (i) => <AppText variant="base">{formatDate(i.created_at)}</AppText>,
     },
     {
       key: 'buyer_name',
@@ -190,13 +180,13 @@ export default function InvoicesScreen() {
       width: 120,
       sortable: true,
       sortValue: (i) => i.buyer_name || '',
-      render: (i) => <Text style={styles.cellText} numberOfLines={1}>{i.buyer_name || '—'}</Text>,
+      render: (i) => <AppText variant="base" numberOfLines={1}>{i.buyer_name || '—'}</AppText>,
     },
     {
       key: 'buyer_tax_code',
       title: 'MST',
       width: 120,
-      render: (i) => <Text style={styles.cellTextMuted} numberOfLines={1}>{i.buyer_tax_code || '—'}</Text>,
+      render: (i) => <AppText variant="base" color={colors.text.muted} numberOfLines={1}>{i.buyer_tax_code || '—'}</AppText>,
     },
     {
       key: 'total_amount',
@@ -205,7 +195,7 @@ export default function InvoicesScreen() {
       align: 'right',
       sortable: true,
       sortValue: (i) => i.total_amount,
-      render: (i) => <Text style={styles.cellAmount}>{formatAmount(i.total_amount)}</Text>,
+      render: (i) => <AppText variant="base" weight="bold">{formatAmount(i.total_amount)}</AppText>,
     },
     {
       key: 'vat_amount',
@@ -214,7 +204,7 @@ export default function InvoicesScreen() {
       align: 'right',
       sortable: true,
       sortValue: (i) => i.vat_amount ?? 0,
-      render: (i) => <Text style={styles.cellAmount}>{formatAmount(i.vat_amount ?? 0)}</Text>,
+      render: (i) => <AppText variant="base" weight="bold">{formatAmount(i.vat_amount ?? 0)}</AppText>,
     },
     {
       key: 'status',
@@ -246,27 +236,25 @@ export default function InvoicesScreen() {
                 }
               }}
             >
-              <Icon name="file-export" size={16} color={'#F97316'} />
+              <Icon name="file-export" size={16} color={colors.brand.primary} />
             </TouchableOpacity>
           )}
           <TouchableOpacity
             style={styles.actionBtn}
             onPress={() => setSelectedOrderId(i.order_id?.toString() || null)}
           >
-            <Icon name="eye-outline" size={16} color={'#737373'} />
+            <Icon name="eye-outline" size={16} color={colors.text.muted} />
           </TouchableOpacity>
         </View>
       ),
     },
   ];
-
   const footerColumns = [
-    { key: 'label', flex: 3, content: <Text style={styles.footerLabel}>Tổng cộng</Text> },
-    { key: 'total', width: 110, align: 'right' as const, content: <Text style={styles.footerValue}>{formatAmount(totals.totalAmount)}</Text> },
-    { key: 'vat', width: 100, align: 'right' as const, content: <Text style={styles.footerValue}>{formatAmount(totals.totalVat)}</Text> },
+    { key: 'label', flex: 3, content: <AppText variant="base" weight="bold">Tổng cộng</AppText> },
+    { key: 'total', width: 110, align: 'right' as const, content: <AppText variant="base" weight="bold">{formatAmount(totals.totalAmount)}</AppText> },
+    { key: 'vat', width: 100, align: 'right' as const, content: <AppText variant="base" weight="bold">{formatAmount(totals.totalVat)}</AppText> },
     { key: 'spacer', flex: 1, content: null },
   ];
-
   const renderMobileCard = (inv: Invoice) => {
     const statusLabel = STATUS_LABEL[inv.status] || inv.status;
     const severity = STATUS_SEVERITY[inv.status] || 'neutral';
@@ -278,80 +266,86 @@ export default function InvoicesScreen() {
           activeOpacity={0.7}
         >
           <View style={{ flex: 1 }}>
-            <Text style={styles.rowPrimary}>{inv.invoice_number || '—'}</Text>
-            <Text style={styles.rowSub}>{inv.buyer_name || '—'} · {formatDate(inv.created_at)}</Text>
+            <AppText variant="base">{inv.invoice_number || '—'}</AppText>
+            <AppText variant="small" color={colors.text.muted} style={{ marginTop: 2 }}>{inv.buyer_name || '—'} · {formatDate(inv.created_at)}</AppText>
           </View>
-          <View style={{ alignItems: 'flex-end' }}>
-            <Text style={styles.rowAmount}>{formatAmount(inv.total_amount)}</Text>
+          <View style={{ alignItems: 'flex-end', gap: 4 }}>
+            <AppText variant="base" weight="bold">{formatAmount(inv.total_amount)}</AppText>
             <StatusBadge label={statusLabel} severity={severity} />
           </View>
         </TouchableOpacity>
       </SwipeableRow>
     );
   };
-
   return (
-    <ScreenContainer compact>
-      <UnifiedHeader
-        icon="receipt"
-        title="Hóa đơn VAT"
-        subtitle="Quản lý phát hành hóa đơn"
-        onMenuPress={openSidebar} compact
-        onBackPress={() => router.push('/ke-toan')}
-        right={
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12}}>
-            {isWide && (
-              <TouchableOpacity style={styles.addBtn} onPress={openForm}>
-                <Icon name="plus" size={18} color="#fff" />
-                <Text style={styles.addBtnText}>Tạo HĐ</Text>
-              </TouchableOpacity>
-            )}
-            <TouchableOpacity
-              style={styles.exportBtn}
-              onPress={async () => {
-                try {
-                  const blob = await api.exportInvoicesCsv();
-                  Alert.alert('Xuất CSV', 'Xuất dữ liệu thành công');
-                } catch (e: any) {
-                  Alert.alert('Lỗi', e?.message || 'Xuất CSV thất bại');
-                }
-              }}
-            >
-              <Icon name="file-delimited" size={18} color="#fff" />
+    <ScreenLayout
+      icon="receipt"
+      title="Hóa đơn VAT"
+      subtitle="Quản lý phát hành hóa đơn"
+      onBackPress={() => router.push('/ke-toan')}
+      compactHeader={isWide}
+      scrollable={false}
+      headerRight={
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12}}>
+          {isWide ? (
+            <TouchableOpacity style={styles.addBtn} onPress={openForm}>
+              <Icon name="plus" size={18} color="#fff" />
+              <AppText variant="medium" weight="bold" color="#fff">Tạo HĐ</AppText>
             </TouchableOpacity>
-          </View>
-        }
-      />
-      <View style={{ paddingHorizontal: hPad, paddingTop: 12 }}>
+          ) : (
+            <TouchableOpacity style={[styles.actionBtn, { backgroundColor: colors.brand.primary, borderWidth: 0, width: 36, height: 36 }]} onPress={openForm}>
+              <Icon name="plus" size={20} color="#fff" />
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity
+            style={styles.exportBtn}
+            onPress={async () => {
+              try {
+                await api.exportInvoicesCsv();
+                Alert.alert('Xuất CSV', 'Xuất dữ liệu thành công');
+              } catch (e: any) {
+                Alert.alert('Lỗi', e?.message || 'Xuất CSV thất bại');
+              }
+            }}
+          >
+            <Icon name="file-delimited" size={18} color={colors.text.primary} />
+            {isWide && <AppText variant="medium" weight="bold" style={{ color: colors.text.primary }}>Xuất CSV</AppText>}
+          </TouchableOpacity>
+        </View>
+      }
+    >
+      <View style={{ paddingHorizontal: hPad, paddingTop: 12, paddingBottom: 12 }}>
         <View style={styles.searchWrap}>
-          <Icon name="magnify" size={18} color={'#737373'} />
+          <Icon name="magnify" size={18} color={colors.text.muted} />
           <TextInput
             style={styles.searchInput}
             placeholder="Tìm số HĐ, tên người mua…"
-            placeholderTextColor={'#737373'}
+            placeholderTextColor={colors.text.muted}
             value={query}
             onChangeText={setQuery}
           />
         </View>
-        <View style={styles.statStrip}>
-          <View style={styles.statBox}>
-            <View style={[styles.statDot, { backgroundColor: '#D97706' }]} />
-            <Text style={styles.statLabel}>Mới</Text>
-            <Text style={styles.statCount}>{invoices.filter((i) => i.status === 'moi').length}</Text>
-          </View>
-          <View style={styles.statBox}>
-            <View style={[styles.statDot, { backgroundColor: '#16A34A' }]} />
-            <Text style={styles.statLabel}>Đã xuất</Text>
-            <Text style={styles.statCount}>{invoices.filter((i) => i.status === 'da_xuat').length}</Text>
-          </View>
-          <View style={styles.statBox}>
-            <View style={[styles.statDot, { backgroundColor: '#DC2626' }]} />
-            <Text style={styles.statLabel}>Hủy</Text>
-            <Text style={styles.statCount}>{invoices.filter((i) => i.status === 'huy').length}</Text>
-          </View>
-        </View>
       </View>
-      <View style={{ flex: 1, paddingHorizontal: hPad, paddingTop: 8 }}>
+      <SectionBlock style={{ marginBottom: 12 }}>
+        <ResponsiveGrid mobileCols={3} minColWidth={80} gap={12}>
+          <View style={styles.statBox}>
+            <View style={[styles.statDot, { backgroundColor: colors.status.warning }]} />
+            <AppText variant="small" color={colors.text.muted}>Mới</AppText>
+            <AppText variant="medium" weight="bold">{invoices.filter((i) => i.status === 'moi').length}</AppText>
+          </View>
+          <View style={styles.statBox}>
+            <View style={[styles.statDot, { backgroundColor: colors.status.success }]} />
+            <AppText variant="small" color={colors.text.muted}>Đã xuất</AppText>
+            <AppText variant="medium" weight="bold">{invoices.filter((i) => i.status === 'da_xuat').length}</AppText>
+          </View>
+          <View style={styles.statBox}>
+            <View style={[styles.statDot, { backgroundColor: colors.status.danger }]} />
+            <AppText variant="small" color={colors.text.muted}>Hủy</AppText>
+            <AppText variant="medium" weight="bold">{invoices.filter((i) => i.status === 'huy').length}</AppText>
+          </View>
+        </ResponsiveGrid>
+      </SectionBlock>
+      <View style={{ flex: 1, paddingTop: 8 }}>
         <DataTable
           columns={columns}
           data={filtered}
@@ -391,43 +385,41 @@ export default function InvoicesScreen() {
         orderId={selectedOrderId}
         onClose={() => setSelectedOrderId(null)}
       />
-    </ScreenContainer>
+    </ScreenLayout>
   );
 }
-
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FAFAFA' },
+  container: { flex: 1, backgroundColor: colors.surface.app },
   addBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    paddingHorizontal: 12,
-    height: 44,
+    gap: 6,
+    paddingHorizontal: 16,
+    height: 36,
     borderRadius: 8,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    backgroundColor: colors.brand.primary,
   },
   addBtnText: { ...font.buttonSmall, fontWeight: '600', color: '#fff' },
   searchWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
+    gap: 8,
+    backgroundColor: colors.text.inverse,
+    borderRadius: 8,
     paddingHorizontal: 12,
-    paddingVertical: 8,
+    height: 36,
     borderWidth: 1,
-    borderColor: '#F0F0F0',
+    borderColor: colors.border.default,
   },
-  searchInput: { flex: 1, ...font.bodySmall, color: '#171717', paddingVertical: 16},
+  searchInput: { flex: 1, ...font.bodySmall, color: colors.text.primary, paddingVertical: 0},
   statStrip: {
     flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.text.inverse,
     marginTop: 12,
-    borderRadius: 12,
+    borderRadius: 0,
     paddingVertical: 12,
     borderWidth: 1,
-    borderColor: '#F0F0F0',
-    boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
+    borderColor: colors.border.default,
     elevation: 2,
   },
   statBox: {
@@ -435,17 +427,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
+    gap: 8,
   },
   statDot: { width: 10, height: 10, borderRadius: 5 },
-  statLabel: { ...font.caption, color: '#737373', fontWeight: '400' },
-  statCount: { ...font.body, fontWeight: '400' },
-  cellText: { ...font.body, color: '#171717' },
-  cellTextMuted: { ...font.body, color: '#737373' },
-  cellBold: { ...font.bodyBold, color: '#171717' },
-  cellAmount: { ...font.body, fontWeight: '400', color: '#171717' },
-  footerLabel: { ...font.body, fontWeight: '400', color: '#171717' },
-  footerValue: { ...font.body, fontWeight: '400', color: '#171717' },
   invoiceIcon: {
     width: 38,
     height: 38,
@@ -453,38 +437,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  rowPrimary: { ...font.body, fontWeight: '400', color: '#171717' },
-  rowSub: { ...font.bodySmall, color: '#737373', marginTop: 2 },
-  rowAmount: { ...font.bodyBold, color: '#171717' },
   exportBtn: {
-    backgroundColor: '#F97316',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    minHeight: 44,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 6,
+    backgroundColor: colors.surface.app,
+    borderWidth: 1,
+    borderColor: colors.border.default,
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    height: 36,
   },
-  exportText: { ...font.badge, fontWeight: '600', color: colors.text.inverse },
   actionBtn: {
     width: 32,
     height: 32,
     borderRadius: 8,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: colors.surface.app,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#F0F0F0',
+    borderColor: colors.border.default,
   },
   mRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: '#F0F0F0',
+    backgroundColor: colors.text.inverse,
+    borderRadius: 0,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.default,
   },
 });
-
-

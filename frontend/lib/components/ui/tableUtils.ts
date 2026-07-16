@@ -35,11 +35,12 @@ export function applySort<T>(
   sortDir: SortDir,
   columns: { key: string; sortValue?: (row: T) => number | string }[]
 ): T[] {
-  if (!sortKey) return rows;
+  const safeRows = Array.isArray(rows) ? rows : [];
+  if (!sortKey) return safeRows;
   const col = columns.find((c) => c.key === sortKey);
-  if (!col) return rows;
+  if (!col) return safeRows;
   const valFn = col.sortValue;
-  const sorted = [...rows].sort((a, b) => {
+  const sorted = [...safeRows].sort((a, b) => {
     const va = valFn ? valFn(a) : ((a as any)[sortKey] ?? '');
     const vb = valFn ? valFn(b) : ((b as any)[sortKey] ?? '');
     if (va < vb) return -1;

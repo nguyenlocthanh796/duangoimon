@@ -13,6 +13,7 @@ import TicketCard from '../../lib/components/kitchen/TicketCard';
 import KanbanColumn from '../../lib/components/kitchen/KanbanColumn';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import UnifiedHeader from '../../lib/components/ui/UnifiedHeader';
+import AppText from '../../lib/components/ui/AppText';
 import type { TicketOrder, KanbanStatus } from '../../lib/components/kitchen/TicketCard';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -269,42 +270,43 @@ export default function KitchenScreen() {
             <TouchableOpacity
               onPress={() => setSoundEnabled((prev) => !prev)}
               style={{
-                width: 42,
-                height: 42,
+                width: 36,
+                height: 36,
                 borderRadius: 8,
-                backgroundColor: soundEnabled ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.10)',
+                backgroundColor: soundEnabled ? colors.brand.primary : colors.surface.disabled,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
               <Icon
                 name={soundEnabled ? 'bell-ring' : 'bell-off'}
-                size={20}
-                color="#fff"
+                size={18}
+                color={soundEnabled ? '#fff' : colors.text.muted}
               />
             </TouchableOpacity>
             <View
               style={{
-                backgroundColor: 'rgba(255,255,255,0.18)',
+                backgroundColor: colors.surface.disabled,
                 paddingHorizontal: 12,
-                paddingVertical: 12,
+                height: 36,
+                justifyContent: 'center',
                 borderRadius: 8,
               }}
             >
-              <Text style={{ ...font.bodySmall, color: '#fff' }}>{allOrders.length} đơn</Text>
+              <AppText variant="base" weight="bold" color={colors.text.primary}>{allOrders.length} đơn</AppText>
             </View>
             <TouchableOpacity
               onPress={fetchOrders}
               style={{
-                width: 42,
-                height: 42,
+                width: 36,
+                height: 36,
                 borderRadius: 8,
-                backgroundColor: 'rgba(255,255,255,0.10)',
+                backgroundColor: colors.surface.disabled,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
-              <Icon name="refresh" size={20} color="#fff" />
+              <Icon name="refresh" size={18} color={colors.text.primary} />
             </TouchableOpacity>
           </View>
         }
@@ -332,7 +334,7 @@ export default function KitchenScreen() {
                 onPress={() => setActiveTab(col.id)}
                 style={{
                   flex: 1,
-                  paddingVertical: 32,
+                  height: 36,
                   borderRadius: 8,
                   backgroundColor: sel ? col.dotColor + '20' : '#F5F5F5',
                   borderWidth: 1,
@@ -340,7 +342,7 @@ export default function KitchenScreen() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexDirection: 'row',
-                  gap: 12,
+                  gap: 6,
                 }}
               >
                 <Icon
@@ -348,24 +350,26 @@ export default function KitchenScreen() {
                   size={16}
                   color={sel ? col.dotColor : colors.icon.muted}
                 />
-                <Text style={{ ...font.label, color: sel ? col.dotColor : '#404040' }}>
+                <AppText variant="base" weight="bold" color={sel ? col.dotColor : colors.text.primary}>
                   {col.label}
-                </Text>
+                </AppText>
                 <View
                   style={{
                     width: 20,
                     height: 20,
-                    borderRadius: 12,
+                    borderRadius: 6,
                     backgroundColor: sel ? col.dotColor : '#F5F5F5',
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}
                 >
-                  <Text
-                    style={{ ...font.badge, color: sel ? colors.text.inverse : '#737373' }}
+                  <AppText
+                    variant="small"
+                    weight="bold"
+                    color={sel ? colors.text.inverse : colors.text.muted}
                   >
                     {count}
-                  </Text>
+                  </AppText>
                 </View>
               </TouchableOpacity>
             );

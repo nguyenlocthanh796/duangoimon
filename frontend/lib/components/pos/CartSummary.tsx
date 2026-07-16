@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text } from 'react-native';
-import { colors, font, formatPrice } from '../../theme';
+import { View } from 'react-native';
+import { colors, formatPrice } from '../../theme';
+import AppText from '../ui/AppText';
 
 interface CartSummaryProps {
   total: number;
@@ -20,35 +21,35 @@ export default function CartSummary({
   return (
     <View style={{ gap: 2 }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Text style={{ ...font.bodySmall, color: colors.text.secondary }}>Tạm tính</Text>
-        <Text style={{ ...font.bodyBold, color: colors.text.primary }}>{formatPrice(total)}</Text>
+        <AppText variant="base" color={colors.text.secondary}>Tạm tính</AppText>
+        <AppText variant="medium" weight="bold" color={colors.text.primary}>{formatPrice(total)}</AppText>
       </View>
       {vatAmount !== undefined && vatAmount > 0 && (
         <View
           style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
         >
-          <Text style={{ ...font.bodySmall, color: colors.text.secondary }}>Thuế VAT (đã gồm)</Text>
-          <Text style={{ ...font.bodySmall, color: colors.text.secondary }}>
+          <AppText variant="base" color={colors.text.secondary}>Thuế VAT (đã gồm)</AppText>
+          <AppText variant="base" color={colors.text.secondary}>
             {formatPrice(vatAmount)}
-          </Text>
+          </AppText>
         </View>
       )}
       {serviceCharge > 0 && (
         <View
           style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
         >
-          <Text style={{ ...font.bodySmall, color: colors.text.secondary }}>
+          <AppText variant="base" color={colors.text.secondary}>
             Phí service ({serviceChargePercent}%)
-          </Text>
-          <Text style={{ ...font.bodySmall, color: colors.text.secondary }}>
+          </AppText>
+          <AppText variant="base" color={colors.text.secondary}>
             {formatPrice(serviceCharge)}
-          </Text>
+          </AppText>
         </View>
       )}
       <View style={{ height: 1, backgroundColor: colors.border.light, marginVertical: 2 }} />
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Text style={{ ...font.bodyBold, color: colors.text.primary }}>Tổng cộng</Text>
-        <Text style={{ ...font.price, color: colors.text.primary }}>{formatPrice(grandTotal)}</Text>
+        <AppText variant="medium" weight="bold" color={colors.text.primary}>Tổng cộng</AppText>
+        <AppText variant="large" weight="bold" color={colors.text.primary}>{formatPrice(grandTotal)}</AppText>
       </View>
     </View>
   );

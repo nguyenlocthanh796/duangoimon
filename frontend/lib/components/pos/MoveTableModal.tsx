@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Modal, ActivityIndicator, TextInput } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { View, TouchableOpacity, Modal, ActivityIndicator, TextInput } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { api } from '../../api';
 import { colors, font } from '../../theme';
+import AppText from '../ui/AppText';
 
 interface MoveTableModalProps {
   visible: boolean;
@@ -67,19 +68,19 @@ export default function MoveTableModal({
               marginBottom: 8,
             }}
           >
-            <Text style={{ ...font.sectionTitle, color: colors.text.primary }}>{title}</Text>
+            <AppText variant="large" color={colors.text.primary} weight="bold">{title}</AppText>
             <TouchableOpacity
               onPress={onClose}
               style={{
                 width: 32,
                 height: 32,
-                borderRadius: 16,
+                borderRadius: 8,
                 backgroundColor: colors.surface.disabled,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
-              <MaterialIcons name="close" size={20} color={colors.icon.default} />
+              <MaterialCommunityIcons name="close" size={20} color={colors.icon.default} />
             </TouchableOpacity>
           </View>
           <View
@@ -95,7 +96,7 @@ export default function MoveTableModal({
               marginBottom: 8,
             }}
           >
-            <MaterialIcons name="search" size={18} color={colors.icon.muted} />
+            <MaterialCommunityIcons name="magnify" size={18} color={colors.icon.muted} />
             <TextInput
               value={search}
               onChangeText={setSearch}
@@ -136,32 +137,31 @@ export default function MoveTableModal({
                       justifyContent: 'center',
                     }}
                   >
-                    <MaterialIcons
-                      name="table-restaurant"
+                    <MaterialCommunityIcons name="table-furniture"
                       size={18}
                       color={t.status === 'co_khach' ? '#0284c7' : '#16a34a'}
                     />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={{ ...font.body, color: colors.text.primary }}>{t.name}</Text>
-                    <Text style={{ ...font.caption, color: colors.text.secondary }}>
+                    <AppText variant="medium" color={colors.text.primary}>{t.name}</AppText>
+                    <AppText variant="small" color={colors.text.secondary}>
                       {t.status === 'co_khach' ? 'Có khách' : 'Trống'} · {t.area || 'Không khu vực'}
-                    </Text>
+                    </AppText>
                   </View>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.icon.muted} />
+                  <MaterialCommunityIcons name="chevron-right" size={20} color={colors.icon.muted} />
                 </TouchableOpacity>
               ))}
               {filtered.length === 0 && (
-                <Text
+                <AppText
+                  variant="small"
+                  color={colors.text.muted}
                   style={{
-                    ...font.bodySmall,
-                    color: colors.text.muted,
                     paddingVertical: 30,
                     textAlign: 'center',
                   }}
                 >
                   {filterOccupied ? 'Không có bàn có khách phù hợp' : 'Không tìm thấy bàn'}
-                </Text>
+                </AppText>
               )}
             </View>
           )}

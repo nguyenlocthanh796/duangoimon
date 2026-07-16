@@ -1,7 +1,8 @@
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import { StyleSheet } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { colors, font } from '../../theme';
+import { colors } from '../../theme';
+import AppText from '../ui/AppText';
 
 const MEDAL = ['🥇', '🥈', '🥉'];
 
@@ -37,23 +38,25 @@ interface DayData {
 export function DailyReportTable({ data }: { data: DayData[] }) {
   return (
     <View style={s.section}>
-      <Text style={s.sectionTitle}>📋 Chi tiết theo ngày</Text>
+      <View style={{flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8}}>
+        <AppText variant="large" style={{color: colors.text.primary}}>📋 Chi tiết theo ngày</AppText>
+      </View>
       <View style={s.tableHeader}>
-        <Text style={[s.thCell, { flex: 1.5 }]}>Ngày</Text>
-        <Text style={[s.thCell, { flex: 1, textAlign: 'center' }]}>Đơn</Text>
-        <Text style={[s.thCell, { flex: 2, textAlign: 'right' }]}>Doanh thu</Text>
+        <AppText variant="small" style={[s.thCell, { flex: 1.5 }]}>Ngày</AppText>
+        <AppText variant="small" style={[s.thCell, { flex: 1, textAlign: 'center' }]}>Đơn</AppText>
+        <AppText variant="small" style={[s.thCell, { flex: 2, textAlign: 'right' }]}>Doanh thu</AppText>
       </View>
       {data.map((d, i) => (
-        <View key={i} style={[s.tableRow, i % 2 === 0 && { backgroundColor: '#FAFAFA' }]}>
-          <Text style={[s.tdCell, { flex: 1.5 }]}>
+        <View key={i} style={[s.tableRow, i % 2 === 0 && { backgroundColor: colors.surface.app }]}>
+          <AppText variant="base" style={[s.tdCell, { flex: 1.5 }]}>
             {formatDayLabel(d.date)} {formatDate(d.date)}
-          </Text>
+          </AppText>
           <View style={{ flex: 1, alignItems: 'center' }}>
             <View style={s.ordersBadge}>
-              <Text style={s.ordersCount}>{d.orders}</Text>
+              <AppText variant="small" style={s.ordersCount}>{d.orders}</AppText>
             </View>
           </View>
-          <Text style={[s.revCell, { flex: 2 }]}>{formatFullVND(d.revenue)}</Text>
+          <AppText variant="base" style={[s.revCell, { flex: 2 }]}>{formatFullVND(d.revenue)}</AppText>
         </View>
       ))}
     </View>
@@ -68,32 +71,34 @@ interface TopProduct {
 export function TopProductsTable({ data }: { data: TopProduct[] }) {
   return (
     <View style={s.section}>
-      <Text style={s.sectionTitle}>🏆 Top sản phẩm bán chạy</Text>
+      <View style={{flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8}}>
+        <AppText variant="large" style={{color: colors.text.primary}}>🏆 Top sản phẩm bán chạy</AppText>
+      </View>
       {data.length === 0 ? (
         <View style={s.emptyBox}>
           <Icon name="inbox" size={40} color="#CBD5E1" />
-          <Text style={s.emptyText}>Không có dữ liệu</Text>
+          <AppText variant="base" style={s.emptyText}>Không có dữ liệu</AppText>
         </View>
       ) : (
         <>
           <View style={s.tableHeader}>
-            <Text style={[s.thCell, { width: 36 }]}>#</Text>
-            <Text style={[s.thCell, { flex: 1 }]}>Sản phẩm</Text>
-            <Text style={[s.thCell, { width: 60, textAlign: 'center' }]}>SL</Text>
-            <Text style={[s.thCell, { width: 90, textAlign: 'right' }]}>Doanh thu</Text>
+            <AppText variant="small" style={[s.thCell, { width: 36 }]}>#</AppText>
+            <AppText variant="small" style={[s.thCell, { flex: 1 }]}>Sản phẩm</AppText>
+            <AppText variant="small" style={[s.thCell, { width: 60, textAlign: 'center' }]}>SL</AppText>
+            <AppText variant="small" style={[s.thCell, { width: 90, textAlign: 'right' }]}>Doanh thu</AppText>
           </View>
           {data.map((p, i) => (
-            <View key={i} style={[s.tableRow, i % 2 === 0 && { backgroundColor: '#FAFAFA' }]}>
-              <Text style={[s.rankCell, { width: 36 }]}>{i < 3 ? MEDAL[i] : `${i + 1}`}</Text>
-              <Text style={[s.tdCell, { flex: 1 }]} numberOfLines={1}>
+            <View key={i} style={[s.tableRow, i % 2 === 0 && { backgroundColor: colors.surface.app }]}>
+              <AppText variant="base" style={[s.rankCell, { width: 36 }]}>{i < 3 ? MEDAL[i] : `${i + 1}`}</AppText>
+              <AppText variant="base" style={[s.tdCell, { flex: 1 }]} numberOfLines={1}>
                 {p.name}
-              </Text>
+              </AppText>
               <View style={{ width: 60, alignItems: 'center' }}>
                 <View style={s.qtyBadge}>
-                  <Text style={s.qtyText}>{p.quantity}</Text>
+                  <AppText variant="small" style={s.qtyText}>{p.quantity}</AppText>
                 </View>
               </View>
-              <Text style={[s.revCell, { width: 90 }]}>{formatVND(p.total)}</Text>
+              <AppText variant="base" style={[s.revCell, { width: 90 }]}>{formatVND(p.total)}</AppText>
             </View>
           ))}
         </>
@@ -102,51 +107,40 @@ export function TopProductsTable({ data }: { data: TopProduct[] }) {
   );
 }
 
-const CARD_SHADOW = { boxShadow: '0px 2px 8px rgba(0,0,0,0.06)' };
-
 const s = StyleSheet.create({
   section: {
     backgroundColor: colors.surface.card,
-    borderRadius: 4,
-    marginHorizontal: 12,
-    marginTop: 14,
-    padding: 16,
-    ...CARD_SHADOW,
+    borderRadius: 0,
+    marginHorizontal: 0,
+    marginTop: 8,
+    padding: 6,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: colors.border.default,
   },
-  sectionTitle: { ...font.sectionTitle, color: colors.text.primary, marginBottom: 14 },
-  emptyBox: { alignItems: 'center', paddingVertical: 24, gap: 8 },
-  emptyText: { ...font.bodySmall, color: colors.text.secondary },
+  emptyBox: { alignItems: 'center', paddingVertical: 12, gap: 8 },
+  emptyText: { color: colors.text.secondary },
   tableHeader: {
     flexDirection: 'row',
     paddingVertical: 8,
     paddingHorizontal: 4,
-    borderBottomWidth: 1.5,
-    borderBottomColor: colors.border.light,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.default,
     marginBottom: 4,
   },
-  thCell: { ...font.caption, color: colors.text.secondary, fontWeight: '600' },
+  thCell: { color: colors.text.secondary, fontWeight: '600' },
   tableRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 8,
     paddingHorizontal: 4,
-    borderRadius: 4,
+    borderRadius: 0,
   },
-  tdCell: { ...font.bodySmall, color: colors.text.primary },
-  revCell: { ...font.bodySmall, fontWeight: '600', color: colors.text.primary, textAlign: 'right' },
-  rankCell: { ...font.body, fontWeight: '600', color: colors.brand.primary },
-  ordersBadge: {
-    backgroundColor: colors.brand.primaryBg,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  ordersCount: { ...font.bodySmall, fontWeight: '600', color: colors.status.info },
-  qtyBadge: {
-    backgroundColor: colors.brand.primaryBg,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  qtyText: { ...font.bodySmall, fontWeight: '600', color: colors.brand.primary },
+  tdCell: { color: colors.text.primary },
+  revCell: { fontWeight: '600', color: colors.text.primary, textAlign: 'right' },
+  rankCell: { fontWeight: '600', color: colors.brand.primary },
+  ordersBadge: {},
+  ordersCount: { fontWeight: '600', color: colors.status.info },
+  qtyBadge: {},
+  qtyText: { fontWeight: '600', color: colors.brand.primary },
 });

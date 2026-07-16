@@ -40,11 +40,10 @@ export default function ScreenContainer({
       style={[
         styles.inner,
         {
-          paddingHorizontal: padH,
-          paddingTop: padV,
-          paddingBottom: padV,
-          maxWidth: isWide ? maxWidth : undefined,
-          alignSelf: isWide ? 'center' : 'stretch',
+          paddingHorizontal: 0,
+          paddingTop: 0,
+          paddingBottom: 0,
+          alignSelf: 'stretch',
           width: '100%',
         },
         accentBorder === 'top' && styles.accentTop,
