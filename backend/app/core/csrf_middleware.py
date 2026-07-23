@@ -2,6 +2,7 @@
 
 # Options: comma-separated allowed origins, e.g. "http://localhost:3000,http://localhost:8081"
 import os
+import re
 
 from fastapi import HTTPException, Request
 
@@ -9,6 +10,15 @@ ALLOWED_ORIGINS = set(
     o.strip()
     for o in os.getenv("CORS_ORIGINS", "http://localhost:3000,http://localhost:8081").split(",")
     if o.strip()
+)
+
+# Regex to support wildcards/subdomains for local, cloudflared, pages.dev, railway, and render
+ALLOWED_ORIGINS_REGEX = re.compile(
+    r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$"
+    r"|^https://[a-z0-9-]+\.trycloudflare\.com$"
+    r"|^https://(?:[a-z0-9-]+\.)*pages\.dev$"
+    r"|^https://(?:[a-z0-9-]+\.)*up\.railway\.app$"
+    r"|^https://[a-z0-9-]+\.onrender\.com$"
 )
 
 
@@ -33,7 +43,7 @@ async def csrf_middleware(request: Request, call_next):
             raise HTTPException(status_code=403, detail="CSRF check: missing Origin/Referer")
 
     if origin:
-        if origin not in ALLOWED_ORIGINS:
+        if origin not in ALLOWED_ORIGINS and not ALLOWED_ORIGINS_REGEX.match(origin):
             raise HTTPException(status_code=403, detail="CSRF check: invalid Origin")
     elif referer:
         allowed = False
@@ -42,6 +52,17 @@ async def csrf_middleware(request: Request, call_next):
                 allowed = True
                 break
         if not allowed:
+            # Check against regex pattern
+            # Strip trailing slash if present for cleaner matching
+            ref_clean = referer.rstrip("/")
+            # Also extract origin part for regex matching
+            parts = ref_clean.split("/")
+            if len(parts) >= 3:
+                ref_origin = f"{parts[0]}//{parts[2]}"
+                if ALLOWED_ORIGINS_REGEX.match(ref_origin):
+                    allowed = True
+        if not allowed:
             raise HTTPException(status_code=403, detail="CSRF check: invalid Referer")
 
     return await call_next(request)
+

@@ -1,16 +1,11 @@
 import { ApiError, ExpectedNotFoundError } from '../logger';
 
 // API URL resolution:
-// 1. Use EXPO_PUBLIC_API_URL env variable if set (for flexible dev/deploy)
-// 2. In production, use same host (backend serves frontend)
-// 3. Dev fallback: localhost:8000
+// In production, EXPO_PUBLIC_API_URL is set during build via .env
+// If not set, use the Render backend URL directly
 const API_URL =
   (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_API_URL) ||
-  (typeof window !== 'undefined' && window.location
-    ? window.location.host === 'localhost:8081' || window.location.host === 'localhost:19006'
-      ? 'http://localhost:8000/api/v1'
-      : `${window.location.protocol}//${window.location.host}/api/v1`
-    : 'http://localhost:8000/api/v1');
+  'https://pos-quanan-backend.onrender.com/api/v1';
 
 import { getToken as getSecureToken, setToken as setSecureToken, clearToken as clearSecureToken } from '../secure-storage';
 

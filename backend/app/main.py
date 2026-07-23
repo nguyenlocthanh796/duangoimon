@@ -1,1 +1,338 @@
-IyBfIC0qLSBjb2Rpbmc6IHV0Zi04IC0qLQ0KcHl0aG9uID49IDMuMTEsIDwgNA0KcGFzc2xpYiA+PSAxLjcsIDwgMg0KDQoiIiINClBPUyBGJkIgQVBJIOKAlCBGYXN0QVBJIGFwcGxpY2F0aW9uIGVudHJ5IHBvaW50Lg0KDQpMYXlvdXQ6DQogIGltcG9ydHMgKHN0ZGxpYiDihpIgM3JkLXBhcnR5IOKGkiBhcHApDQogIGxpZmVzcGFuIChzdGFydHVwIC8gc2h1dGRvd24pDQogIEZhc3RBUEkgYXBwIGNyZWF0aW9uDQogIG1pZGRsZXdhcmUgc3RhY2sNCiAgcm91dGUgcmVnaXN0cmF0aW9uDQogIFdlYlNvY2tldCBoYW5kbGVycw0KICBoZWFsdGggLyByZWFkaW5lc3MgcHJvYmVzDQogIGV4Y2VwdGlvbiBoYW5kbGVycw0KIiIiDQoNCmltcG9ydCBsb2dnaW5nDQppbXBvcnQgb3MNCmltcG9ydCByZQ0KaW1wb3J0IHNvY2tldA0KaW1wb3J0IHN5cw0KZnJvbSBjb250ZXh0bGliIGltcG9ydCBhc3luY2NvbnRleHRtYW5hZ2VyDQoNCmZyb20gZmFzdGFwaSBpbXBvcnQgRmFzdEFQSSwgUmVxdWVzdCwgV2ViU29ja2V0LCBXZWJTb2NrZXREaXNjb25uZWN0DQpmcm9tIGZhc3RhcGkuZXhjZXB0aW9ucyBpbXBvcnQgUmVxdWVzdFZhbGlkYXRpb25FcnJvcg0KZnJvbSBmYXN0YXBpLm1pZGRsZXdhcmUuY29ycyBpbXBvcnQgQ09SU01pZGRsZXdhcmUNCmZyb20gZmFzdGFwaS5yZXNwb25zZXMgaW1wb3J0IEpTT05SZXNwb25zZQ0KZnJvbSBzdGFybGV0dGUuZXhjZXB0aW9ucyBpbXBvcnQgSFRUUEV4Y2VwdGlvbiBhcyBTdGFybGV0dGVIVFRQRXhjZXB0aW9uDQoNCmZyb20gYXBwLmNvcmUubG9nZ2luZ19jb25maWcgaW1wb3J0IHNldHVwX2xvZ2dpbmcNCg0Kc2V0dXBfbG9nZ2luZygpDQoNCmZyb20gYXBwLmNvcmUuZGF0YWJhc2UgaW1wb3J0IGVuZ2luZQ0KZnJvbSBhcHAuY29yZS5yYmFjIGltcG9ydCByZXF1aXJlX2JyYW5jaF9hY2Nlc3MsIHJlcXVpcmVfcm9sZQ0KZnJvbSBhcHAuY29yZS53c19tYW5hZ2VyIGltcG9ydCB3c19tYW5hZ2VyDQpmcm9tIGFwcC5taWRkbGV3YXJlLnJlcXVlc3RfaWQgaW1wb3J0IFJlcXVlc3RJRE1pZGRsZXdhcmUNCmZyb20gYXBwLm1pZGRsZXdhcmUuc2VjdXJpdHlfaGVhZGVycyBpbXBvcnQgU2VjdXJpdHlIZWFkZXJzTWlkZGxld2FyZQ0KZnJvbSBhcHAuY29yZS5hdWRpdF9taWRkbGV3YXJlIGltcG9ydCBhdWRpdF9tdXRhdGlvbl9taWRkbGV3YXJlDQpmcm9tIGFwcC5jb3JlLmNzcmZfbWlkZGxld2FyZSBpbXBvcnQgY3NyZl9taWRkbGV3YXJlDQpmcm9tIGFwcC5jb3JlLnJhdGVfbGltaXRlciBpbXBvcnQgcmF0ZV9saW1pdF9taWRkbGV3YXJlDQpmcm9tIGFwcC5hcGkudjEgaW1wb3J0IGF1dGgsIHB1YmxpYywgaW50ZWdyYXRpb25zDQpmcm9tIGFwcC5hcGkudjEgaW1wb3J0IGJhbl9oYW5nLCBrZV90b2FuLCBxdWFuX2x5LCB0aHVlDQoNCmxvZ2dlciA9IGxvZ2dpbmcuZ2V0TG9nZ2VyKF9fbmFtZV9fKQ0KDQojIOKUlMKgIFdpbmRvd3MgLyBQeXRob24gMy4xNCsgc2VsZWN0b3IgZXZlbnQgbG9vcCDihJQNCmlmIHN5cy5wbGF0Zm9ybSA9PSBcIndpbjMyXCI6DQogICAgaW1wb3J0IGFzeW5jaW8NCiAgICBpbXBvcnQgc2VsZWN0b3JzDQoNCiAgICB0cnk6DQogICAgICAgIGFzeW5jaW8uc2V0X2V2ZW50X2xvb3BfcG9saWN5KGFzeW5jaW8uV2luZG93c1NlbGVjdG9yRXZlbnRMb29wUG9saWN5KCkpDQogICAgZXhjZXB0IERlcHJlY2F0aW9uV2FybmluZzoNCiAgICAgICAgcGFzcw0KDQogICAgdHJ5Og0KICAgICAgICBsb29wID0gYXN5bmNpby5nZXRfcnVubmluZ19sb29wKCkNCiAgICAgICAgaWYgaXNpbnN0YW5jZShsb29wLCBhc3luY2lvLlByb2FjdG9yRXZlbnRMb29wKToNCiAgICAgICAgICAgIGxvb3AuY2xvc2UoKQ0KICAgICAgICAgICAgYXN5bmNpby5zZXRfZXZlbnRfbG9vcChhc3luY2lvLlNlbGVjdG9yRXZlbnRMb29wKHNlbGVjdG9ycy5TZWxlY3RTZWxlY3RvcigpKSkNCiAgICBleGNlcHQgUnVudGltZUVycm9yOg0KICAgICAgICBwYXNzDQoNCg0KIyDilJTCoCBMaWZlc3BhbiAoc3RhcnR1cCAvIHNodXRkb3duKSDilJQNCg0KQGFzeW5jY29udGV4dG1hbmFnZXINCmFzeW5jIGRlZiBsaWZlc3BhbihhcHA6IEZhc3RBUEkpOg0KICAgIGZyb20gYXBwLmNvcmUuc2VudHJ5X2NvbmZpZyBpbXBvcnQgaW5pdF9zZW50cnkNCiAgICBpbml0X3NlbnRyeSgpDQoNCiAgICAjIFRheCBzY2hlZHVsZXIg4oCUIGZhaWxzIGdyYWNlZnVsbHkgb24gV2luZG93cyAoUHJvYWN0b3JFdmVudExvb3ApDQogICAgdHJ5Og0KICAgICAgICBmcm9tIGFwcC5jb3JlLnRodWUuc2NoZWR1bGVyIGltcG9ydCBzdGFydF9zY2hlZHVsZXINCiAgICAgICAgYXdhaXQgc3RhcnRfc2NoZWR1bGVyKCkNCiAgICBleGNlcHQgRXhjZXB0aW9uIGFzIGU6DQogICAgICAgIGxvZ2dlci53YXJuaW5nKFZUYXggc2NoZWR1bGVyIG5vdCBzdGFydGVkOiAlcyIsIGUpDQoNCiAgICB5aWVsZA0KICAgIGF3YWl0IGVuZ2luZS5kaXNwb3NlKCkNCg0KDQojIOKUlMKgIEZhc3RBUEkgYXBwIOKUlA0KDQpfc2hvd19kb2NzID0gb3MuZ2V0ZW52KFJQT1NfRU5WIiwgImRldmVsb3BtZW50IikgIT0gInByb2R1Y3Rpb24iDQoNCmFwcCA9IEZhc3RBUEkoDQogICAgdGl0bGU9IlBPUyBGJkIgQVBJIiwNCiAgICB2ZXJzaW9uPSIxLjAuMCIsDQogICAgbGlmZXNwYW49bGlmZXNwYW4sDQogICAgZG9jc191cmw9Ii9kb2NzIiBpZiBfc2hvd19kb2NzIGVsc2UgTm9uZSwNCiAgICByZWRvY191cmw9Ii9yZWRvYyIgaWYgX3Nob3dfZG9jcyBlbHNlIE5vbmUsDQogICAgb3BlbmFwaV91cmw9Ii9vcGVuYXBpLmpzb24iIGlmIF9zaG93X2RvY3MgZWxzZSBOb25lLA0KKQ0KDQoNCiMg4pSUwqAgQ09SUyDilJQNCg0KX2Vudl9vcmlnaW5zID0gb3MuZ2V0ZW52KFJDT1JTX09SSUdJTlMiLCAiIikNCm9yaWdpbnMgPSBbby5zdHJpcCgpIGZvciBvIGluIF9lbnZfb3JpZ2lucy5zcGxpdCgiLCIpIGlmIG8uc3RyaXAoKV0gb3IgWw0KICAgICJodHRwOi8vbG9jYWxob3N0OjMwMDAiLA0KICAgICJodHRwOi8vbG9jYWxob3N0OjgwODEiLA0KXQ0KDQojIFJlc29sdmUgdGhlIG1hY2hpbmUncyBMQU4gSVB2NCBhZGRyZXNzZXMgc28gRXhwbydzICJMQU4iIFVSTCBhbmQgcGhvbmVzIHdvcmsuDQpfbGFuX2lwczogc2V0W3N0cl0gPSBzZXQoKQ0KdHJ5Og0KICAgIF9ob3N0bmFtZSA9IHNvY2tldC5naGV0aG9zdG5hbWUoKQ0KICAgIGZvciBfaW5mbyBpbiBzb2NrZXQuZ2V0YWRkcmluZm8oX2hvc3RuYW1lLCBOb25lKToNCiAgICAgICAgX2lwID0gX2luZm9bNF1bMF0NCiAgICAgICAgaWYgcmUubWF0Y2gociJeXGQrXC5cZCtcLlxkK1wuXGQrJCIsIF9pcCkgYW5kIG5vdCBfaXAuc3RhcnRzd2l0aCgiMTI3LiIpOg0KICAgICAgICAgICAgX2xhbl9pcHMuYWRkKF9pcCkNCiAgICAjIEZhbGxiYWNrOiBhc2sgdGhlIGRlZmF1bHQgZ2F0ZXdheSAod29ya3MgaWYgaG9zdG5hbWUgZG9lc24ndCByZXNvbHZlIHRvIExBTiBJUCkNCiAgICBfcyA9IHNvY2tldC5zb2NrZXQoc29ja2V0LkFGX0lORVQsIHNvY2tldC5TT0NLX0RSQU0pDQogICAgX3MuY29ubmVjdCgoIjguOC44LjgiLCA4MCkpDQogICAgX2xhbl9pcHMuYWRkKF9zLmdldHNvY2tuYW1lKClbMF0pDQogICAgX3MuY2xvc2UoKQ0KZXhjZXB0IEV4Y2VwdGlvbiBhcyBlOg0KICAgIHRyeToNCiAgICAgICAgaW1wb3J0IHN0cnVjdGxvZw0KDQogICAgICAgIHN0cnVjdGxvZy5nZXRMb2dnZXIoImNvcnMiKS53YXJuaW5nKA0KICAgICAgICAgICAgIkZhaWxlZCB0byByZXNvbHZlIExBTiBJUCBmb3IgQ09SUyIsIGVycm9yPXN0cihlKQ0KICAgICAgICApDQogICAgZXhjZXB0IEltcG9ydEVycm9yOg0KICAgICAgICBwYXNzDQoNCl9sYW5fcGF0dGVybiA9ICJ8Ii5qb2luKHJlLmVzY2FwZShpcCkgZm9yIGlwIGluIF9sYW5faXBzKQ0KX2NvcnNfcmVnZXggPSAoDQogICAgciJeIGh0dHBzPzovLyhsb2NhbGhvc3R8MTI3XC4wXC4wXC4xIg0KICAgICsgKGZ7Inx7X2xhbl9wYXR0ZXJufSIgaWYgX2xhbl9wYXR0ZXJuIGVsc2UgIiIpDQogICAgKyByIikoOlxkKyk/JCINCiAgICArIHIifF5odHRwczovL1thLXowLTktXStcLnRyeWNsb3VkZmxhcmVcLmNvbSQiDQogICAgKyByInxeaHR0cHM6Ly8oPzpbYS16MC05LV0rXC4pKnBhZ2VzXC5kZXYkIg0KICAgICsgciJ8Xmh0dHBzOi8vKD86W2EtejAtOS1dK1wuKSp1cFwucmFpbHdheVwuYXBwJCIgICAgDQogICAgKyByInxeaHR0cHM6Ly9bYS16MC05LV0rXC5vbnJlbmRlclwuY29tJCIgICAgDQopDQoNCmFwcC5hZGRfbWlkZGxld2FyZSgNCiAgICBDT1JTTWlkZGxld2FyZSwNCiAgICBhbGxvd19vcmlnaW5zPW9yaWdpbnMsDQogICAgYWxsb3dfY3JlZGVudGlhbHM9VHJ1ZSwNCiAgICBhbGxvd19tZXRob2RzPVsiR0VUIiwgIlBPU1QiLCAiUFVUIiwgIlBBVENIIiwgIkRFTEVURSIsICJPUFRJT05TIl0sDQogICAgYWxsb3dfaGVhZGVycz1bIkF1dGhvcml6YXRpb24iLCAiQ29udGVudC1UeXBlIiwgIkFjY2VwdCIsICJYLVJlcXVlc3RlZC1XaXRoIl0sDQogICAgYWxsb3dfb3JpZ2luX3JlZ2V4PV9jb3JzX3JlZ2V4LA0KKQ0KDQojIE1pZGRsZXdhcmUgc3RhY2sgKG9yZGVyIG1hdHRlcnMpDQphcHAuYWRkX21pZGRsZXdhcmUoUmVxdWVzdElETWlkZGxld2FyZSkNCmFwcC5hZGRfbWlkZGxld2FyZShTZWN1cml0eUhlYWRlcnNNaWRkbGV3YXJlKQ0KDQphcHAubWlkZGxld2FyZSgiaHR0cCIpKGF1ZGl0X211dGF0aW9uX21pZGRsZXdhcmUpDQphcHAubWlkZGxld2FyZSgiaHR0cCIpKGNzcmZfbWlkZGxld2FyZSkNCmFwcC5taWRkbGV3YXJlKCJodHRwIikocmF0ZV9saW1pdF9taWRkbGV3YXJlKQ0KDQoNCiMg4pSUwqAgUm91dGUgcmVnaXN0cmF0aW9uIOKUlA0KDQojIFB1YmxpYyBlbmRwb2ludHMgKG5vIGF1dGgpDQphcHAuaW5jbHVkZV9yb3V0ZXIoYXV0aC5yb3V0ZXIsIHByZWZpeD0iL2FwaS92MS9hdXRoIikNCmFwcC5pbmNsdWRlX3JvdXRlcihwdWJsaWMucm91dGVyLCBwcmVmaXg9Ii9hcGkvdjEiKQ0KYXBwLmluY2x1ZGVfcm91dGVyKGludGVncmF0aW9ucy5yb3V0ZXIsIHByZWZpeD0iL2FwaS92MSIpDQoNCiMgQmFuLWhhbmcgKFBPUykg4oCUIGNhc2hpZXIgKyBhZG1pbiArIG1hbmFnZXINCl9iYW5faGFuZ19kZXBzID0gW3JlcXVpcmVfcm9sZShlbmRwb2ludF9wYXRoPSJiYW4taGFuZyIpLCByZXF1aXJlX2JyYW5jaF9hY2Nlc3MoKV0NCmFwcC5pbmNsdWRlX3JvdXRlcihiYW5faGFuZy50YWJsZXMucm91dGVyLCBwcmVmaXg9Ii9hcGkvdjEiLCBkZXBlbmRlbmNpZXM9X2Jhbl9oYW5nX2RlcHMpDQphcHAuaW5jbHVkZV9yb3V0ZXIoYmFuX2hhbmcucHJvZHVjdHMucm91dGVyLCBwcmVmaXg9Ii9hcGkvdjEiLCBkZXBlbmRlbmNpZXM9X2Jhbl9oYW5nX2RlcHMpDQphcHAuaW5jbHVkZV9yb3V0ZXIoYmFuX2hhbmcub3JkZXJzLnJvdXRlciwgcHJlZml4PSIvYXBpL3YxIiwgZGVwZW5kZW5jaWVzPV9iYW5faGFuZ19kZXBzKQ0KYXBwLmluY2x1ZGVfcm91dGVyKGJhbl9oYW5nLnBheW1lbnRzLnJvdXRlciwgcHJlZml4PSIvYXBpL3YxIiwgZGVwZW5kZW5jaWVzPV9iYW5faGFuZ19kZXBzKQ0KYXBwLmluY2x1ZGVfcm91dGVyKGJhbl9oYW5nLmtpdGNoZW4ucm91dGVyLCBwcmVmaXg9Ii9hcGkvdjEiLCBkZXBlbmRlbmNpZXM9X2Jhbl9oYW5nX2RlcHMpDQoNCiMgUXVhbi1seSAoYWRtaW4gLyBtYW5hZ2VyKQ0KX3F1YW5fbHlfZGVwcyA9IFtyZXF1aXJlX3JvbGUoZW5kcG9pbnRfcGF0aD0icXVhbi1seSIpLCByZXF1aXJlX2JyYW5jaF9hY2Nlc3MoKV0NCmFwcC5pbmNsdWRlX3JvdXRlcihxdWFuX2x5LnJvdXRlciwgcHJlZml4PSIvYXBpL3YxIiwgZGVwZW5kZW5jaWVzPV9xdWFuX2x5X2RlcHMpDQphcHAuaW5jbHVkZV9yb3V0ZXIoDQogICAgcXVhbl9seS51c2Vycy5yb3V0ZXIsDQogICAgcHJlZml4PSIvYXBpL3YxIiwNCiAgICBkZXBlbmRlbmNpZXM9W3JlcXVpcmVfcm9sZShlbmRwb2ludF9wYXRoPSJxdWFuLWx5L3VzZXJzIiksIHJlcXVpcmVfYnJhbmNoX2FjY2VzcygpXSwNCikKDQojIEtlLXRvYW4gKGFjY291bnRpbmcpIOKAlCBhZG1pbiArIGFjY291bnRhbnQNCl9rZV90b2FuX2RlcHMgPSBbcmVxdWlyZV9yb2xlKGVuZHBvaW50X3BhdGg9ImtlLXRvYW4iKSwgcmVxdWlyZV9icmFuY2hfYWNjZXNzKCldDQphcHAuaW5jbHVkZV9yb3V0ZXIoa2VfdG9hbi50cmFuc2FjdGlvbnMucm91dGVyLCBwcmVmaXg9Ii9hcGkvdjEiLCBkZXBlbmRlbmNpZXM9X2tlX3RvYW5fZGVwcykNCmFwcC5pbmNsdWRlX3JvdXRlcihrZV90b2FuLmludm9pY2VzLnJvdXRlciwgcHJlZml4PSIvYXBpL3YxIiwgZGVwZW5kZW5jaWVzPV9rZV90b2FuX2RlcHMpDQphcHAuaW5jbHVkZV9yb3V0ZXIoa2VfdG9hbi5kYXNoYm9hcmQucm91dGVyLCBwcmVmaXg9Ii9hcGkvdjEiLCBkZXBlbmRlbmNpZXM9X2tlX3RvYW5fZGVwcykNCg0KIyBUaHVlICh0YXgpIOKAlCBhZG1pbiArIGFjY291bnRhbnQNCl90aHVlX2RlcHNfbWdtdCA9IFtyZXF1aXJlX3JvbGUoZW5kcG9pbnRfcGF0aD0idGh1ZSIpXQ0KX3RodWVfZGVwc19icmFuY2ggPSBbcmVxdWlyZV9yb2xlKGVuZHBvaW50X3BhdGg9InRodWUiKSwgcmVxdWlyZV9icmFuY2hfYWNjZXNzKCldDQphcHAuaW5jbHVkZV9yb3V0ZXIodGh1ZS5wcm9maWxlLnJvdXRlciwgcHJlZml4PSIvYXBpL3YxIiwgZGVwZW5kZW5jaWVzPV90aHVlX2RlcHNfbWdtdCkNCmFwcC5pbmNsdWRlX3JvdXRlcih0aHVlLmxlZ2FjeS5yb3V0ZXIsIHByZWZpeD0iL2FwaS92MSIsIGRlcGVuZGVuY2llcz1fdGh1ZV9kZXBzX21nbXQpDQphcHAuaW5jbHVkZV9yb3V0ZXIodGh1ZS5fYWxpYXMucm91dGVyLCBwcmVmaXg9Ii9hcGkvdjEiLCBkZXBlbmRlbmNpZXM9X3RodWVfZGVwc19tZ210KQ0KYXBwLmluY2x1ZGVfcm91dGVyKHRodWUuY2FzaF9yZWdpc3Rlcl9pbnZvaWNlLnJvdXRlciwgcHJlZml4PSIvYXBpL3YxIiwgZGVwZW5kZW5jaWVzPV90aHVlX2RlcHNfYnJhbmNoKQ0KYXBwLmluY2x1ZGVfcm91dGVyKHRodWUuZGVjbGFyYXRpb24ucm91dGVyLCBwcmVmaXg9Ii9hcGkvdjEiLCBkZXBlbmRlbmNpZXM9X3RodWVfZGVwc19icmFuY2gpDQphcHAuaW5jbHVkZV9yb3V0ZXIodGh1ZS5iYW5rLnJvdXRlciwgcHJlZml4PSIvYXBpL3YxIiwgZGVwZW5kZW5jaWVzPV90aHVlX2RlcHNfYnJhbmNoKQ0KYXBwLmluY2x1ZGVfcm91dGVyKHRodWUucmVwb3J0LnJvdXRlciwgcHJlZml4PSIvYXBpL3YxIiwgZGVwZW5kZW5jaWVzPV90aHVlX2RlcHNfYnJhbmNoKQ0KDQoNCiMg4pSUwqAgV2ViU29ja2V0IGVuZHBvaW50cyDilJQNCg0KZnJvbSBhcHAuY29yZS5hdXRoIGltcG9ydCBkZWNvZGVfdG9rZW4NCg0KDQphc3luYyBkZWYgX3dzX2F1dGgod2Vic29ja2V0OiBXZWJTb2NrZXQpIC0+IGJvb2w6DQogICAgIiIiVmFsaWRhdGUgSldUIHRva2VuIGZyb20gV2ViU29ja2V0IHF1ZXJ5IHBhcmFtLiIiIg0KICAgIHRva2VuID0gd2Vic29ja2V0LnF1ZXJ5X3BhcmFtcy5nZXQoInRva2VuIiwgIiIpDQogICAgaWYgbm90IHRva2VuOg0KICAgICAgICBhd2FpdCB3ZWJzb2NrZXQuY2xvc2UoY29kZT00MDAxLCByZWFzb249Ik1pc3NpbmcgYXV0aCB0b2tlbiIpDQogICAgICAgIHJldHVybiBGYWxzZQ0KICAgIHRyeToNCiAgICAgICAgZGVjb2RlX3Rva2VuKHRva2VuKQ0KICAgICAgICByZXR1cm4gVHJ1ZQ0KICAgIGV4Y2VwdCBFeGNlcHRpb246DQogICAgICAgIGF3YWl0IHdlYnNvY2tldC5jbG9zZShjb2RlPTQwMDEsIHJlYXNvbj0iSW52YWxpZCBhdXRoIHRva2VuIikNCiAgICAgICAgcmV0dXJuIEZhbHNlDQoNCg0KQGFwcC53ZWJzb2NrZXQoIi93cy9raXRjaGVuIikNCmFzeW5jIGRlZiBraXRjaGVuX3dzKHdlYnNvY2tldDogV2ViU29ja2V0KToNCiAgICBpZiBub3QgYXdhaXQgX3dzX2F1dGgod2Vic29ja2V0KToNCiAgICAgICAgcmV0dXJuDQogICAgYXdhaXQgd3NfbWFuYWdlci5jb25uZWN0KHdlYnNvY2tldCwgImtpdGNoZW4iKQ0KICAgIHRyeToNCiAgICAgICAgd2hpbGUgVHJ1ZToNCiAgICAgICAgICAgIGF3YWl0IHdlYnNvY2tldC5yZWNlaXZlX3RleHQoKQ0KICAgIGV4Y2VwdCBXZWJTb2NrZXREaXNjb25uZWN0Og0KICAgICAgICB3c19tYW5hZ2VyLmRpc2Nvbm5lY3Qod2Vic29ja2V0LCAia2l0Y2hlbiIpDQoNCg0KQGFwcC53ZWJzb2NrZXQoIi93cy9pbnZlbnRvcnkiKQ0KYXN5bmMgZGVmIGludmVudG9yeV93cyh3ZWJzb2NrZXQ6IFdlYlNvY2tldCk6DQogICAgaWYgbm90IGF3YWl0IF93c19hdXRoKHdlYnNvY2tldCk6DQogICAgICAgIHJldHVybg0KICAgIGF3YWl0IHdzX21hbmFnZXIuY29ubmVjdCh3ZWJzb2NrZXQsICJpbnZlbnRvcnkiKQ0KICAgIHRyeToNCiAgICAgICAgd2hpbGUgVHJ1ZToNCiAgICAgICAgICAgIGF3YWl0IHdlYnNvY2tldC5yZWNlaXZlX3RleHQoKQ0KICAgIGV4Y2VwdCBXZWJTb2NrZXREaXNjb25uZWN0Og0KICAgICAgICB3c19tYW5hZ2VyLmRpc2Nvbm5lY3Qod2Vic29ja2V0LCAiaW52ZW50b3J5IikNCg0KDQpAYXBwLndlYnNvY2tldCgiL3dzL3BvcyIpCkBhcHAud2Vic29ja2V0KCIvd3MiKQ0KYXN5bmMgZGVmIHBvc193cyh3ZWJzb2NrZXQ6IFdlYlNvY2tldCk6DQogICAgdG9rZW4gPSB3ZWJzb2NrZXQucXVlcnlfcGFyYW1zLmdldCgidG9rZW4iLCAiIikNCiAgICBpZiB0b2tlbjoNCiAgICAgICAgdHJ5Og0KICAgICAgICAgICAgZGVjb2RlX3Rva2VuKHRva2VuKQ0KICAgICAgICBleGNlcHQgRXhjZXB0aW9uOg0KICAgICAgICAgICAgcGFzcw0KICAgIGF3YWl0IHdzX21hbmFnZXIuY29ubmVjdCh3ZWJzb2NrZXQsICJwb3MiKQ0KICAgIHRyeToNCiAgICAgICAgd2hpbGUgVHJ1ZToNCiAgICAgICAgICAgIGF3YWl0IHdlYnNvY2tldC5yZWNlaXZlX3RleHQoKQ0KICAgIGV4Y2VwdCBXZWJTb2NrZXREaXNjb25uZWN0Og0KICAgICAgICB3c19tYW5hZ2VyLmRpc2Nvbm5lY3Qod2Vic29ja2V0LCAicG9zIikNCg0KDQojIOKUlMKgIEhlYWx0aCAvIHJlYWRpbmVzcyDilJQNCg0KZnJvbSBzcWxhbGNoZW15IGltcG9ydCB0ZXh0DQoNCg0KQGFwcC5nZXQoIi9oZWFsdGh6IikKQGFwcC5nZXQoIi9yZWFkeXoiKQphc3luYyBkZWYgaGVhbHRoeigpOg0KICAgIGRiX29rID0gRmFsc2UNCiAgICB0cnk6DQogICAgICAgIGFzeW5jIHdpdGggZW5naW5lLmNvbm5lY3QoKSBhcyBjb25uOg0KICAgICAgICAgICAgYXdhaXQgY29ubi5leGVjdXRlKHRleHQoIlNFTEVDVCAxIikpDQogICAgICAgIGRiX29rID0gVHJ1ZQ0KICAgIGV4Y2VwdCBFeGNlcHRpb246DQogICAgICAgIGxvZ2dlci53YXJuaW5nKCJEYXRhYmFzZSBoZWFsdGggY2hlY2sgZmFpbGVkIiwgZXhjaV9pbmZvPVRydWUpDQogICAgcmV0dXJuIHsNCiAgICAgICAgInN0YXR1cyI6ICJvayIsDQogICAgICAgICJ2ZXJzaW9uIjogIjEuMC4wIiwNCiAgICAgICAgImRhdGFiYXNlIjogImNvbm5lY3RlZCIgaWYgZGJfb2sgZWxzZSAiZGlzY29ubmVjdGVkIiwNCiAgICB9DQo=&#10;
+"""POS F&B API — FastAPI application entry point.
+
+Layout:
+  imports (stdlib → 3rd-party → app)
+  lifespan (startup / shutdown)
+  FastAPI app creation
+  middleware stack
+  route registration
+  WebSocket handlers
+  health / readiness probes
+  exception handlers
+"""
+
+import logging
+import os
+import re
+import socket
+import sys
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
+from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
+from app.core.logging_config import setup_logging
+
+setup_logging()
+
+from app.core.database import engine
+from app.core.rbac import require_branch_access, require_role
+from app.core.ws_manager import ws_manager
+from app.middleware.request_id import RequestIDMiddleware
+from app.middleware.security_headers import SecurityHeadersMiddleware
+from app.core.audit_middleware import audit_mutation_middleware
+from app.core.csrf_middleware import csrf_middleware
+from app.core.rate_limiter import rate_limit_middleware
+from app.api.v1 import auth, public, integrations
+from app.api.v1 import ban_hang, ke_toan, quan_ly, thue
+
+logger = logging.getLogger(__name__)
+
+# ── Windows / Python 3.14+ selector event loop ────────────────────────────
+if sys.platform == "win32":
+    import asyncio
+    import selectors
+
+    try:
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+    except DeprecationWarning:
+        pass
+
+    try:
+        loop = asyncio.get_running_loop()
+        if isinstance(loop, asyncio.ProactorEventLoop):
+            loop.close()
+            asyncio.set_event_loop(asyncio.SelectorEventLoop(selectors.SelectSelector()))
+    except RuntimeError:
+        pass
+
+
+# ── Lifespan (startup / shutdown) ─────────────────────────────────────────
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    from app.core.sentry_config import init_sentry
+    init_sentry()
+
+    # Tax scheduler — fails gracefully on Windows (ProactorEventLoop)
+    try:
+        from app.core.thue.scheduler import start_scheduler
+        await start_scheduler()
+    except Exception as e:
+        logger.warning("Tax scheduler not started: %s", e)
+
+    yield
+    await engine.dispose()
+
+
+# ── FastAPI app ────────────────────────────────────────────────────────────
+
+_show_docs = os.getenv("POS_ENV", "development") != "production"
+
+app = FastAPI(
+    title="POS F&B API",
+    version="1.0.0",
+    lifespan=lifespan,
+    docs_url="/docs" if _show_docs else None,
+    redoc_url="/redoc" if _show_docs else None,
+    openapi_url="/openapi.json" if _show_docs else None,
+)
+
+
+# ── CORS ──────────────────────────────────────────────────────────────────
+# Restrict origins via env, but always allow localhost / 127.0.0.1 / the
+# machine's LAN IPs on any dev port (covers Expo web on :8081/:19006,
+# production build on :3000, and access from the LAN URL or a phone).
+# Note: .env is NOT auto-loaded (no python-dotenv), so CORS_ORIGINS must
+# be set in the real process env for non-localhost origins.
+
+_env_origins = os.getenv("CORS_ORIGINS", "")
+origins = [o.strip() for o in _env_origins.split(",") if o.strip()] or [
+    "http://localhost:3000",
+    "http://localhost:8081",
+]
+
+# Resolve the machine's LAN IPv4 addresses so Expo's "LAN" URL and phones work.
+_lan_ips: set[str] = set()
+try:
+    _hostname = socket.gethostname()
+    for _info in socket.getaddrinfo(_hostname, None):
+        _ip = _info[4][0]
+        if re.match(r"^\d+\.\d+\.\d+\.\d+$", _ip) and not _ip.startswith("127."):
+            _lan_ips.add(_ip)
+    # Fallback: ask the default gateway (works if hostname doesn't resolve to LAN IP)
+    _s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    _s.connect(("8.8.8.8", 80))
+    _lan_ips.add(_s.getsockname()[0])
+    _s.close()
+except Exception as e:
+    try:
+        import structlog
+
+        structlog.get_logger("cors").warning(
+            "Failed to resolve LAN IP for CORS", error=str(e)
+        )
+    except ImportError:
+        pass
+
+_lan_pattern = "|".join(re.escape(ip) for ip in _lan_ips)
+_cors_regex = (
+    r"^https?://(localhost|127\.0\.0\.1"
+    + (f"|{_lan_pattern}" if _lan_pattern else "")
+    + r")(:\d+)?$"
+    + r"|^https://[a-z0-9-]+\.trycloudflare\.com$"
+    + r"|^https://(?:[a-z0-9-]+\.)*pages\.dev$"
+    + r"|^https://(?:[a-z0-9-]+\.)*up\.railway\.app$"
+    + r"|^https://[a-z0-9-]+\.onrender\.com$"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "Accept", "X-Requested-With"],
+    allow_origin_regex=_cors_regex,
+)
+
+# Middleware stack (order matters)
+app.add_middleware(RequestIDMiddleware)
+app.add_middleware(SecurityHeadersMiddleware)
+
+app.middleware("http")(audit_mutation_middleware)
+app.middleware("http")(csrf_middleware)
+app.middleware("http")(rate_limit_middleware)
+
+
+# ── Route registration ────────────────────────────────────────────────────
+
+# Public endpoints (no auth)
+app.include_router(auth.router, prefix="/api/v1/auth")
+app.include_router(public.router, prefix="/api/v1")
+app.include_router(integrations.router, prefix="/api/v1")
+
+# Ban-hang (POS) — cashier + admin + manager
+_ban_hang_deps = [require_role(endpoint_path="ban-hang"), require_branch_access()]
+app.include_router(ban_hang.tables.router, prefix="/api/v1", dependencies=_ban_hang_deps)
+app.include_router(ban_hang.products.router, prefix="/api/v1", dependencies=_ban_hang_deps)
+app.include_router(ban_hang.orders.router, prefix="/api/v1", dependencies=_ban_hang_deps)
+app.include_router(ban_hang.payments.router, prefix="/api/v1", dependencies=_ban_hang_deps)
+app.include_router(ban_hang.kitchen.router, prefix="/api/v1", dependencies=_ban_hang_deps)
+
+# Quan-ly (admin / manager)
+_quan_ly_deps = [require_role(endpoint_path="quan-ly"), require_branch_access()]
+app.include_router(quan_ly.router, prefix="/api/v1", dependencies=_quan_ly_deps)
+app.include_router(
+    quan_ly.users.router,
+    prefix="/api/v1",
+    dependencies=[require_role(endpoint_path="quan-ly/users"), require_branch_access()],
+)
+
+# Ke-toan (accounting) — admin + accountant
+_ke_toan_deps = [require_role(endpoint_path="ke-toan"), require_branch_access()]
+app.include_router(ke_toan.transactions.router, prefix="/api/v1", dependencies=_ke_toan_deps)
+app.include_router(ke_toan.invoices.router, prefix="/api/v1", dependencies=_ke_toan_deps)
+app.include_router(ke_toan.dashboard.router, prefix="/api/v1", dependencies=_ke_toan_deps)
+
+# Thue (tax) — admin + accountant
+_thue_deps_mgmt = [require_role(endpoint_path="thue")]
+_thue_deps_branch = [require_role(endpoint_path="thue"), require_branch_access()]
+app.include_router(thue.profile.router, prefix="/api/v1", dependencies=_thue_deps_mgmt)
+app.include_router(thue.legacy.router, prefix="/api/v1", dependencies=_thue_deps_mgmt)
+app.include_router(thue._alias.router, prefix="/api/v1", dependencies=_thue_deps_mgmt)
+app.include_router(thue.cash_register_invoice.router, prefix="/api/v1", dependencies=_thue_deps_branch)
+app.include_router(thue.declaration.router, prefix="/api/v1", dependencies=_thue_deps_branch)
+app.include_router(thue.bank.router, prefix="/api/v1", dependencies=_thue_deps_branch)
+app.include_router(thue.report.router, prefix="/api/v1", dependencies=_thue_deps_branch)
+
+
+# ── WebSocket endpoints ──────────────────────────────────────────────────
+
+from app.core.auth import decode_token
+
+
+async def _ws_auth(websocket: WebSocket) -> bool:
+    """Validate JWT token from WebSocket query param."""
+    token = websocket.query_params.get("token", "")
+    if not token:
+        await websocket.close(code=4001, reason="Missing auth token")
+        return False
+    try:
+        decode_token(token)
+        return True
+    except Exception:
+        await websocket.close(code=4001, reason="Invalid auth token")
+        return False
+
+
+@app.websocket("/ws/kitchen")
+async def kitchen_ws(websocket: WebSocket):
+    if not await _ws_auth(websocket):
+        return
+    await ws_manager.connect(websocket, "kitchen")
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        ws_manager.disconnect(websocket, "kitchen")
+
+
+@app.websocket("/ws/inventory")
+async def inventory_ws(websocket: WebSocket):
+    if not await _ws_auth(websocket):
+        return
+    await ws_manager.connect(websocket, "inventory")
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        ws_manager.disconnect(websocket, "inventory")
+
+
+@app.websocket("/ws/pos")
+@app.websocket("/ws")
+async def pos_ws(websocket: WebSocket):
+    token = websocket.query_params.get("token", "")
+    if token:
+        try:
+            decode_token(token)
+        except Exception:
+            pass
+    await ws_manager.connect(websocket, "pos")
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        ws_manager.disconnect(websocket, "pos")
+
+
+# ── Health / readiness ────────────────────────────────────────────────────
+
+from sqlalchemy import text
+
+
+@app.get("/healthz")
+@app.get("/readyz")
+async def healthz():
+    db_ok = False
+    try:
+        async with engine.connect() as conn:
+            await conn.execute(text("SELECT 1"))
+        db_ok = True
+    except Exception:
+        logger.warning("Database health check failed", exc_info=True)
+    return {
+        "status": "ok",
+        "version": "1.0.0",
+        "database": "connected" if db_ok else "disconnected",
+    }
+
+
+# ── Exception handlers ────────────────────────────────────────────────────
+
+
+def _get_cors_headers(request: Request) -> dict[str, str]:
+    origin = request.headers.get("origin")
+    if origin:
+        return {
+            "Access-Control-Allow-Origin": origin,
+            "Access-Control-Allow-Credentials": "true",
+            "Access-Control-Allow-Methods": "*",
+            "Access-Control-Allow-Headers": "*",
+        }
+    return {}
+
+
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    headers = _get_cors_headers(request)
+    if exc.headers:
+        headers.update(exc.headers)
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail},
+        headers=headers,
+    )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    return JSONResponse(
+        status_code=422,
+        content={"detail": exc.errors()},
+        headers=_get_cors_headers(request),
+    )
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    from app.core.i18n import t
+
+    return JSONResponse(
+        status_code=500,
+        content={"detail": t("common.error")},
+        headers=_get_cors_headers(request),
+    )
+
+
+@app.exception_handler(404)
+async def not_found_handler(request: Request, exc):
+    return JSONResponse(
+        status_code=404,
+        content={"detail": "Not found"},
+        headers=_get_cors_headers(request),
+    )
+# trigger reload

@@ -31,20 +31,38 @@ TABLES = [
 
 
 def upgrade() -> None:
-    for table in TABLES:
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    schemas = ["public", "ban_hang", "quan_ly", "ke_toan", "thue"]
+    
+    for schema in schemas:
         try:
-            op.add_column(
-                table,
-                sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
-                schema=None,
-            )
+            tables = inspector.get_table_names(schema=schema)
         except Exception:
-            pass  # might already exist
+            continue
+        for table in TABLES:
+            if table in tables:
+                columns = [c["name"] for c in inspector.get_columns(table, schema=schema)]
+                if "deleted_at" not in columns:
+                    op.add_column(
+                        table,
+                        sa.Column("deleted_at", sa.DateTime(timezone=True), nullable=True),
+                        schema=schema,
+                    )
 
 
 def downgrade() -> None:
-    for table in TABLES:
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    schemas = ["public", "ban_hang", "quan_ly", "ke_toan", "thue"]
+    
+    for schema in schemas:
         try:
-            op.drop_column(table, "deleted_at")
+            tables = inspector.get_table_names(schema=schema)
         except Exception:
-            pass
+            continue
+        for table in TABLES:
+            if table in tables:
+                columns = [c["name"] for c in inspector.get_columns(table, schema=schema)]
+                if "deleted_at" in columns:
+                    op.drop_column(table, "deleted_at", schema=schema)
