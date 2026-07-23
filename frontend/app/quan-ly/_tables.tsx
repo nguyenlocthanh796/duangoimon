@@ -41,17 +41,17 @@ const TableCard = ({ table, onPress }: { table: Table; onPress: () => void }) =>
       }}
     >
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <Text style={{ ...font.sectionTitle, color: '#171717' }}>{table.name}</Text>
+        <Text style={{ ...font.lg, color: '#171717' }}>{table.name}</Text>
         {isOccupied && (
           <View style={{ width: 8, height: 8, borderRadius: 999, backgroundColor: '#F97316', marginTop: 4 }} />
         )}
       </View>
 
       <View>
-        <Text style={{ ...font.caption, color: '#737373' }}>
+        <Text style={{ ...font.sm, color: '#737373' }}>
           {isOccupied ? 'Có khách' : 'Trống'}
         </Text>
-        <Text style={{ ...font.bodySmall, color: '#171717', fontWeight: '600' }}>
+        <Text style={{ ...font.sm, color: '#171717', fontWeight: '600' }}>
           {isOccupied ? '310k' : table.area}
         </Text>
       </View>
@@ -131,7 +131,7 @@ export default function TablesScreen() {
         </View>
         <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, marginVertical: 10 }}>
           <View style={{ marginBottom: 16 }}>
-            <Text style={{ ...font.label, color: '#171717', marginBottom: 8 }}>Tên bàn *</Text>
+            <Text style={{ ...font.smBold, color: '#171717', marginBottom: 8 }}>Tên bàn *</Text>
             <TextInput
               style={styles.input}
               placeholder="VD: A01, Bàn 1..."
@@ -142,7 +142,7 @@ export default function TablesScreen() {
           </View>
 
           <View style={{ marginBottom: 16 }}>
-            <Text style={{ ...font.label, color: '#171717', marginBottom: 8 }}>Khu vực</Text>
+            <Text style={{ ...font.smBold, color: '#171717', marginBottom: 8 }}>Khu vực</Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 16, marginBottom: 8 }}>
               {AREAS.map(a => (
                 <TouchableOpacity
@@ -155,7 +155,7 @@ export default function TablesScreen() {
                   }}
                   onPress={() => setForm(f => ({ ...f, area: f.area === a ? '' : a }))}
                 >
-                  <Text style={{ ...font.bodySmall, fontWeight: '600', color: form.area === a ? colors.text.inverse : '#404040' }}>{a}</Text>
+                  <Text style={{ ...font.sm, fontWeight: '600', color: form.area === a ? colors.text.inverse : '#404040' }}>{a}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -169,7 +169,7 @@ export default function TablesScreen() {
           </View>
 
           <View style={{ marginBottom: 16 }}>
-            <Text style={{ ...font.label, color: '#171717', marginBottom: 8 }}>Sức chứa (người)</Text>
+            <Text style={{ ...font.smBold, color: '#171717', marginBottom: 8 }}>Sức chứa (người)</Text>
             <View style={{ flexDirection: 'row', gap: 16}}>
               {[2, 4, 6, 8, 10, 12].map(n => (
                 <TouchableOpacity
@@ -182,7 +182,7 @@ export default function TablesScreen() {
                   }}
                   onPress={() => setForm(f => ({ ...f, capacity: String(n) }))}
                 >
-                  <Text style={{ ...font.body, fontWeight: '600', color: form.capacity === String(n) ? colors.text.inverse : '#404040' }}>
+                  <Text style={{ ...font.md, fontWeight: '600', color: form.capacity === String(n) ? colors.text.inverse : '#404040' }}>
                     {n}
                   </Text>
                 </TouchableOpacity>
@@ -195,7 +195,7 @@ export default function TablesScreen() {
             style={{ flex: 1, minHeight: 44, borderRadius: 8, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#E5E5E5', alignItems: 'center', justifyContent: 'center' }}
             onPress={() => setShowForm(false)}
           >
-            <Text style={{ ...font.button, color: '#404040' }}>Hủy</Text>
+            <Text style={{ ...font.mdBold, color: '#404040' }}>Hủy</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={{ flex: 1.5, minHeight: 44, borderRadius: 8, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 12}}
@@ -203,7 +203,7 @@ export default function TablesScreen() {
             disabled={saving}
           >
             {saving && <ActivityIndicator size="small" color={colors.text.inverse} />}
-            <Text style={{ ...font.button, color: colors.text.inverse }}>{editingId ? 'Cập nhật' : 'Lưu'}</Text>
+            <Text style={{ ...font.mdBold, color: colors.text.inverse }}>{editingId ? 'Cập nhật' : 'Lưu'}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -237,7 +237,7 @@ export default function TablesScreen() {
                 const active = index === 0;
                 return (
                   <TouchableOpacity key={area} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, height: 34, borderRadius: 999, backgroundColor: active ? '#F97316' : '#FFFFFF', borderWidth: 1, borderColor: active ? '#F97316' : '#E5E5E5' }}>
-                    <Text style={{ ...font.button, color: active ? colors.text.inverse : '#171717' }}>{area}</Text>
+                    <Text style={{ ...font.mdBold, color: active ? colors.text.inverse : '#171717' }}>{area}</Text>
                   </TouchableOpacity>
                 );
               })}
@@ -247,7 +247,7 @@ export default function TablesScreen() {
             {loading ? (
               <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 60, gap: 16}}>
                 <TableSkeleton rowCount={5} />
-                <Text style={{...font.bodySmall, color: '#404040', marginTop: 8}}>Đang tải...</Text>
+                <Text style={{...font.sm, color: '#404040', marginTop: 8}}>Đang tải...</Text>
               </View>
             ) : (
               <ScrollView contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', padding: '1%' }}>
@@ -309,7 +309,7 @@ export default function TablesScreen() {
               const active = index === 0;
               return (
                 <TouchableOpacity key={area} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, height: 34, borderRadius: 999, backgroundColor: active ? '#F97316' : '#FFFFFF', borderWidth: 1, borderColor: active ? '#F97316' : '#E5E5E5' }}>
-                  <Text style={{ ...font.button, color: active ? colors.text.inverse : '#171717' }}>{area}</Text>
+                  <Text style={{ ...font.mdBold, color: active ? colors.text.inverse : '#171717' }}>{area}</Text>
                 </TouchableOpacity>
               );
             })}
@@ -335,7 +335,7 @@ export default function TablesScreen() {
           {loading ? (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 60, gap: 16}}>
               <TableSkeleton rowCount={5} />
-              <Text style={{...font.bodySmall, color: '#404040', marginTop: 8}}>Đang tải...</Text>
+              <Text style={{...font.sm, color: '#404040', marginTop: 8}}>Đang tải...</Text>
             </View>
           ) : (
             <ScrollView contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', padding: '1%' }}>
@@ -360,7 +360,7 @@ export default function TablesScreen() {
           saving={saving}
         >
           <View style={{ marginBottom: 16 }}>
-            <Text style={{ ...font.label, color: '#171717', marginBottom: 8 }}>Tên bàn *</Text>
+            <Text style={{ ...font.smBold, color: '#171717', marginBottom: 8 }}>Tên bàn *</Text>
             <TextInput
               style={styles.input}
               placeholder="VD: A01, Bàn 1..."
@@ -371,7 +371,7 @@ export default function TablesScreen() {
           </View>
 
           <View style={{ marginBottom: 16 }}>
-            <Text style={{ ...font.label, color: '#171717', marginBottom: 8 }}>Khu vực</Text>
+            <Text style={{ ...font.smBold, color: '#171717', marginBottom: 8 }}>Khu vực</Text>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 16}}>
               {AREAS.map(a => (
                 <TouchableOpacity
@@ -384,7 +384,7 @@ export default function TablesScreen() {
                   }}
                   onPress={() => setForm(f => ({ ...f, area: f.area === a ? '' : a }))}
                 >
-                  <Text style={{ ...font.bodySmall, fontWeight: '600', color: form.area === a ? colors.text.inverse : '#404040' }}>{a}</Text>
+                  <Text style={{ ...font.sm, fontWeight: '600', color: form.area === a ? colors.text.inverse : '#404040' }}>{a}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -398,7 +398,7 @@ export default function TablesScreen() {
           </View>
 
           <View style={{ marginBottom: 16 }}>
-            <Text style={{ ...font.label, color: '#171717', marginBottom: 8 }}>Sức chứa (người)</Text>
+            <Text style={{ ...font.smBold, color: '#171717', marginBottom: 8 }}>Sức chứa (người)</Text>
             <View style={{ flexDirection: 'row', gap: 16}}>
               {[2, 4, 6, 8, 10, 12].map(n => (
                 <TouchableOpacity
@@ -411,7 +411,7 @@ export default function TablesScreen() {
                   }}
                   onPress={() => setForm(f => ({ ...f, capacity: String(n) }))}
                 >
-                  <Text style={{ ...font.body, fontWeight: '600', color: form.capacity === String(n) ? colors.text.inverse : '#404040' }}>
+                  <Text style={{ ...font.md, fontWeight: '600', color: form.capacity === String(n) ? colors.text.inverse : '#404040' }}>
                     {n}
                   </Text>
                 </TouchableOpacity>
@@ -428,16 +428,16 @@ export default function TablesScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FAFAFA' },
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, height: 38, borderRadius: 8, backgroundColor: '#F97316' },
-  addBtnText: { ...font.buttonSmall, fontWeight: '600', color: '#fff' },
+  addBtnText: { ...font.smBold, fontWeight: '600', color: '#fff' },
 
   panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12, boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelHeaderText: { ...font.body, fontWeight: '600', color: '#171717' },
-  panelStatLabel: { ...font.caption, color: '#737373', marginTop: 2 },
-  panelStatValue: { ...font.sectionTitle, fontWeight: '600', color: '#171717' },
+  panelHeaderText: { ...font.md, fontWeight: '600', color: '#171717' },
+  panelStatLabel: { ...font.sm, color: '#737373', marginTop: 2 },
+  panelStatValue: { ...font.lg, fontWeight: '600', color: '#171717' },
   panelDivider: { height: 1, backgroundColor: '#F0F0F0' },
   panelDividerV: { width: 1, backgroundColor: '#F0F0F0' },
-  panelLabel: { ...font.caption, color: '#737373' },
+  panelLabel: { ...font.sm, color: '#737373' },
   separator: { width: 1, backgroundColor: '#F0F0F0' },
 
   input: {
@@ -446,7 +446,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 32,
-    ...font.body,
+    ...font.md,
     color: '#171717',
     backgroundColor: '#F5F5F5',
   },

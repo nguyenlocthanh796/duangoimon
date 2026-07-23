@@ -7,7 +7,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "mock": "node ../mock-server/server.cjs",
+    "mock": "echo 'mock-server removed; use backend instead'",
     "test": "jest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext .ts,.tsx",

@@ -18,8 +18,7 @@ import { useSidebar } from '../../../lib/context/SidebarContext';
 import { useRouter } from 'expo-router';
 import { useResponsive } from '../../../lib/hooks/useResponsive';
 import BranchPeriodFilter from '../../../lib/components/ke-toan/BranchPeriodFilter';
-import StatusBadge from '../../../lib/components/ke-toan/StatusBadge';
-import type { SeverityKey } from '../../../lib/components/ke-toan/StatusBadge';
+import StatusBadge, { type BadgeSeverity } from '../../../lib/components/ui/StatusBadge';
 import { useAuth } from '../../../lib/context/AuthContext';
 import ScreenLayout from '../../../lib/components/layout/ScreenLayout';
 import { TableSkeleton } from '../../../lib/components/ui/Skeleton';
@@ -93,7 +92,7 @@ export default function BankAccountsScreen() {
     downloadText(`BK-STK_${(branchId ?? '').slice(0, 8)}.csv`, toCsv(headers, rows));
   };
 
-  const statusSeverity = (s: string): SeverityKey =>
+  const statusSeverity = (s: string): BadgeSeverity =>
     s === 'da_thong_bao' ? 'success' : s === 'tu_choi' ? 'danger' : 'muted';
   const statusLabel = (s: string) =>
     s === 'da_thong_bao' ? 'Đã thông báo' : s === 'tu_choi' ? 'Từ chối' : 'Chờ';
@@ -113,11 +112,11 @@ export default function BankAccountsScreen() {
             disabled={accounts.length === 0}
           >
             <Icon name="file-delimited" size={18} color={colors.text.inverse} />
-            {isWide && <AppText variant="small" weight="bold" color="#fff" style={{ marginLeft: 6 }}>CSV</AppText>}
+            {isWide && <AppText variant="sm" weight="bold" color="#fff" style={{ marginLeft: 6 }}>CSV</AppText>}
           </TouchableOpacity>
           <TouchableOpacity style={styles.addBtn} onPress={() => setShowForm(true)}>
             <Icon name="plus" size={18} color={colors.text.inverse} />
-            <AppText variant="medium" weight="bold" color="#fff" style={{ marginLeft: 6 }}>Thêm</AppText>
+            <AppText variant="md" weight="bold" color="#fff" style={{ marginLeft: 6 }}>Thêm</AppText>
           </TouchableOpacity>
         </View>
       }
@@ -146,16 +145,16 @@ export default function BankAccountsScreen() {
           }
           ListEmptyComponent={
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 40 }}>
-              <AppText variant="base" color={colors.text.muted}>Chưa có tài khoản</AppText>
+              <AppText variant="md" color={colors.text.muted}>Chưa có tài khoản</AppText>
             </View>
           }
           renderItem={({ item }) => (
             <View style={[styles.mRow, isWide && { flex: 1, margin: 8, borderBottomWidth: 0, borderWidth: 1, borderColor: colors.border.default }]}>
               <View style={{ flex: 1 }}>
-                <AppText variant="base" weight="bold" color={colors.text.primary} style={{ marginBottom: 4 }}>
+                <AppText variant="md" weight="bold" color={colors.text.primary} style={{ marginBottom: 4 }}>
                   {item.bank_name} · {item.wallet_type.toUpperCase()}
                 </AppText>
-                <AppText variant="small" color={colors.text.muted}>
+                <AppText variant="sm" color={colors.text.muted}>
                   {item.account_number}
                 </AppText>
               </View>
@@ -171,9 +170,9 @@ export default function BankAccountsScreen() {
       {showForm && (
         <View style={styles.modal}>
           <View style={styles.modalCard}>
-            <AppText variant="h3" weight="bold" style={{ marginBottom: 16 }}>Thêm tài khoản (01/BK-STK)</AppText>
+            <AppText variant="lg" weight="bold" style={{ marginBottom: 16 }}>Thêm tài khoản (01/BK-STK)</AppText>
             
-            <AppText variant="small" color={colors.text.muted} style={{ marginBottom: 8 }}>Tên ngân hàng / ví</AppText>
+            <AppText variant="sm" color={colors.text.muted} style={{ marginBottom: 8 }}>Tên ngân hàng / ví</AppText>
             <TextInput
               style={styles.field}
               placeholder="VD: Vietcombank"
@@ -182,7 +181,7 @@ export default function BankAccountsScreen() {
               onChangeText={(t) => setForm({ ...form, bank_name: t })}
             />
             
-            <AppText variant="small" color={colors.text.muted} style={{ marginBottom: 8, marginTop: 12 }}>Số tài khoản</AppText>
+            <AppText variant="sm" color={colors.text.muted} style={{ marginBottom: 8, marginTop: 12 }}>Số tài khoản</AppText>
             <TextInput
               style={styles.field}
               placeholder="Nhập số tài khoản"
@@ -191,7 +190,7 @@ export default function BankAccountsScreen() {
               onChangeText={(t) => setForm({ ...form, account_number: t })}
             />
 
-            <AppText variant="small" color={colors.text.muted} style={{ marginBottom: 8, marginTop: 16 }}>Loại ví</AppText>
+            <AppText variant="sm" color={colors.text.muted} style={{ marginBottom: 8, marginTop: 16 }}>Loại ví</AppText>
             <View style={styles.walletRow}>
               {WALLETS.map((w) => (
                 <TouchableOpacity
@@ -199,7 +198,7 @@ export default function BankAccountsScreen() {
                   style={[styles.walletChip, form.wallet_type === w && styles.walletChipActive]}
                   onPress={() => setForm({ ...form, wallet_type: w })}
                 >
-                  <AppText variant="small" weight="bold" color={form.wallet_type === w ? '#fff' : colors.text.muted}>
+                  <AppText variant="sm" weight="bold" color={form.wallet_type === w ? '#fff' : colors.text.muted}>
                     {w.toUpperCase()}
                   </AppText>
                 </TouchableOpacity>
@@ -208,10 +207,10 @@ export default function BankAccountsScreen() {
 
             <View style={styles.modalActions}>
               <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowForm(false)}>
-                <AppText variant="medium" color={colors.text.primary}>Huỷ</AppText>
+                <AppText variant="md" color={colors.text.primary}>Huỷ</AppText>
               </TouchableOpacity>
               <TouchableOpacity style={styles.saveBtn} onPress={submit} disabled={submitting}>
-                <AppText variant="medium" weight="bold" color="#fff">
+                <AppText variant="md" weight="bold" color="#fff">
                   {submitting ? 'Đang lưu...' : 'Lưu & Thông báo'}
                 </AppText>
               </TouchableOpacity>

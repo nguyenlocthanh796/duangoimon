@@ -13,6 +13,8 @@ import CartSummary from './CartSummary';
 import CartMainActions from './CartMainActions';
 import CartSplitActions from './CartSplitActions';
 import AppText from '../ui/AppText';
+import UnifiedHeader from '../ui/UnifiedHeader';
+import { CATEGORIES } from '../../constants/categories';
 
 interface CartPanelProps {
   cart: CartItem[];
@@ -85,18 +87,41 @@ export default function CartPanel({
   >(null);
   const [moveItemCartId, setMoveItemCartId] = React.useState<string | null>(null);
 
-  const openNoteEditor = (cartItemId: string) => {
+  const openNoteEditor = React.useCallback((cartItemId: string) => {
     const item = cart.find((i) => i.cartItemId === cartItemId);
     if (!item) return;
     setNoteText(item.note || '');
     setNoteEditId(cartItemId);
-  };
+  }, [cart]);
 
-  const saveNote = () => {
+  const saveNote = React.useCallback(() => {
     if (noteEditId && onEditNote) onEditNote(noteEditId, noteText);
     setNoteEditId(null);
-  };
+  }, [noteEditId, onEditNote, noteText]);
 
+  // Group cart items by (productId + variantId) for iPad grouped mode
+  const groupedCart = React.useMemo(() => {
+    if (!isWide) return cart; // no grouping on iPhone
+    const groups = new Map<string, CartItem & { groupQty: number; groupTotal: number }>();
+    cart.forEach((item) => {
+      if (item.cancelReason) return;
+      const key = item.id + '_' + (item.selectedSize || 'default');
+      const existing = groups.get(key);
+      if (existing) {
+        existing.groupQty += item.qty;
+        existing.groupTotal += item.unitPrice * item.qty;
+      } else {
+        groups.set(key, {
+          ...item,
+          groupQty: item.qty,
+          groupTotal: item.unitPrice * item.qty,
+        });
+      }
+    });
+    return Array.from(groups.values());
+  }, [cart, isWide]);
+
+  // Group cart by category for iPhone narrow layout
   const groupedItems = React.useMemo(() => {
     const groups: {
       category: string;
@@ -120,37 +145,11 @@ export default function CartPanel({
       map[cat].unsent.push(item);
     });
     Object.entries(map).forEach(([cat, { canc, unsent, sent }]) => {
-      groups.push({ category: cat, label: cat, unsent, sent, cancelled: canc });
+      const label = CATEGORIES.find(c => c.id === cat)?.name || cat;
+      groups.push({ category: cat, label, unsent, sent, cancelled: canc });
     });
     return groups;
   }, [cart]);
-
-  const serviceCharge =
-    serviceChargePercent > 0 ? Math.round((total * serviceChargePercent) / 100) : 0;
-  const grandTotal = total + serviceCharge;
-  const vatAmount = React.useMemo(() => {
-    return cart.reduce((sum, item) => {
-      if (item.cancelReason) return sum;
-      const rate = item.vatRate ?? 8;
-      const itemTax = Math.round(item.qty * item.unitPrice * (rate / (100 + rate)));
-      return sum + itemTax;
-    }, 0);
-  }, [cart]);
-  const hasUnsentItems = cart.some(
-    (i) => !(i.isSent && i.status && !['moi', undefined, ''].includes(i.status)) && !i.cancelReason
-  );
-  const allDineIn = cart.length > 0 && cart.every((i) => i.serviceType !== 'takeaway');
-  const allTakeaway = cart.length > 0 && cart.every((i) => i.serviceType === 'takeaway');
-  const canBulkToggle = hasUnsentItems && (allDineIn || allTakeaway);
-
-  const toggleSelectItem = (id: string) => {
-    setSelectedItems((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
 
   const handleSplit = () => {
     if (selectedItems.size < 1) return;
@@ -180,6 +179,15 @@ export default function CartPanel({
     },
   });
 
+  const toggleSelectItem = (id: string) => {
+    setSelectedItems((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
   const renderCartItems = () => {
     if (cart.length === 0) {
       return (
@@ -193,35 +201,63 @@ export default function CartPanel({
           }}
         >
           <MaterialCommunityIcons name="basket" size={48} color={colors.icon.muted} />
-          <AppText variant="medium" color={colors.text.secondary}>Giỏ hàng trống</AppText>
-          <TouchableOpacity
-            onPress={() => setCartSheet(false)}
-            style={{
-              paddingHorizontal: 20,
-              paddingVertical: 10,
-            borderRadius: 8,
-            backgroundColor: colors.brand.primaryBg,
-            borderWidth: 1,
-            borderColor: colors.border.brand,
-          }}
-        >
-          <AppText variant="medium" color={colors.text.brand}>Thêm món ngay</AppText>
-        </TouchableOpacity>
+          <AppText variant="md" color={colors.text.secondary}>Giỏ hàng trống</AppText>
+          {!isWide && (
+            <TouchableOpacity
+              onPress={() => setCartSheet(false)}
+              style={{
+                paddingHorizontal: 20,
+                paddingVertical: 10,
+                borderRadius: shape.radius.md,
+                backgroundColor: colors.brand.primaryBg,
+                borderWidth: 1,
+                borderColor: colors.border.brand,
+              }}
+            >
+              <AppText variant="md" color={colors.text.brand}>Thêm món ngay</AppText>
+            </TouchableOpacity>
+          )}
         </View>
       );
     }
 
+    // Wide (iPad) — compact flat list
+    if (isWide) {
+      return (
+        <>
+          <View style={{ paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: colors.border.light }}>
+            <AppText variant={'md'} weight="bold" color={colors.text.primary}>
+              Món ({itemCount})
+            </AppText>
+          </View>
+          {groupedCart.map((item) => (
+            <CartItemRow
+              key={item.cartItemId}
+              {...itemRowProps(item)}
+              groupedMode={true}
+            />
+          ))}
+        </>
+      );
+    }
+
+    // Narrow (iPhone) — grouped by category
     return groupedItems.map((group) => {
       const { unsent, sent, cancelled } = group;
       if (!unsent.length && !sent.length && !cancelled.length) return null;
 
       return (
-        <View key={group.category} style={{ marginBottom: 4 }}>
+        <View key={group.category} style={{ marginBottom: 12 }}>
+          <View style={{ paddingHorizontal: 4, paddingVertical: 8, backgroundColor: colors.surface.app, borderRadius: shape.radius.sm, marginBottom: 4 }}>
+            <AppText variant="md" weight="bold" color={colors.text.primary}>
+              {group.label}
+            </AppText>
+          </View>
           {unsent.length > 0 && (
             <>
               {(sent.length > 0 || cancelled.length > 0) && (
                 <View style={{ paddingHorizontal: 4, paddingBottom: 4 }}>
-                  <AppText variant="base" color={colors.brand.primary}>Món mới</AppText>
+                  <AppText variant={'md'} color={colors.brand.primary}>Món mới</AppText>
                 </View>
               )}
               {unsent.map((item) => (
@@ -234,7 +270,7 @@ export default function CartPanel({
             <>
               {(unsent.length > 0 || cancelled.length > 0) && (
                 <View style={{ paddingHorizontal: 4, paddingVertical: 4 }}>
-                  <AppText variant="base" color="#16a34a">Đã gửi bếp</AppText>
+                  <AppText variant={'md'} color={colors.status.success}>Đã gửi bếp</AppText>
                 </View>
               )}
               {sent.map((item) => (
@@ -246,7 +282,7 @@ export default function CartPanel({
           {cancelled.length > 0 && (
             <>
               <View style={{ paddingHorizontal: 4, paddingVertical: 4 }}>
-                <AppText variant="base" color="#dc2626">Đã huỷ</AppText>
+                <AppText variant={'md'} color={colors.status.danger}>Đã huỷ</AppText>
               </View>
               {cancelled.map((item) => (
                 <CartItemRow key={item.cartItemId} {...itemRowProps(item)} />
@@ -257,6 +293,24 @@ export default function CartPanel({
       );
     });
   };
+
+  const serviceCharge =
+    serviceChargePercent > 0 ? Math.round((total * serviceChargePercent) / 100) : 0;
+  const grandTotal = total + serviceCharge;
+  const vatAmount = React.useMemo(() => {
+    return cart.reduce((sum, item) => {
+      if (item.cancelReason) return sum;
+      const rate = item.vatRate ?? 8;
+      const itemTax = Math.round(item.qty * item.unitPrice * (rate / (100 + rate)));
+      return sum + itemTax;
+    }, 0);
+  }, [cart]);
+  const hasUnsentItems = cart.some(
+    (i) => !(i.isSent && i.status && !['moi', undefined, ''].includes(i.status)) && !i.cancelReason
+  );
+  const allDineIn = cart.length > 0 && cart.every((i) => i.serviceType !== 'takeaway');
+  const allTakeaway = cart.length > 0 && cart.every((i) => i.serviceType === 'takeaway');
+  const canBulkToggle = hasUnsentItems && (allDineIn || allTakeaway);
 
   const handleBulkToggle = () => {
     cart.forEach((i) => {
@@ -370,96 +424,77 @@ export default function CartPanel({
     onSplitTable ||
     onMergeTable
   );
-  const btnSize = isWide ? 40 : 36;
+  const btnSize = 44;
   const iconSize = isWide ? 22 : 18;
   const paddingV = 8;
   const paddingH = isWide ? 10 : 12;
 
+  const titleComponent = (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+      <AppText variant={'lg'} color={colors.text.primary} weight="bold">
+        Giỏ hàng
+      </AppText>
+      {itemCount > 0 && (
+        <View
+          style={{
+            backgroundColor: colors.brand.primary + '40',
+            paddingHorizontal: 8,
+            paddingVertical: 3,
+            borderRadius: shape.radius.xs,
+          }}
+        >
+          <AppText variant={'md'} color={colors.brand.primary} weight="bold">
+            {itemCount} món
+          </AppText>
+        </View>
+      )}
+    </View>
+  );
+
+  const rightActions = hasMoreActions ? (
+    <TouchableOpacity
+      onPress={() => setShowMoreMenu(true)}
+      style={{
+        width: btnSize,
+        height: btnSize,
+        borderRadius: shape.radius.md,
+        backgroundColor: colors.surface.disabled,
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <MaterialCommunityIcons name="dots-horizontal" size={iconSize} color={colors.icon.default} />
+    </TouchableOpacity>
+  ) : null;
+
   const content = (
     <>
-      <View
-        style={{
-          paddingTop: isWide ? 10 : insets.top,
-          height: isWide ? 56 : insets.top + 52,
-          paddingHorizontal: paddingH,
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          backgroundColor: colors.surface.header,
-          borderBottomWidth: 1,
-          borderBottomColor: colors.border.default,
-          boxShadow: '0 1px 4px rgba(15,23,42,0.06)',
-        }}
-      >
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          {!isWide && (
-            <TouchableOpacity
-              onPress={() => setCartSheet(false)}
-              style={{
-                height: btnSize,
-                borderRadius: 8,
-                backgroundColor: colors.surface.disabled,
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginRight: 2,
-              }}
-            >
-              <MaterialCommunityIcons name="close" size={iconSize} color={colors.icon.default} />
-            </TouchableOpacity>
-          )}
-          <AppText variant={isWide ? "large" : "medium"} color={colors.text.primary} weight="bold">
-            Giỏ hàng
-          </AppText>
-          {itemCount > 0 && (
-            <View
-              style={{
-                backgroundColor: 'rgba(255,255,255,0.25)',
-                paddingHorizontal: 8,
-                paddingVertical: 3,
-                borderRadius: 4,
-              }}
-            >
-              <AppText variant="medium" color={colors.brand.primary} weight="bold">
-                {itemCount} món
-              </AppText>
-            </View>
-          )}
-        </View>
-        {hasMoreActions && (
-          <TouchableOpacity
-            onPress={() => setShowMoreMenu(true)}
-            style={{
-              width: btnSize,
-              height: btnSize,
-              borderRadius: 8,
-              backgroundColor: colors.surface.disabled,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <MaterialCommunityIcons name="dots-horizontal" size={iconSize} color={colors.icon.default} />
-          </TouchableOpacity>
-        )}
-      </View>
+      <UnifiedHeader
+        titleComponent={titleComponent}
+        onBackPress={!isWide ? () => setCartSheet(false) : undefined}
+        backIcon="close"
+        right={rightActions}
+      />
 
+      {/* Cart items */}
       <View style={{ flex: 1, backgroundColor: colors.surface.card }}>
         {cart.length === 0 ? (
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16 }}>
             <MaterialCommunityIcons name="basket" size={48} color={colors.icon.muted} />
-            <AppText variant="medium" color={colors.text.secondary}>Giỏ hàng trống</AppText>
+            <AppText variant={'md'} color={colors.text.secondary} numberOfLines={1}>Giỏ hàng trống</AppText>
             {!isWide && (
               <TouchableOpacity
                 onPress={() => setCartSheet(false)}
                 style={{
                   paddingHorizontal: 20,
                   paddingVertical: 10,
-                  borderRadius: 8,
+                  borderRadius: shape.radius.md,
                   backgroundColor: colors.brand.primaryBg,
                   borderWidth: 1,
                   borderColor: colors.border.brand,
                 }}
               >
-                <AppText variant="medium" color={colors.text.brand}>Thêm món ngay</AppText>
+                <AppText variant="md" color={colors.text.brand}>Thêm món ngay</AppText>
               </TouchableOpacity>
             )}
           </View>
@@ -467,7 +502,7 @@ export default function CartPanel({
           <>
             <ScrollView
               style={{ flex: 1 }}
-              contentContainerStyle={{ paddingHorizontal: 4, paddingTop: 8, paddingBottom: 16 }}
+              contentContainerStyle={{ paddingHorizontal: isWide ? 0 : 4, paddingTop: isWide ? 0 : 8, paddingBottom: 16 }}
               showsVerticalScrollIndicator={false}
             >
               {renderCartItems()}
@@ -487,41 +522,11 @@ export default function CartPanel({
       <MoreMenu
         visible={showMoreMenu}
         onClose={() => setShowMoreMenu(false)}
-        onSplitBill={
-          onSplitBill
-            ? () => {
-                setSplitMode(true);
-              }
-            : undefined
-        }
-        onMergeBill={
-          onMergeBill
-            ? () => {
-                setMoveAction('merge_bill');
-              }
-            : undefined
-        }
-        onMoveTable={
-          onMoveTable
-            ? () => {
-                setMoveAction('move_table');
-              }
-            : undefined
-        }
-        onSplitTable={
-          onSplitTable
-            ? () => {
-                setMoveAction('split_table');
-              }
-            : undefined
-        }
-        onMergeTable={
-          onMergeTable
-            ? () => {
-                setMoveAction('merge_table');
-              }
-            : undefined
-        }
+        onSplitBill={onSplitBill ? () => setSplitMode(true) : undefined}
+        onMergeBill={onMergeBill ? () => setMoveAction('merge_bill') : undefined}
+        onMoveTable={onMoveTable ? () => setMoveAction('move_table') : undefined}
+        onSplitTable={onSplitTable ? () => setMoveAction('split_table') : undefined}
+        onMergeTable={onMergeTable ? () => setMoveAction('merge_table') : undefined}
       />
     </>
   );
@@ -534,7 +539,7 @@ export default function CartPanel({
     <Modal visible={cartSheet} animationType="slide" presentationStyle="fullScreen">
       <SafeAreaView
         style={{ flex: 1, backgroundColor: colors.surface.card }}
-        edges={['bottom', 'left', 'right']}
+        edges={['top', 'bottom', 'left', 'right']}
       >
         {content}
       </SafeAreaView>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, font } from '../../theme';
@@ -7,7 +7,7 @@ import { shape } from '../../theme/shape';
 import { useResponsive } from '../../hooks/useResponsive';
 
 export interface UnifiedHeaderProps {
-  title: string;
+  title?: string;
   subtitle?: string;
   icon?: string;
   onMenuPress?: () => void;
@@ -16,6 +16,9 @@ export interface UnifiedHeaderProps {
   compact?: boolean;
   right?: React.ReactNode;
   hideMenu?: boolean; // hide menu btn when persistent sidebar visible
+  animated?: boolean;
+  titleComponent?: React.ReactNode;
+  backIcon?: string;
 }
 
 /**
@@ -34,14 +37,29 @@ export default function UnifiedHeader({
   compact = false,
   right,
   hideMenu = false,
+  animated = false,
+  titleComponent,
+  backIcon = 'arrow-left',
 }: UnifiedHeaderProps) {
   const insets = useSafeAreaInsets();
   const { isWide } = useResponsive();
 
   const showLeftButton = (onMenuPress || onBackPress) && !hideMenu;
 
+  const fadeAnim = React.useRef(new Animated.Value(animated ? 0 : 1)).current;
+  const slideAnim = React.useRef(new Animated.Value(animated ? -10 : 0)).current;
+
+  React.useEffect(() => {
+    if (animated) {
+      Animated.parallel([
+        Animated.timing(fadeAnim, { toValue: 1, duration: 400, useNativeDriver: true }),
+        Animated.timing(slideAnim, { toValue: 0, duration: 400, useNativeDriver: true }),
+      ]).start();
+    }
+  }, [animated, fadeAnim, slideAnim]);
+
   return (
-    <View
+    <Animated.View
       style={[
         styles.header,
         compact ? styles.headerCompact : styles.headerDefault,
@@ -50,6 +68,8 @@ export default function UnifiedHeader({
           height: insets.top + (isWide ? 56 : 52),
           paddingHorizontal: isWide ? shape.spacing.xl : shape.spacing.md,
           justifyContent: 'center',
+          opacity: fadeAnim,
+          transform: [{ translateY: slideAnim }],
         },
       ]}
     >
@@ -62,7 +82,7 @@ export default function UnifiedHeader({
               style={styles.menuBtn}
               accessibilityLabel={backLabel || 'Quay lại'}
             >
-              <Icon name="arrow-left" size={20} color={colors.brand.primary} />
+              <Icon name={backIcon as any} size={20} color={colors.brand.primary} />
             </TouchableOpacity>
           ) : onMenuPress ? (
             <TouchableOpacity
@@ -84,14 +104,20 @@ export default function UnifiedHeader({
 
         {/* Title */}
         <View style={{ flex: 1 }}>
-          <Text style={styles.title} numberOfLines={1}>{title}</Text>
-          {subtitle && <Text style={styles.subtitle} numberOfLines={1}>{subtitle}</Text>}
+          {titleComponent ? (
+            titleComponent
+          ) : (
+            <>
+              <Text style={styles.title} numberOfLines={1}>{title}</Text>
+              {subtitle && <Text style={styles.subtitle} numberOfLines={1}>{subtitle}</Text>}
+            </>
+          )}
         </View>
 
         {/* Right actions */}
         {right}
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -124,12 +150,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.brand.primaryBg,
   },
   title: {
-    ...font.sectionTitle,
+    ...font.lg,
     color: colors.text.primary,
     fontWeight: '600',
   },
   subtitle: {
-    ...font.caption,
+    ...font.sm,
     color: colors.text.muted,
     marginTop: 1,
   },

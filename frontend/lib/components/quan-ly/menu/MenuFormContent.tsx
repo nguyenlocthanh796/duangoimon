@@ -128,14 +128,14 @@ export default function MenuFormContent({ form, onChange }: MenuFormContentProps
 const styles = StyleSheet.create({
   formRow: { flexDirection: 'row', gap: 10 },
   inputWrap: { marginBottom: 14 },
-  inputLabel: { ...font.label, color: colors.text.primary, marginBottom: 6 },
+  inputLabel: { ...font.smBold, color: colors.text.primary, marginBottom: 6 },
   input: {
     borderWidth: 1.5,
     borderColor: colors.border.default,
     borderRadius: 4,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    ...font.body,
+    ...font.md,
     color: colors.text.primary,
     backgroundColor: colors.surface.disabled,
   },
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border.default,
     backgroundColor: colors.surface.app,
   },
-  catChipText: { ...font.bodySmall, fontWeight: '600', color: colors.text.secondary },
+  catChipText: { ...font.sm, fontWeight: '600', color: colors.text.secondary },
   switchRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -157,5 +157,5 @@ const styles = StyleSheet.create({
     borderTopColor: colors.border.light,
     marginTop: 4,
   },
-  switchSub: { ...font.caption, color: colors.text.secondary, marginTop: 2 },
+  switchSub: { ...font.sm, color: colors.text.secondary, marginTop: 2 },
 });

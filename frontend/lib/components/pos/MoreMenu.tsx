@@ -28,7 +28,7 @@ export default function MoreMenu({
   return (
     <Modal visible={visible} transparent animationType="fade">
       <TouchableOpacity
-        style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.3)' }}
+        style={{ flex: 1, backgroundColor: colors.surface.overlay }}
         activeOpacity={1}
         onPress={onClose}
       >
@@ -44,11 +44,11 @@ export default function MoreMenu({
             minWidth: 180,
             borderWidth: 1,
             borderColor: colors.border.default,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            ...shape.shadow.md,
           }}
         >
           <AppText
-            variant="small"
+            variant="sm"
             color={colors.text.muted}
             style={{
               paddingHorizontal: 8,
@@ -85,7 +85,7 @@ export default function MoreMenu({
               >
                 <MaterialCommunityIcons name="call-split" size={16} color={colors.brand.primary} />
               </View>
-              <AppText variant="medium" color={colors.text.primary}>Tách bill</AppText>
+              <AppText variant="md" color={colors.text.primary}>Tách bill</AppText>
             </TouchableOpacity>
           )}
           {onMergeBill && (
@@ -108,14 +108,14 @@ export default function MoreMenu({
                   width: 32,
                   height: 32,
                   borderRadius: 6,
-                  backgroundColor: '#f0f9ff',
+                  backgroundColor: colors.badge.info.bg,
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
               >
-                <MaterialCommunityIcons name="call-merge" size={16} color="#0284c7" />
+                <MaterialCommunityIcons name="call-merge" size={16} color={colors.status.info} />
               </View>
-              <AppText variant="medium" color={colors.text.primary}>Gộp bill</AppText>
+              <AppText variant="md" color={colors.text.primary}>Gộp bill</AppText>
             </TouchableOpacity>
           )}
           {onMoveTable && (
@@ -138,14 +138,14 @@ export default function MoreMenu({
                   width: 32,
                   height: 32,
                   borderRadius: 6,
-                  backgroundColor: '#fef3c7',
+                  backgroundColor: colors.badge.warning.bg,
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
               >
-                <MaterialCommunityIcons name="tray-arrow-down" size={16} color="#d97706" />
+                <MaterialCommunityIcons name="tray-arrow-down" size={16} color={colors.status.warning} />
               </View>
-              <AppText variant="medium" color={colors.text.primary}>Chuyển bàn</AppText>
+              <AppText variant="md" color={colors.text.primary}>Chuyển bàn</AppText>
             </TouchableOpacity>
           )}
           {onSplitTable && (
@@ -168,14 +168,14 @@ export default function MoreMenu({
                   width: 32,
                   height: 32,
                   borderRadius: 6,
-                  backgroundColor: '#fce4ec',
+                  backgroundColor: colors.badge.danger.bg,
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
               >
-                <MaterialCommunityIcons name="call-split" size={16} color="#e53935" />
+                <MaterialCommunityIcons name="call-split" size={16} color={colors.status.danger} />
               </View>
-              <AppText variant="medium" color={colors.text.primary}>Tách bàn</AppText>
+              <AppText variant="md" color={colors.text.primary}>Tách bàn</AppText>
             </TouchableOpacity>
           )}
           {onMergeTable && (
@@ -198,14 +198,14 @@ export default function MoreMenu({
                   width: 32,
                   height: 32,
                   borderRadius: 6,
-                  backgroundColor: '#e8f5e9',
+                  backgroundColor: colors.badge.success.bg,
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
               >
-                <MaterialCommunityIcons name="compare-horizontal" size={16} color="#43a047" />
+                <MaterialCommunityIcons name="compare-horizontal" size={16} color={colors.status.success} />
               </View>
-              <AppText variant="medium" color={colors.text.primary}>Gộp bàn</AppText>
+              <AppText variant="md" color={colors.text.primary}>Gộp bàn</AppText>
             </TouchableOpacity>
           )}
         </View>

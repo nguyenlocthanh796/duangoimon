@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'reac
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
-import { colors, font } from '../../lib/theme';
+import { colors, font, formatVND } from '../../lib/theme';
 import { request } from '../../lib/api/client';
 import DataTable, { type Column } from '../../lib/components/ui/DataTable';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
@@ -12,7 +12,7 @@ import FormModal from '../../lib/components/ui/FormModal';
 import FAB from '../../lib/components/ui/FAB';
 
 const API = '/api/v1/quan-ly';
-function formatVND(v: number) { return (v || 0).toLocaleString('vi-VN') + 'đ'; }
+
 function fmtDate(d: string) { try { return new Date(d).toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }); } catch { return d; } }
 
 export default function ShiftsScreen() {
@@ -260,28 +260,28 @@ export default function ShiftsScreen() {
 const styles = StyleSheet.create({
   statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
   barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
-  statValue: { ...font.bodyBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
-  statLabel: { ...font.micro, color: '#737373', lineHeight: 12 },
-  cellPrimary: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
-  cellAmount: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
-  cellDiff: { ...font.bodySmall, fontWeight: '600' },
+  statValue: { ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
+  statLabel: { ...font.sm, color: '#737373', lineHeight: 12 },
+  cellPrimary: { ...font.sm, fontWeight: '600', color: '#171717' },
+  cellAmount: { ...font.sm, fontWeight: '600', color: '#171717' },
+  cellDiff: { ...font.sm, fontWeight: '600' },
   panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelHeaderText: { ...font.body, fontWeight: '600', color: '#171717' },
-  panelLabel: { ...font.caption, color: '#737373' },
-  panelValue: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
+  panelHeaderText: { ...font.md, fontWeight: '600', color: '#171717' },
+  panelLabel: { ...font.sm, color: '#737373' },
+  panelValue: { ...font.sm, fontWeight: '600', color: '#171717' },
   panelDivider: { height: 1, backgroundColor: '#F0F0F0' },
   panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16, borderRadius: 8, paddingVertical: 12, minHeight: 44, backgroundColor: '#F97316' },
-  panelCtaText: { ...font.button, color: '#fff' },
+  panelCtaText: { ...font.mdBold, color: '#fff' },
   activeBanner: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 8, borderWidth: 1 },
-  activeBannerText: { ...font.caption, fontWeight: '600' },
+  activeBannerText: { ...font.sm, fontWeight: '600' },
   mobileActiveBanner: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingVertical: 10, backgroundColor: '#DCFCE7', borderBottomWidth: 1, borderBottomColor: '#E5E5E5' },
-  mobileActiveText: { flex: 1, ...font.caption, color: '#16A34A', fontWeight: '600' },
+  mobileActiveText: { flex: 1, ...font.sm, color: '#16A34A', fontWeight: '600' },
   mobileCloseBtn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6, backgroundColor: '#DC2626' },
-  mobileCloseBtnText: { ...font.badge, color: '#fff', fontWeight: '600' },
+  mobileCloseBtnText: { ...font.smBold, color: '#fff', fontWeight: '600' },
   mobileStartBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, padding: 12, backgroundColor: '#F97316', marginHorizontal: 4, borderRadius: 8, marginTop: 4 },
-  mobileStartBtnText: { ...font.buttonSmall, color: '#fff', fontWeight: '600' },
-  fieldLabel: { ...font.label, color: '#404040', marginBottom: 6 },
-  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.body, color: '#171717', backgroundColor: '#FAFAFA' },
+  mobileStartBtnText: { ...font.smBold, color: '#fff', fontWeight: '600' },
+  fieldLabel: { ...font.smBold, color: '#404040', marginBottom: 6 },
+  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.md, color: '#171717', backgroundColor: '#FAFAFA' },
   separator: { width: 1, backgroundColor: '#F0F0F0' },
 });

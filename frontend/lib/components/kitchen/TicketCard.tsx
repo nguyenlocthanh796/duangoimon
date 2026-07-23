@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, Animated } from 'react-native';
+import { Swipeable } from 'react-native-gesture-handler';
 import AppText from '../ui/AppText';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font, palette } from '../../theme';
@@ -47,35 +48,84 @@ export default function TicketCard({
   onMarkDone,
   onMoveForward,
 }: TicketCardProps) {
+  const swipeRef = React.useRef<Swipeable>(null);
   const elapsed = Math.floor((Date.now() - new Date(order.created_at).getTime()) / 60000);
-  const isUrgent = elapsed > 15 && colStatus !== 'hoan_thanh';
   const isDone = colStatus === 'hoan_thanh';
 
-  return (
+  const borderColor = isDone
+    ? colors.status.success
+    : elapsed > 5
+      ? colors.status.danger
+      : elapsed >= 3
+        ? colors.status.warning
+        : colors.status.success;
+
+  const timeColor = isDone
+    ? colors.status.success
+    : elapsed > 5
+      ? colors.status.danger
+      : elapsed >= 3
+        ? colors.status.warning
+        : colors.status.success;
+
+  // Pulse animation for >5 min (spec 5.2)
+  const pulseAnim = React.useRef(new Animated.Value(1)).current;
+  React.useEffect(() => {
+    if (elapsed > 5 && !isDone) {
+      const anim = Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, { toValue: 0.5, duration: 1000, useNativeDriver: true }),
+          Animated.timing(pulseAnim, { toValue: 1, duration: 1000, useNativeDriver: true }),
+        ])
+      );
+      anim.start();
+      return () => anim.stop();
+    }
+  }, [elapsed, isDone]);
+
+  // Swipe gesture renderLeftActions (swipe RIGHT reveals green panel)
+  const renderLeftActions = (
+    _progress: Animated.AnimatedInterpolation<number>,
+    dragX: Animated.AnimatedInterpolation<number>
+  ) => {
+    if (isDone) return null;
+    const nextLabel = colStatus === 'cho_xu_ly' ? 'Bắt đầu' : 'Xong';
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: colors.status.success,
+          justifyContent: 'center',
+          alignItems: 'flex-start',
+          paddingLeft: 20,
+          borderRadius: shape.radius.md,
+          marginBottom: 12,
+        }}
+      >
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <Icon name={colStatus === 'cho_xu_ly' ? 'play' : 'check'} size={20} color={colors.text.inverse} />
+          <AppText variant="md" weight="bold" color={colors.text.inverse}>
+            {nextLabel}
+          </AppText>
+        </View>
+      </View>
+    );
+  };
+
+  const cardContent = (
     <View
       style={{
         backgroundColor: colors.surface.card,
         borderRadius: shape.radius.md,
         marginBottom: 12,
         borderWidth: 1,
-        borderColor: isUrgent
-          ? palette.red[300]
-          : isDone
-            ? colors.border.success
-            : colors.border.default,
+        borderColor: isDone ? colors.border.success : colors.border.default,
+        borderLeftWidth: 4,
+        borderLeftColor: borderColor,
         overflow: 'hidden',
         opacity: isDone ? 0.75 : 1,
       }}
     >
-      {/* Urgency top stripe */}
-      {isUrgent && <View style={{ height: 3, backgroundColor: colors.status.danger }} />}
-      {!isUrgent && isDone && (
-        <View style={{ height: 3, backgroundColor: colors.status.success }} />
-      )}
-      {!isUrgent && !isDone && (
-        <View style={{ height: 3, backgroundColor: colors.brand.primary }} />
-      )}
-
       {/* Header */}
       <View
         style={{
@@ -84,17 +134,9 @@ export default function TicketCard({
           alignItems: 'center',
           paddingHorizontal: 14,
           paddingVertical: 10,
-          backgroundColor: isUrgent
-            ? colors.surface.danger
-            : isDone
-              ? palette.green[50]
-              : colors.surface.app,
+          backgroundColor: isDone ? colors.status.successBg : colors.surface.app,
           borderBottomWidth: 1,
-          borderBottomColor: isUrgent
-            ? colors.border.danger
-            : isDone
-              ? palette.green[250]
-              : colors.surface.disabled,
+          borderBottomColor: isDone ? colors.border.success : colors.surface.disabled,
         }}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -103,11 +145,7 @@ export default function TicketCard({
               width: 36,
               height: 36,
               borderRadius: shape.radius.md,
-              backgroundColor: isUrgent
-                ? colors.status.danger
-                : isDone
-                  ? colors.status.success
-                  : colors.brand.primary,
+              backgroundColor: isDone ? colors.status.success : colors.brand.primary,
               alignItems: 'center',
               justifyContent: 'center',
             }}
@@ -115,48 +153,39 @@ export default function TicketCard({
             <Icon name="table-furniture" size={18} color={colors.text.inverse} />
           </View>
           <View style={{ flexShrink: 1 }}>
-            <AppText variant="medium" weight="bold" color={colors.text.primary}>{order.table_name}</AppText>
-            <AppText variant="small" color={colors.text.muted}>
+            <AppText variant="md" weight="bold" color={colors.text.primary}>{order.table_name}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>
               #{order.id.slice(-6).toUpperCase()}
             </AppText>
           </View>
         </View>
 
         <View style={{ alignItems: 'flex-end', flexShrink: 0 }}>
-          <View
+          <Animated.View
             style={{
               paddingHorizontal: 8,
               paddingVertical: 3,
               borderRadius: shape.radius.md,
-              backgroundColor: isUrgent
-                ? palette.red[100]
-                : isDone
-                  ? colors.border.success
-                  : colors.brand.primaryBg,
+              backgroundColor: isDone
+                ? colors.border.success
+                : elapsed > 5
+                  ? colors.status.dangerBg
+                  : elapsed >= 3
+                    ? colors.status.warningBg
+                    : colors.brand.primaryBg,
+              opacity: elapsed > 5 && !isDone ? pulseAnim : 1,
             }}
           >
-            <AppText
-              variant="small"
-              color={
-                isUrgent
-                  ? colors.status.danger
-                  : isDone
-                    ? colors.status.success
-                    : colors.brand.primary
-              }
-            >
+            <AppText variant="sm" weight="bold" color={timeColor}>
               {getElapsed(order.created_at)}
             </AppText>
-          </View>
-          {isUrgent && (
-            <AppText
-              variant="small"
-              weight="bold"
-              color={colors.status.danger}
-              style={{ marginTop: 2, letterSpacing: 1 }}
-            >
-              QUÁ HẠN
-            </AppText>
+          </Animated.View>
+          {elapsed > 5 && !isDone && (
+            <Animated.View style={{ opacity: pulseAnim }}>
+              <AppText variant="sm" weight="bold" color={colors.status.danger} style={{ marginTop: 2, letterSpacing: 1 }}>
+                QUÁ HẠN
+              </AppText>
+            </Animated.View>
           )}
         </View>
       </View>
@@ -178,24 +207,20 @@ export default function TicketCard({
                   marginTop: 1,
                 }}
               >
-                <AppText variant="small" weight="bold" color={colors.brand.primary}>
+                <AppText variant="sm" weight="bold" color={colors.brand.primary}>
                   ×{item.quantity}
                 </AppText>
               </View>
               <View style={{ flex: 1 }}>
-                <AppText variant="base" color={colors.text.primary}>
-                  {item.product_name}
-                </AppText>
+                <AppText variant="md" color={colors.text.primary}>{item.product_name}</AppText>
                 {item.note && (
-                  <AppText variant="small" color={palette.amber[600]} style={{ marginTop: 2 }}>
+                  <AppText variant="sm" color={colors.status.warning} style={{ marginTop: 2 }}>
                     📝 {item.note}
                   </AppText>
                 )}
                 {item.options && Object.keys(item.options).length > 0 && (
-                  <AppText variant="small" color={colors.text.muted} style={{ marginTop: 1 }}>
-                    {Object.entries(item.options)
-                      .map(([k, v]) => `${k}: ${v}`)
-                      .join(' · ')}
+                  <AppText variant="sm" color={colors.text.muted} style={{ marginTop: 1 }}>
+                    {Object.entries(item.options).map(([k, v]) => `${k}: ${v}`).join(' · ')}
                   </AppText>
                 )}
               </View>
@@ -203,73 +228,60 @@ export default function TicketCard({
           ))}
       </View>
 
-      {/* Order note */}
       {order.note && (
-        <View
-          style={{
-            paddingHorizontal: 14,
-            paddingVertical: 8,
-            backgroundColor: colors.status.warningBg,
-            borderTopWidth: 1,
-            borderTopColor: palette.amber[200],
-          }}
-        >
-          <AppText variant="small" color={palette.amber[800]}>📋 {order.note}</AppText>
+        <View style={{ paddingHorizontal: 14, paddingVertical: 8, backgroundColor: colors.status.warningBg, borderTopWidth: 1, borderTopColor: palette.amber[200] }}>
+          <AppText variant="sm" color={palette.amber[800]}>📋 {order.note}</AppText>
         </View>
       )}
 
-      {/* Actions */}
+      {/* Action buttons — 52pt (spec 5.1) */}
       {!isDone && (
-        <View
-          style={{
-            flexDirection: 'row',
-            gap: 8,
-            padding: 12,
-            paddingTop: 8,
-            borderTopWidth: 1,
-            borderTopColor: colors.surface.disabled,
-          }}
-        >
+        <View style={{ flexDirection: 'row', gap: 8, padding: 12, paddingTop: 8, borderTopWidth: 1, borderTopColor: colors.surface.disabled }}>
           {colStatus === 'cho_xu_ly' && (
             <TouchableOpacity
               onPress={() => onMoveForward(order.id)}
-              style={{
-                flex: 1,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 6,
-                height: 36,
-                borderRadius: shape.radius.md,
-                backgroundColor: colors.brand.primaryBg,
-                borderWidth: 1,
-                borderColor: colors.border.brand,
-              }}
+              style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, height: 52, borderRadius: shape.radius.lg, backgroundColor: colors.surface.card, borderWidth: 1.5, borderColor: colors.brand.primary }}
             >
-              <Icon name="play" size={16} color={colors.brand.primary} />
-              <AppText variant="medium" color={colors.brand.primary}>Bắt đầu làm</AppText>
+              <Icon name="play" size={18} color={colors.brand.primary} />
+              <AppText variant="md" color={colors.brand.primary} weight="bold">Bắt đầu làm</AppText>
             </TouchableOpacity>
           )}
           <TouchableOpacity
             onPress={() => onMarkDone(order.id)}
-            style={{
-              flex: 1,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 6,
-              height: 36,
-              borderRadius: shape.radius.md,
-              backgroundColor: colors.status.successBg,
-              borderWidth: 1,
-              borderColor: palette.green[350],
-            }}
+            style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, height: 52, borderRadius: shape.radius.lg, backgroundColor: colors.status.success, borderWidth: 1.5, borderColor: colors.status.available }}
           >
-            <Icon name="check" size={16} color={colors.status.success} />
-            <AppText variant="medium" color={colors.status.success}>Xong</AppText>
+            <Icon name="check" size={18} color={colors.text.inverse} />
+            <AppText variant="md" color={colors.text.inverse} weight="bold">Xong</AppText>
           </TouchableOpacity>
         </View>
       )}
     </View>
   );
+
+  // Wrap with Swipeable for gesture (skip for hoan_thanh)
+  if (!isDone) {
+    const handleSwipe = () => {
+      swipeRef.current?.close();
+      if (colStatus === 'cho_xu_ly') {
+        onMoveForward(order.id);
+      } else if (colStatus === 'dang_lam') {
+        onMarkDone(order.id);
+      }
+    };
+
+    return (
+      <Swipeable
+        ref={swipeRef}
+        renderLeftActions={renderLeftActions}
+        onSwipeableOpen={handleSwipe}
+        overshootLeft={false}
+        friction={2}
+        leftThreshold={60}
+      >
+        {cardContent}
+      </Swipeable>
+    );
+  }
+
+  return cardContent;
 }

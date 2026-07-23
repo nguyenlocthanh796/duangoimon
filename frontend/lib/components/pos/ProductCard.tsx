@@ -2,7 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { colors, font } from '../../theme/index';
+import { colors, palette, font } from '../../theme/index';
 import { formatPrice } from '../../utils/format';
 import { shape } from '../../theme/shape';
 import { MenuItem } from './types';
@@ -15,11 +15,11 @@ interface ProductCardProps {
   cardSize: number;
   isWide: boolean;
   inCartCount: number;
-  onPress: () => void; // Triggers options modal (size/toppings selection)
-  onQuickAdd: () => void; // Triggers quick add (default size M)
+  onPress: () => void;
+  onQuickAdd: () => void;
 }
 
-export default function ProductCard({
+export default React.memo(function ProductCard({
   item,
   cardSize,
   isWide,
@@ -47,7 +47,7 @@ export default function ProductCard({
       style={{
         width: cardSize,
         height: cardSize,
-        borderRadius: 0, // Flat design
+        borderRadius: shape.radius.lg,
         overflow: 'hidden',
         backgroundColor: colors.surface.card,
         borderWidth: StyleSheet.hairlineWidth,
@@ -61,55 +61,71 @@ export default function ProductCard({
         style={{ position: 'absolute', width: '100%', height: '100%' }}
         contentFit="cover"
         transition={200}
-        cachePolicy="disk"
+        cachePolicy="memory-disk"
         onError={() => setImageError(true)}
       />
 
-      {/* Full-width bottom bar overlay stretching fully across the card width */}
+      {/* Bottom text overlay — chiều cao CỐ ĐỊNH 48pt */}
       <View
         style={{
           position: 'absolute',
           bottom: 0,
           left: 0,
           right: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.72)', // Dark overlay stretching fully across the card width
-          paddingVertical: 10,
-          paddingHorizontal: 8,
-          alignItems: 'center',
+          height: 48,
+          backgroundColor: 'rgba(0, 0, 0, 0.72)',
+          paddingHorizontal: shape.spacing.sm,
+          paddingVertical: shape.spacing.xs,
           justifyContent: 'center',
-          borderRadius: 0,
+          overflow: 'hidden',
         }}
       >
         <AppText
-          variant="base"
-          color="#FFFFFF"
-          style={{ textAlign: 'center', marginBottom: 3 }}
-          numberOfLines={1}
+          variant="sm"
+          color={colors.text.inverse}
+          style={{ textAlign: 'center' }}
+          numberOfLines={2}
+          ellipsizeMode="tail"
         >
           {item.name}
         </AppText>
-        <AppText variant="small" color="#FDBA74" style={{ textAlign: 'center' }}>
+        <AppText
+          variant="sm"
+          color={palette.orange[300]}
+          style={{ textAlign: 'center', marginTop: 2 }}
+          numberOfLines={1}
+        >
           {formatPrice(item.price)}
         </AppText>
       </View>
 
-      {/* In Cart Count Badge (Top Left) */}
+      {/* Badge số lượng — 24pt, viền trắng 2pt */}
       {inCartCount > 0 && (
         <View
           style={{
             position: 'absolute',
-            top: 8,
-            left: 8,
+            top: 6,
+            right: 6,
+            minWidth: 24,
+            height: 24,
+            borderRadius: shape.radius.full,
             backgroundColor: colors.brand.primary,
-            paddingHorizontal: 8,
-            paddingVertical: 2,
-            borderRadius: 6,
+            borderWidth: 2,
+            borderColor: colors.text.inverse,
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingHorizontal: 4,
             zIndex: 5,
           }}
         >
-          <AppText variant="small" weight="bold" color={colors.text.inverse}>
-              {inCartCount}
-            </AppText>
+          <AppText
+            variant="sm"
+            weight="bold"
+            color={colors.text.inverse}
+            style={{ textAlign: 'center' }}
+          >
+            {inCartCount > 99 ? '99+' : inCartCount}
+          </AppText>
         </View>
       )}
 
@@ -127,9 +143,9 @@ export default function ProductCard({
             borderRadius: 8,
           }}
         >
-          <Icon name="tune" size={15} color="#FFFFFF" />
+          <Icon name="tune" size={16} color={colors.text.inverse} />
         </TouchableOpacity>
       )}
     </TouchableOpacity>
   );
-}
+});

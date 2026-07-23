@@ -133,6 +133,9 @@ _cors_regex = (
     r"^https?://(localhost|127\.0\.0\.1"
     + (f"|{_lan_pattern}" if _lan_pattern else "")
     + r")(:\d+)?$"
+    + r"|^https://[a-z0-9-]+\.trycloudflare\.com$"
+    + r"|^https://(?:[a-z0-9-]+\.)*pages\.dev$"
+    + r"|^https://(?:[a-z0-9-]+\.)*up\.railway\.app$"
 )
 
 app.add_middleware(
@@ -166,6 +169,7 @@ app.include_router(ban_hang.tables.router, prefix="/api/v1", dependencies=_ban_h
 app.include_router(ban_hang.products.router, prefix="/api/v1", dependencies=_ban_hang_deps)
 app.include_router(ban_hang.orders.router, prefix="/api/v1", dependencies=_ban_hang_deps)
 app.include_router(ban_hang.payments.router, prefix="/api/v1", dependencies=_ban_hang_deps)
+app.include_router(ban_hang.kitchen.router, prefix="/api/v1", dependencies=_ban_hang_deps)
 
 # Quan-ly (admin / manager)
 _quan_ly_deps = [require_role(endpoint_path="quan-ly"), require_branch_access()]
@@ -235,6 +239,23 @@ async def inventory_ws(websocket: WebSocket):
             await websocket.receive_text()
     except WebSocketDisconnect:
         ws_manager.disconnect(websocket, "inventory")
+
+
+@app.websocket("/ws/pos")
+@app.websocket("/ws")
+async def pos_ws(websocket: WebSocket):
+    token = websocket.query_params.get("token", "")
+    if token:
+        try:
+            decode_token(token)
+        except Exception:
+            pass
+    await ws_manager.connect(websocket, "pos")
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        ws_manager.disconnect(websocket, "pos")
 
 
 # ── Health / readiness ────────────────────────────────────────────────────

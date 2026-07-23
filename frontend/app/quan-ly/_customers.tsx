@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TextInput, Alert } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
-import { colors, font } from '../../lib/theme';
+import { colors, font, formatVND } from '../../lib/theme';
 import { request } from '../../lib/api/client';
 import type { Customer } from '../../lib/api/client';
 import DataTable, { type Column } from '../../lib/components/ui/DataTable';
@@ -14,7 +14,7 @@ import FAB from '../../lib/components/ui/FAB';
 import SearchBar from '../../lib/components/ui/SearchBar';
 
 const API = '/api/v1/quan-ly';
-function formatVND(v: number) { return (v || 0).toLocaleString('vi-VN') + 'đ'; }
+
 
 export default function CustomersScreen() {
   const { openSidebar } = useSidebar();
@@ -106,14 +106,14 @@ export default function CustomersScreen() {
           ))}
         </View>
         <View style={styles.panelDivider} />
-        <Text style={{ ...font.caption, fontWeight: '600', color: '#171717', marginBottom: 4 }}>Top chi tiêu</Text>
+        <Text style={{ ...font.sm, fontWeight: '600', color: '#171717', marginBottom: 4 }}>Top chi tiêu</Text>
         {top.map((c, i) => (
           <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 12}}>
-            <Text style={{ width: 60, ...font.micro, color: '#171717' }} numberOfLines={1}>{c.name}</Text>
+            <Text style={{ width: 60, ...font.sm, color: '#171717' }} numberOfLines={1}>{c.name}</Text>
             <View style={{ flex: 1, height: 10, backgroundColor: '#F5F5F5', borderRadius: 3 }}>
               <View style={{ width: `${Math.max(5, ((c.total_spent || 0) / maxSpent) * 100)}%`, height: 10, backgroundColor: '#F97316', borderRadius: 3 }} />
             </View>
-            <Text style={{ width: 70, textAlign: 'right', ...font.micro, fontWeight: '600', color: '#171717' }}>{formatVND(c.total_spent || 0)}</Text>
+            <Text style={{ width: 70, textAlign: 'right', ...font.sm, fontWeight: '600', color: '#171717' }}>{formatVND(c.total_spent || 0)}</Text>
           </View>
         ))}
       </View>
@@ -219,18 +219,18 @@ export default function CustomersScreen() {
 const styles = StyleSheet.create({
   statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
   barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
-  statValue: { ...font.bodyBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
-  statLabel: { ...font.micro, color: '#737373', lineHeight: 12 },
+  statValue: { ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
+  statLabel: { ...font.sm, color: '#737373', lineHeight: 12 },
   searchRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, paddingVertical: 12, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  cellPrimary: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
-  cellSub: { ...font.micro, color: '#737373', marginTop: 2 },
-  cellAmount: { ...font.bodySmall, fontWeight: '600', color: '#F97316' },
-  cellNumber: { ...font.bodySmall, color: '#171717' },
+  cellPrimary: { ...font.sm, fontWeight: '600', color: '#171717' },
+  cellSub: { ...font.sm, color: '#737373', marginTop: 2 },
+  cellAmount: { ...font.sm, fontWeight: '600', color: '#F97316' },
+  cellNumber: { ...font.sm, color: '#171717' },
   panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12},
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelHeaderText: { ...font.body, fontWeight: '600', color: '#171717' },
+  panelHeaderText: { ...font.md, fontWeight: '600', color: '#171717' },
   panelDivider: { height: 1, backgroundColor: '#F0F0F0' },
-  fieldLabel: { ...font.label, color: '#404040', marginBottom: 6 },
-  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.body, color: '#171717', backgroundColor: '#FAFAFA' },
+  fieldLabel: { ...font.smBold, color: '#404040', marginBottom: 6 },
+  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.md, color: '#171717', backgroundColor: '#FAFAFA' },
   separator: { width: 1, backgroundColor: '#F0F0F0' },
 });

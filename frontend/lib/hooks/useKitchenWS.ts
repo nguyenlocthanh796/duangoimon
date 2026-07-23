@@ -1,7 +1,20 @@
 'use client';
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { CLOUDFLARE_TUNNEL_BASE } from '../api/serverConfig';
 
-const WS_URL = 'ws://localhost:8000/ws/kitchen';
+function getWsUrl(): string {
+  if (typeof window !== 'undefined' && window.location) {
+    const host = window.location.hostname;
+    if (host === 'localhost' || host === '127.0.0.1') {
+      return `ws://${host}:8000/ws/kitchen`;
+    }
+    if (host.endsWith('.pages.dev') || host.endsWith('.cloudflare.com')) {
+      return `${CLOUDFLARE_TUNNEL_BASE.replace(/^https/, 'wss')}/ws/kitchen`;
+    }
+    return `ws://${host}:8000/ws/kitchen`;
+  }
+  return 'ws://localhost:8000/ws/kitchen';
+}
 
 export type OrderEvent =
   | { event: 'new_order'; order: any }
@@ -22,7 +35,7 @@ export function useKitchenWS() {
   const connect = useCallback(() => {
     if (wsRef.current?.readyState === WebSocket.OPEN) return;
     try {
-      const ws = new WebSocket(WS_URL);
+      const ws = new WebSocket(getWsUrl());
       wsRef.current = ws;
 
       ws.onopen = () => setConnected(true);

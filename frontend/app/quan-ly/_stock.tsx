@@ -8,7 +8,7 @@ import {
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive, calcGridCols } from '../../lib/hooks/useResponsive';
-import { colors, font } from '../../lib/theme';
+import { colors, font, formatVND } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
@@ -17,7 +17,7 @@ import FormModal from '../../lib/components/ui/FormModal';
 import EmptyState from '../../lib/components/ui/EmptyState';
 
 const API = '/api/v1/quan-ly';
-function formatVND(v: number) { return v.toLocaleString('vi-VN') + 'đ'; }
+
 
 function stockLevel(stock: number, min: number) {
   if (min <= 0) return { bg: '#EFF6FF', text: '#2563EB', label: 'Không ngưỡng' };
@@ -171,7 +171,7 @@ export default function StockScreen() {
             <Text style={s.panelSub}>{selectedItem.code}</Text>
           </View>
           <View style={[s.badge, { backgroundColor: lv.bg }]}>
-            <Text style={{ ...font.micro, fontWeight: '600', color: lv.text }}>{lv.label}</Text>
+            <Text style={{ ...font.sm, fontWeight: '600', color: lv.text }}>{lv.label}</Text>
           </View>
         </View>
 
@@ -201,7 +201,7 @@ export default function StockScreen() {
                 backgroundColor: lv.text,
               }]} />
             </View>
-            <Text style={{ ...font.micro, color: '#737373', marginTop: 2 }}>
+            <Text style={{ ...font.sm, color: '#737373', marginTop: 2 }}>
               {selectedItem.current_stock >= selectedItem.min_stock
                 ? 'Đạt ngưỡng tối thiểu'
                 : `Thiếu ${(selectedItem.min_stock - selectedItem.current_stock).toFixed(1)} ${selectedItem.unit}`}
@@ -300,7 +300,7 @@ export default function StockScreen() {
         <Icon name="magnify" size={16} color={'#737373'} />
         <TextInput value={search} onChangeText={setSearch} placeholder="Tìm nguyên liệu..."
           placeholderTextColor={'#737373'}
-          style={{ flex: 1, ...font.caption, color: '#171717', paddingVertical: 0 }} />
+          style={{ flex: 1, ...font.sm, color: '#171717', paddingVertical: 0 }} />
         {search !== '' && (
           <TouchableOpacity onPress={() => setSearch('')}><Icon name="close-circle" size={16} color={'#737373'} /></TouchableOpacity>
         )}
@@ -374,7 +374,7 @@ export default function StockScreen() {
             {selectedItem ? renderDetail() : (
               <View style={{ alignItems: 'center', padding: 40, gap: 16}}>
                 <Icon name="hand-pointing-up" size={36} color={'#737373'} />
-                <Text style={{ ...font.body, color: '#737373' }}>Chọn nguyên liệu để xem chi tiết</Text>
+                <Text style={{ ...font.md, color: '#737373' }}>Chọn nguyên liệu để xem chi tiết</Text>
               </View>
             )}
           </View>
@@ -446,31 +446,31 @@ const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FAFAFA' },
 
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, height: 38, borderRadius: 8, backgroundColor: '#F97316' },
-  addBtnText: { ...font.buttonSmall, fontWeight: '600', color: '#fff' },
+  addBtnText: { ...font.smBold, fontWeight: '600', color: '#fff' },
   headerBtn: { width: 36, height: 36, borderRadius: 8, backgroundColor: '#F5F5F5', alignItems: 'center', justifyContent: 'center' },
 
   // Stats bar
   statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
   barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
-  statValue: { ...font.bodyBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
-  statLabel: { ...font.micro, color: '#737373', lineHeight: 12 },
+  statValue: { ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
+  statLabel: { ...font.sm, color: '#737373', lineHeight: 12 },
 
   // Filters
   filterBar: { paddingHorizontal: 12, paddingVertical: 12, backgroundColor: '#FAFAFA', gap: 12},
   searchBox: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#FFFFFF', borderRadius: 8, paddingHorizontal: 32, height: 36, borderWidth: 1, borderColor: '#F0F0F0' },
   chip: { paddingHorizontal: 32, paddingVertical: 5, borderRadius: 999, backgroundColor: '#F5F5F5' },
   chipActive: { backgroundColor: '#F97316' },
-  chipText: { ...font.micro, fontWeight: '600', color: '#737373' },
+  chipText: { ...font.sm, fontWeight: '600', color: '#737373' },
   chipTextActive: { color: colors.text.inverse },
 
   // Card
   card: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#F0F0F0' },
   cardTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
   cardIcon: { width: 36, height: 36, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
-  cardName: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
-  cardCode: { ...font.micro, color: '#737373', marginTop: 1 },
+  cardName: { ...font.sm, fontWeight: '600', color: '#171717' },
+  cardCode: { ...font.sm, color: '#737373', marginTop: 1 },
   badge: { paddingHorizontal: 16, paddingVertical: 3, borderRadius: 999},
-  badgeText: { ...font.micro, fontWeight: '600' },
+  badgeText: { ...font.sm, fontWeight: '600' },
 
   // Stock bar
   stockBar: { height: 5, backgroundColor: '#F1F5F9', borderRadius: 2.5, overflow: 'hidden' },
@@ -479,8 +479,8 @@ const s = StyleSheet.create({
   // Card stats
   cardStats: { flexDirection: 'row', gap: 16, marginTop: 8, borderTopWidth: 1, borderTopColor: '#F0F0F0', paddingTop: 8 },
   cardStatItem: { flex: 1, alignItems: 'center' },
-  cardStatValue: { ...font.caption, fontWeight: '600', color: '#171717' },
-  cardStatLabel: { ...font.micro, color: '#737373' },
+  cardStatValue: { ...font.sm, fontWeight: '600', color: '#171717' },
+  cardStatLabel: { ...font.sm, color: '#737373' },
 
   // Actions
   actionRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 6, paddingTop: 6, borderTopWidth: 1, borderTopColor: '#F0F0F0' },
@@ -491,19 +491,19 @@ const s = StyleSheet.create({
   panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: '#F0F0F0', gap: 32},
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 32, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
   panelIconBox: { width: 40, height: 40, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
-  panelTitle: { ...font.body, fontWeight: '600', color: '#171717' },
-  panelSub: { ...font.caption, color: '#737373', marginTop: 1 },
+  panelTitle: { ...font.md, fontWeight: '600', color: '#171717' },
+  panelSub: { ...font.sm, color: '#737373', marginTop: 1 },
   panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12, paddingHorizontal: 12, borderRadius: 8},
-  panelBtnText: { ...font.caption, color: '#fff', fontWeight: '600' },
+  panelBtnText: { ...font.sm, color: '#fff', fontWeight: '600' },
   detailRow: { flexDirection: 'row', gap: 16},
   detailItem: { flex: 1, alignItems: 'center' },
-  detailValue: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
-  detailLabel: { ...font.micro, color: '#737373' },
+  detailValue: { ...font.sm, fontWeight: '600', color: '#171717' },
+  detailLabel: { ...font.sm, color: '#737373' },
   detailDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 4 },
 
   // Form
-  fieldLabel: { ...font.label, color: '#404040', marginBottom: 4 },
-  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.body, color: '#171717', backgroundColor: '#FAFAFA' },
+  fieldLabel: { ...font.smBold, color: '#404040', marginBottom: 4 },
+  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.md, color: '#171717', backgroundColor: '#FAFAFA' },
 
   separator: { width: 1, backgroundColor: '#F0F0F0' },
 

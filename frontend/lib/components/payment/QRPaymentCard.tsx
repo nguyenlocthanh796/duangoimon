@@ -190,7 +190,7 @@ export default function QRPaymentCard({ total, orderId, note }: QRPaymentCardPro
         >
           <Icon name="bank" size={18} color="#fff" />
         </View>
-        <Text style={{ ...font.bodyBold, color: colors.text.primary }}>Chuyển khoản ngân hàng</Text>
+        <Text style={{ ...font.mdBold, color: colors.text.primary }}>Chuyển khoản ngân hàng</Text>
       </View>
 
       {/* QR Code Area */}
@@ -217,7 +217,7 @@ export default function QRPaymentCard({ total, orderId, note }: QRPaymentCardPro
             }}
           >
             <Icon name="qrcode" size={40} color={colors.icon.muted} />
-            <Text style={{ ...font.caption, color: colors.text.muted, textAlign: 'center' }}>
+            <Text style={{ ...font.sm, color: colors.text.muted, textAlign: 'center' }}>
               QR unavailable{'\n'}Manual transfer
             </Text>
           </View>
@@ -265,7 +265,7 @@ export default function QRPaymentCard({ total, orderId, note }: QRPaymentCardPro
           alignItems: 'center',
         }}
       >
-        <Text style={{ ...font.button, color: '#fff', fontWeight: '600' }}>Mở app ngân hàng</Text>
+        <Text style={{ ...font.mdBold, color: '#fff', fontWeight: '600' }}>Mở app ngân hàng</Text>
       </TouchableOpacity>
     </View>
   );
@@ -286,10 +286,10 @@ function Row({
 }) {
   return (
     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-      <Text style={{ ...font.caption, color: colors.text.muted, flex: 0.4 }}>{label}</Text>
+      <Text style={{ ...font.sm, color: colors.text.muted, flex: 0.4 }}>{label}</Text>
       <Text
         style={{
-          ...(bold ? font.bodyBold : font.body),
+          ...(bold ? font.mdBold : font.md),
           color: colors.text.primary,
           flex: 0.6,
           textAlign: 'right',

@@ -94,7 +94,7 @@ export default function PromoScreen() {
         return (
           <TouchableOpacity onPress={() => toggleActive(i)} style={[styles.chipSmall, { backgroundColor: active ? '#DCFCE7' : '#F1F5F9', flexDirection: 'row', alignItems: 'center', gap: 6 }]}>
             <View style={[styles.activeDot, { backgroundColor: active ? '#16A34A' : '#737373' }]} />
-            <Text style={{ ...font.micro, fontWeight: '600', color: active ? '#16A34A' : '#737373' }}>{active ? 'Bật' : 'Tắt'}</Text>
+            <Text style={{ ...font.sm, fontWeight: '600', color: active ? '#16A34A' : '#737373' }}>{active ? 'Bật' : 'Tắt'}</Text>
           </TouchableOpacity>
         );
       },
@@ -134,7 +134,7 @@ export default function PromoScreen() {
         return (
           <TouchableOpacity onPress={() => toggleActive(i)} style={[styles.chipSmall, { backgroundColor: active ? '#DCFCE7' : '#F1F5F9', flexDirection: 'row', alignItems: 'center', gap: 6 }]}>
             <View style={[styles.activeDot, { backgroundColor: active ? '#16A34A' : '#737373' }]} />
-            <Text style={{ ...font.micro, fontWeight: '600', color: active ? '#16A34A' : '#737373' }}>{active ? 'Bật' : 'Tắt'}</Text>
+            <Text style={{ ...font.sm, fontWeight: '600', color: active ? '#16A34A' : '#737373' }}>{active ? 'Bật' : 'Tắt'}</Text>
           </TouchableOpacity>
         );
       },
@@ -259,10 +259,10 @@ export default function PromoScreen() {
           <Text style={styles.fieldLabel}>Tên *</Text><TextInput value={form.name} onChangeText={v => setForm(p => ({ ...p, name: v }))} style={styles.fieldInput} />
           <View style={{ flexDirection: 'row', gap: 8}}>
             <TouchableOpacity onPress={() => setForm(p => ({ ...p, type: 'percent' }))} style={[styles.typeBtn, form.type === 'percent' && styles.typeBtnActive]}>
-              <Text style={{ ...font.button, color: form.type === 'percent' ? '#fff' : '#737373' }}>%</Text>
+              <Text style={{ ...font.mdBold, color: form.type === 'percent' ? '#fff' : '#737373' }}>%</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setForm(p => ({ ...p, type: 'fixed' }))} style={[styles.typeBtn, form.type === 'fixed' && styles.typeBtnActive]}>
-              <Text style={{ ...font.button, color: form.type === 'fixed' ? '#fff' : '#737373' }}>Tiền mặt</Text>
+              <Text style={{ ...font.mdBold, color: form.type === 'fixed' ? '#fff' : '#737373' }}>Tiền mặt</Text>
             </TouchableOpacity>
           </View>
           <Text style={styles.fieldLabel}>Giá trị</Text><TextInput value={form.value} onChangeText={v => setForm(p => ({ ...p, value: v }))} keyboardType="decimal-pad" style={styles.fieldInput} />
@@ -275,32 +275,32 @@ export default function PromoScreen() {
 
 const styles = StyleSheet.create({
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, height: 44, borderRadius: 8, backgroundColor: '#F97316' },
-  addBtnText: { ...font.buttonSmall, fontWeight: '600', color: '#fff' },
+  addBtnText: { ...font.smBold, fontWeight: '600', color: '#fff' },
   addBtnSm: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, paddingVertical: 10, borderRadius: 8, backgroundColor: '#F97316', marginLeft: 'auto' },
-  addBtnSmText: { ...font.label, color: '#fff' },
+  addBtnSmText: { ...font.smBold, color: '#fff' },
   statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
   barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
-  statValue: { ...font.bodyBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
-  statLabel: { ...font.micro, color: '#737373', lineHeight: 12 },
+  statValue: { ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
+  statLabel: { ...font.sm, color: '#737373', lineHeight: 12 },
   tabRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 4, paddingVertical: 8, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0', alignItems: 'center' },
   tab: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#E5E5E5' },
   tabActive: { backgroundColor: '#F97316', borderColor: '#F97316' },
-  tabText: { ...font.micro, fontWeight: '600', color: '#737373' },
+  tabText: { ...font.sm, fontWeight: '600', color: '#737373' },
   tabTextActive: { color: '#fff' },
-  cellPrimary: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
-  cellMuted: { ...font.caption, color: '#737373', textAlign: 'center' },
+  cellPrimary: { ...font.sm, fontWeight: '600', color: '#171717' },
+  cellMuted: { ...font.sm, color: '#737373', textAlign: 'center' },
   chipSmall: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999, alignSelf: 'center' },
   activeDot: { width: 6, height: 6, borderRadius: 3 },
   panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelHeaderText: { ...font.body, fontWeight: '600', color: '#171717' },
-  panelStatLabel: { ...font.caption, color: '#737373', marginTop: 2 },
-  panelStatValue: { ...font.sectionTitle, fontWeight: '600', color: '#171717' },
+  panelHeaderText: { ...font.md, fontWeight: '600', color: '#171717' },
+  panelStatLabel: { ...font.sm, color: '#737373', marginTop: 2 },
+  panelStatValue: { ...font.lg, fontWeight: '600', color: '#171717' },
   panelDivider: { height: 1, backgroundColor: '#F0F0F0' },
   panelDividerV: { width: 1, backgroundColor: '#F0F0F0' },
-  panelLabel: { ...font.caption, color: '#737373' },
-  fieldLabel: { ...font.label, color: '#404040', marginBottom: 4 },
-  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.body, color: '#171717', backgroundColor: '#FAFAFA' },
+  panelLabel: { ...font.sm, color: '#737373' },
+  fieldLabel: { ...font.smBold, color: '#404040', marginBottom: 4 },
+  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.md, color: '#171717', backgroundColor: '#FAFAFA' },
   typeBtn: { flex: 1, paddingVertical: 10, borderRadius: 8, borderWidth: 1.5, borderColor: '#E5E5E5', alignItems: 'center', backgroundColor: '#F5F5F5' },
   typeBtnActive: { backgroundColor: '#F97316', borderColor: '#F97316' },
   separator: { width: 1, backgroundColor: '#F0F0F0' },

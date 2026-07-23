@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api } from '../../lib/api';
 import { colors, font, shape } from '../../lib/theme';
+import { formatPrice } from '../../lib/utils/format';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import { useTableOrder } from '../../lib/hooks/useTableOrder';
@@ -26,12 +27,15 @@ import CartPanel from '../../lib/components/pos/CartPanel';
 import ModifierSheet from '../../lib/components/pos/ModifierSheet';
 import AreaFilter from '../../lib/components/pos/AreaFilter';
 import OrderHeader from '../../lib/components/pos/OrderHeader';
+import OverviewPanel from '../../lib/components/pos/OverviewPanel';
+import AppText from '../../lib/components/ui/AppText';
 import type { Table, TableStatus } from '../../lib/components/pos/TableCard';
 
 export default function TableSelection() {
   const { openSidebar } = useSidebar();
-  const gutter = 0; // Flat Grid style
-  const hPad = 0;
+  const gutter = 12; // Gap between table cards
+  const hPad = 12;   // Horizontal padding around grid
+  const gridPaddingBottom = 32;
   const insets = useSafeAreaInsets();
   const { isWide, isLandscape, width, breakpoint, containerWidth } = useResponsive();
   const [selectedTable, setSelectedTable] = useState<{ id: string; name: string } | null>(null);
@@ -190,8 +194,8 @@ export default function TableSelection() {
     if (loading)
       return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8}}>
-          <ActivityIndicator size="large" color={'#F97316'} />
-          <Text style={{ ...font.bodySmall, color: '#737373' }}>Đang tải...</Text>
+          <ActivityIndicator size="large" color={colors.brand.primary} />
+          <Text style={{ ...font.sm, color: colors.text.muted }}>Đang tải...</Text>
         </View>
       );
     if (error)
@@ -209,7 +213,7 @@ export default function TableSelection() {
             style={{
               width: 56,
               height: 56,
-              borderRadius: 8,
+              borderRadius: shape.radius.md,
               backgroundColor: colors.surface.danger,
               alignItems: 'center',
               justifyContent: 'center',
@@ -217,10 +221,10 @@ export default function TableSelection() {
           >
             <Icon name="cloud-off-outline" size={28} color={colors.text.danger} />
           </View>
-          <Text style={{ ...font.sectionTitle, color: '#171717', textAlign: 'center' }}>
+          <Text style={{ ...font.lg, color: colors.text.primary, textAlign: 'center' }}>
             Không thể kết nối
           </Text>
-          <Text style={{ ...font.caption, color: '#737373', textAlign: 'center' }}>
+          <Text style={{ ...font.sm, color: colors.text.muted, textAlign: 'center' }}>
             {error}
           </Text>
           <TouchableOpacity
@@ -230,11 +234,11 @@ export default function TableSelection() {
               minHeight: 40,
               justifyContent: 'center',
               alignItems: 'center',
-              backgroundColor: '#F97316',
-              borderRadius: 8,
+              backgroundColor: colors.brand.primary,
+              borderRadius: shape.radius.md,
             }}
           >
-            <Text style={{ ...font.buttonSmall, color: colors.text.inverse }}>Thử lại</Text>
+            <Text style={{ ...font.smBold, color: colors.text.inverse }}>Thử lại</Text>
           </TouchableOpacity>
         </View>
       );
@@ -247,23 +251,27 @@ export default function TableSelection() {
           numColumns={CARD_COLS}
           extraData={`${cardWidth}-${selectedTable?.id}`}
           keyExtractor={(item) => item.id}
+          initialNumToRender={8}
+          maxToRenderPerBatch={6}
+          windowSize={5}
+          removeClippedSubviews={true}
           columnWrapperStyle={{ gap: gutter, justifyContent: 'center' }}
           contentContainerStyle={{
             paddingHorizontal: hPad,
-            paddingTop: 0,
-            paddingBottom: 32 + insets.bottom,
+            paddingTop: gutter,
+            paddingBottom: gridPaddingBottom + insets.bottom,
           }}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
               onRefresh={() => loadData(true)}
-              tintColor={'#F97316'}
-              colors={['#F97316']}
+              tintColor={colors.brand.primary}
+              colors={[colors.brand.primary]}
             />
           }
           ListHeaderComponent={null}
           renderItem={({ item }) => (
-            <View style={{ width: cardWidth }}>
+            <View style={{ width: cardWidth, marginBottom: gutter }}>
               <TableCard
                 table={item}
                 selected={selectedTable?.id === item.id}
@@ -279,21 +287,21 @@ export default function TableSelection() {
                 style={{
                   width: 64,
                   height: 64,
-                  borderRadius: 8,
-                  backgroundColor: '#F5F5F5',
+                  borderRadius: shape.radius.md,
+                  backgroundColor: colors.surface.disabled,
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
               >
                 <Icon name="table-furniture" size={32} color={colors.border.strong} />
               </View>
-              <Text style={{ ...font.sectionTitle, color: '#171717' }}>
+              <Text style={{ ...font.lg, color: colors.text.primary }}>
                 {tables.length === 0 ? 'Chưa có bàn nào' : 'Không tìm thấy bàn'}
               </Text>
               <Text
                 style={{
-                  ...font.caption,
-                  color: '#737373',
+                  ...font.sm,
+                  color: colors.text.muted,
                   textAlign: 'center',
                   paddingHorizontal: 12,
                 }}
@@ -312,12 +320,14 @@ export default function TableSelection() {
   // iPad Landscape / Desktop: 62/38 Master-Detail Split Layout
   if (isSplitLayout) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#FAFAFA' }}>
+      <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
         <View style={{ flex: 1, flexDirection: 'row' }}>
-          <View
-            style={{ flex: 62, borderRightWidth: 1, borderColor: '#E5E5E5' }}
+          <View 
+            style={{ flex: 62, position: 'relative', backgroundColor: colors.surface.app }}
             onLayout={(e) => setLeftPanelWidth(e.nativeEvent.layout.width)}
           >
+            {/* Subtle shadow separator */}
+            <View style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: 2, backgroundColor: colors.border.default, zIndex: 10 }} />
             {selectedTable ? (
               <>
                 <OrderHeader
@@ -369,7 +379,7 @@ export default function TableSelection() {
             )}
           </View>
 
-          <View style={{ flex: 38, backgroundColor: '#FFFFFF' }}>
+          <View style={{ flex: 38, backgroundColor: colors.surface.card }}>
             {selectedTable ? (
               <CartPanel
                 cart={cart}
@@ -401,41 +411,10 @@ export default function TableSelection() {
                 tableId={selectedTable?.id}
               />
             ) : (
-              <View
-                style={{
-                  flex: 1,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: '#FFFFFF',
-                }}
-              >
-                <View
-                  style={{
-                    width: 80,
-                    height: 80,
-                    borderRadius: 8,
-                    backgroundColor: '#F5F5F5',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginBottom: 16,
-                  }}
-                >
-                  <Icon name="cart-outline" size={40} color={'#737373'} />
-                </View>
-                <Text style={{ ...font.sectionTitle, color: '#171717', marginBottom: 4 }}>
-                  Giỏ hàng
-                </Text>
-                <Text
-                  style={{
-                    ...font.bodySmall,
-                    color: '#737373',
-                    textAlign: 'center',
-                    paddingHorizontal: 40,
-                  }}
-                >
-                  Chọn bàn và gọi món để xem giỏ hàng
-                </Text>
-              </View>
+              <OverviewPanel
+                tables={tables}
+                onTablePress={handleTablePress}
+              />
             )}
           </View>
         </View>
@@ -464,7 +443,7 @@ export default function TableSelection() {
   return (
     <SafeAreaView
       edges={['left', 'right', 'bottom']}
-      style={{ flex: 1, backgroundColor: '#FAFAFA' }}
+      style={{ flex: 1, backgroundColor: colors.surface.app }}
     >
       <TableScreenHeader
         tablesCount={tables.length}

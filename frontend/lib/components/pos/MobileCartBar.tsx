@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, COLORS, font, formatPrice } from '../../theme';
+import { colors, font, formatPrice } from '../../theme';
 import { shape } from '../../theme/shape';
 
 interface MobileCartBarProps {
@@ -26,6 +27,9 @@ export default function MobileCartBar({
   submitting,
   hasUnsentItems = false,
 }: MobileCartBarProps) {
+  const insets = useSafeAreaInsets();
+  const hasItems = itemCount > 0;
+
   return (
     <View
       style={{
@@ -34,97 +38,123 @@ export default function MobileCartBar({
         left: 0,
         right: 0,
         backgroundColor: colors.surface.card,
-        borderTopWidth: 1,
-        borderTopColor: colors.border.default,
-        paddingHorizontal: 12,
-        paddingVertical: 10,
-        boxShadow: '0 -2px 3px rgba(0,0,0,0.15)',
-        flexDirection: 'row',
-        alignItems: 'center',
+        paddingBottom: insets.bottom,
+        ...shape.shadow.top,
+        zIndex: 100,
       }}
     >
+      {/* ROW 1: Mini-cart info bar — luôn hiển thị */}
       <TouchableOpacity
         onPress={onPress}
         activeOpacity={0.7}
-        style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12 }}
+        disabled={!hasItems}
+        style={{
+          height: 44,
+          flexDirection: 'row',
+          alignItems: 'center',
+          paddingHorizontal: 12,
+          backgroundColor: colors.surface.miniCartBg,
+          borderTopWidth: 1,
+          borderTopColor: colors.border.default,
+        }}
       >
-        <View>
-          <MaterialCommunityIcons name="shopping" size={30} color={colors.icon.default} />
-          <View
+        <MaterialCommunityIcons
+          name="shopping"
+          size={20}
+          color={hasItems ? colors.text.primary : colors.text.placeholder}
+          style={{ marginRight: 8 }}
+        />
+        <Text
+          style={{
+            flex: 1,
+            ...font.sm,
+            color: hasItems ? colors.text.primary : colors.text.placeholder,
+          }}
+        >
+          {hasItems ? `${itemCount} món đã chọn` : 'Chưa có món nào'}
+        </Text>
+        {hasItems && (
+          <Text
             style={{
-              position: 'absolute',
-              top: -6,
-              right: -6,
-              backgroundColor: COLORS.primary,
-              width: 22,
-              height: 22,
-              borderRadius: 5,
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderWidth: 2,
-              borderColor: colors.surface.card,
+              ...font.mdBold,
+              color: colors.brand.primary,
             }}
           >
-            <Text style={{ ...font.badge, color: colors.text.inverse }}>{itemCount}</Text>
-          </View>
-        </View>
-        <View>
-          <Text style={{ ...font.buttonSmall, color: colors.text.muted }}>Tổng tiền</Text>
-          <Text style={{ ...font.bodyBold, color: COLORS.primary }}>{formatPrice(total)}</Text>
-        </View>
+            {formatPrice(total)}
+          </Text>
+        )}
       </TouchableOpacity>
 
-      <View style={{ flexDirection: 'row', gap: 8 }}>
+      {/* ROW 2: Action buttons */}
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          paddingHorizontal: 12,
+          paddingVertical: 10,
+          gap: 8,
+          backgroundColor: colors.surface.card,
+          borderTopWidth: 1,
+          borderTopColor: colors.border.default,
+        }}
+      >
+        {/* Gửi Bếp */}
         <TouchableOpacity
           onPress={onSendToKitchen}
           disabled={!hasUnsentItems || submitting}
           style={{
-            paddingHorizontal: 14,
-            paddingVertical: 0,
-            height: 48,
+            flex: 1,
+            height: 44,
             borderRadius: shape.radius.md,
-            backgroundColor: hasUnsentItems ? colors.brand.primaryBg : colors.surface.disabled,
+            backgroundColor: hasUnsentItems ? colors.surface.card : colors.surface.disabled,
             borderWidth: 1.5,
-            borderColor: hasUnsentItems ? colors.border.brand : colors.border.default,
+            borderColor: hasUnsentItems ? colors.brand.primary : colors.border.default,
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
           <Text
             style={{
-              ...font.button,
-              color: hasUnsentItems ? colors.text.brand : colors.text.muted,
+              ...font.smBold,
+              color: hasUnsentItems ? colors.brand.primary : colors.text.placeholder,
             }}
           >
             Gửi Bếp
           </Text>
         </TouchableOpacity>
 
+        {/* Lưu HĐ */}
         <TouchableOpacity
           onPress={onSave}
           disabled={submitting}
           style={{
-            paddingHorizontal: 14,
-            paddingVertical: 0,
-            height: 48,
+            flex: 1,
+            height: 44,
             borderRadius: shape.radius.md,
-            backgroundColor: colors.brand.primaryBg,
+            backgroundColor: colors.surface.card,
             borderWidth: 1.5,
-            borderColor: colors.border.brand,
+            borderColor: colors.border.default,
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <Text style={{ ...font.button, color: colors.text.brand }}>Lưu HĐ</Text>
+          <Text
+            style={{
+              ...font.smBold,
+              color: colors.text.secondary,
+            }}
+          >
+            Lưu HĐ
+          </Text>
         </TouchableOpacity>
 
+        {/* THANH TOÁN → hiển thị số tiền */}
         <TouchableOpacity
           onPress={onPay}
           disabled={submitting}
           style={{
-            paddingHorizontal: 18,
-            paddingVertical: 0,
-            height: 48,
+            flex: 1.5,
+            height: 44,
             borderRadius: shape.radius.md,
             backgroundColor: colors.brand.primary,
             alignItems: 'center',
@@ -133,8 +163,14 @@ export default function MobileCartBar({
             gap: 4,
           }}
         >
-          <Text style={{ ...font.button, color: colors.text.inverse }}>Thanh toán</Text>
-          <MaterialCommunityIcons name="chevron-up" size={20} color={colors.text.inverse} />
+          <Text
+            style={{
+              color: colors.text.inverse,
+              ...font.smBold,
+            }}
+          >
+            {hasItems ? formatPrice(total) : 'Thanh toán'}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

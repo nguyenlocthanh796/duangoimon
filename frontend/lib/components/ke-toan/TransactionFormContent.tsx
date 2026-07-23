@@ -147,9 +147,9 @@ const styles = StyleSheet.create({
   },
   segBtnActiveThu: { backgroundColor: colors.status.success, borderColor: colors.status.success },
   segBtnActiveChi: { backgroundColor: colors.status.danger, borderColor: colors.status.danger },
-  segText: { ...font.body, fontWeight: '600', color: colors.text.primary },
+  segText: { ...font.md, fontWeight: '600', color: colors.text.primary },
   segTextActive: { color: '#fff' },
-  label: { ...font.label, color: colors.text.secondary, marginBottom: 8, marginTop: 6 },
+  label: { ...font.smBold, color: colors.text.secondary, marginBottom: 8, marginTop: 6 },
   inputWrap: {
     backgroundColor: colors.surface.card,
     borderRadius: shape.radius.md,
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
   input: {
     paddingHorizontal: 14,
     paddingVertical: 14,
-    ...font.body,
+    ...font.md,
     color: colors.text.primary,
     textAlignVertical: 'top',
   },
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border.default,
   },
   catChipActive: { backgroundColor: colors.brand.primaryBg, borderColor: colors.brand.primary },
-  catText: { ...font.caption, color: colors.text.muted, fontWeight: '600' },
+  catText: { ...font.sm, color: colors.text.muted, fontWeight: '600' },
   catTextActive: { color: colors.brand.primary },
   submit: {
     marginTop: 8,
@@ -183,5 +183,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     boxShadow: '0px 4px 8px rgba(0,0,0,0.12)',
   },
-  submitText: { ...font.button, color: '#fff', fontWeight: '600' },
+  submitText: { ...font.mdBold, color: '#fff', fontWeight: '600' },
 });

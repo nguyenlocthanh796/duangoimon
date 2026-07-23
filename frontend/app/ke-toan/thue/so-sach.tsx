@@ -102,7 +102,7 @@ export default function SoSachScreen() {
       width: 90,
       sortable: true,
       sortValue: (r) => r.period_month,
-      render: (r) => <AppText variant="base" weight="bold">{r.period_month.slice(5)}</AppText>,
+      render: (r) => <AppText variant="md" weight="bold">{r.period_month.slice(5)}</AppText>,
     },
     {
       key: 'revenue',
@@ -111,7 +111,7 @@ export default function SoSachScreen() {
       align: 'right',
       sortable: true,
       sortValue: (r) => r.revenue,
-      render: (r) => <AppText variant="base" weight="bold">{formatVND(r.revenue)}</AppText>,
+      render: (r) => <AppText variant="md" weight="bold">{formatVND(r.revenue)}</AppText>,
     },
     {
       key: 'vat',
@@ -120,7 +120,7 @@ export default function SoSachScreen() {
       align: 'right',
       sortable: true,
       sortValue: (r) => r.vat,
-      render: (r) => <AppText variant="base" weight="bold">{formatVND(r.vat)}</AppText>,
+      render: (r) => <AppText variant="md" weight="bold">{formatVND(r.vat)}</AppText>,
     },
     {
       key: 'tncn',
@@ -129,7 +129,7 @@ export default function SoSachScreen() {
       align: 'right',
       sortable: true,
       sortValue: (r) => r.tncn,
-      render: (r) => <AppText variant="base" weight="bold">{formatVND(r.tncn)}</AppText>,
+      render: (r) => <AppText variant="md" weight="bold">{formatVND(r.tncn)}</AppText>,
     },
     {
       key: 'total',
@@ -139,7 +139,7 @@ export default function SoSachScreen() {
       sortable: true,
       sortValue: (r) => r.total,
       render: (r) => (
-        <AppText variant="base" weight="bold" color={colors.status.danger}>
+        <AppText variant="md" weight="bold" color={colors.status.danger}>
           {formatVND(r.total)}
         </AppText>
       ),
@@ -152,7 +152,7 @@ export default function SoSachScreen() {
       sortable: true,
       sortValue: (r) => r.group,
       render: (r) => (
-        <AppText variant="small" weight="bold" color={colors.brand.primary}>
+        <AppText variant="sm" weight="bold" color={colors.brand.primary}>
           Nhóm {r.group}
         </AppText>
       ),
@@ -176,11 +176,11 @@ export default function SoSachScreen() {
   ];
 
   const footerColumns = [
-    { key: 'label', width: 90, content: <AppText variant="base" weight="bold">Tổng năm</AppText> },
-    { key: 'revenue', flex: 1, align: 'right' as const, content: <AppText variant="base" weight="bold">{formatVND(sumBy(rows, (r) => r.revenue))}</AppText> },
-    { key: 'vat', flex: 1, align: 'right' as const, content: <AppText variant="base" weight="bold">{formatVND(sumBy(rows, (r) => r.vat))}</AppText> },
-    { key: 'tncn', flex: 1, align: 'right' as const, content: <AppText variant="base" weight="bold">{formatVND(sumBy(rows, (r) => r.tncn))}</AppText> },
-    { key: 'total', flex: 1, align: 'right' as const, content: <AppText variant="base" weight="bold" color={colors.status.danger}>{formatVND(sumBy(rows, (r) => r.total))}</AppText> },
+    { key: 'label', width: 90, content: <AppText variant="md" weight="bold">Tổng năm</AppText> },
+    { key: 'revenue', flex: 1, align: 'right' as const, content: <AppText variant="md" weight="bold">{formatVND(sumBy(rows, (r) => r.revenue))}</AppText> },
+    { key: 'vat', flex: 1, align: 'right' as const, content: <AppText variant="md" weight="bold">{formatVND(sumBy(rows, (r) => r.vat))}</AppText> },
+    { key: 'tncn', flex: 1, align: 'right' as const, content: <AppText variant="md" weight="bold">{formatVND(sumBy(rows, (r) => r.tncn))}</AppText> },
+    { key: 'total', flex: 1, align: 'right' as const, content: <AppText variant="md" weight="bold" color={colors.status.danger}>{formatVND(sumBy(rows, (r) => r.total))}</AppText> },
     { key: 'spacer', width: 190, content: null },
   ];
 
@@ -205,14 +205,14 @@ export default function SoSachScreen() {
     <SwipeableRow rightActions={getSwipeActions(r)}>
       <View style={styles.mRow}>
         <View style={{ flex: 1 }}>
-          <AppText variant="medium" weight="bold">Tháng {r.period_month.slice(5)}</AppText>
-          <AppText variant="small" color={colors.text.muted} style={{ marginTop: 2 }}>Nhóm HKD {r.group}</AppText>
+          <AppText variant="md" weight="bold">Tháng {r.period_month.slice(5)}</AppText>
+          <AppText variant="sm" color={colors.text.muted} style={{ marginTop: 2 }}>Nhóm HKD {r.group}</AppText>
         </View>
         <View style={{ alignItems: 'flex-end', gap: 4 }}>
-          <AppText variant="base" weight="bold" color={colors.status.danger}>
+          <AppText variant="md" weight="bold" color={colors.status.danger}>
             {formatVND(r.total)}
           </AppText>
-          <AppText variant="small" color={colors.text.muted}>
+          <AppText variant="sm" color={colors.text.muted}>
             DT: {formatVND(r.revenue)}
           </AppText>
         </View>
@@ -240,7 +240,7 @@ export default function SoSachScreen() {
             ) : (
               <Icon name="file-delimited" size={18} color={colors.text.primary} />
             )}
-            {isWide && <AppText variant="medium" weight="bold" color={colors.text.primary}>CSV (Năm)</AppText>}
+            {isWide && <AppText variant="md" weight="bold" color={colors.text.primary}>CSV (Năm)</AppText>}
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.exportBtn, { backgroundColor: colors.status.danger, borderWidth: 0 }]}
@@ -252,7 +252,7 @@ export default function SoSachScreen() {
             ) : (
               <Icon name="file-pdf-box" size={18} color="#fff" />
             )}
-            {isWide && <AppText variant="medium" weight="bold" color="#fff">PDF (Năm)</AppText>}
+            {isWide && <AppText variant="md" weight="bold" color="#fff">PDF (Năm)</AppText>}
           </TouchableOpacity>
         </View>
       }
@@ -277,8 +277,8 @@ export default function SoSachScreen() {
                 <Icon name={b.icon as any} size={20} color={b.color} />
               </View>
               <View>
-                <AppText variant="base" weight="bold">{b.key}</AppText>
-                <AppText variant="small" color={colors.text.muted}>{b.label.split('—')[1]?.trim()}</AppText>
+                <AppText variant="md" weight="bold">{b.key}</AppText>
+                <AppText variant="sm" color={colors.text.muted}>{b.label.split('—')[1]?.trim()}</AppText>
               </View>
             </TouchableOpacity>
           ))}
@@ -296,23 +296,23 @@ export default function SoSachScreen() {
         >
           {/* Summary KPI Block */}
           <SectionBlock style={{ marginBottom: 16, paddingTop: 16 }}>
-            <AppText variant="medium" weight="bold" style={{ marginBottom: 16 }}>Tổng quan cả năm</AppText>
+            <AppText variant="md" weight="bold" style={{ marginBottom: 16 }}>Tổng quan cả năm</AppText>
             <ResponsiveGrid mobileCols={2} minColWidth={140} gap={16}>
               <View style={styles.kpiBox}>
-                <AppText variant="small" color={colors.text.muted}>Doanh thu</AppText>
-                <AppText variant="medium" weight="bold" color={colors.status.success}>{formatVND(Number(report.totals.revenue))}</AppText>
+                <AppText variant="sm" color={colors.text.muted}>Doanh thu</AppText>
+                <AppText variant="md" weight="bold" color={colors.status.success}>{formatVND(Number(report.totals.revenue))}</AppText>
               </View>
               <View style={styles.kpiBox}>
-                <AppText variant="small" color={colors.text.muted}>Thuế GTGT</AppText>
-                <AppText variant="medium" weight="bold">{formatVND(Number(report.totals.vat))}</AppText>
+                <AppText variant="sm" color={colors.text.muted}>Thuế GTGT</AppText>
+                <AppText variant="md" weight="bold">{formatVND(Number(report.totals.vat))}</AppText>
               </View>
               <View style={styles.kpiBox}>
-                <AppText variant="small" color={colors.text.muted}>Thuế TNCN</AppText>
-                <AppText variant="medium" weight="bold">{formatVND(Number(report.totals.pit))}</AppText>
+                <AppText variant="sm" color={colors.text.muted}>Thuế TNCN</AppText>
+                <AppText variant="md" weight="bold">{formatVND(Number(report.totals.pit))}</AppText>
               </View>
               <View style={styles.kpiBox}>
-                <AppText variant="small" color={colors.text.muted}>Tổng tiền thuế</AppText>
-                <AppText variant="medium" weight="bold" color={colors.status.danger}>{formatVND(Number(report.totals.total))}</AppText>
+                <AppText variant="sm" color={colors.text.muted}>Tổng tiền thuế</AppText>
+                <AppText variant="md" weight="bold" color={colors.status.danger}>{formatVND(Number(report.totals.total))}</AppText>
               </View>
             </ResponsiveGrid>
           </SectionBlock>
@@ -336,7 +336,7 @@ export default function SoSachScreen() {
         </ScrollView>
       ) : (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <AppText variant="base" color={colors.text.muted}>Không có dữ liệu</AppText>
+          <AppText variant="md" color={colors.text.muted}>Không có dữ liệu</AppText>
         </View>
       )}
     </ScreenLayout>

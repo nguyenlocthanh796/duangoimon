@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cancelText: {
-    ...font.buttonSmall,
+    ...font.smBold,
     color: colors.text.secondary,
     fontWeight: '600',
   },
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   saveText: {
-    ...font.buttonSmall,
+    ...font.smBold,
     color: '#fff',
     fontWeight: '600',
   },
@@ -205,12 +205,12 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.border.light,
   },
   sheetTitle: {
-    ...font.sectionTitle,
+    ...font.lg,
     fontWeight: '600',
     color: colors.text.primary,
   },
   sheetSubtitle: {
-    ...font.caption,
+    ...font.sm,
     color: colors.text.muted,
     marginTop: 2,
   },
@@ -246,12 +246,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   phoneTitle: {
-    ...font.bodyBold,
+    ...font.mdBold,
     fontWeight: '600',
     color: '#fff',
   },
   phoneSubtitle: {
-    ...font.micro,
+    ...font.sm,
     color: 'rgba(255,255,255,0.8)',
     marginTop: 1,
   },

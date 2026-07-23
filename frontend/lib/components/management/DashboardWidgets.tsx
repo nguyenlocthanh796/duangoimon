@@ -102,7 +102,7 @@ const dtStyles = StyleSheet.create({
     paddingHorizontal: 6,
   },
   headerCell: { flex: 1 },
-  headerText: { ...font.tableHeader, color: colors.text.tableHeader },
+  headerText: { ...font.smBold, color: colors.text.tableHeader },
   dataRow: {
     flexDirection: 'row',
     paddingVertical: 8,
@@ -114,9 +114,9 @@ const dtStyles = StyleSheet.create({
   dataCell: { flex: 1, justifyContent: 'center' },
   cellRight: { alignItems: 'flex-end' },
   cellCenter: { alignItems: 'center' },
-  dataText: { ...font.tableCell, color: colors.text.primary },
+  dataText: { ...font.sm, color: colors.text.primary },
   empty: { alignItems: 'center', paddingVertical: 24 },
-  emptyText: { ...font.bodySmall, color: colors.text.muted },
+  emptyText: { ...font.sm, color: colors.text.muted },
   statusDot: { width: 8, height: 8, borderRadius: 4 },
 });
 
@@ -146,13 +146,13 @@ export function TopProductsList({ data, loading }: TopProductsProps) {
         <DataTable
           columns={[
             { key: 'rank', label: '#', flex: 0.4, align: 'center', render: (v) => (
-              <Text style={{ ...font.tableCell, fontWeight: '600', textAlign: 'center', color: (v <= 3) ? colors.brand.primary : colors.text.muted }}>
+              <Text style={{ ...font.sm, fontWeight: '600', textAlign: 'center', color: (v <= 3) ? colors.brand.primary : colors.text.muted }}>
                 {v}
               </Text>
             ) },
             { key: 'name', label: 'Tên món', flex: 2 },
             { key: 'quantity', label: 'SL', flex: 0.8, align: 'right', render: (v) => (
-              <Text style={{ ...font.tableCell, fontWeight: '600', color: colors.text.primary, textAlign: 'right' }}>{v}</Text>
+              <Text style={{ ...font.sm, fontWeight: '600', color: colors.text.primary, textAlign: 'right' }}>{v}</Text>
             ) },
           ]}
           data={(data ?? []).map((p, i) => ({ ...p, id: i, rank: i + 1 }))}
@@ -268,10 +268,10 @@ export function LowStockList({ items, loading }: LowStockWidgetProps) {
                 const r = row as any;
                 return (
                   <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 4 }}>
-                    <Text style={{ ...font.tableCell, fontWeight: '600', color: r._critical ? colors.status.danger : colors.status.warning }}>
+                    <Text style={{ ...font.sm, fontWeight: '600', color: r._critical ? colors.status.danger : colors.status.warning }}>
                       {r.current}
                     </Text>
-                    <Text style={{ ...font.tableCell, color: colors.text.muted }}>
+                    <Text style={{ ...font.sm, color: colors.text.muted }}>
                       / {r.min} {r.unit}
                     </Text>
                   </View>
@@ -338,7 +338,7 @@ export function RecentActivitiesList({ activities, loading }: ActivitiesProps) {
               ),
             },
             { key: 'time', label: 'Thời gian', flex: 1, align: 'right', render: (v) => (
-              <Text style={{ ...font.tableCell, color: colors.text.muted, textAlign: 'right' }}>{v}</Text>
+              <Text style={{ ...font.sm, color: colors.text.muted, textAlign: 'right' }}>{v}</Text>
             ) },
           ]}
           data={acts.slice(0, 5)}
@@ -411,7 +411,7 @@ function SectionHeader({
     <View style={styles.sectionHeader}>
       <View style={styles.sectionHeaderLeft}>
         <Icon name={iconName as any} size={compact ? 16 : 20} color={colors.text.muted} />
-        <Text style={[styles.sectionTitle, compact && font.bodyBold]}>
+        <Text style={[styles.sectionTitle, compact && font.mdBold]}>
           {title}
         </Text>
       </View>
@@ -459,10 +459,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   sectionHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  sectionTitle: { ...font.body, fontWeight: '600', color: colors.text.primary },
-  sectionSub: { ...font.caption, color: colors.text.secondary },
+  sectionTitle: { ...font.md, fontWeight: '600', color: colors.text.primary },
+  sectionSub: { ...font.sm, color: colors.text.secondary },
   emptyBox: { alignItems: 'center', paddingVertical: 24, gap: 8 },
-  emptyText: { ...font.bodySmall, color: colors.text.secondary },
+  emptyText: { ...font.sm, color: colors.text.secondary },
 
   navGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 6 },
   actDot: {
@@ -483,7 +483,7 @@ const styles = StyleSheet.create({
   chartCol: { flex: 1, alignItems: 'center' },
   chartBarOuter: { flex: 1, width: '60%', justifyContent: 'flex-end', alignItems: 'center' },
   chartBar: { width: '100%', borderRadius: 4, minHeight: 2 },
-  chartLabel: { ...font.caption, color: colors.text.muted, marginTop: 4 },
+  chartLabel: { ...font.sm, color: colors.text.muted, marginTop: 4 },
 });
 
 const navNormal = {
@@ -509,7 +509,7 @@ const navNormal = {
     backgroundColor: '#F3F4F6',
   },
   navLabel: {
-    ...font.body,
+    ...font.md,
     fontWeight: '500' as const,
     color: colors.text.primary,
     textAlign: 'center' as const,
@@ -539,7 +539,7 @@ const navCompact = {
     backgroundColor: '#F3F4F6',
   },
   navLabel: {
-    ...font.label,
+    ...font.smBold,
     fontWeight: '500' as const,
     color: colors.text.primary,
     textAlign: 'center' as const,

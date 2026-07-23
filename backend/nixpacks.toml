@@ -1,0 +1,17 @@
+# Railway Python Nixpacks config
+# Railway tự động detect Python từ requirements.txt
+
+[deploy]
+  # Railway sử dụng PORT env variable được inject tự động
+  startCommand = "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+  healthcheckPath = "/docs"
+  
+[phases]
+  [phases.setup]
+    nixpkgs = ["python311", "gcc", "libpq-dev"]
+  
+  [phases.install]
+    cmds = [
+      "pip install --upgrade pip",
+      "pip install -r requirements.txt"
+    ]

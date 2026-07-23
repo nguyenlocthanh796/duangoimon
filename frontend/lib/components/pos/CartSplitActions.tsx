@@ -37,7 +37,7 @@ export default function CartSplitActions({
             justifyContent: 'center',
           }}
         >
-          <AppText variant="medium" color={colors.text.secondary}>CHỌN HẾT</AppText>
+          <AppText variant="md" color={colors.text.secondary}>CHỌN HẾT</AppText>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={onDeselectAll}
@@ -50,7 +50,7 @@ export default function CartSplitActions({
             justifyContent: 'center',
           }}
         >
-          <AppText variant="medium" color={colors.text.secondary}>BỎ HẾT</AppText>
+          <AppText variant="md" color={colors.text.secondary}>BỎ HẾT</AppText>
         </TouchableOpacity>
       </View>
       <View style={{ flexDirection: 'row', gap: 10 }}>
@@ -65,7 +65,7 @@ export default function CartSplitActions({
             justifyContent: 'center',
           }}
         >
-          <AppText variant="medium" color={colors.text.secondary}>HUỶ</AppText>
+          <AppText variant="md" color={colors.text.secondary}>HUỶ</AppText>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={onConfirmSplit}
@@ -80,7 +80,7 @@ export default function CartSplitActions({
           }}
         >
           <AppText
-            variant="medium"
+            variant="md"
             color={hasSelection ? colors.text.inverse : colors.text.muted}
           >
             TÁCH ({selectedItems.size})

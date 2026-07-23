@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import {
   ScrollView,
   TouchableOpacity,
@@ -9,21 +9,75 @@ import {
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors } from '../../theme/colors';
-import { font } from '../../theme/typography';
 import { shape } from '../../theme/shape';
-import { Category } from './types';
+import { CATEGORIES } from '../../constants/categories';
+import type { Category } from './types';
 import AppText from '../ui/AppText';
 
-const CATEGORIES: Category[] = [
-  { id: 'all', name: 'Tất cả', icon: 'restaurant-menu' },
-  { id: 'sua-chua', name: 'Sữa chua', icon: 'local-drink' },
-  { id: 'tra-chanh', name: 'Trà chanh', icon: 'local-cafe' },
-  { id: 'do-an-vat', name: 'Đồ ăn vặt', icon: 'fastfood' },
-  { id: 'che', name: 'Chè', icon: 'cake' },
-  { id: 'tra-sua', name: 'Trà sữa', icon: 'local-cafe' },
-  { id: 'soda', name: 'Soda', icon: 'local-bar' },
-  { id: 'kem', name: 'Kem', icon: 'ac-unit' },
-];
+interface CategoryProps {
+  cat: Category;
+  active: boolean;
+  onPress: () => void;
+}
+
+const CategoryChip = React.memo(function CategoryChip({ cat, active, onPress }: CategoryProps) {
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const onPressIn = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.94,
+      useNativeDriver: true,
+      friction: 8,
+      tension: 150,
+    }).start();
+  };
+  const onPressOut = () => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+      friction: 5,
+      tension: 100,
+    }).start();
+  };
+
+  return (
+    <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+      <TouchableOpacity
+        onPress={onPress}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        activeOpacity={0.9}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 6,
+          paddingHorizontal: 16,
+          height: 44,
+          borderRadius: shape.radius.md,
+          backgroundColor: active ? colors.brand.primary : colors.surface.disabled,
+          borderWidth: 1,
+          borderColor: active ? colors.brand.primary : colors.border.default,
+          ...(active ? shape.shadow.md : {}),
+        }}
+      >
+        {cat.icon && (
+          <MaterialCommunityIcons
+            name={cat.icon as any}
+            size={16}
+            color={active ? colors.text.inverse : colors.icon.default}
+          />
+        )}
+        <AppText
+          variant="md"
+          color={active ? colors.text.inverse : colors.text.primary}
+        >
+          {cat.name}
+        </AppText>
+      </TouchableOpacity>
+    </Animated.View>
+  );
+});
+
 
 interface CategoryTabsProps {
   activeCategory: string;
@@ -31,7 +85,7 @@ interface CategoryTabsProps {
   isWide: boolean;
 }
 
-export default function CategoryTabs({
+const CategoryTabs = React.memo(function CategoryTabs({
   activeCategory,
   onSelectCategory,
   isWide,
@@ -81,37 +135,19 @@ export default function CategoryTabs({
         contentContainerStyle={{
           paddingHorizontal: 12,
           paddingRight: 36,
-          paddingVertical: 8, alignItems: 'center',
+          paddingVertical: 10,
+          alignItems: 'center',
+          gap: 8,
         }}
       >
-        {CATEGORIES.map((cat, index) => {
-          const active = activeCategory === cat.id;
-          const isLast = index === CATEGORIES.length - 1;
-          return (
-            <TouchableOpacity
-              key={cat.id}
-              onPress={() => onSelectCategory(cat.id)}
-              style={{
-                paddingHorizontal: 16,
-                height: 36,
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderRadius: 8,
-                marginRight: isLast ? 0 : 8,
-                backgroundColor: active ? colors.brand.primary : colors.surface.disabled,
-                borderWidth: 1,
-                borderColor: active ? colors.brand.primary : colors.border.default,
-              }}
-            >
-              <AppText
-                variant="medium"
-                color={active ? colors.text.inverse : colors.text.primary}
-              >
-                {cat.name}
-              </AppText>
-            </TouchableOpacity>
-          );
-        })}
+        {CATEGORIES.map((cat) => (
+          <CategoryChip
+            key={cat.id}
+            cat={cat}
+            active={activeCategory === cat.id}
+            onPress={() => onSelectCategory(cat.id)}
+          />
+        ))}
       </ScrollView>
 
       {/* Scroll hint fade + arrow */}
@@ -133,16 +169,16 @@ export default function CategoryTabs({
         <TouchableOpacity
           onPress={scrollRight}
           activeOpacity={0.7}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           style={{
             width: 32,
             height: 32,
-            borderRadius: 8,
+            borderRadius: shape.radius.md,
             backgroundColor: colors.brand.primary,
             alignItems: 'center',
             justifyContent: 'center',
             marginRight: 4,
-            /* elevation removed */
-            /* boxShadow removed */
+            ...shape.shadow.sm,
           }}
           accessibilityLabel="Xem thêm danh mục"
           accessibilityRole="button"
@@ -152,4 +188,6 @@ export default function CategoryTabs({
       </Animated.View>
     </View>
   );
-}
+});
+export default CategoryTabs;
+

@@ -66,9 +66,9 @@ def _save_state() -> None:
 
 _load_state()
 
-RATE_LIMIT_LOGIN = 5
-RATE_LIMIT_PUBLIC = 20
-RATE_LIMIT_API = 60
+RATE_LIMIT_LOGIN = 50
+RATE_LIMIT_PUBLIC = 100
+RATE_LIMIT_API = 200
 RATE_WINDOW = 60
 
 
@@ -100,6 +100,10 @@ async def rate_limit_middleware(request: Request, call_next):
     """Rate limit per endpoint type and IP.
     Only trusts X-Forwarded-For from known proxy IPs to prevent spoofing.
     """
+    # ── Skip OPTIONS preflight (CORS needs to respond without rate-limit) ──
+    if request.method == "OPTIONS":
+        return await call_next(request)
+
     forwarded = request.headers.get("x-forwarded-for", "")
     client_ip = request.client.host if request.client else "unknown"
 
@@ -110,10 +114,16 @@ async def rate_limit_middleware(request: Request, call_next):
     limit = _get_limit(request.url.path)
 
     if not check_rate_limit(client_ip, limit):
-        return JSONResponse(
+        resp = JSONResponse(
             status_code=429,
             content={"detail": f"Rate limit exceeded ({limit}/{RATE_WINDOW}s)."},
         )
+        # Add CORS headers so the browser doesn't treat it as a CORS error
+        origin = request.headers.get("origin", "")
+        if origin:
+            resp.headers["Access-Control-Allow-Origin"] = origin
+            resp.headers["Vary"] = "Origin"
+        return resp
 
     if len(_requests) % 5 == 0:
         _save_state()

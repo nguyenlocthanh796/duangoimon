@@ -2,41 +2,42 @@ import { colors } from './colors';
 import { font } from './typography';
 
 /**
- * Typography "nhẹ" cho dữ liệu bảng / thẻ.
+ * Typography cho dữ liệu bảng / thẻ.
+ * 3-size system: sm(13→16), md(16→20), lg(24→30).
  * Nhấn mạnh bằng MÀU + NỀN, weight tối đa 600.
  */
 
 export const colHeader = {
-  ...font.tableHeader,
+  ...font.smBold,
   color: colors.text.muted,
 };
 
 export const dataValue = {
-  ...font.tableCell,
+  ...font.sm,
   color: colors.text.primary,
 };
 
 export const dataAmountPos = {
-  ...font.tableCell,
+  ...font.sm,
   color: colors.status.success,
 };
 
 export const dataAmountNeg = {
-  ...font.tableCell,
+  ...font.sm,
   color: colors.status.danger,
 };
 
 export const sectionTitle = {
-  ...font.sectionTitle,
+  ...font.mdBold,
   color: colors.text.primary,
 };
 
 export const totalValue = {
-  ...font.body,
+  ...font.md,
   color: colors.text.primary,
 };
 
 export const dataLabel = {
-  ...font.caption,
+  ...font.sm,
   color: colors.text.muted,
 };

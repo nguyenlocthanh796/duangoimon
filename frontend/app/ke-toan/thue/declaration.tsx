@@ -89,7 +89,7 @@ export default function DeclarationScreen() {
             <Icon name="send" size={18} color="#fff" />
           )}
           {isWide && (
-            <AppText variant="medium" weight="bold" color="#fff">
+            <AppText variant="md" weight="bold" color="#fff">
               Ký & Gửi T-VAN
             </AppText>
           )}
@@ -125,10 +125,10 @@ export default function DeclarationScreen() {
         >
           <SectionBlock style={{ backgroundColor: colors.text.primary, borderColor: colors.text.primary, padding: 0, marginBottom: 16 }}>
             <View style={{ padding: 16, borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.1)' }}>
-              <AppText variant="medium" weight="bold" color="#fff">Xem trước XML ({form})</AppText>
+              <AppText variant="md" weight="bold" color="#fff">Xem trước XML ({form})</AppText>
             </View>
             <ScrollView style={styles.xmlBox} nestedScrollEnabled>
-              <AppText variant="small" color={colors.border.default} style={{ fontFamily: 'monospace' }} selectable>
+              <AppText variant="sm" color={colors.border.default} style={{ fontFamily: 'monospace' }} selectable>
                 {xml || '—'}
               </AppText>
             </ScrollView>

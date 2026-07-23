@@ -151,7 +151,7 @@ export default function InvoiceFormContent({
 }
 
 const styles = StyleSheet.create({
-  label: { ...font.label, color: colors.text.secondary, marginBottom: 6 },
+  label: { ...font.smBold, color: colors.text.secondary, marginBottom: 6 },
   input: {
     borderWidth: 1,
     borderColor: colors.border.default,
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginBottom: 20,
   },
-  sheetTitle: { ...font.sectionTitle, color: colors.text.primary, marginBottom: 16 },
+  sheetTitle: { ...font.lg, color: colors.text.primary, marginBottom: 16 },
   orderRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -198,6 +198,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.brand.primary,
     marginRight: 12,
   },
-  orderName: { ...font.bodySmall, fontWeight: '600', color: colors.text.primary },
-  orderTotal: { ...font.caption, color: colors.text.muted, marginTop: 1 },
+  orderName: { ...font.sm, fontWeight: '600', color: colors.text.primary },
+  orderTotal: { ...font.sm, color: colors.text.muted, marginTop: 1 },
 });

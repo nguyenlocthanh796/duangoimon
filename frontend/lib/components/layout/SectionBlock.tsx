@@ -5,17 +5,17 @@ import { useResponsive } from '../../hooks/useResponsive';
 
 interface SectionBlockProps {
   children: React.ReactNode;
-  /** Bật/tắt padding mặc định (12 trên Mobile, 16 trên iPad). Mặc định: true */
+  /** Bật/tắt padding mặc định. Mặc định: true */
   padding?: boolean;
   /** Custom style thêm nếu cần */
   style?: ViewStyle | ViewStyle[];
 }
 
 export default function SectionBlock({ children, padding = true, style }: SectionBlockProps) {
-  const { isWide } = useResponsive();
+  const { pad } = useResponsive();
 
-  // Chuẩn hóa lề nội dung theo SKILL: 12px cho iPhone, 16px cho iPad
-  const padH = padding ? (isWide ? 16 : 12) : 0;
+  // Chuẩn hóa lề nội dung theo responsive tokens
+  const padH = padding ? pad.section : 0;
   
   return (
     <View style={[styles.block, { paddingHorizontal: padH }, style]}>

@@ -56,12 +56,12 @@ export default function ReceiveModal({
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface.card }}>
         <View style={s.modalHeader}>
           <TouchableOpacity onPress={onClose}>
-            <Text style={{ ...font.button, color: colors.text.muted }}>Huỷ</Text>
+            <Text style={{ ...font.mdBold, color: colors.text.muted }}>Huỷ</Text>
           </TouchableOpacity>
-          <Text style={{ ...font.sectionTitle, color: colors.text.primary }}>Nhập kho · {po?.po_number}</Text>
+          <Text style={{ ...font.lg, color: colors.text.primary }}>Nhập kho · {po?.po_number}</Text>
           <TouchableOpacity onPress={save} disabled={saving}>
             <Text
-              style={{ ...font.button, color: saving ? colors.text.muted : colors.brand.primary }}
+              style={{ ...font.mdBold, color: saving ? colors.text.muted : colors.brand.primary }}
             >
               {saving ? 'Đang xử lý...' : 'Xác nhận'}
             </Text>
@@ -74,10 +74,10 @@ export default function ReceiveModal({
               style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}
             >
               <View style={{ flex: 1 }}>
-                <Text style={{ ...font.body, color: colors.text.primary }}>
+                <Text style={{ ...font.md, color: colors.text.primary }}>
                   {it.raw_material_name}
                 </Text>
-                <Text style={{ ...font.caption, color: colors.text.muted }}>
+                <Text style={{ ...font.sm, color: colors.text.muted }}>
                   Đã đặt: {it.quantity} · Đã nhận: {it.received_quantity || 0}
                 </Text>
               </View>
@@ -112,7 +112,7 @@ const s = StyleSheet.create({
     borderColor: colors.border.default,
     borderRadius: 8,
     padding: 8,
-    ...font.caption,
+    ...font.sm,
     color: colors.text.primary,
     backgroundColor: colors.surface.app,
     width: 80,

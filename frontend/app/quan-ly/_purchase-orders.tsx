@@ -5,7 +5,7 @@ import {
         } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSidebar } from '../../lib/context/SidebarContext';
-import { colors, font } from '../../lib/theme';
+import { colors, font, formatVND } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import { useResponsive, calcGridCols } from '../../lib/hooks/useResponsive';
 import { request } from '../../lib/api/client';
@@ -16,7 +16,7 @@ import ReceiveModal from '../../lib/components/purchaseOrders/ReceiveModal';
 import EmptyState from '../../lib/components/ui/EmptyState';
         
 const API = '/api/v1/quan-ly';
-function formatVND(v: number) { return v.toLocaleString('vi-VN') + 'đ'; }
+
         
 const STATUS_LABEL: Record<string, string> = {
           draft: 'Nháp', sent: 'Đã gửi', confirmed: 'Xác nhận', received: 'Đã nhận', cancelled: 'Hủy',
@@ -120,7 +120,7 @@ export default function POScreen() {
                     <Text style={s.panelSub}>{supplier?.name || selected.supplier_name || '—'}</Text>
                   </View>
                   <View style={[s.badge, { backgroundColor: sbg }]}>
-                    <Text style={{ ...font.micro, fontWeight: '600', color: sc }}>{sl}</Text>
+                    <Text style={{ ...font.sm, fontWeight: '600', color: sc }}>{sl}</Text>
                   </View>
                 </View>
 
@@ -144,13 +144,13 @@ export default function POScreen() {
         {/* Items */}
                 {selected.items?.length > 0 && (
                   <View style={{ borderTopWidth: 1, borderTopColor: '#F0F0F0', paddingTop: 8 }}>
-                    <Text style={{ ...font.label, color: '#404040', marginBottom: 4 }}>Chi tiết</Text>
+                    <Text style={{ ...font.smBold, color: '#404040', marginBottom: 4 }}>Chi tiết</Text>
                     {selected.items.map((it: any, i: number) => (
                       <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 3 }}>
-                        <Text style={{ ...font.caption, color: '#171717', flex: 1 }} numberOfLines={1}>
+                        <Text style={{ ...font.sm, color: '#171717', flex: 1 }} numberOfLines={1}>
                           {it.raw_material_name || it.raw_material_id?.slice(0, 8)}
                         </Text>
-                        <Text style={{ ...font.caption, color: '#737373' }}>
+                        <Text style={{ ...font.sm, color: '#737373' }}>
                           {it.quantity} × {formatVND(it.unit_price)}
                         </Text>
                       </View>
@@ -190,7 +190,7 @@ export default function POScreen() {
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16}}>
                       <Text style={s.cardPoNum}>{item.po_number}</Text>
                       <View style={[s.badge, { backgroundColor: sbg }]}>
-                        <Text style={{ ...font.micro, fontWeight: '600', color: sc }}>{sl}</Text>
+                        <Text style={{ ...font.sm, fontWeight: '600', color: sc }}>{sl}</Text>
                       </View>
                     </View>
                     <Text style={s.cardSupplier} numberOfLines={1}>{item.supplier_name || '—'}</Text>
@@ -216,7 +216,7 @@ export default function POScreen() {
                   <View style={s.actionRow}>
                     <TouchableOpacity style={s.actionBtn}>
                       <Icon name="send" size={14} color={'#F97316'} />
-                      <Text style={{ ...font.micro, color: '#F97316' }}>Gửi</Text>
+                      <Text style={{ ...font.sm, color: '#F97316' }}>Gửi</Text>
                     </TouchableOpacity>
                   </View>
                 )}
@@ -291,7 +291,7 @@ export default function POScreen() {
                     {selected ? renderDetail() : (
                       <View style={{ alignItems: 'center', padding: 40, gap: 16}}>
                         <Icon name="hand-pointing-up" size={36} color={'#737373'} />
-                        <Text style={{ ...font.body, color: '#737373' }}>Chọn đơn để xem chi tiết</Text>
+                        <Text style={{ ...font.md, color: '#737373' }}>Chọn đơn để xem chi tiết</Text>
                       </View>
                     )}
                   </View>
@@ -340,30 +340,30 @@ function StatItem({ icon, label, value, valueColor }: { icon: string; label: str
 const s = StyleSheet.create({
           container: { flex: 1, backgroundColor: '#FAFAFA' },
           addBtn: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, height: 38, borderRadius: 8, backgroundColor: '#F97316' },
-          addBtnText: { ...font.buttonSmall, fontWeight: '600', color: '#fff' },
+          addBtnText: { ...font.smBold, fontWeight: '600', color: '#fff' },
           headerBtn: { width: 36, height: 36, borderRadius: 8, backgroundColor: '#F5F5F5', alignItems: 'center', justifyContent: 'center' },
 
   statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
           barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
-          statValue: { ...font.bodyBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
-          statLabel: { ...font.micro, color: '#737373', lineHeight: 12 },
+          statValue: { ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
+          statLabel: { ...font.sm, color: '#737373', lineHeight: 12 },
 
   filterRow: { flexDirection: 'row', gap: 8, padding: 8, flexWrap: 'wrap' },
           chip: { paddingHorizontal: 32, paddingVertical: 5, borderRadius: 999, backgroundColor: '#F5F5F5' },
           chipActive: { backgroundColor: '#F97316' },
-          chipText: { ...font.micro, fontWeight: '600', color: '#737373' },
+          chipText: { ...font.sm, fontWeight: '600', color: '#737373' },
           chipTextActive: { color: '#fff' },
 
   card: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#F0F0F0' },
           cardTop: { marginBottom: 6 },
-          cardPoNum: { ...font.body, fontWeight: '600', color: '#171717' },
-          cardSupplier: { ...font.caption, color: '#737373', marginTop: 2 },
+          cardPoNum: { ...font.md, fontWeight: '600', color: '#171717' },
+          cardSupplier: { ...font.sm, color: '#737373', marginTop: 2 },
           badge: { paddingHorizontal: 16, paddingVertical: 3, borderRadius: 999},
 
   cardStats: { flexDirection: 'row', gap: 16, marginTop: 6, borderTopWidth: 1, borderTopColor: '#F0F0F0', paddingTop: 6 },
           cardStatItem: { flex: 1, alignItems: 'center' },
-          cardStatValue: { ...font.caption, fontWeight: '600', color: '#171717' },
-          cardStatLabel: { ...font.micro, color: '#737373' },
+          cardStatValue: { ...font.sm, fontWeight: '600', color: '#171717' },
+          cardStatLabel: { ...font.sm, color: '#737373' },
 
   actionRow: { flexDirection: 'row', marginTop: 6, paddingTop: 6, borderTopWidth: 1, borderTopColor: '#F0F0F0' },
           actionBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, paddingHorizontal: 16, borderRadius: 4},
@@ -371,15 +371,15 @@ const s = StyleSheet.create({
   panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: '#F0F0F0', gap: 16},
           panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 32, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
           panelIconBox: { width: 40, height: 40, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
-          panelTitle: { ...font.body, fontWeight: '600', color: '#171717' },
-          panelSub: { ...font.caption, color: '#737373', marginTop: 1 },
+          panelTitle: { ...font.md, fontWeight: '600', color: '#171717' },
+          panelSub: { ...font.sm, color: '#737373', marginTop: 1 },
           panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 16, paddingHorizontal: 12, borderRadius: 8},
-          panelBtnText: { ...font.caption, color: '#fff', fontWeight: '600' },
+          panelBtnText: { ...font.sm, color: '#fff', fontWeight: '600' },
 
   detailRow: { flexDirection: 'row', gap: 16},
           detailItem: { flex: 1, alignItems: 'center' },
-          detailValue: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
-          detailLabel: { ...font.micro, color: '#737373' },
+          detailValue: { ...font.sm, fontWeight: '600', color: '#171717' },
+          detailLabel: { ...font.sm, color: '#737373' },
           detailDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 4 },
 
   separator: { width: 1, backgroundColor: '#F0F0F0' },

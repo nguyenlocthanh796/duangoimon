@@ -67,7 +67,7 @@ export default function MarketingScreen() {
       render: (c) => (
         <View style={{ flex: 1 }}>
           <Text style={styles.cellPrimary} numberOfLines={1}>{c.name}</Text>
-          <Text style={{ ...font.micro, color: '#737373' }}>{c.type}</Text>
+          <Text style={{ ...font.sm, color: '#737373' }}>{c.type}</Text>
         </View>
       ),
     },
@@ -89,7 +89,7 @@ export default function MarketingScreen() {
       sortValue: (c) => c.is_active ? 1 : 0,
       render: (c) => (
         <View style={[styles.chipSmall, { backgroundColor: c.is_active ? '#E8F5E9' : '#FFEBEE' }]}>
-          <Text style={{ ...font.micro, fontWeight: '600', color: c.is_active ? '#2E7D32' : '#C62828' }}>{c.is_active ? 'ON' : 'OFF'}</Text>
+          <Text style={{ ...font.sm, fontWeight: '600', color: c.is_active ? '#2E7D32' : '#C62828' }}>{c.is_active ? 'ON' : 'OFF'}</Text>
         </View>
       ),
     },
@@ -108,8 +108,8 @@ export default function MarketingScreen() {
           <View style={{ alignItems: 'center', flex: 1 }}><Text style={styles.panelStatValue}>{selected.click_count || 0}</Text><Text style={styles.panelStatLabel}>Click</Text></View>
         </View>
         <View style={styles.panelDivider} />
-        <Text style={{ ...font.caption, fontWeight: '600', color: '#171717', marginBottom: 4 }}>Nội dung</Text>
-        <Text style={{ ...font.caption, color: '#404040' }} numberOfLines={4}>{selected.content || '—'}</Text>
+        <Text style={{ ...font.sm, fontWeight: '600', color: '#171717', marginBottom: 4 }}>Nội dung</Text>
+        <Text style={{ ...font.sm, color: '#404040' }} numberOfLines={4}>{selected.content || '—'}</Text>
         <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
           <TouchableOpacity onPress={() => openEdit(selected)} style={[styles.panelBtn, { backgroundColor: '#F97316' }]}><Icon name="pencil" size={14} color="#fff" /><Text style={styles.panelBtnText}>Sửa</Text></TouchableOpacity>
         </View>
@@ -208,7 +208,7 @@ export default function MarketingScreen() {
           <TextInput value={form.content} onChangeText={v => setForm(p => ({ ...p, content: v }))} style={[styles.fieldInput, { minHeight: 80 }]} multiline placeholder="Nội dung chiến dịch" />
           <TouchableOpacity onPress={() => setForm(p => ({ ...p, is_active: !p.is_active }))} style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
             <Icon name={form.is_active ? 'toggle-switch' : 'toggle-switch-off'} size={20} color={form.is_active ? '#16A34A' : '#737373'} />
-            <Text style={{ ...font.bodySmall, color: '#171717' }}>{form.is_active ? 'Kích hoạt' : 'Tạm dừng'}</Text>
+            <Text style={{ ...font.sm, color: '#171717' }}>{form.is_active ? 'Kích hoạt' : 'Tạm dừng'}</Text>
           </TouchableOpacity>
         </View>
       </FormModal>
@@ -220,25 +220,25 @@ const styles = StyleSheet.create({
   addBtn: { width: 36, height: 36, borderRadius: 8, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center' },
   statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
   barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
-  statValue: { ...font.bodyBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
-  statLabel: { ...font.micro, color: '#737373', lineHeight: 12 },
-  cellPrimary: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
-  cellNumber: { ...font.bodySmall, color: '#171717', textAlign: 'right' },
+  statValue: { ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
+  statLabel: { ...font.sm, color: '#737373', lineHeight: 12 },
+  cellPrimary: { ...font.sm, fontWeight: '600', color: '#171717' },
+  cellNumber: { ...font.sm, color: '#171717', textAlign: 'right' },
   chipSmall: { paddingVertical: 3, paddingHorizontal: 10, borderRadius: 999, alignSelf: 'center' },
   panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12},
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelHeaderText: { ...font.body, fontWeight: '600', color: '#171717' },
+  panelHeaderText: { ...font.md, fontWeight: '600', color: '#171717' },
   panelDivider: { height: 1, backgroundColor: '#F0F0F0' },
   panelDividerV: { width: 1, backgroundColor: '#F0F0F0' },
-  panelStatLabel: { ...font.caption, color: '#737373', marginTop: 2 },
-  panelStatValue: { ...font.sectionTitle, fontWeight: '600', color: '#171717' },
+  panelStatLabel: { ...font.sm, color: '#737373', marginTop: 2 },
+  panelStatValue: { ...font.lg, fontWeight: '600', color: '#171717' },
   panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 10, paddingHorizontal: 10, borderRadius: 8},
-  panelBtnText: { ...font.buttonSmall, fontWeight: '600', color: '#fff' },
-  fieldLabel: { ...font.label, color: '#404040', marginBottom: 6 },
-  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.body, color: '#171717', backgroundColor: '#FAFAFA' },
+  panelBtnText: { ...font.smBold, fontWeight: '600', color: '#fff' },
+  fieldLabel: { ...font.smBold, color: '#404040', marginBottom: 6 },
+  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.md, color: '#171717', backgroundColor: '#FAFAFA' },
   separator: { width: 1, backgroundColor: '#F0F0F0' },
   typeChip: { paddingHorizontal: 12, paddingVertical: 10, borderRadius: 8, backgroundColor: '#F5F5F5' },
   typeChipActive: { backgroundColor: '#F97316' },
-  typeChipText: { ...font.buttonSmall, fontWeight: '600', color: '#737373' },
+  typeChipText: { ...font.smBold, fontWeight: '600', color: '#737373' },
   typeChipTextActive: { color: colors.text.inverse },
 });

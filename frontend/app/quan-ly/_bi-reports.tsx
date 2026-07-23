@@ -3,13 +3,13 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
-import { colors, font } from '../../lib/theme';
+import { colors, font, formatVND } from '../../lib/theme';
 import { request } from '../../lib/api/client';
 import DataTable, { type Column } from '../../lib/components/ui/DataTable';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
 import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 
-function formatVND(v: number) { return (v || 0).toLocaleString('vi-VN') + 'đ'; }
+
 
 type TabKey = 'revenue' | 'foodcost';
 
@@ -109,11 +109,11 @@ export default function BIReportsScreen() {
           <View style={styles.panelHeader}><Icon name="food-apple" size={18} color={'#F97316'} /><Text style={styles.panelHeaderText}>Top Food Cost</Text></View>
           {top.map((item: any, i: number) => (
             <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-              <Text style={{ width: 50, ...font.caption, color: '#171717' }} numberOfLines={1}>{item.name || item.date}</Text>
+              <Text style={{ width: 50, ...font.sm, color: '#171717' }} numberOfLines={1}>{item.name || item.date}</Text>
               <View style={{ flex: 1, height: 10, backgroundColor: '#F5F5F5', borderRadius: 3 }}>
                 <View style={{ width: `${Math.max(5, ((item.pct || 0) / maxPct) * 100)}%`, height: 10, backgroundColor: (item.pct || 0) > 40 ? '#DC2626' : '#D97706', borderRadius: 3 }} />
               </View>
-              <Text style={{ width: 40, textAlign: 'right', ...font.micro, fontWeight: '600', color: (item.pct || 0) > 40 ? '#DC2626' : '#171717' }}>{item.pct}%</Text>
+              <Text style={{ width: 40, textAlign: 'right', ...font.sm, fontWeight: '600', color: (item.pct || 0) > 40 ? '#DC2626' : '#171717' }}>{item.pct}%</Text>
             </View>
           ))}
         </View>
@@ -128,11 +128,11 @@ export default function BIReportsScreen() {
           <View style={styles.panelHeader}><Icon name="chart-line" size={18} color={'#F97316'} /><Text style={styles.panelHeaderText}>Top Doanh thu</Text></View>
           {top.map((item: any, i: number) => (
             <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-              <Text style={{ width: 50, ...font.caption, color: '#171717' }} numberOfLines={1}>{item.date || item.name}</Text>
+              <Text style={{ width: 50, ...font.sm, color: '#171717' }} numberOfLines={1}>{item.date || item.name}</Text>
               <View style={{ flex: 1, height: 10, backgroundColor: '#F5F5F5', borderRadius: 3 }}>
                 <View style={{ width: `${Math.max(5, ((item.revenue || 0) / maxRev) * 100)}%`, height: 10, backgroundColor: '#F97316', borderRadius: 3 }} />
               </View>
-              <Text style={{ width: 65, textAlign: 'right', ...font.micro, fontWeight: '600', color: '#171717' }}>{formatVND(item.revenue)}</Text>
+              <Text style={{ width: 65, textAlign: 'right', ...font.sm, fontWeight: '600', color: '#171717' }}>{formatVND(item.revenue)}</Text>
             </View>
           ))}
         </View>
@@ -233,21 +233,21 @@ export default function BIReportsScreen() {
 const styles = StyleSheet.create({
   statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
   barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
-  statValue: { ...font.bodyBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
-  statLabel: { ...font.micro, color: '#737373', lineHeight: 12 },
+  statValue: { ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
+  statLabel: { ...font.sm, color: '#737373', lineHeight: 12 },
   tabRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 4, paddingVertical: 8, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0', alignItems: 'center' },
   tab: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#E5E5E5' },
   tabActive: { backgroundColor: '#F97316', borderColor: '#F97316' },
-  tabText: { ...font.micro, fontWeight: '600', color: '#737373' },
+  tabText: { ...font.sm, fontWeight: '600', color: '#737373' },
   tabTextActive: { color: '#fff' },
   daysChip: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#E5E5E5', marginLeft: 4 },
   daysChipActive: { backgroundColor: '#1E293B', borderColor: '#1E293B' },
-  daysChipText: { ...font.micro, fontWeight: '600', color: '#737373' },
+  daysChipText: { ...font.sm, fontWeight: '600', color: '#737373' },
   daysChipTextActive: { color: '#fff' },
-  cellPrimary: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
-  cellNumber: { ...font.bodySmall, color: '#171717', textAlign: 'right' },
+  cellPrimary: { ...font.sm, fontWeight: '600', color: '#171717' },
+  cellNumber: { ...font.sm, color: '#171717', textAlign: 'right' },
   panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelHeaderText: { ...font.body, fontWeight: '600', color: '#171717' },
+  panelHeaderText: { ...font.md, fontWeight: '600', color: '#171717' },
   separator: { width: 1, backgroundColor: '#F0F0F0' },
 });

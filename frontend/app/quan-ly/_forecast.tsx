@@ -33,7 +33,7 @@ export default function ForecastScreen() {
       <View style={{ width: 35, height: 6, backgroundColor: '#F5F5F5', borderRadius: 3 }}>
         <View style={{ width: `${c}%`, height: 6, borderRadius: 3, backgroundColor: c > 70 ? '#16A34A' : c > 50 ? '#D97706' : '#DC2626' }} />
       </View>
-      <Text style={{ ...font.micro, fontWeight: '600', color: c > 70 ? '#16A34A' : c > 50 ? '#D97706' : '#DC2626', width: 28, textAlign: 'right' }}>{Math.round(c)}%</Text>
+      <Text style={{ ...font.sm, fontWeight: '600', color: c > 70 ? '#16A34A' : c > 50 ? '#D97706' : '#DC2626', width: 28, textAlign: 'right' }}>{Math.round(c)}%</Text>
     </View>
   );
 
@@ -100,11 +100,11 @@ export default function ForecastScreen() {
         const c = item.confidence || 0;
         return (
           <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Text style={{ width: 45, ...font.micro, color: '#737373' }}>{item.date?.slice(5)}</Text>
+            <Text style={{ width: 45, ...font.sm, color: '#737373' }}>{item.date?.slice(5)}</Text>
             <View style={{ flex: 1, height: 6, backgroundColor: '#F5F5F5', borderRadius: 3}}>
               <View style={{ width: `${c}%`, height: 6, borderRadius: 3, backgroundColor: c > 70 ? '#16A34A' : c > 50 ? '#D97706' : '#DC2626' }} />
             </View>
-            <Text style={{ width: 25, textAlign: 'right', ...font.micro, color: '#737373' }}>{Math.round(c)}%</Text>
+            <Text style={{ width: 25, textAlign: 'right', ...font.sm, color: '#737373' }}>{Math.round(c)}%</Text>
           </View>
         );
       })}
@@ -197,20 +197,20 @@ export default function ForecastScreen() {
 const styles = StyleSheet.create({
   statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
   barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
-  statValue: { ...font.bodyBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
-  statLabel: { ...font.micro, color: '#737373', lineHeight: 12 },
+  statValue: { ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
+  statLabel: { ...font.sm, color: '#737373', lineHeight: 12 },
   filterRow: { flexDirection: 'row', gap: 12, paddingHorizontal: 12, paddingVertical: 12, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
   chip: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#E5E5E5' },
   chipActive: { backgroundColor: '#F97316', borderColor: '#F97316' },
-  chipText: { ...font.badge, color: '#737373' },
+  chipText: { ...font.smBold, color: '#737373' },
   chipTextActive: { color: '#fff', fontWeight: '600' },
-  cellPrimary: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
-  cellHighlight: { ...font.bodySmall, fontWeight: '600', color: '#F97316' },
+  cellPrimary: { ...font.sm, fontWeight: '600', color: '#171717' },
+  cellHighlight: { ...font.sm, fontWeight: '600', color: '#F97316' },
   panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelHeaderText: { ...font.body, fontWeight: '600', color: '#171717' },
-  panelStatLabel: { ...font.caption, color: '#737373', marginTop: 2 },
-  panelStatValue: { ...font.pageTitle, fontWeight: '600', color: '#171717' },
+  panelHeaderText: { ...font.md, fontWeight: '600', color: '#171717' },
+  panelStatLabel: { ...font.sm, color: '#737373', marginTop: 2 },
+  panelStatValue: { ...font.lg, fontWeight: '600', color: '#171717' },
   panelDivider: { height: 1, backgroundColor: '#F0F0F0' },
   separator: { width: 1, backgroundColor: '#F0F0F0' },
 });

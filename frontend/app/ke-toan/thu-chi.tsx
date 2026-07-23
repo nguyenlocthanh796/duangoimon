@@ -153,7 +153,7 @@ export default function ThuChiScreen() {
       width: 110,
       sortable: true,
       sortValue: (t) => t.created_at || '',
-      render: (t) => <AppText variant="base">{formatDate(t.created_at)}</AppText>,
+      render: (t) => <AppText variant="md">{formatDate(t.created_at)}</AppText>,
     },
     {
       key: 'type',
@@ -166,7 +166,7 @@ export default function ThuChiScreen() {
         const thu = t.type === 'thu';
         return (
           <AppText
-            variant="small"
+            variant="sm"
             weight="bold"
             style={{ color: thu ? colors.status.success : colors.status.danger }}
           >
@@ -182,7 +182,7 @@ export default function ThuChiScreen() {
       sortable: true,
       sortValue: (t) => t.category || '',
       render: (t) => (
-        <AppText variant="base" numberOfLines={1}>
+        <AppText variant="md" numberOfLines={1}>
           {t.category || '—'}
         </AppText>
       ),
@@ -198,7 +198,7 @@ export default function ThuChiScreen() {
         const thu = t.type === 'thu';
         return (
           <AppText
-            variant="base"
+            variant="md"
             style={{ color: thu ? colors.status.success : colors.status.danger }}
           >
             {thu ? '+' : '-'}
@@ -212,7 +212,7 @@ export default function ThuChiScreen() {
       title: 'Ghi chú',
       flex: 1.4,
       render: (t) => (
-        <AppText variant="base" style={{ color: colors.text.muted }} numberOfLines={1}>
+        <AppText variant="md" style={{ color: colors.text.muted }} numberOfLines={1}>
           {t.note?.trim() || '—'}
         </AppText>
       ),
@@ -272,14 +272,14 @@ export default function ThuChiScreen() {
       key: 'label',
       title: '',
       flex: 1,
-      content: <AppText variant="base" weight="bold">Tổng cộng</AppText>,
+      content: <AppText variant="md" weight="bold">Tổng cộng</AppText>,
     },
     {
       key: 'thu',
       align: 'right' as const,
       width: 130,
       content: (
-        <AppText variant="base" style={{ color: colors.status.success }}>
+        <AppText variant="md" style={{ color: colors.status.success }}>
           {formatVND(totalThu)}
         </AppText>
       ),
@@ -290,7 +290,7 @@ export default function ThuChiScreen() {
       width: 130,
       content: (
         <AppText
-          variant="base"
+          variant="md"
           style={{ color: totalThu - totalChi >= 0 ? colors.status.success : colors.status.danger }}
         >
           {formatVND(totalThu - totalChi)}
@@ -349,7 +349,7 @@ export default function ThuChiScreen() {
         subtitle={`${formatDate(t.created_at)} · ${t.category || 'Khác'}`}
         right={
           <AppText
-            variant="base"
+            variant="md"
             style={{ color: t.type === 'thu' ? colors.status.success : colors.status.danger }}
           >
             {t.type === 'thu' ? '+' : '-'}
@@ -409,7 +409,7 @@ export default function ThuChiScreen() {
                 color={filter === f ? '#fff' : colors.status.danger}
               />
             ) : null}
-            <AppText variant="base" style={[styles.chipText, filter === f && styles.chipTextActive]}>
+            <AppText variant="md" style={[styles.chipText, filter === f && styles.chipTextActive]}>
               {f ? (f === 'thu' ? 'Thu' : 'Chi') : 'Tất cả'}
             </AppText>
           </TouchableOpacity>
@@ -419,21 +419,21 @@ export default function ThuChiScreen() {
       <SectionBlock>
         <ResponsiveGrid mobileCols={3} minColWidth={100} gap={8}>
           <View style={styles.kpiBox}>
-            <AppText variant="small" style={styles.kpiLabel}>Tổng Thu</AppText>
-            <AppText variant="medium" weight="bold" style={[styles.kpiValue, { color: colors.status.success }]}>
+            <AppText variant="sm" style={styles.kpiLabel}>Tổng Thu</AppText>
+            <AppText variant="md" weight="bold" style={[styles.kpiValue, { color: colors.status.success }]}>
               {formatAmount(totalThu)}
             </AppText>
           </View>
           <View style={styles.kpiBox}>
-            <AppText variant="small" style={styles.kpiLabel}>Tổng Chi</AppText>
-            <AppText variant="medium" weight="bold" style={[styles.kpiValue, { color: colors.status.danger }]}>
+            <AppText variant="sm" style={styles.kpiLabel}>Tổng Chi</AppText>
+            <AppText variant="md" weight="bold" style={[styles.kpiValue, { color: colors.status.danger }]}>
               {formatAmount(totalChi)}
             </AppText>
           </View>
           <View style={styles.kpiBox}>
-            <AppText variant="small" style={styles.kpiLabel}>Thực tế</AppText>
+            <AppText variant="sm" style={styles.kpiLabel}>Thực tế</AppText>
             <AppText
-              variant="medium"
+              variant="md"
               weight="bold"
               style={[
                 styles.kpiValue,

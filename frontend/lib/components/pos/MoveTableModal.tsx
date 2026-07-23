@@ -68,7 +68,7 @@ export default function MoveTableModal({
               marginBottom: 8,
             }}
           >
-            <AppText variant="large" color={colors.text.primary} weight="bold">{title}</AppText>
+            <AppText variant="lg" color={colors.text.primary} weight="bold">{title}</AppText>
             <TouchableOpacity
               onPress={onClose}
               style={{
@@ -102,7 +102,7 @@ export default function MoveTableModal({
               onChangeText={setSearch}
               placeholder="Tìm bàn..."
               placeholderTextColor={colors.text.muted}
-              style={{ flex: 1, ...font.body, color: colors.text.primary, marginLeft: 6 }}
+              style={{ flex: 1, ...font.md, color: colors.text.primary, marginLeft: 6 }}
             />
           </View>
           {loading ? (
@@ -143,8 +143,8 @@ export default function MoveTableModal({
                     />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <AppText variant="medium" color={colors.text.primary}>{t.name}</AppText>
-                    <AppText variant="small" color={colors.text.secondary}>
+                    <AppText variant="md" color={colors.text.primary}>{t.name}</AppText>
+                    <AppText variant="sm" color={colors.text.secondary}>
                       {t.status === 'co_khach' ? 'Có khách' : 'Trống'} · {t.area || 'Không khu vực'}
                     </AppText>
                   </View>
@@ -153,7 +153,7 @@ export default function MoveTableModal({
               ))}
               {filtered.length === 0 && (
                 <AppText
-                  variant="small"
+                  variant="sm"
                   color={colors.text.muted}
                   style={{
                     paddingVertical: 30,

@@ -44,13 +44,13 @@ export const getGlobalStyles = (isWide: boolean) => StyleSheet.create({
     gap: 8,
   },
 
-  // ── 3. Nút bấm (Kích thước vàng: 36px cao) ──────────────────────────────────
+  // ── 3. Nút bấm (Kích thước chuẩn: 44px cao) ──────────────────────────────────
   btnPrimary: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    height: 36,
+    height: 44,
     paddingHorizontal: 16,
     borderRadius: 8,
     backgroundColor: colors.brand.primary,
@@ -61,7 +61,7 @@ export const getGlobalStyles = (isWide: boolean) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    height: 36,
+    height: 44,
     paddingHorizontal: 16,
     borderRadius: 8,
     backgroundColor: colors.surface.app,
@@ -73,15 +73,15 @@ export const getGlobalStyles = (isWide: boolean) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    height: 36,
+    height: 44,
     paddingHorizontal: 16,
     borderRadius: 8,
     backgroundColor: colors.status.danger,
     borderWidth: 0,
   },
   btnIconOnly: {
-    width: 36,
-    height: 36,
+    width: 44,
+    height: 44,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
@@ -90,8 +90,8 @@ export const getGlobalStyles = (isWide: boolean) => StyleSheet.create({
     borderColor: colors.border.default,
   },
   btnHeaderRight: {
-    width: 36,
-    height: 36,
+    width: 44,
+    height: 44,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
@@ -114,8 +114,37 @@ export const getGlobalStyles = (isWide: boolean) => StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    height: 36,
+    height: 40,
     borderRadius: 8,
+  },
+
+  // ── 5. Bottom Action Bar (dùng cho màn hình có action ở cuối) ───────────────
+  bottomActionBar: {
+    backgroundColor: colors.surface.card,
+    borderTopWidth: 1,
+    borderTopColor: colors.border.default,
+    paddingHorizontal: shape.spacing.md,
+    paddingTop: shape.spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+
+  // ── 6. Mini Cart Bar (thanh cart dưới màn hình) ─────────────────────────────
+  miniCartBar: {
+    height: 44,
+    backgroundColor: colors.surface.app,
+    borderTopWidth: 1,
+    borderTopColor: colors.border.default,
+    paddingHorizontal: shape.spacing.lg,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
 });
 

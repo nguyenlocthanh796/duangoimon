@@ -59,9 +59,9 @@ export default function AuditScreen() {
             <View style={{ flex: 1 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                 <Text style={[styles.cellAction, { color }]}>{l.action}</Text>
-                <Text style={{ ...font.micro, color: '#737373' }}>{l.resource}</Text>
+                <Text style={{ ...font.sm, color: '#737373' }}>{l.resource}</Text>
               </View>
-              <Text style={{ ...font.micro, color: '#737373' }}>{l.user_name}</Text>
+              <Text style={{ ...font.sm, color: '#737373' }}>{l.user_name}</Text>
             </View>
           </View>
         );
@@ -99,11 +99,11 @@ export default function AuditScreen() {
           return (
             <View key={k} style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 3 }}>
               <View style={[styles.panelRowDot, { backgroundColor: color }]} />
-              <Text style={{ flex: 1, ...font.caption, color: '#171717', textTransform: 'capitalize' }}>{k}</Text>
+              <Text style={{ flex: 1, ...font.sm, color: '#171717', textTransform: 'capitalize' }}>{k}</Text>
               <View style={{ width: 60, height: 8, backgroundColor: '#F5F5F5', borderRadius: 12, overflow: 'hidden' }}>
                 <View style={{ width: `${pct}%`, height: 8, backgroundColor: color, borderRadius: 12}} />
               </View>
-              <Text style={{ width: 25, textAlign: 'right', ...font.micro, fontWeight: '600', color }}>{v}</Text>
+              <Text style={{ width: 25, textAlign: 'right', ...font.sm, fontWeight: '600', color }}>{v}</Text>
             </View>
           );
         })}
@@ -211,21 +211,21 @@ const styles = StyleSheet.create({
   refreshBtn: { width: 44, height: 44, borderRadius: 8, backgroundColor: '#F5F5F5', alignItems: 'center', justifyContent: 'center' },
   statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
   barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
-  statValue: { ...font.bodyBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
-  statLabel: { ...font.micro, color: '#737373', lineHeight: 12 },
+  statValue: { ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
+  statLabel: { ...font.sm, color: '#737373', lineHeight: 12 },
   filterRow: { flexDirection: 'row', gap: 12, paddingHorizontal: 4, paddingVertical: 8, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0', flexWrap: 'wrap', alignItems: 'center' },
   chip: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#E5E5E5' },
   chipActive: { backgroundColor: '#F97316', borderColor: '#F97316' },
-  chipText: { ...font.badge, color: '#737373' },
+  chipText: { ...font.smBold, color: '#737373' },
   chipTextActive: { color: '#fff', fontWeight: '600' },
-  cellAction: { ...font.bodySmall, fontWeight: '600', textTransform: 'capitalize' },
-  cellTime: { ...font.caption, color: '#737373' },
+  cellAction: { ...font.sm, fontWeight: '600', textTransform: 'capitalize' },
+  cellTime: { ...font.sm, color: '#737373' },
   actionIcon: { width: 32, height: 32, borderRadius: 4, alignItems: 'center', justifyContent: 'center' },
   panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12},
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelHeaderText: { ...font.body, fontWeight: '600', color: '#171717' },
-  panelStatValue: { ...font.pageTitle, fontWeight: '600', color: '#171717' },
-  panelStatLabel: { ...font.caption, color: '#737373', marginTop: 2 },
+  panelHeaderText: { ...font.md, fontWeight: '600', color: '#171717' },
+  panelStatValue: { ...font.lg, fontWeight: '600', color: '#171717' },
+  panelStatLabel: { ...font.sm, color: '#737373', marginTop: 2 },
   panelDivider: { height: 1, backgroundColor: '#F0F0F0' },
   panelRowDot: { width: 8, height: 8, borderRadius: 12},
   separator: { width: 1, backgroundColor: '#F0F0F0' },

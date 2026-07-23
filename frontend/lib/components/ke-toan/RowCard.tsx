@@ -27,11 +27,11 @@ const RowCard = React.memo(
           </View>
         )}
         <View style={{ flex: 1, marginLeft: leftIcon ? 6 : 0 }}>
-          <AppText variant="base" style={styles.title} numberOfLines={1}>
+          <AppText variant="md" style={styles.title} numberOfLines={1}>
             {title}
           </AppText>
           {subtitle && (
-            <AppText variant="small" style={styles.subtitle} numberOfLines={1}>
+            <AppText variant="sm" style={styles.subtitle} numberOfLines={1}>
               {subtitle}
             </AppText>
           )}

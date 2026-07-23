@@ -51,7 +51,7 @@ export default function SplitBillToggle({
       }}
     >
       <Icon name="content-copy" size={14} color={colors.brand.primary} />
-      <Text style={{ ...font.bodySmall, color: colors.brand.primary }}>Chia hóa đơn (Split bill)</Text>
+      <Text style={{ ...font.sm, color: colors.brand.primary }}>Chia hóa đơn (Split bill)</Text>
     </TouchableOpacity>
   );
 }

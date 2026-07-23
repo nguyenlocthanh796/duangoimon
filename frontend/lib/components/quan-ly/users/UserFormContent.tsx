@@ -121,14 +121,14 @@ export default function UserFormContent({
 
 const styles = StyleSheet.create({
   inputWrap: { marginBottom: 16 },
-  inputLabel: { ...font.label, color: colors.text.body, marginBottom: 6 },
+  inputLabel: { ...font.smBold, color: colors.text.body, marginBottom: 6 },
   input: {
     borderWidth: 1.5,
     borderColor: colors.border.default,
     borderRadius: 4,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    ...font.body,
+    ...font.md,
     color: colors.text.primary,
     backgroundColor: colors.surface.disabled,
   },
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     gap: 6,
     position: 'relative',
   },
-  roleCardText: { ...font.bodySmall, fontWeight: '600', color: colors.text.secondary },
+  roleCardText: { ...font.sm, fontWeight: '600', color: colors.text.secondary },
   roleCheck: {
     position: 'absolute',
     top: -5,
@@ -174,5 +174,5 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: colors.border.light,
   },
-  switchSub: { ...font.caption, color: colors.text.secondary, marginTop: 2 },
+  switchSub: { ...font.sm, color: colors.text.secondary, marginTop: 2 },
 });

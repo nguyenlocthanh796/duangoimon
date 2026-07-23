@@ -22,15 +22,16 @@ import EmptyState from '../../lib/components/ui/EmptyState';
 import SwipeableRow, { type SwipeAction } from '../../lib/components/ui/SwipeableRow';
 import InvoiceFormContent from '../../lib/components/ke-toan/InvoiceFormContent';
 import BillDetailModal from '../../lib/components/ke-toan/BillDetailModal';
-import StatusBadge, { type SeverityKey } from '../../lib/components/ke-toan/StatusBadge';
+import StatusBadge, { type BadgeSeverity } from '../../lib/components/ui/StatusBadge';
 import DataTable, { Column } from '../../lib/components/ui/DataTable';
 import { useSortState, sumBy, formatVND } from '../../lib/components/ui/tableUtils';
 import ScreenLayout from '../../lib/components/layout/ScreenLayout';
 import SectionBlock from '../../lib/components/layout/SectionBlock';
 import ResponsiveGrid from '../../lib/components/layout/ResponsiveGrid';
+import { formatDate } from '../../lib/theme';
 type PaidOrder = { id: string; table_name?: string; total?: number; created_at?: string };
 const STATUS_LABEL: Record<string, string> = { moi: 'Mới', da_xuat: 'Đã xuất', huy: 'Hủy' };
-const STATUS_SEVERITY: Record<string, SeverityKey> = {
+const STATUS_SEVERITY: Record<string, BadgeSeverity> = {
   moi: 'warning',
   da_xuat: 'success',
   huy: 'danger',
@@ -47,14 +48,11 @@ const INITIAL_FORM: InvoiceFormState = {
   buyer_tax_code: '',
   vat_rate: '10',
 };
-const formatAmount = (n: number) => n.toLocaleString('vi-VN') + '₫';
-const formatDate = (iso: string | null) => (iso ? iso.slice(0, 10) : '');
 export default function InvoicesScreen() {
   const router = useRouter();
   const { openSidebar } = useSidebar();
   const { branchId } = useAuth();
   const { isWide } = useResponsive();
-  const hPad = 16;
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -164,7 +162,7 @@ export default function InvoicesScreen() {
       width: 130,
       sortable: true,
       sortValue: (i) => i.invoice_number || '',
-      render: (i) => <AppText variant="base" weight="bold" numberOfLines={1}>{i.invoice_number || '—'}</AppText>,
+      render: (i) => <AppText variant="md" weight="bold" numberOfLines={1}>{i.invoice_number || '—'}</AppText>,
     },
     {
       key: 'created_at',
@@ -172,7 +170,7 @@ export default function InvoicesScreen() {
       width: 100,
       sortable: true,
       sortValue: (i) => i.created_at || '',
-      render: (i) => <AppText variant="base">{formatDate(i.created_at)}</AppText>,
+      render: (i) => <AppText variant="md">{formatDate(i.created_at)}</AppText>,
     },
     {
       key: 'buyer_name',
@@ -180,13 +178,13 @@ export default function InvoicesScreen() {
       width: 120,
       sortable: true,
       sortValue: (i) => i.buyer_name || '',
-      render: (i) => <AppText variant="base" numberOfLines={1}>{i.buyer_name || '—'}</AppText>,
+      render: (i) => <AppText variant="md" numberOfLines={1}>{i.buyer_name || '—'}</AppText>,
     },
     {
       key: 'buyer_tax_code',
       title: 'MST',
       width: 120,
-      render: (i) => <AppText variant="base" color={colors.text.muted} numberOfLines={1}>{i.buyer_tax_code || '—'}</AppText>,
+      render: (i) => <AppText variant="md" color={colors.text.muted} numberOfLines={1}>{i.buyer_tax_code || '—'}</AppText>,
     },
     {
       key: 'total_amount',
@@ -195,7 +193,7 @@ export default function InvoicesScreen() {
       align: 'right',
       sortable: true,
       sortValue: (i) => i.total_amount,
-      render: (i) => <AppText variant="base" weight="bold">{formatAmount(i.total_amount)}</AppText>,
+      render: (i) => <AppText variant="md" weight="bold">{formatVND(i.total_amount)}</AppText>,
     },
     {
       key: 'vat_amount',
@@ -204,7 +202,7 @@ export default function InvoicesScreen() {
       align: 'right',
       sortable: true,
       sortValue: (i) => i.vat_amount ?? 0,
-      render: (i) => <AppText variant="base" weight="bold">{formatAmount(i.vat_amount ?? 0)}</AppText>,
+      render: (i) => <AppText variant="md" weight="bold">{formatVND(i.vat_amount ?? 0)}</AppText>,
     },
     {
       key: 'status',
@@ -250,9 +248,9 @@ export default function InvoicesScreen() {
     },
   ];
   const footerColumns = [
-    { key: 'label', flex: 3, content: <AppText variant="base" weight="bold">Tổng cộng</AppText> },
-    { key: 'total', width: 110, align: 'right' as const, content: <AppText variant="base" weight="bold">{formatAmount(totals.totalAmount)}</AppText> },
-    { key: 'vat', width: 100, align: 'right' as const, content: <AppText variant="base" weight="bold">{formatAmount(totals.totalVat)}</AppText> },
+    { key: 'label', flex: 3, content: <AppText variant="md" weight="bold">Tổng cộng</AppText> },
+    { key: 'total', width: 110, align: 'right' as const, content: <AppText variant="md" weight="bold">{formatVND(totals.totalAmount)}</AppText> },
+    { key: 'vat', width: 100, align: 'right' as const, content: <AppText variant="md" weight="bold">{formatVND(totals.totalVat)}</AppText> },
     { key: 'spacer', flex: 1, content: null },
   ];
   const renderMobileCard = (inv: Invoice) => {
@@ -266,11 +264,11 @@ export default function InvoicesScreen() {
           activeOpacity={0.7}
         >
           <View style={{ flex: 1 }}>
-            <AppText variant="base">{inv.invoice_number || '—'}</AppText>
-            <AppText variant="small" color={colors.text.muted} style={{ marginTop: 2 }}>{inv.buyer_name || '—'} · {formatDate(inv.created_at)}</AppText>
+            <AppText variant="md">{inv.invoice_number || '—'}</AppText>
+            <AppText variant="sm" color={colors.text.muted} style={{ marginTop: 2 }}>{inv.buyer_name || '—'} · {formatDate(inv.created_at)}</AppText>
           </View>
           <View style={{ alignItems: 'flex-end', gap: 4 }}>
-            <AppText variant="base" weight="bold">{formatAmount(inv.total_amount)}</AppText>
+            <AppText variant="md" weight="bold">{formatVND(inv.total_amount)}</AppText>
             <StatusBadge label={statusLabel} severity={severity} />
           </View>
         </TouchableOpacity>
@@ -290,7 +288,7 @@ export default function InvoicesScreen() {
           {isWide ? (
             <TouchableOpacity style={styles.addBtn} onPress={openForm}>
               <Icon name="plus" size={18} color="#fff" />
-              <AppText variant="medium" weight="bold" color="#fff">Tạo HĐ</AppText>
+              <AppText variant="md" weight="bold" color="#fff">Tạo HĐ</AppText>
             </TouchableOpacity>
           ) : (
             <TouchableOpacity style={[styles.actionBtn, { backgroundColor: colors.brand.primary, borderWidth: 0, width: 36, height: 36 }]} onPress={openForm}>
@@ -309,12 +307,12 @@ export default function InvoicesScreen() {
             }}
           >
             <Icon name="file-delimited" size={18} color={colors.text.primary} />
-            {isWide && <AppText variant="medium" weight="bold" style={{ color: colors.text.primary }}>Xuất CSV</AppText>}
+            {isWide && <AppText variant="md" weight="bold" style={{ color: colors.text.primary }}>Xuất CSV</AppText>}
           </TouchableOpacity>
         </View>
       }
     >
-      <View style={{ paddingHorizontal: hPad, paddingTop: 12, paddingBottom: 12 }}>
+      <View style={{ paddingHorizontal: isWide ? 32 : 16, paddingTop: 12, paddingBottom: 12 }}>
         <View style={styles.searchWrap}>
           <Icon name="magnify" size={18} color={colors.text.muted} />
           <TextInput
@@ -330,18 +328,18 @@ export default function InvoicesScreen() {
         <ResponsiveGrid mobileCols={3} minColWidth={80} gap={12}>
           <View style={styles.statBox}>
             <View style={[styles.statDot, { backgroundColor: colors.status.warning }]} />
-            <AppText variant="small" color={colors.text.muted}>Mới</AppText>
-            <AppText variant="medium" weight="bold">{invoices.filter((i) => i.status === 'moi').length}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Mới</AppText>
+            <AppText variant="md" weight="bold">{invoices.filter((i) => i.status === 'moi').length}</AppText>
           </View>
           <View style={styles.statBox}>
             <View style={[styles.statDot, { backgroundColor: colors.status.success }]} />
-            <AppText variant="small" color={colors.text.muted}>Đã xuất</AppText>
-            <AppText variant="medium" weight="bold">{invoices.filter((i) => i.status === 'da_xuat').length}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Đã xuất</AppText>
+            <AppText variant="md" weight="bold">{invoices.filter((i) => i.status === 'da_xuat').length}</AppText>
           </View>
           <View style={styles.statBox}>
             <View style={[styles.statDot, { backgroundColor: colors.status.danger }]} />
-            <AppText variant="small" color={colors.text.muted}>Hủy</AppText>
-            <AppText variant="medium" weight="bold">{invoices.filter((i) => i.status === 'huy').length}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Hủy</AppText>
+            <AppText variant="md" weight="bold">{invoices.filter((i) => i.status === 'huy').length}</AppText>
           </View>
         </ResponsiveGrid>
       </SectionBlock>
@@ -399,7 +397,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: colors.brand.primary,
   },
-  addBtnText: { ...font.buttonSmall, fontWeight: '600', color: '#fff' },
+  addBtnText: { ...font.smBold, fontWeight: '600', color: '#fff' },
   searchWrap: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -411,7 +409,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border.default,
   },
-  searchInput: { flex: 1, ...font.bodySmall, color: colors.text.primary, paddingVertical: 0},
+  searchInput: { flex: 1, ...font.sm, color: colors.text.primary, paddingVertical: 0},
   statStrip: {
     flexDirection: 'row',
     backgroundColor: colors.text.inverse,

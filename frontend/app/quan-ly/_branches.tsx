@@ -77,7 +77,7 @@ export default function BranchesScreen() {
       sortValue: (b) => b.is_active ? 1 : 0,
       render: (b) => (
         <View style={[styles.statusChip, { backgroundColor: b.is_active ? '#DCFCE7' : '#FEE2E2' }]}>
-          <Text style={{ ...font.micro, fontWeight: '600', color: b.is_active ? '#16A34A' : '#DC2626' }}>{b.is_active ? 'Bật' : 'Tắt'}</Text>
+          <Text style={{ ...font.sm, fontWeight: '600', color: b.is_active ? '#16A34A' : '#DC2626' }}>{b.is_active ? 'Bật' : 'Tắt'}</Text>
         </View>
       ),
     },
@@ -227,7 +227,7 @@ export default function BranchesScreen() {
           <TextInput value={form.phone} onChangeText={v => setForm(p => ({ ...p, phone: v }))} style={styles.fieldInput} placeholder="090..." keyboardType="phone-pad" />
           <TouchableOpacity onPress={() => setForm(p => ({ ...p, is_active: !p.is_active }))} style={[styles.toggleChip, { alignSelf: 'flex-start' }]}>
             <Icon name={form.is_active ? 'toggle-switch' : 'toggle-switch-off'} size={20} color={form.is_active ? '#16A34A' : '#737373'} />
-            <Text style={{ ...font.bodySmall, color: '#171717' }}>{form.is_active ? 'Đang hoạt động' : 'Tạm ngừng'}</Text>
+            <Text style={{ ...font.sm, color: '#171717' }}>{form.is_active ? 'Đang hoạt động' : 'Tạm ngừng'}</Text>
           </TouchableOpacity>
         </View>
       </FormModal>
@@ -239,22 +239,22 @@ const styles = StyleSheet.create({
   addBtn: { width: 44, height: 44, borderRadius: 8, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center' },
   statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
   barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
-  statValue: { ...font.bodyBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
-  statLabel: { ...font.micro, color: '#737373', lineHeight: 12 },
-  cellPrimary: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
-  cellCode: { ...font.caption, color: '#737373' },
+  statValue: { ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
+  statLabel: { ...font.sm, color: '#737373', lineHeight: 12 },
+  cellPrimary: { ...font.sm, fontWeight: '600', color: '#171717' },
+  cellCode: { ...font.sm, color: '#737373' },
   statusChip: { paddingVertical: 3, paddingHorizontal: 12, borderRadius: 999 },
   panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12},
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
   panelIcon: { width: 36, height: 36, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
-  panelTitle: { ...font.body, fontWeight: '600', color: '#171717' },
-  panelSub: { ...font.caption, color: '#737373' },
-  panelAddress: { ...font.caption, color: '#737373' },
+  panelTitle: { ...font.md, fontWeight: '600', color: '#171717' },
+  panelSub: { ...font.sm, color: '#737373' },
+  panelAddress: { ...font.sm, color: '#737373' },
   panelDivider: { height: 1, backgroundColor: '#F0F0F0' },
   panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12, paddingHorizontal: 12, borderRadius: 8},
-  panelBtnText: { ...font.buttonSmall, fontWeight: '600', color: '#fff' },
-  fieldLabel: { ...font.label, color: '#404040', marginBottom: 6 },
-  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.body, color: '#171717', backgroundColor: '#FAFAFA' },
+  panelBtnText: { ...font.smBold, fontWeight: '600', color: '#fff' },
+  fieldLabel: { ...font.smBold, color: '#404040', marginBottom: 6 },
+  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.md, color: '#171717', backgroundColor: '#FAFAFA' },
   toggleChip: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12, paddingHorizontal: 12, borderRadius: 8, backgroundColor: '#F5F5F5' },
   separator: { width: 1, backgroundColor: '#F0F0F0' },
 });

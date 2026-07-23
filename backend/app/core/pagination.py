@@ -26,7 +26,7 @@ class PageParams:
     def __init__(
         self,
         page: int = Query(1, ge=1, description="Page number (1-indexed)"),
-        page_size: int = Query(20, ge=1, le=100, description="Items per page (max 100)"),
+        page_size: int = Query(20, ge=1, le=500, description="Items per page (max 500)"),
     ):
         self.page = page
         self.page_size = page_size
@@ -45,7 +45,7 @@ async def paginate(
     query: Select,
     page: int = 1,
     page_size: int = 20,
-    max_page_size: int = 100,
+    max_page_size: int = 500,
 ) -> dict:
     """Paginate a SQLAlchemy select query.
 

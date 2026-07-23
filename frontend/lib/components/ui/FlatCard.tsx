@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, ViewProps, StyleSheet } from 'react-native';
 import { colors } from '../../theme';
+import { shape } from '../../theme/shape';
 
 interface FlatCardProps extends ViewProps {
   children: React.ReactNode;
@@ -28,10 +29,10 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: colors.border.default,
-    padding: 6,
+    padding: shape.spacing.sm,
     // Strictly no radius and no shadow for Flat Design
     borderRadius: 0,
-    boxShadow: 'none',
+    shadowOpacity: 0,
     elevation: 0,
   },
   edgeToEdge: {

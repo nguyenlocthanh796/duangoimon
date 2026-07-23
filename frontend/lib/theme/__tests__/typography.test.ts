@@ -46,33 +46,33 @@ test('typography font definitions have correct weights and font families', () =>
   assert.strictEqual(font.h4.fontSize, scale(15));
 
   // Check bodies
-  assert.strictEqual(font.body.fontFamily, 'BeVietnamPro_500Medium');
-  assert.strictEqual(font.body.fontWeight, '500');
+  assert.strictEqual(font.md.fontFamily, 'BeVietnamPro_500Medium');
+  assert.strictEqual(font.md.fontWeight, '500');
 
-  assert.strictEqual(font.bodyBold.fontFamily, 'BeVietnamPro_600SemiBold');
-  assert.strictEqual(font.bodyBold.fontWeight, '600');
+  assert.strictEqual(font.mdBold.fontFamily, 'BeVietnamPro_600SemiBold');
+  assert.strictEqual(font.mdBold.fontWeight, '600');
 
   // Check prices
-  assert.strictEqual(font.price.fontFamily, 'BeVietnamPro_600SemiBold');
-  assert.strictEqual(font.price.fontWeight, '600');
+  assert.strictEqual(font.mdBold.fontFamily, 'BeVietnamPro_600SemiBold');
+  assert.strictEqual(font.mdBold.fontWeight, '600');
 
-  assert.strictEqual(font.priceLarge.fontFamily, 'BeVietnamPro_700Bold');
-  assert.strictEqual(font.priceLarge.fontWeight, '700');
+  assert.strictEqual(font.mdBoldLarge.fontFamily, 'BeVietnamPro_700Bold');
+  assert.strictEqual(font.mdBoldLarge.fontWeight, '700');
 
   // Check buttons
-  assert.strictEqual(font.button.fontFamily, 'BeVietnamPro_600SemiBold');
-  assert.strictEqual(font.button.fontWeight, '600');
+  assert.strictEqual(font.mdBold.fontFamily, 'BeVietnamPro_600SemiBold');
+  assert.strictEqual(font.mdBold.fontWeight, '600');
 
-  assert.strictEqual(font.buttonSmall.fontFamily, 'BeVietnamPro_600SemiBold');
-  assert.strictEqual(font.buttonSmall.fontWeight, '600');
+  assert.strictEqual(font.smBold.fontFamily, 'BeVietnamPro_600SemiBold');
+  assert.strictEqual(font.smBold.fontWeight, '600');
 
   // Check labels, tabs, badges
-  assert.strictEqual(font.label.fontFamily, 'BeVietnamPro_500Medium');
-  assert.strictEqual(font.label.fontWeight, '500');
+  assert.strictEqual(font.smBold.fontFamily, 'BeVietnamPro_500Medium');
+  assert.strictEqual(font.smBold.fontWeight, '500');
 
   assert.strictEqual(font.tab.fontFamily, 'BeVietnamPro_600SemiBold');
   assert.strictEqual(font.tab.fontWeight, '600');
 
-  assert.strictEqual(font.badge.fontFamily, 'BeVietnamPro_500Medium');
-  assert.strictEqual(font.badge.fontWeight, '500');
+  assert.strictEqual(font.smBold.fontFamily, 'BeVietnamPro_500Medium');
+  assert.strictEqual(font.smBold.fontWeight, '500');
 });

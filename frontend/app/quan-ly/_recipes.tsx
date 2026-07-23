@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSidebar } from '../../lib/context/SidebarContext';
-import { colors, font } from '../../lib/theme';
+import { colors, font, formatVND } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import { useResponsive, calcGridCols } from '../../lib/hooks/useResponsive';
 import { request } from '../../lib/api/client';
@@ -16,7 +16,7 @@ import RecipeForm from '../../lib/components/recipes/RecipeForm';
 
 const API = '/api/v1/quan-ly';
 
-function formatVND(v: number) { return v.toLocaleString('vi-VN') + 'đ'; }
+
 
 function foodCostColor(pct: number) {
   if (pct < 30) return { bg: '#F3F4F6', text: '#16A34A' };
@@ -170,7 +170,7 @@ export default function RecipesScreen() {
 
         {profit !== null && (
           <View style={s.profitRow}>
-            <Text style={{ ...font.micro, fontWeight: '600', color: profit >= 0 ? '#16A34A' : '#DC2626' }}>
+            <Text style={{ ...font.sm, fontWeight: '600', color: profit >= 0 ? '#16A34A' : '#DC2626' }}>
               LN: {formatVND(profit)} ({profitPct}%)
             </Text>
           </View>
@@ -212,19 +212,19 @@ export default function RecipesScreen() {
           <DetailRow label="Sản phẩm" value={selectedRecipe.product_name || '—'} />
           <DetailRow label="Giá bán" value={selectedRecipe.product_price ? formatVND(selectedRecipe.product_price) : '—'} />
           <DetailRow label="Giá vốn" value={formatVND(selectedRecipe.cost_price)} />
-          <DetailRow label="Food cost" value={<Text style={{ ...font.caption, fontWeight: '600', color: cc.text }}>{pct}%</Text>} />
-          {profit !== null && <DetailRow label="Lợi nhuận" value={<Text style={{ ...font.caption, fontWeight: '600', color: profit >= 0 ? '#16A34A' : '#DC2626' }}>{formatVND(profit)}</Text>} />}
+          <DetailRow label="Food cost" value={<Text style={{ ...font.sm, fontWeight: '600', color: cc.text }}>{pct}%</Text>} />
+          {profit !== null && <DetailRow label="Lợi nhuận" value={<Text style={{ ...font.sm, fontWeight: '600', color: profit >= 0 ? '#16A34A' : '#DC2626' }}>{formatVND(profit)}</Text>} />}
           <DetailRow label="Số NL" value={`${selectedRecipe.ingredient_count || 0} nguyên liệu`} />
         </View>
 
         {/* Ingredients */}
         {selectedRecipe.items?.length > 0 && (
           <View style={{ borderTopWidth: 1, borderTopColor: '#F0F0F0', paddingTop: 8, marginTop: 4 }}>
-            <Text style={{ ...font.label, color: '#404040', marginBottom: 4 }}>Nguyên liệu</Text>
+            <Text style={{ ...font.smBold, color: '#404040', marginBottom: 4 }}>Nguyên liệu</Text>
             {selectedRecipe.items.map((it: any, i: number) => (
               <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 3 }}>
-                <Text style={{ ...font.caption, color: '#171717', flex: 1 }} numberOfLines={1}>{it.raw_material_name || it.raw_material_id?.slice(0, 8)}</Text>
-                <Text style={{ ...font.caption, color: '#737373' }}>{it.quantity} {it.unit} · {formatVND(it.cost)}</Text>
+                <Text style={{ ...font.sm, color: '#171717', flex: 1 }} numberOfLines={1}>{it.raw_material_name || it.raw_material_id?.slice(0, 8)}</Text>
+                <Text style={{ ...font.sm, color: '#737373' }}>{it.quantity} {it.unit} · {formatVND(it.cost)}</Text>
               </View>
             ))}
           </View>
@@ -234,15 +234,15 @@ export default function RecipesScreen() {
         <View style={{ flexDirection: 'row', gap: 16, marginTop: 8 }}>
           <TouchableOpacity onPress={() => handleEdit(selectedRecipe)} style={[s.panelBtn, { backgroundColor: '#F97316' }]}>
             <Icon name="pencil-outline" size={14} color="#fff" />
-            <Text style={{ ...font.caption, color: '#fff', fontWeight: '600' }}>Sửa</Text>
+            <Text style={{ ...font.sm, color: '#fff', fontWeight: '600' }}>Sửa</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleClone(selectedRecipe)} style={[s.panelBtn, { backgroundColor: '#F5F5F5' }]}>
             <Icon name="content-copy" size={14} color={'#171717'} />
-            <Text style={{ ...font.caption, color: '#171717', fontWeight: '600' }}>Nhân bản</Text>
+            <Text style={{ ...font.sm, color: '#171717', fontWeight: '600' }}>Nhân bản</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => deleteRecipe(selectedRecipe.id || selectedRecipe.product_id)} style={[s.panelBtn, { backgroundColor: '#FEE2E2' }]}>
             <Icon name="delete-outline" size={14} color={'#DC2626'} />
-            <Text style={{ ...font.caption, color: '#DC2626', fontWeight: '600' }}>Xoá</Text>
+            <Text style={{ ...font.sm, color: '#DC2626', fontWeight: '600' }}>Xoá</Text>
           </TouchableOpacity>
         </View>
 
@@ -250,20 +250,20 @@ export default function RecipesScreen() {
         <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8 }}
           onPress={() => { setVersionsOpen(!versionsOpen); if (!versionsOpen) fetchVersions(selectedRecipe.id || selectedRecipe.product_id); }}>
           <Icon name="history" size={16} color={'#737373'} />
-          <Text style={{ ...font.label, color: '#404040', flex: 1 }}>Lịch sử</Text>
+          <Text style={{ ...font.smBold, color: '#404040', flex: 1 }}>Lịch sử</Text>
           <Icon name={versionsOpen ? 'chevron-up' : 'chevron-down'} size={16} color={'#737373'} />
         </TouchableOpacity>
         {versionsOpen && (
           versions.length > 0 ? versions.map((v: any) => (
             <View key={v.id} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 3 }}>
-              <Text style={{ ...font.caption, fontWeight: '600', color: '#171717' }}>v{v.version_number}</Text>
-              <Text style={{ ...font.caption, color: '#737373' }}>{formatVND(v.cost_price)}</Text>
-              <Text style={{ ...font.micro, color: '#737373' }}>
+              <Text style={{ ...font.sm, fontWeight: '600', color: '#171717' }}>v{v.version_number}</Text>
+              <Text style={{ ...font.sm, color: '#737373' }}>{formatVND(v.cost_price)}</Text>
+              <Text style={{ ...font.sm, color: '#737373' }}>
                 {v.created_at ? new Date(v.created_at).toLocaleDateString('vi-VN') : ''}
               </Text>
             </View>
           )) : (
-            <Text style={{ ...font.caption, color: '#737373', fontStyle: 'italic' }}>Chưa có lịch sử</Text>
+            <Text style={{ ...font.sm, color: '#737373', fontStyle: 'italic' }}>Chưa có lịch sử</Text>
           )
         )}
       </View>
@@ -278,7 +278,7 @@ export default function RecipesScreen() {
         <Icon name="magnify" size={16} color={'#737373'} />
         <TextInput value={search} onChangeText={setSearch} placeholder="Tìm công thức..."
           placeholderTextColor={'#737373'}
-          style={{ flex: 1, ...font.caption, color: '#171717', paddingVertical: 0 }} />
+          style={{ flex: 1, ...font.sm, color: '#171717', paddingVertical: 0 }} />
         {search !== '' && (
           <TouchableOpacity onPress={() => setSearch('')}><Icon name="close-circle" size={16} color={'#737373'} /></TouchableOpacity>
         )}
@@ -288,7 +288,7 @@ export default function RecipesScreen() {
       {!isWide && (
         <TouchableOpacity onPress={() => setShowFilters(!showFilters)} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8}}>
           <Icon name="filter-variant" size={16} color={'#737373'} />
-          <Text style={{ ...font.micro, color: '#737373' }}>
+          <Text style={{ ...font.sm, color: '#737373' }}>
             {showFilters ? 'Ẩn filter' : `Filter/Sort`}
           </Text>
         </TouchableOpacity>
@@ -329,7 +329,7 @@ export default function RecipesScreen() {
       ListEmptyComponent={
         <View style={{ alignItems: 'center', padding: 40, gap: 12}}>
           <Icon name="food-off" size={48} color={'#737373'} />
-          <Text style={{ ...font.body, color: '#737373' }}>Không có công thức</Text>
+          <Text style={{ ...font.md, color: '#737373' }}>Không có công thức</Text>
         </View>
       }
     />
@@ -377,7 +377,7 @@ export default function RecipesScreen() {
             {selectedRecipe ? renderDetailPanel() : (
               <View style={{ alignItems: 'center', padding: 40, gap: 16}}>
                 <Icon name="hand-pointing-up" size={36} color={'#737373'} />
-                <Text style={{ ...font.body, color: '#737373' }}>Chọn công thức để xem chi tiết</Text>
+                <Text style={{ ...font.md, color: '#737373' }}>Chọn công thức để xem chi tiết</Text>
               </View>
             )}
           </View>
@@ -406,8 +406,8 @@ function StatItem({ icon, label, value }: { icon: string; label: string; value: 
     <View style={{ flex: 1, alignItems: 'center', flexDirection: 'row', gap: 12, justifyContent: 'center' }}>
       <Icon name={icon as any} size={16} color={'#F97316'} />
       <View>
-        <Text style={{ ...font.bodyBold, fontWeight: '600', color: '#171717', lineHeight: 18 }}>{value}</Text>
-        <Text style={{ ...font.micro, color: '#737373', lineHeight: 12 }}>{label}</Text>
+        <Text style={{ ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 }}>{value}</Text>
+        <Text style={{ ...font.sm, color: '#737373', lineHeight: 12 }}>{label}</Text>
       </View>
     </View>
   );
@@ -416,9 +416,9 @@ function StatItem({ icon, label, value }: { icon: string; label: string; value: 
 function DetailRow({ label, value }: { label: string; value: string | number | React.ReactNode }) {
   return (
     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-      <Text style={{ ...font.caption, color: '#404040' }}>{label}</Text>
+      <Text style={{ ...font.sm, color: '#404040' }}>{label}</Text>
       {typeof value === 'string' || typeof value === 'number'
-        ? <Text style={{ ...font.caption, fontWeight: '600', color: '#171717' }}>{value}</Text>
+        ? <Text style={{ ...font.sm, fontWeight: '600', color: '#171717' }}>{value}</Text>
         : value}
     </View>
   );
@@ -428,12 +428,12 @@ function DetailRow({ label, value }: { label: string; value: string | number | R
 const s = StyleSheet.create({
   card: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#F0F0F0' },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 2 },
-  cardName: { ...font.bodySmall, fontWeight: '600', color: '#171717', flex: 1 },
-  cardProduct: { ...font.micro, color: '#737373', marginTop: 1 },
+  cardName: { ...font.sm, fontWeight: '600', color: '#171717', flex: 1 },
+  cardProduct: { ...font.sm, color: '#737373', marginTop: 1 },
   badge: { paddingHorizontal: 16, paddingVertical: 3, borderRadius: 999},
-  badgeText: { ...font.micro, fontWeight: '600' },
+  badgeText: { ...font.sm, fontWeight: '600' },
   cardStats: { flexDirection: 'row', gap: 32, paddingTop: 6, marginTop: 4 },
-  cardStat: { ...font.micro, color: '#737373', fontWeight: '500' },
+  cardStat: { ...font.sm, color: '#737373', fontWeight: '500' },
   profitRow: { marginTop: 2 },
 
   // Action capsule — always visible
@@ -442,7 +442,7 @@ const s = StyleSheet.create({
   actionDot: { width: 3, height: 3, borderRadius: 1.5, backgroundColor: '#E5E5E5' },
 
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, height: 38, borderRadius: 8, backgroundColor: '#F97316' },
-  addBtnText: { ...font.buttonSmall, fontWeight: '600', color: '#fff' },
+  addBtnText: { ...font.smBold, fontWeight: '600', color: '#fff' },
   headerBtn: { width: 36, height: 36, borderRadius: 8, backgroundColor: '#F5F5F5', alignItems: 'center', justifyContent: 'center' },
 
   // Stats bar
@@ -454,13 +454,13 @@ const s = StyleSheet.create({
   searchBox: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#FFFFFF', borderRadius: 8, paddingHorizontal: 32, height: 36, borderWidth: 1, borderColor: '#F0F0F0' },
   chip: { paddingHorizontal: 32, paddingVertical: 5, borderRadius: 999, backgroundColor: '#F5F5F5' },
   chipActive: { backgroundColor: '#F97316' },
-  chipText: { ...font.micro, fontWeight: '600', color: '#737373' },
+  chipText: { ...font.sm, fontWeight: '600', color: '#737373' },
   chipTextActive: { color: colors.text.inverse },
 
   // Right panel (iPad)
   panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: '#F0F0F0', gap: 16},
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelHeaderText: { ...font.body, fontWeight: '600', color: '#171717', flex: 1 },
+  panelHeaderText: { ...font.md, fontWeight: '600', color: '#171717', flex: 1 },
   panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12, paddingHorizontal: 12, borderRadius: 8},
 
   separator: { width: 1, backgroundColor: '#F0F0F0' },

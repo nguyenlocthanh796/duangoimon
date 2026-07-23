@@ -3,42 +3,39 @@ import { Text, TextProps } from 'react-native';
 import { font, colors } from '../../theme';
 
 interface AppTextProps extends TextProps {
-  variant?: 'small' | 'base' | 'medium' | 'large';
+  variant?: 'sm' | 'md' | 'lg';
   weight?: 'normal' | 'bold';
   color?: string;
   children: React.ReactNode;
 }
 
 /**
- * AppText ensures typography strictly adheres to the 4-tier minimal scale.
- * NEVER hardcode fontSize in the app. Use variant instead.
- * 
- * - small: 12px (caption, micro, badge, tableHeader)
- * - base: 14px (bodySmall, tableCell)
- * - medium: 16px (body, button)
- * - large: 20px (sectionTitle, pageTitle, statNumber)
+ * AppText — 3-size typography system.
+ *
+ *   sm = 13pt (iPad 16) — labels, badges, timestamps, ghi chú
+ *   md = 16pt (iPad 20) — body, buttons, product names, cart items
+ *   lg = 24pt (iPad 30) — totals, stat numbers, page titles
+ *
+ * Triết lý: nhấn mạnh bằng MÀU + NỀN. Không hardcode fontSize.
  */
 export default function AppText({
-  variant = 'base',
+  variant = 'md',
   weight = 'normal',
   color = colors.text.primary,
   style,
   children,
   ...props
 }: AppTextProps) {
-  
   const getFontToken = () => {
     switch (variant) {
-      case 'small':
-        return weight === 'bold' ? font.badge : font.caption;
-      case 'base':
-        return weight === 'bold' ? font.tableCellBold : font.bodySmall;
-      case 'medium':
-        return weight === 'bold' ? font.bodyBold : font.body;
-      case 'large':
-        return font.sectionTitle; // Large is usually bold by default
+      case 'sm':
+        return weight === 'bold' ? font.smBold : font.sm;
+      case 'md':
+        return weight === 'bold' ? font.mdBold : font.md;
+      case 'lg':
+        return font.lg;
       default:
-        return font.bodySmall;
+        return font.md;
     }
   };
 

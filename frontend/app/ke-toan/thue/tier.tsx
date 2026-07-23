@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api } from '../../../lib/api';
-import { colors } from '../../../lib/theme';
+import { colors, formatVND } from '../../../lib/theme';
 import AppText from '../../../lib/components/ui/AppText';
 import { useSidebar } from '../../../lib/context/SidebarContext';
 import { useRouter } from 'expo-router';
@@ -51,7 +51,7 @@ const METHOD_LABEL: Record<string, string> = {
   ke_khai: 'Kê khai theo thực tế',
 };
 
-const formatVND = (n: number) => n.toLocaleString('vi-VN') + '₫';
+
 
 export default function TierDashboard() {
   const { openSidebar } = useSidebar();
@@ -146,16 +146,16 @@ export default function TierDashboard() {
                 <Icon name="chart-bell-curve" size={24} color="#fff" />
               </View>
               <View style={{ flex: 1 }}>
-                <AppText variant="large" weight="bold" color={meta!.color}>{meta!.label}</AppText>
-                <AppText variant="base" color={colors.text.muted}>{meta!.method}</AppText>
+                <AppText variant="lg" weight="bold" color={meta!.color}>{meta!.label}</AppText>
+                <AppText variant="md" color={colors.text.muted}>{meta!.method}</AppText>
               </View>
             </View>
           </SectionBlock>
 
           {/* Accumulated vs 1 tỷ */}
           <SectionBlock style={{ marginBottom: 12 }}>
-            <AppText variant="medium" weight="bold">Doanh thu lũy kế năm</AppText>
-            <AppText variant="large" weight="bold" color={SEVERITY_COLOR[severity]} style={{ marginVertical: 8 }}>
+            <AppText variant="md" weight="bold">Doanh thu lũy kế năm</AppText>
+            <AppText variant="lg" weight="bold" color={SEVERITY_COLOR[severity]} style={{ marginVertical: 8 }}>
               {formatVND(status.revenue_ytd)}
             </AppText>
             <View style={styles.barTrack}>
@@ -168,13 +168,13 @@ export default function TierDashboard() {
               <View style={styles.barMarker} />
             </View>
             <View style={styles.barLegend}>
-              <AppText variant="small" color={colors.text.muted}>0</AppText>
-              <AppText variant="small" color={colors.status.danger}>
+              <AppText variant="sm" color={colors.text.muted}>0</AppText>
+              <AppText variant="sm" color={colors.status.danger}>
                 Ngưỡng 1 tỷ
               </AppText>
             </View>
             <View style={[styles.sevBadge, { backgroundColor: SEVERITY_COLOR[severity] }]}>
-              <AppText variant="base" weight="bold" color="#fff">
+              <AppText variant="md" weight="bold" color="#fff">
                 {pct.toFixed(1)}% · {SEVERITY_LABEL[severity]}
               </AppText>
             </View>
@@ -182,8 +182,8 @@ export default function TierDashboard() {
 
           {/* Method switch */}
           <SectionBlock style={{ marginBottom: 12 }}>
-            <AppText variant="medium" weight="bold">Phương pháp tính thuế</AppText>
-            <AppText variant="medium" weight="bold" style={{ marginVertical: 8 }}>
+            <AppText variant="md" weight="bold">Phương pháp tính thuế</AppText>
+            <AppText variant="md" weight="bold" style={{ marginVertical: 8 }}>
               {METHOD_LABEL[status.tax_method] || status.tax_method}
             </AppText>
             <TouchableOpacity
@@ -193,7 +193,7 @@ export default function TierDashboard() {
               activeOpacity={0.85}
             >
               <Icon name="swap-horizontal" size={18} color="#fff" />
-              <AppText variant="medium" weight="bold" color="#fff">
+              <AppText variant="md" weight="bold" color="#fff">
                 {patching ? 'Đang cập nhật...' : 'Chuyển đổi phương pháp'}
               </AppText>
             </TouchableOpacity>
@@ -204,7 +204,7 @@ export default function TierDashboard() {
             <SectionBlock style={{ backgroundColor: '#FEF2F2', borderColor: '#FECACA', marginBottom: 12 }}>
               <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12 }}>
                 <Icon name="alert-circle" size={24} color={SEVERITY_COLOR[severity]} />
-                <AppText variant="base" color={SEVERITY_COLOR[severity]} style={{ flex: 1, lineHeight: 22 }}>
+                <AppText variant="md" color={SEVERITY_COLOR[severity]} style={{ flex: 1, lineHeight: 22 }}>
                   Doanh thu đã vượt 80% ngưỡng 1 tỷ. Cảnh báo chuyển đổi đã{' '}
                   {status.threshold_alert_sent ? 'được gửi' : 'CHƯA gửi'}.
                 </AppText>
@@ -215,12 +215,12 @@ export default function TierDashboard() {
           {/* KV Info */}
           <ResponsiveGrid mobileCols={2} gap={16}>
             <SectionBlock>
-              <AppText variant="small" color={colors.text.muted}>MST</AppText>
-              <AppText variant="base" weight="bold" style={{ marginTop: 4 }}>{status.tax_code}</AppText>
+              <AppText variant="sm" color={colors.text.muted}>MST</AppText>
+              <AppText variant="md" weight="bold" style={{ marginTop: 4 }}>{status.tax_code}</AppText>
             </SectionBlock>
             <SectionBlock>
-              <AppText variant="small" color={colors.text.muted}>Tên HKD</AppText>
-              <AppText variant="base" weight="bold" style={{ marginTop: 4 }}>{status.legal_name}</AppText>
+              <AppText variant="sm" color={colors.text.muted}>Tên HKD</AppText>
+              <AppText variant="md" weight="bold" style={{ marginTop: 4 }}>{status.legal_name}</AppText>
             </SectionBlock>
           </ResponsiveGrid>
         </ScrollView>

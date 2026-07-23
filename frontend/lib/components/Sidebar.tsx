@@ -80,8 +80,8 @@ function LogoHeader({ collapsed, onToggle }: { collapsed: boolean; onToggle?: ()
             />
           </View>
           <View>
-            <Text style={{ ...font.sectionTitle, color: colors.text.primary }}>OngChu POS</Text>
-            <Text style={{ ...font.micro, color: colors.text.muted, marginTop: 1 }}>Hệ thống quản lý F&B</Text>
+            <Text style={{ ...font.lg, color: colors.text.primary }}>OngChu POS</Text>
+            <Text style={{ ...font.sm, color: colors.text.muted, marginTop: 1 }}>Hệ thống quản lý F&B</Text>
           </View>
         </View>
       )}
@@ -112,7 +112,7 @@ function NavItems({
           {group.label && !collapsed && (
             <Text
               style={{
-                ...font.badge,
+                ...font.smBold,
                 color: colors.text.muted,
                 textTransform: 'uppercase',
                 letterSpacing: 1.2,
@@ -133,7 +133,7 @@ function NavItems({
                   {!collapsed && (
                     <Text
                       style={{
-                        ...font.label,
+                        ...font.smBold,
                         color: colors.text.muted,
                         paddingHorizontal: 14,
                         paddingVertical: 4,
@@ -259,7 +259,7 @@ function NavItemRow({
       <View style={{ flex: 1 }}>
         <Text
           style={{
-            ...font.body,
+            ...font.md,
             color: active ? colors.brand.primary : colors.text.primary,
           }}
         >
@@ -268,7 +268,7 @@ function NavItemRow({
         {item.description && (
           <Text
             style={{
-              ...font.caption,
+              ...font.sm,
               color: active ? colors.brand.primary : colors.text.muted,
               marginTop: 1,
             }}
@@ -335,7 +335,7 @@ function LogoutButton({ collapsed, onClose }: { collapsed: boolean; onClose: (()
           <Icon name="logout" size={18} color={colors.text.danger} />
         </View>
         {!collapsed && (
-          <Text style={{ ...font.button, color: colors.text.danger }}>Đăng xuất</Text>
+          <Text style={{ ...font.mdBold, color: colors.text.danger }}>Đăng xuất</Text>
         )}
       </TouchableOpacity>
     </View>

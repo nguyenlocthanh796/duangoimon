@@ -3,6 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors } from '../../theme/colors';
 import { font } from '../../theme/typography';
+import { shape } from '../../theme/shape';
 
 interface PaymentSuccessScreenProps {
   tableName: string;
@@ -16,68 +17,145 @@ interface PaymentSuccessScreenProps {
 }
 
 export default function PaymentSuccessScreen({
+  tableName,
+  total,
+  method,
+  cash,
+  change,
   countdown,
+  onPrint,
   onGoBack,
 }: PaymentSuccessScreenProps) {
+  const methodLabels: Record<string, string> = {
+    tien_mat: 'Tiền mặt',
+    card: 'Quẹt thẻ',
+    qr: 'QR Code',
+    chuyen_khoan: 'Chuyển khoản',
+  };
+
   return (
     <SafeAreaView
       style={{
         flex: 1,
-        backgroundColor: colors.surface.app,
-        alignItems: 'center',
-        justifyContent: 'center',
+        backgroundColor: 'rgba(0,0,0,0.4)',
+        justifyContent: 'flex-end',
       }}
     >
-      <View style={{ alignItems: 'center', paddingHorizontal: 32, gap: 12 }}>
-        <View
-          style={{
-            width: 72,
-            height: 72,
-            borderRadius: 36,
-            backgroundColor: '#DCFCE7',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Icon name="check-circle" size={40} color="#16A34A" />
+      {/* Overlay dismiss */}
+      <TouchableOpacity
+        style={{ flex: 1 }}
+        activeOpacity={1}
+        onPress={onGoBack}
+      />
+
+      {/* Bottom sheet */}
+      <View
+        style={{
+          backgroundColor: colors.surface.card,
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          paddingHorizontal: 24,
+          paddingVertical: 24,
+          gap: 16,
+        }}
+      >
+        {/* Success icon + title */}
+        <View style={{ alignItems: 'center', gap: 8 }}>
+          <View
+            style={{
+              width: 56,
+              height: 56,
+              borderRadius: 28,
+              backgroundColor: '#DCFCE7',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Icon name="check-circle" size={32} color="#16A34A" />
+          </View>
+          <Text
+            style={{
+              ...font.lg,
+              color: colors.text.primary,
+              textAlign: 'center',
+            }}
+          >
+            ✅ Thanh toán thành công
+          </Text>
+          <Text
+            style={{
+              ...font.sm,
+              color: colors.text.muted,
+              textAlign: 'center',
+            }}
+          >
+            {tableName} · {total.toLocaleString('vi-VN')}đ · {methodLabels[method] || method}
+          </Text>
         </View>
+
+        {/* Action buttons */}
+        <View style={{ flexDirection: 'row', gap: 12 }}>
+          <TouchableOpacity
+            onPress={onPrint}
+            style={{
+              flex: 1,
+              height: 48,
+              borderRadius: shape.radius.md,
+              borderWidth: 1.5,
+              borderColor: colors.brand.primary,
+              backgroundColor: colors.surface.card,
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexDirection: 'row',
+              gap: 6,
+            }}
+          >
+            <Icon name="printer" size={20} color={colors.brand.primary} />
+            <Text
+              style={{
+                ...font.mdBold,
+                color: colors.brand.primary,
+                fontWeight: '600',
+              }}
+            >
+              In hóa đơn
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={onGoBack}
+            style={{
+              flex: 1,
+              height: 48,
+              borderRadius: shape.radius.md,
+              backgroundColor: colors.brand.primary,
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexDirection: 'row',
+              gap: 6,
+            }}
+          >
+            <Text
+              style={{
+                ...font.mdBold,
+                color: colors.text.inverse,
+                fontWeight: '600',
+              }}
+            >
+              Đóng
+            </Text>
+          </TouchableOpacity>
+        </View>
+
         <Text
           style={{
-            ...font.sectionTitle,
-            color: colors.text.primary,
+            ...font.sm,
+            color: colors.text.placeholder,
             textAlign: 'center',
           }}
         >
-          Thanh toán thành công!
+          Tự đóng sau {countdown}s
         </Text>
-        <Text
-          style={{
-            ...font.bodySmall,
-            color: colors.text.muted,
-            textAlign: 'center',
-          }}
-        >
-          Tự động quay về sau{' '}
-          <Text style={{ fontWeight: '600', color: colors.brand.primary }}>
-            {countdown} giây
-          </Text>
-        </Text>
-        <TouchableOpacity
-          onPress={onGoBack}
-          style={{
-            marginTop: 16,
-            paddingHorizontal: 24,
-            paddingVertical: 12,
-            borderRadius: 8,
-            backgroundColor: colors.surface.card,
-            borderWidth: 1,
-            borderColor: colors.border.default,
-          }}
-        >
-          <Text style={{ ...font.caption, color: colors.text.secondary }}>
-            Về sơ đồ bàn
-          </Text>
-        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

@@ -233,35 +233,6 @@ export const allMenuItems: Record<string, SidebarItem> = {
     description: '01/BK-HTK',
     isActive: (segs) => segs[0] === 'ke-toan' && segs[1] === 'thue' && segs[2] === 'legacy',
   },
-  // ─── Orphan routes (only in NavigationGrid on dashboard) ──
-  quanLyMenu: {
-    path: '/quan-ly/menu',
-    icon: 'silverware',
-    label: 'Thực Đơn',
-    description: 'Quản lý món ăn & sản phẩm',
-    isActive: (segs) => segs[0] === 'quan-ly' && segs[1] === 'menu' && !segs[2],
-  },
-  quanLyUsers: {
-    path: '/quan-ly/users',
-    icon: 'account-cog',
-    label: 'Nhân Viên',
-    description: 'Quản lý tài khoản & phân quyền',
-    isActive: (segs) => segs[0] === 'quan-ly' && segs[1] === 'users',
-  },
-  quanLyTables: {
-    path: '/quan-ly/tables',
-    icon: 'table-furniture',
-    label: 'Bàn',
-    description: 'Quản lý sơ đồ bàn',
-    isActive: (segs) => segs[0] === 'quan-ly' && segs[1] === 'tables',
-  },
-  quanLyReports: {
-    path: '/quan-ly/reports',
-    icon: 'file-chart',
-    label: 'Báo Cáo',
-    description: 'Báo cáo tổng hợp',
-    isActive: (segs) => segs[0] === 'quan-ly' && segs[1] === 'reports',
-  },
 };
 
 export type ActiveModule = 'ban-hang' | 'quan-ly' | 'ke-toan';

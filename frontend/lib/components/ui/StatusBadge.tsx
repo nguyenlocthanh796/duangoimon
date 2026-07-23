@@ -1,39 +1,44 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { colors, font } from '../../theme';
+import { shape } from '../../theme/shape';
 
-export type BadgeSeverity = 'success' | 'warning' | 'danger' | 'info' | 'neutral';
+export type BadgeSeverity = 'success' | 'warning' | 'danger' | 'info' | 'neutral' | 'critical' | 'muted';
 
-interface StatusBadgeProps {
+export interface StatusBadgeProps {
   label: string;
   severity?: BadgeSeverity;
   size?: 'sm' | 'md';
+  /** pill shape (rounded) vs flat — default flat */
+  pill?: boolean;
 }
 
 const SEVERITY_MAP: Record<BadgeSeverity, { bg: string; text: string }> = {
-  success: { bg: '#E8F5E9', text: '#2E7D32' },
-  warning: { bg: '#FFF8E1', text: '#F57F17' },
-  danger:  { bg: '#FFEBEE', text: '#C62828' },
-  info:    { bg: '#E3F2FD', text: '#1565C0' },
-  neutral: { bg: colors.surface.disabled, text: colors.text.muted },
+  success: { bg: colors.badge.success.bg, text: colors.badge.success.text },
+  warning: { bg: colors.badge.warning.bg, text: colors.badge.warning.text },
+  danger:  { bg: colors.badge.danger.bg, text: colors.badge.danger.text },
+  info:    { bg: colors.badge.info.bg, text: colors.badge.info.text },
+  neutral: { bg: colors.badge.neutral.bg, text: colors.badge.neutral.text },
+  critical: { bg: colors.badge.danger.bg, text: colors.badge.danger.text },
+  muted:   { bg: colors.badge.neutral.bg, text: colors.badge.neutral.text },
 };
 
-export default function StatusBadge({ label, severity = 'neutral', size = 'md' }: StatusBadgeProps) {
+export default function StatusBadge({ label, severity = 'neutral', size = 'md', pill = false }: StatusBadgeProps) {
   const palette = SEVERITY_MAP[severity];
   const isSmall = size === 'sm';
   return (
     <View
       style={{
-        paddingHorizontal: isSmall ? 4 : 6,
+        paddingHorizontal: isSmall ? shape.spacing.xs : shape.spacing.sm,
         paddingVertical: isSmall ? 2 : 3,
-        borderRadius: 4,
+        borderRadius: pill ? shape.radius.full : shape.radius.xs,
         backgroundColor: palette.bg,
         alignSelf: 'flex-start',
       }}
     >
       <Text
         style={{
-          ...(isSmall ? font.micro : font.badge),
+          ...(isSmall ? font.sm : font.smBold),
           fontWeight: '600',
           color: palette.text,
         }}

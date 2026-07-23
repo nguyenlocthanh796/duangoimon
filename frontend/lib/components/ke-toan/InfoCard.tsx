@@ -57,6 +57,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  title: { ...font.body, fontWeight: '600', color: colors.text.primary },
-  subtitle: { ...font.caption, color: colors.text.muted, marginTop: 2 },
+  title: { ...font.md, fontWeight: '600', color: colors.text.primary },
+  subtitle: { ...font.sm, color: colors.text.muted, marginTop: 2 },
 });

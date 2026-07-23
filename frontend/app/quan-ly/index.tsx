@@ -152,7 +152,7 @@ export default function QuanLyDashboard() {
                   style={[styles.pillBtn, { paddingHorizontal: 32, paddingVertical: 12, borderRadius: 99 }]}
                 >
                   <Icon name="point-of-sale" size={24} color="#FFF" />
-                  <Text style={[{ color: '#FFF' }, font.button, isWide && { fontSize: 18 } ]}>Bán hàng</Text>
+                  <Text style={[{ color: '#FFF' }, font.mdBold, isWide && { fontSize: 18 } ]}>Bán hàng</Text>
                 </LinearGradient>
               </TouchableOpacity>
             </View>
@@ -215,7 +215,7 @@ export default function QuanLyDashboard() {
                 style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 16, paddingVertical: 8, borderRadius: 99}}
               >
                 <Icon name="point-of-sale" size={20} color="#FFF" />
-                <Text style={[{ color: '#FFF' }, font.button ]}>Bán hàng</Text>
+                <Text style={[{ color: '#FFF' }, font.mdBold ]}>Bán hàng</Text>
               </LinearGradient>
             </TouchableOpacity>
           </View>
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12, paddingVertical: 32,
     borderRadius: 8,
   },
-  pillText: { color: '#FFFFFF', ...font.buttonSmall },
+  pillText: { color: '#FFFFFF', ...font.smBold },
   refreshBtn: {
     width: 44, height: 44, borderRadius: 8,
     backgroundColor: '#F97316',

@@ -282,19 +282,19 @@ export function StatChartCard({
     <View style={sccStyles.card}>
       <View style={sccStyles.top}>
         <View style={{ flex: 1 }}>
-          <AppText variant="small" style={sccStyles.title}>{title}</AppText>
-          <AppText variant="large" weight="bold" style={[sccStyles.value, { color }]} numberOfLines={1}>
+          <AppText variant="sm" style={sccStyles.title}>{title}</AppText>
+          <AppText variant="lg" weight="bold" style={[sccStyles.value, { color }]} numberOfLines={1}>
             {value}
           </AppText>
           {trend !== undefined && (
-            <AppText variant="small"
+            <AppText variant="sm"
               style={[
                 sccStyles.trend,
                 { color: isUp ? colors.status.success : colors.status.danger },
               ]}
             >
               {isUp ? '\u2191' : '\u2193'} {Math.abs(trend)}%{' '}
-              <AppText variant="small" style={sccStyles.trendLabel}>so v\u1edbi k\u1ef3 tr\u01b0\u1edbc</AppText>
+              <AppText variant="sm" style={sccStyles.trendLabel}>so v\u1edbi k\u1ef3 tr\u01b0\u1edbc</AppText>
             </AppText>
           )}
         </View>
@@ -310,7 +310,7 @@ export function StatChartCard({
           </View>
         )}
       </View>
-      {subtitle && <AppText variant="small" style={sccStyles.subtitle}>{subtitle}</AppText>}
+      {subtitle && <AppText variant="sm" style={sccStyles.subtitle}>{subtitle}</AppText>}
     </View>
   );
 }
@@ -325,12 +325,12 @@ const sccStyles = StyleSheet.create({
     borderColor: colors.border.light,
   },
   top: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
-  title: { ...font.caption, color: colors.text.muted, fontWeight: '500' },
-  value: { ...font.sectionTitle, fontWeight: '600', marginTop: 2 },
-  trend: { ...font.caption, fontWeight: '600', marginTop: 4 },
-  trendLabel: { ...font.caption, color: colors.text.muted, fontWeight: '400' },
+  title: { ...font.sm, color: colors.text.muted, fontWeight: '500' },
+  value: { ...font.lg, fontWeight: '600', marginTop: 2 },
+  trend: { ...font.sm, fontWeight: '600', marginTop: 4 },
+  trendLabel: { ...font.sm, color: colors.text.muted, fontWeight: '400' },
   chartWrap: { marginTop: 2 },
-  subtitle: { ...font.micro, color: colors.text.muted, marginTop: 4 },
+  subtitle: { ...font.sm, color: colors.text.muted, marginTop: 4 },
 });
 
 // ─── Quick Data Table ──────────────────────────────────────────────────────
@@ -356,7 +356,7 @@ export function QuickTable({ columns, data, maxRows = 5 }: QuickTableProps) {
       <View style={qtStyles.headerRow}>
         {columns.map((col) => (
           <View key={col.key} style={[qtStyles.headerCell, col.width != null ? { width: col.width } : undefined]}>
-            <AppText variant="small" weight="bold" style={qtStyles.headerText} numberOfLines={1}>
+            <AppText variant="sm" weight="bold" style={qtStyles.headerText} numberOfLines={1}>
               {col.label}
             </AppText>
           </View>
@@ -383,7 +383,7 @@ export function QuickTable({ columns, data, maxRows = 5 }: QuickTableProps) {
                 {col.render ? (
                   col.render(val, row)
                 ) : (
-                  <AppText variant="base" style={qtStyles.dataText} numberOfLines={1}>
+                  <AppText variant="md" style={qtStyles.dataText} numberOfLines={1}>
                     {val ?? '—'}
                   </AppText>
                 )}
@@ -394,7 +394,7 @@ export function QuickTable({ columns, data, maxRows = 5 }: QuickTableProps) {
       ))}
       {rows.length === 0 && (
         <View style={qtStyles.empty}>
-          <AppText variant="small" style={qtStyles.emptyText}>Chưa có dữ liệu</AppText>
+          <AppText variant="sm" style={qtStyles.emptyText}>Chưa có dữ liệu</AppText>
         </View>
       )}
     </View>
@@ -418,7 +418,7 @@ const qtStyles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   headerCell: { flex: 1 },
-  headerText: { ...font.tableHeader, color: colors.text.tableHeader },
+  headerText: { ...font.smBold, color: colors.text.tableHeader },
   dataRow: {
     flexDirection: 'row',
     paddingVertical: 10,
@@ -430,9 +430,9 @@ const qtStyles = StyleSheet.create({
   dataCell: { flex: 1, justifyContent: 'center' },
   dataCellRight: { alignItems: 'flex-end' },
   dataCellCenter: { alignItems: 'center' },
-  dataText: { ...font.tableCell, color: colors.text.primary },
+  dataText: { ...font.sm, color: colors.text.primary },
   empty: { padding: 24, alignItems: 'center' },
-  emptyText: { ...font.caption, color: colors.text.muted },
+  emptyText: { ...font.sm, color: colors.text.muted },
 });
 
 // ─── Summary Row (for table footer) ─────────────────────────────────────────
@@ -452,7 +452,7 @@ export function QuickTableSummary({
           const total = data.reduce((acc, row) => acc + (Number(row[col.key]) || 0), 0);
           return (
             <View key={col.key} style={[qtsStyles.cell, col.width != null ? { width: col.width } : undefined]}>
-              <AppText variant="base" weight="bold" style={qtsStyles.value} numberOfLines={1}>
+              <AppText variant="md" weight="bold" style={qtsStyles.value} numberOfLines={1}>
                 {Intl.NumberFormat('vi-VN').format(total)}
               </AppText>
             </View>
@@ -460,7 +460,7 @@ export function QuickTableSummary({
         }
         return (
           <View key={col.key} style={[qtsStyles.cell, col.width != null ? { width: col.width } : undefined]}>
-            <AppText variant="small" weight="bold" style={qtsStyles.label}>{col.key === 'label' ? 'Tổng' : ''}</AppText>
+            <AppText variant="sm" weight="bold" style={qtsStyles.label}>{col.key === 'label' ? 'Tổng' : ''}</AppText>
           </View>
         );
       })}
@@ -477,6 +477,6 @@ const qtsStyles = StyleSheet.create({
     borderTopColor: colors.border.strong,
   },
   cell: { flex: 1, justifyContent: 'center' },
-  label: { ...font.caption, color: colors.text.primary, fontWeight: '600' },
-  value: { ...font.tableCellBold, color: colors.text.primary, textAlign: 'right' },
+  label: { ...font.sm, color: colors.text.primary, fontWeight: '600' },
+  value: { ...font.smBold, color: colors.text.primary, textAlign: 'right' },
 });

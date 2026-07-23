@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font } from '../../theme';
+import { shape } from '../../theme/shape';
 import { NUMPAD_KEYS } from '../../hooks/usePayment';
 
 interface NumpadProps {
@@ -31,14 +32,14 @@ export default function Numpad({ method, onKey }: NumpadProps) {
             style={{
               width: '30%',
               height: 44,
-              borderRadius: 4,
+              borderRadius: shape.radius.md,
               alignItems: 'center',
               justifyContent: 'center',
               backgroundColor: isClear
                 ? colors.surface.danger
                 : isBack
                   ? colors.surface.disabled
-                  : colors.surface.app,
+                  : colors.surface.numpadKey,
               borderWidth: 1,
               borderColor: isClear ? colors.border.danger : colors.border.default,
             }}
@@ -48,7 +49,7 @@ export default function Numpad({ method, onKey }: NumpadProps) {
             ) : (
               <Text
                 style={{
-                  ...font.button,
+                  ...font.mdBold,
                   color: isClear ? colors.status.danger : colors.text.primary,
                 }}
               >

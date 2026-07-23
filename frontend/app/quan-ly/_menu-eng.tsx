@@ -9,7 +9,7 @@ import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api } from '../../lib/api';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
-import { colors, font } from '../../lib/theme';
+import { colors, font, formatVND } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
 import ScreenContainer from '../../lib/components/ui/ScreenContainer';
@@ -42,7 +42,7 @@ function getCatStyle(cat: string | null) {
   return CATEGORIES.find(c => c.key === cat) ?? CATEGORIES[4];
 }
 
-function formatVND(v: number) { return v.toLocaleString('en-US', { style: 'currency', currency: 'VND' }); }
+
 
 export default function MenuScreen() {
   const router = useRouter();
@@ -142,7 +142,7 @@ export default function MenuScreen() {
             style={{ flex: 1, minHeight: 44, borderRadius: 8, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#E5E5E5', alignItems: 'center', justifyContent: 'center' }}
             onPress={() => setShowForm(false)}
           >
-            <Text style={{ ...font.button, color: '#404040' }}>Cancel</Text>
+            <Text style={{ ...font.mdBold, color: '#404040' }}>Cancel</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={{ flex: 1.5, minHeight: 44, borderRadius: 8, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 12}}
@@ -150,7 +150,7 @@ export default function MenuScreen() {
             disabled={saving}
           >
             {saving && <ActivityIndicator size="small" color={colors.text.inverse} />}
-            <Text style={{ ...font.button, color: colors.text.inverse }}>{editingId ? 'Update' : 'Save'}</Text>
+            <Text style={{ ...font.mdBold, color: colors.text.inverse }}>{editingId ? 'Update' : 'Save'}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -256,22 +256,22 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FAFAFA' },
 
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, height: 44, borderRadius: 8, backgroundColor: '#F97316' },
-  addBtnText: { ...font.buttonSmall, fontWeight: '600', color: colors.text.inverse },
+  addBtnText: { ...font.smBold, fontWeight: '600', color: colors.text.inverse },
 
   /* Right panel */
   panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 32, boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelHeaderText: { ...font.body, fontWeight: '600', color: '#171717' },
+  panelHeaderText: { ...font.md, fontWeight: '600', color: '#171717' },
   panelStatRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 8},
-  panelStatLabel: { ...font.caption, color: '#737373' },
-  panelStatValue: { ...font.sectionTitle, fontWeight: '600', color: '#171717' },
+  panelStatLabel: { ...font.sm, color: '#737373' },
+  panelStatValue: { ...font.lg, fontWeight: '600', color: '#171717' },
   panelDivider: { height: 1, backgroundColor: '#F0F0F0', marginVertical: 4 },
   catRow: { flexDirection: 'row', alignItems: 'center', gap: 32, paddingVertical: 12, paddingHorizontal: 8, borderRadius: 8},
   catDot: { width: 8, height: 8, borderRadius: 12},
-  catLabel: { flex: 1, ...font.bodySmall, color: '#171717' },
-  catCount: { ...font.bodySmall, fontWeight: '600' },
+  catLabel: { flex: 1, ...font.sm, color: '#171717' },
+  catCount: { ...font.sm, fontWeight: '600' },
   panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16, backgroundColor: '#F97316', borderRadius: 8, paddingVertical: 12, minHeight: 44, marginTop: 4 },
-  panelCtaText: { ...font.button, color: colors.text.inverse },
+  panelCtaText: { ...font.mdBold, color: colors.text.inverse },
 
   /* Search */
   searchWrap: {
@@ -281,10 +281,10 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: '#F0F0F0',
     boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3,
   },
-  searchInput: { flex: 1, ...font.body, color: '#171717' },
+  searchInput: { flex: 1, ...font.md, color: '#171717' },
 
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 60, gap: 16},
-  loadingText: { ...font.bodySmall, color: '#404040' },
+  loadingText: { ...font.sm, color: '#404040' },
 
   /* Item card */
   item: {
@@ -295,12 +295,12 @@ const styles = StyleSheet.create({
     boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3,
   },
   codeTag: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 4},
-  codeText: { ...font.caption, fontWeight: '600' },
-  itemName: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
+  codeText: { ...font.sm, fontWeight: '600' },
+  itemName: { ...font.sm, fontWeight: '600', color: '#171717' },
   catBadge: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 7, paddingVertical: 3, borderRadius: 999},
-  catText: { ...font.micro, fontWeight: '600' },
-  metaText: { ...font.caption, color: '#404040' },
-  priceText: { ...font.price, color: '#F97316' },
+  catText: { ...font.sm, fontWeight: '600' },
+  metaText: { ...font.sm, color: '#404040' },
+  priceText: { ...font.mdBold, color: '#F97316' },
   activeDot: { width: 8, height: 8, borderRadius: 12},
   deleteBtn: { padding: 4 },
 

@@ -17,10 +17,11 @@ export default function ResponsiveGrid({
   children, 
   minColWidth = 180, 
   mobileCols = 2,
-  gap = 8, 
+  gap: gapOverride,
   style 
 }: ResponsiveGridProps) {
-  const { isWide, columns } = useResponsive();
+  const { isWide, columns, pad } = useResponsive();
+  const gap = gapOverride ?? pad.gap;
   
   // Tính số lượng cột
   const colCount = isWide ? columns(minColWidth) : mobileCols;

@@ -197,7 +197,7 @@ export default function SuppliersScreen() {
       <Icon name="magnify" size={16} color={'#737373'} />
       <TextInput value={search} onChangeText={setSearch} placeholder="Tìm NCC..."
         placeholderTextColor={'#737373'}
-        style={{ flex: 1, ...font.caption, color: '#171717', paddingVertical: 0 }} />
+        style={{ flex: 1, ...font.sm, color: '#171717', paddingVertical: 0 }} />
       {search !== '' && (
         <TouchableOpacity onPress={() => setSearch('')}><Icon name="close-circle" size={16} color={'#737373'} /></TouchableOpacity>
       )}
@@ -258,7 +258,7 @@ export default function SuppliersScreen() {
             {selected ? renderDetail() : (
               <View style={{ alignItems: 'center', padding: 40, gap: 16}}>
                 <Icon name="hand-pointing-up" size={36} color={'#737373'} />
-                <Text style={{ ...font.body, color: '#737373' }}>Chọn NCC để xem chi tiết</Text>
+                <Text style={{ ...font.md, color: '#737373' }}>Chọn NCC để xem chi tiết</Text>
               </View>
             )}
           </View>
@@ -315,8 +315,8 @@ function ContactRow({ icon, label, value, multiline }: { icon: string; label: st
     <View style={{ flexDirection: 'row', gap: 16, alignItems: multiline ? 'flex-start' : 'center' }}>
       <Icon name={icon as any} size={14} color={'#737373'} style={{ marginTop: 1 }} />
       <View style={{ flex: 1 }}>
-        <Text style={{ ...font.micro, color: '#737373' }}>{label}</Text>
-        <Text style={{ ...font.caption, color: '#171717' }}>{value}</Text>
+        <Text style={{ ...font.sm, color: '#737373' }}>{label}</Text>
+        <Text style={{ ...font.sm, color: '#171717' }}>{value}</Text>
       </View>
     </View>
   );
@@ -334,14 +334,14 @@ const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FAFAFA' },
 
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, height: 38, borderRadius: 8, backgroundColor: '#F97316' },
-  addBtnText: { ...font.buttonSmall, fontWeight: '600', color: '#fff' },
+  addBtnText: { ...font.smBold, fontWeight: '600', color: '#fff' },
   headerBtn: { width: 36, height: 36, borderRadius: 8, backgroundColor: '#F5F5F5', alignItems: 'center', justifyContent: 'center' },
 
   // Stats bar
   statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
   barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
-  statValue: { ...font.bodyBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
-  statLabel: { ...font.micro, color: '#737373', lineHeight: 12 },
+  statValue: { ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
+  statLabel: { ...font.sm, color: '#737373', lineHeight: 12 },
 
   // Search
   searchBox: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#FFFFFF', borderRadius: 8, paddingHorizontal: 32, height: 36, borderWidth: 1, borderColor: '#F0F0F0', marginBottom: 6 },
@@ -350,9 +350,9 @@ const s = StyleSheet.create({
   card: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#F0F0F0' },
   cardTop: { flexDirection: 'row', alignItems: 'center' },
   cardIcon: { width: 40, height: 40, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
-  cardName: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
-  cardCode: { ...font.micro, color: '#737373' },
-  cardMeta: { ...font.micro, color: '#737373', marginTop: 2 },
+  cardName: { ...font.sm, fontWeight: '600', color: '#171717' },
+  cardCode: { ...font.sm, color: '#737373' },
+  cardMeta: { ...font.sm, color: '#737373', marginTop: 2 },
 
   // Actions
   actionRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8, paddingTop: 6, borderTopWidth: 1, borderTopColor: '#F0F0F0' },
@@ -363,14 +363,14 @@ const s = StyleSheet.create({
   panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: '#F0F0F0', gap: 16},
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 32, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
   panelIconBox: { width: 40, height: 40, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
-  panelTitle: { ...font.body, fontWeight: '600', color: '#171717' },
-  panelSub: { ...font.caption, color: '#737373', marginTop: 1 },
+  panelTitle: { ...font.md, fontWeight: '600', color: '#171717' },
+  panelSub: { ...font.sm, color: '#737373', marginTop: 1 },
   panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12, paddingHorizontal: 12, borderRadius: 8},
-  panelBtnText: { ...font.caption, color: '#fff', fontWeight: '600' },
+  panelBtnText: { ...font.sm, color: '#fff', fontWeight: '600' },
 
   // Form
-  fieldLabel: { ...font.label, color: '#404040', marginBottom: 6 },
-  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.body, color: '#171717', backgroundColor: '#FAFAFA' },
+  fieldLabel: { ...font.smBold, color: '#404040', marginBottom: 6 },
+  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.md, color: '#171717', backgroundColor: '#FAFAFA' },
 
   separator: { width: 1, backgroundColor: '#F0F0F0' },
 

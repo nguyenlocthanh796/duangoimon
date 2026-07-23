@@ -66,12 +66,12 @@ export default function POForm({
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface.card }}>
         <View style={s.modalHeader}>
           <TouchableOpacity onPress={onClose}>
-            <Text style={{ ...font.button, color: colors.text.muted }}>Huỷ</Text>
+            <Text style={{ ...font.mdBold, color: colors.text.muted }}>Huỷ</Text>
           </TouchableOpacity>
-          <Text style={{ ...font.sectionTitle, color: colors.text.primary }}>PO mới</Text>
+          <Text style={{ ...font.lg, color: colors.text.primary }}>PO mới</Text>
           <TouchableOpacity onPress={save} disabled={saving}>
             <Text
-              style={{ ...font.button, color: saving ? colors.text.muted : colors.brand.primary }}
+              style={{ ...font.mdBold, color: saving ? colors.text.muted : colors.brand.primary }}
             >
               {saving ? 'Đang lưu...' : 'Lưu'}
             </Text>
@@ -110,7 +110,7 @@ export default function POForm({
               <Text style={s.label}>Nguyên liệu</Text>
               <TouchableOpacity onPress={addItem} style={{ flexDirection: 'row', gap: 4 }}>
                 <Icon name="plus-circle" size={18} color={colors.brand.primary} />
-                <Text style={{ ...font.bodySmall, color: colors.brand.primary }}>Thêm</Text>
+                <Text style={{ ...font.sm, color: colors.brand.primary }}>Thêm</Text>
               </TouchableOpacity>
             </View>
             {items.map((it, idx) => (
@@ -150,7 +150,7 @@ export default function POForm({
               </View>
             ))}
             {items.length === 0 && (
-              <Text style={{ fontStyle: 'italic', ...font.caption, color: colors.text.muted }}>
+              <Text style={{ fontStyle: 'italic', ...font.sm, color: colors.text.muted }}>
                 Chưa có nguyên liệu.
               </Text>
             )}
@@ -171,13 +171,13 @@ const s = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border.default,
   },
-  label: { ...font.label, color: colors.text.secondary, marginBottom: 4 },
+  label: { ...font.smBold, color: colors.text.secondary, marginBottom: 4 },
   input: {
     borderWidth: 1.5,
     borderColor: colors.border.default,
     borderRadius: 10,
     padding: 12,
-    ...font.body,
+    ...font.md,
     color: colors.text.primary,
     backgroundColor: colors.surface.app,
   },
@@ -186,7 +186,7 @@ const s = StyleSheet.create({
     borderColor: colors.border.default,
     borderRadius: 8,
     padding: 8,
-    ...font.caption,
+    ...font.sm,
     color: colors.text.primary,
     backgroundColor: colors.surface.app,
     width: 80,
@@ -201,6 +201,6 @@ const s = StyleSheet.create({
     backgroundColor: colors.surface.app,
   },
   supChipActive: { borderColor: colors.brand.primary, backgroundColor: colors.brand.primaryBg },
-  supChipText: { ...font.caption, color: colors.text.secondary },
+  supChipText: { ...font.sm, color: colors.text.secondary },
   supChipTextActive: { color: colors.brand.primary, fontWeight: '600' },
 });

@@ -1,5 +1,5 @@
 'use client';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { MenuItem, CartItem } from '../components/pos/types';
 
 export function useModifier() {
@@ -19,28 +19,28 @@ export function useModifier() {
     return sp + tc;
   }, [modalItem, modalSize, modalToppings]);
 
-  const openForNew = (item: MenuItem) => {
+  const openForNew = useCallback((item: MenuItem) => {
     setModalItem(item);
     setModalQty(1);
     setModalSize((item.sizes?.length ?? 0) > 0 ? 'M' : null);
     setModalToppings([]);
     setModalNote('');
-  };
+  }, []);
 
-  const openForEdit = (item: CartItem) => {
+  const openForEdit = useCallback((item: CartItem) => {
     setModalItem(item);
     setModalQty(item.qty);
     setModalSize(item.selectedSize || null);
     setModalToppings(item.selectedToppings || []);
     setModalNote(item.note || '');
-  };
+  }, []);
 
-  const close = () => {
+  const close = useCallback(() => {
     setModalItem(null);
     setModalQty(1);
     setModalNote('');
     setModalToppings([]);
-  };
+  }, []);
 
   return {
     modalItem,

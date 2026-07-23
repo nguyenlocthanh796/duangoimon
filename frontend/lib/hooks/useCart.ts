@@ -20,8 +20,9 @@ export function useCart() {
   const total = cart.reduce((sum, item) => sum + item.unitPrice * item.qty, 0);
   const itemCount = cart.reduce((sum, item) => sum + item.qty, 0);
 
-  const getItemCartCount = (itemId: string) =>
-    cart.filter((i) => i.id === itemId).reduce((s, i) => s + i.qty, 0);
+  const getItemCartCount = useCallback((itemId: string) =>
+    cart.filter((i) => i.id === itemId).reduce((s, i) => s + i.qty, 0),
+  [cart]);
 
   const reset = useCallback(() => {
     setCart([]);
@@ -54,7 +55,7 @@ export function useCart() {
     setCart(mapped);
   }, []);
 
-  const quickAdd = (item: MenuItem) => {
+  const quickAdd = useCallback((item: MenuItem) => {
     setCart((prev) => {
       const defaultSize = (item.sizes?.length ?? 0) > 0 ? 'M' : undefined;
       const existing = prev.find(
@@ -82,9 +83,9 @@ export function useCart() {
         },
       ];
     });
-  };
+  }, []);
 
-  const quickSubtract = (item: MenuItem) => {
+  const quickSubtract = useCallback((item: MenuItem) => {
     setCart((prev) => {
       const defaultSize = (item.sizes?.length ?? 0) > 0 ? 'M' : undefined;
       const existing = prev.find(
@@ -99,13 +100,13 @@ export function useCart() {
       if (existing.qty <= 1) return prev.filter((i) => i.cartItemId !== existing.cartItemId);
       return prev.map((i) => (i.cartItemId === existing.cartItemId ? { ...i, qty: i.qty - 1 } : i));
     });
-  };
+  }, []);
 
-  const addItem = (item: CartItem) => {
+  const addItem = useCallback((item: CartItem) => {
     setCart((prev) => [...prev, item]);
-  };
+  }, []);
 
-  const updateQty = (cartItemId: string, delta: number) => {
+  const updateQty = useCallback((cartItemId: string, delta: number) => {
     setCart((prev) => {
       const item = prev.find((i) => i.cartItemId === cartItemId);
       if (!item) return prev;
@@ -115,21 +116,21 @@ export function useCart() {
       if (newQty <= 0) return prev.filter((i) => i.cartItemId !== cartItemId);
       return prev.map((i) => (i.cartItemId === cartItemId ? { ...i, qty: newQty } : i));
     });
-  };
+  }, []);
 
-  const setQty = (cartItemId: string, qty: number) => {
+  const setQty = useCallback((cartItemId: string, qty: number) => {
     setCart((prev) => prev.map((i) => (i.cartItemId === cartItemId ? { ...i, qty } : i)));
-  };
+  }, []);
 
-  const removeItem = (cartItemId: string) => {
+  const removeItem = useCallback((cartItemId: string) => {
     setCart((prev) => prev.filter((i) => i.cartItemId !== cartItemId));
-  };
+  }, []);
 
-  const editNote = (cartItemId: string, note: string) => {
+  const editNote = useCallback((cartItemId: string, note: string) => {
     setCart((prev) => prev.map((i) => (i.cartItemId === cartItemId ? { ...i, note } : i)));
-  };
+  }, []);
 
-  const cancelItem = (cartItemId: string, reason: string) => {
+  const cancelItem = useCallback((cartItemId: string, reason: string) => {
     setCart((prev) =>
       prev.map((i) =>
         i.cartItemId === cartItemId ? { ...i, cancelReason: reason, isSent: true } : i
@@ -137,9 +138,9 @@ export function useCart() {
     );
     const realId = getRealItemId(cartItemId);
     if (realId) api.cancelOrderItem({ item_id: realId, reason }).catch((e) => logger.error('cart', e));
-  };
+  }, []);
 
-  const toggleServiceType = (cartItemId: string) => {
+  const toggleServiceType = useCallback((cartItemId: string) => {
     setCart((prev) =>
       prev.map((i) => {
         if (i.cartItemId === cartItemId && !i.isSent) {
@@ -148,20 +149,20 @@ export function useCart() {
         return i;
       })
     );
-  };
+  }, []);
 
-  const updateItem = (cartItemId: string, updates: Partial<CartItem>) => {
+  const updateItem = useCallback((cartItemId: string, updates: Partial<CartItem>) => {
     setCart((prev) => prev.map((i) => (i.cartItemId === cartItemId ? { ...i, ...updates } : i)));
-  };
+  }, []);
 
-  const filterOut = (ids: string[]) => {
+  const filterOut = useCallback((ids: string[]) => {
     setCart((prev) => prev.filter((i) => !ids.includes(i.cartItemId)));
-  };
+  }, []);
 
-  const replaceAll = (items: CartItem[], orderId?: string) => {
+  const replaceAll = useCallback((items: CartItem[], orderId?: string) => {
     setCart(items);
     if (orderId) setActiveOrderId(orderId);
-  };
+  }, []);
 
   return {
     cart,

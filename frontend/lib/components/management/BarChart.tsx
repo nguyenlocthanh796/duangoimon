@@ -92,7 +92,7 @@ const chartStyles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   barValue: {
-    ...font.micro,
+    ...font.sm,
     color: colors.text.secondary,
     marginBottom: 3,
     textAlign: 'center',
@@ -111,18 +111,18 @@ const chartStyles = StyleSheet.create({
     minHeight: 4,
   },
   barLabel: {
-    ...font.caption,
+    ...font.sm,
     color: colors.text.primary,
     marginTop: 6,
     fontWeight: '600',
   },
   barDate: {
-    ...font.micro,
+    ...font.sm,
     color: colors.text.secondary,
     marginTop: 1,
   },
   legend: { flexDirection: 'row', justifyContent: 'center', gap: 16, marginTop: 10 },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   legendDot: { width: 8, height: 8, borderRadius: 4 },
-  legendText: { ...font.caption, color: colors.text.primary },
+  legendText: { ...font.sm, color: colors.text.primary },
 });

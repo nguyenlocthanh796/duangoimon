@@ -3,6 +3,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useRouter } from 'expo-router';
 import { logger } from '../logger';
 import { api } from '../api';
+import { CAT_MAP } from '../constants/categories';
 import { MenuItem, CartItem } from '../components/pos/types';
 import { useCart } from './useCart';
 import { useModifier } from './useModifier';
@@ -38,15 +39,6 @@ export function useTableOrder(tableId: string, tableName: string, onClose?: () =
         if (!currentProducts) {
           const data = await api.getProducts();
           if (cancelled) return;
-          const CAT_MAP: Record<string, string> = {
-            'SỮA CHUA': 'sua-chua',
-            'TRÀ CHANH': 'tra-chanh',
-            'ĐỒ ĂN VẶT': 'do-an-vat',
-            CHÈ: 'che',
-            'TRÀ SỮA': 'tra-sua',
-            SODA: 'soda',
-            KEM: 'kem',
-          };
           currentProducts = data.map((p: any) => ({
             id: p.id,
             name: p.name,
@@ -328,6 +320,6 @@ export function useTableOrder(tableId: string, tableName: string, onClose?: () =
     toggleServiceType: cart.toggleServiceType,
     splitTable: moveItemToTable,
     mergeTable: mergeBill,
-    moveItem: () => {},
+    moveItem: useCallback(() => {}, []),
   };
 }

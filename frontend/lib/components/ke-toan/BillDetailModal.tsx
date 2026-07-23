@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.border.default,
   },
   headerTitle: {
-    ...font.bodyBold,
+    ...font.mdBold,
     color: colors.text.primary,
   },
   closeBtn: {
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   loadingText: {
-    ...font.bodySmall,
+    ...font.sm,
     color: colors.text.muted,
     marginTop: 12,
   },
@@ -396,12 +396,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   mobileTitle: {
-    ...font.sectionTitle,
+    ...font.lg,
     color: colors.text.primary,
     textAlign: 'center',
   },
   mobileSubtitle: {
-    ...font.caption,
+    ...font.sm,
     color: colors.text.secondary,
     textAlign: 'center',
     marginTop: 1,

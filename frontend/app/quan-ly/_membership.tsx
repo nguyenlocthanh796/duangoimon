@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'reac
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
-import { colors, font } from '../../lib/theme';
+import { colors, font, formatVND } from '../../lib/theme';
 import { request } from '../../lib/api/client';
 import type { MembershipTier } from '../../lib/api/client';
 import DataTable, { type Column } from '../../lib/components/ui/DataTable';
@@ -13,7 +13,7 @@ import FormModal from '../../lib/components/ui/FormModal';
 import FAB from '../../lib/components/ui/FAB';
 
 const API = '/api/v1/quan-ly';
-function formatVND(v: number) { return (v || 0).toLocaleString('vi-VN') + 'đ'; }
+
 
 export default function MembershipScreen() {
   const { openSidebar } = useSidebar();
@@ -118,7 +118,7 @@ export default function MembershipScreen() {
         <View style={{ gap: 12}}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12}}>
             {selected.color ? <View style={{ width: 12, height: 12, borderRadius: 16, backgroundColor: selected.color }} /> : null}
-            <Text style={{ ...font.body, fontWeight: '600', color: '#171717' }}>{selected.name}</Text>
+            <Text style={{ ...font.md, fontWeight: '600', color: '#171717' }}>{selected.name}</Text>
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}><Text style={styles.panelLabel}>Min chi</Text><Text style={styles.panelValue}>{formatVND(selected.min_spent || 0)}</Text></View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}><Text style={styles.panelLabel}>Giảm</Text><Text style={styles.panelValue}>{selected.discount_rate}%</Text></View>
@@ -227,7 +227,7 @@ export default function MembershipScreen() {
           <TextInput value={form.color} onChangeText={v => setForm(p => ({ ...p, color: v }))} style={styles.fieldInput} placeholder="#FFD700" />
           <TouchableOpacity onPress={() => setForm(p => ({ ...p, is_active: !p.is_active }))} style={{ flexDirection: 'row', alignItems: 'center', gap: 12}}>
             <Icon name={form.is_active ? 'toggle-switch' : 'toggle-switch-off'} size={20} color={form.is_active ? '#16A34A' : '#737373'} />
-            <Text style={{ ...font.bodySmall, color: '#171717' }}>{form.is_active ? 'Đang áp dụng' : 'Tạm ngừng'}</Text>
+            <Text style={{ ...font.sm, color: '#171717' }}>{form.is_active ? 'Đang áp dụng' : 'Tạm ngừng'}</Text>
           </TouchableOpacity>
         </View>
       </FormModal>
@@ -239,22 +239,22 @@ const styles = StyleSheet.create({
   addBtn: { width: 44, height: 44, borderRadius: 8, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center' },
   statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
   barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
-  statValue: { ...font.bodyBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
-  statLabel: { ...font.micro, color: '#737373', lineHeight: 12 },
-  cellPrimary: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
-  cellMuted: { ...font.caption, color: '#737373' },
-  cellHighlight: { ...font.bodySmall, fontWeight: '600', color: '#F97316' },
+  statValue: { ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
+  statLabel: { ...font.sm, color: '#737373', lineHeight: 12 },
+  cellPrimary: { ...font.sm, fontWeight: '600', color: '#171717' },
+  cellMuted: { ...font.sm, color: '#737373' },
+  cellHighlight: { ...font.sm, fontWeight: '600', color: '#F97316' },
   panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12},
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelHeaderText: { ...font.body, fontWeight: '600', color: '#171717' },
+  panelHeaderText: { ...font.md, fontWeight: '600', color: '#171717' },
   panelDivider: { height: 1, backgroundColor: '#F0F0F0' },
   panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12, paddingHorizontal: 12, borderRadius: 8},
-  panelBtnText: { ...font.buttonSmall, fontWeight: '600', color: '#fff' },
+  panelBtnText: { ...font.smBold, fontWeight: '600', color: '#fff' },
   panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16, backgroundColor: '#F97316', borderRadius: 8, paddingVertical: 12, minHeight: 44 },
-  panelCtaText: { ...font.button, color: '#fff' },
-  panelLabel: { ...font.caption, color: '#737373' },
-  panelValue: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
-  fieldLabel: { ...font.label, color: '#404040', marginBottom: 6 },
-  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.body, color: '#171717', backgroundColor: '#FAFAFA' },
+  panelCtaText: { ...font.mdBold, color: '#fff' },
+  panelLabel: { ...font.sm, color: '#737373' },
+  panelValue: { ...font.sm, fontWeight: '600', color: '#171717' },
+  fieldLabel: { ...font.smBold, color: '#404040', marginBottom: 6 },
+  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.md, color: '#171717', backgroundColor: '#FAFAFA' },
   separator: { width: 1, backgroundColor: '#F0F0F0' },
 });

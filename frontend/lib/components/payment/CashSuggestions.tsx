@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { colors, font } from '../../theme';
+import { shape } from '../../theme/shape';
 
 function getSmartCashSuggestions(total: number): number[] {
   const s = new Set<number>();
@@ -43,16 +44,16 @@ export default function CashSuggestions({ total, onSelect, selectedAmount }: Cas
           style={{
             paddingHorizontal: 14,
             paddingVertical: 8,
-            borderRadius: 8,
-            backgroundColor: selectedAmount === amt ? '#22c55e' : '#f3f4f6',
+            borderRadius: shape.radius.md,
+            backgroundColor: selectedAmount === amt ? colors.status.success : colors.surface.disabled,
             borderWidth: 1,
-            borderColor: selectedAmount === amt ? '#16a34a' : '#e5e7eb',
+            borderColor: selectedAmount === amt ? colors.status.available : colors.border.default,
           }}
         >
           <Text
             style={{
-              ...font.buttonSmall,
-              color: selectedAmount === amt ? '#fff' : '#374151',
+              ...font.smBold,
+              color: selectedAmount === amt ? colors.text.inverse : colors.text.primary,
             }}
           >
             {amt.toLocaleString('vi-VN')}đ

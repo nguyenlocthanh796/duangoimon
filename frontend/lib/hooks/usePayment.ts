@@ -49,16 +49,22 @@ export const NUMPAD_KEYS: Array<{
 export function getSmartCashSuggestions(total: number): number[] {
   const s = new Set<number>();
   s.add(total);
-  const notes = [10000, 20000, 50000, 100000, 200000, 500000];
-  notes.filter((n) => n > total).forEach((n) => s.add(n));
+
+  // Làm tròn lên bội số 10.000 + 10k
   const r10 = total % 10000;
-  if (r10 > 0) s.add(total + (10000 - r10));
+  if (r10 > 0) s.add(total + (10000 - r10) + 10000);
+  else s.add(total + 10000);
+
+  // Làm tròn lên bội số 50.000
   const r50 = total % 50000;
-  if (r50 > 0) {
-    s.add(total + (50000 - r50));
-    s.add(total + 50000);
-    s.add(total + 100000);
-  }
+  if (r50 > 0) s.add(total + (50000 - r50));
+  else s.add(total + 50000);
+
+  // Làm tròn lên bội số 100.000
+  const r100 = total % 100000;
+  if (r100 > 0) s.add(total + (100000 - r100));
+  else s.add(total + 100000);
+
   return Array.from(s)
     .filter((v) => v >= total)
     .sort((a, b) => a - b)
@@ -78,7 +84,7 @@ export function usePayment({ tableId, tableName, total, orderId }: UsePaymentOpt
   const [paid, setPaid] = useState(false);
   const [paying, setPaying] = useState(false);
   const [orderItems, setOrderItems] = useState<any[]>([]);
-  const [countdown, setCountdown] = useState(3);
+  const [countdown, setCountdown] = useState(8);
 
   useEffect(() => {
     if (orderId) {

@@ -24,8 +24,8 @@ export default function SearchPopup({ visible, value, onChangeText, onClose, pla
           <View style={styles.headerRow}>
             <Icon name="magnify" size={18} color={colors.brand.primary} />
             <View style={styles.headerText}>
-              <AppText variant="medium" color={colors.text.primary} weight="bold">Tìm kiếm</AppText>
-              <AppText variant="small" color={colors.text.muted}>Gõ để tìm kiếm, bấm filter để lọc</AppText>
+              <AppText variant="md" color={colors.text.primary} weight="bold">Tìm kiếm</AppText>
+              <AppText variant="sm" color={colors.text.muted}>Gõ để tìm kiếm, bấm filter để lọc</AppText>
             </View>
           </View>
 
@@ -53,7 +53,7 @@ export default function SearchPopup({ visible, value, onChangeText, onClose, pla
               <View style={styles.divider} />
               <View style={styles.filterLabel}>
                 <Icon name="filter-variant" size={13} color={colors.text.muted} />
-                <AppText variant="small" color={colors.text.secondary}>Bộ lọc</AppText>
+                <AppText variant="sm" color={colors.text.secondary}>Bộ lọc</AppText>
               </View>
               {children}
             </View>

@@ -27,7 +27,7 @@ export default function PickerItem({
           }}
         >
           <Text
-            style={{ ...font.micro, color: value === m ? colors.brand.primary : colors.text.muted }}
+            style={{ ...font.sm, color: value === m ? colors.brand.primary : colors.text.muted }}
           >
             {m}
           </Text>

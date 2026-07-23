@@ -57,7 +57,7 @@ export default function SplitBillPanel({
       }}
     >
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Text style={{ ...font.sectionTitle, color: colors.text.primary }}>Chia hóa đơn</Text>
+        <Text style={{ ...font.lg, color: colors.text.primary }}>Chia hóa đơn</Text>
         <TouchableOpacity onPress={onCancel}>
           <Icon name="close" size={20} color={colors.icon.muted} />
         </TouchableOpacity>
@@ -76,7 +76,7 @@ export default function SplitBillPanel({
               borderColor: colors.border.default,
               borderRadius: 8,
               padding: 6,
-              ...font.caption,
+              ...font.sm,
               color: colors.text.primary,
               width: 90,
               textAlign: 'center',
@@ -92,10 +92,10 @@ export default function SplitBillPanel({
         style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
       >
         <Icon name="plus-circle" size={16} color={colors.brand.primary} />
-        <Text style={{ ...font.bodySmall, color: colors.brand.primary }}>Thêm phương thức</Text>
+        <Text style={{ ...font.sm, color: colors.brand.primary }}>Thêm phương thức</Text>
       </TouchableOpacity>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Text style={{ ...font.caption, color: ok ? colors.status.success : colors.status.danger }}>
+        <Text style={{ ...font.sm, color: ok ? colors.status.success : colors.status.danger }}>
           Đã chia: {formatPriceFull(sumPaid)} / {formatPriceFull(total)}
         </Text>
       </View>
@@ -110,7 +110,7 @@ export default function SplitBillPanel({
         }}
       >
         <Text
-          style={{ ...font.sectionTitle, color: !ok || paying ? colors.text.muted : colors.text.inverse }}
+          style={{ ...font.lg, color: !ok || paying ? colors.text.muted : colors.text.inverse }}
         >
           {paying ? 'Đang xử lý...' : `Thanh toán (${formatPriceFull(sumPaid)})`}
         </Text>

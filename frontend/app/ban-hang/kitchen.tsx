@@ -5,7 +5,7 @@ import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { api } from '../../lib/api';
 import { logger } from '../../lib/logger';
-import { colors, palette, COLORS, font, formatPrice } from '../../lib/theme';
+import { colors, palette, font, formatPrice } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import { useAuth } from '../../lib/context/AuthContext';
 import { useSidebar } from '../../lib/context/SidebarContext';
@@ -43,25 +43,25 @@ const COLUMNS: Array<{
     id: 'cho_xu_ly',
     label: 'Chờ xử lý',
     icon: 'clock-outline',
-    headerBg: '#F5F5F5',
-    headerText: '#171717',
-    dotColor: '#D97706',
+    headerBg: colors.surface.disabled,
+    headerText: colors.text.primary,
+    dotColor: colors.status.warning,
     emptyIcon: 'timer-sand',
   },
   {
     id: 'dang_lam',
     label: 'Đang làm',
     icon: 'chef-hat',
-    headerBg: '#F97316' + '10',
-    headerText: '#F97316',
-    dotColor: '#F97316',
+    headerBg: colors.brand.primaryBg,
+    headerText: colors.brand.primary,
+    dotColor: colors.brand.primary,
     emptyIcon: 'silverware-fork-knife',
   },
   {
     id: 'hoan_thanh',
     label: 'Hoàn thành',
     icon: 'check-all',
-    headerBg: '#16A34A' + '10',
+    headerBg: colors.status.successBg,
     headerText: colors.status.available,
     dotColor: colors.status.available,
     emptyIcon: 'check-circle-outline',
@@ -249,17 +249,17 @@ export default function KitchenScreen() {
           flex: 1,
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#F5F5F5',
+          backgroundColor: colors.surface.disabled,
         }}
       >
-        <ActivityIndicator size="large" color={'#F97316'} />
+        <ActivityIndicator size="large" color={colors.brand.primary} />
       </SafeAreaView>
     );
   }
 
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
-    <View style={{ flex: 1, backgroundColor: '#FAFAFA' }}>
+    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
       <UnifiedHeader
         icon="fridge-industrial-outline"
         title="Bếp"
@@ -270,8 +270,8 @@ export default function KitchenScreen() {
             <TouchableOpacity
               onPress={() => setSoundEnabled((prev) => !prev)}
               style={{
-                width: 36,
-                height: 36,
+                width: 44,
+                height: 44,
                 borderRadius: 8,
                 backgroundColor: soundEnabled ? colors.brand.primary : colors.surface.disabled,
                 alignItems: 'center',
@@ -281,25 +281,25 @@ export default function KitchenScreen() {
               <Icon
                 name={soundEnabled ? 'bell-ring' : 'bell-off'}
                 size={18}
-                color={soundEnabled ? '#fff' : colors.text.muted}
+                color={soundEnabled ? colors.text.inverse : colors.text.muted}
               />
             </TouchableOpacity>
             <View
               style={{
                 backgroundColor: colors.surface.disabled,
                 paddingHorizontal: 12,
-                height: 36,
+                height: 44,
                 justifyContent: 'center',
                 borderRadius: 8,
               }}
             >
-              <AppText variant="base" weight="bold" color={colors.text.primary}>{allOrders.length} đơn</AppText>
+              <AppText variant="md" weight="bold" color={colors.text.primary}>{allOrders.length} đơn</AppText>
             </View>
             <TouchableOpacity
               onPress={fetchOrders}
               style={{
-                width: 36,
-                height: 36,
+                width: 44,
+                height: 44,
                 borderRadius: 8,
                 backgroundColor: colors.surface.disabled,
                 alignItems: 'center',
@@ -319,10 +319,10 @@ export default function KitchenScreen() {
             flexDirection: 'row',
             paddingHorizontal: 4,
             paddingVertical: 8,
-            backgroundColor: '#FFFFFF',
+            backgroundColor: colors.surface.card,
             borderBottomWidth: 1,
-            borderBottomColor: '#F0F0F0',
-            gap: 12,
+            borderBottomColor: colors.border.default,
+            gap: 8,
           }}
         >
           {COLUMNS.map((col) => {
@@ -334,11 +334,11 @@ export default function KitchenScreen() {
                 onPress={() => setActiveTab(col.id)}
                 style={{
                   flex: 1,
-                  height: 36,
+                  height: 40,
                   borderRadius: 8,
-                  backgroundColor: sel ? col.dotColor + '20' : '#F5F5F5',
+                  backgroundColor: sel ? colors.brand.primary : 'transparent',
                   borderWidth: 1,
-                  borderColor: sel ? col.dotColor : '#E5E5E5',
+                  borderColor: sel ? colors.brand.primary : colors.border.default,
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexDirection: 'row',
@@ -348,23 +348,28 @@ export default function KitchenScreen() {
                 <Icon
                   name={col.icon as any}
                   size={16}
-                  color={sel ? col.dotColor : colors.icon.muted}
+                  color={sel ? colors.text.inverse : colors.text.muted}
                 />
-                <AppText variant="base" weight="bold" color={sel ? col.dotColor : colors.text.primary}>
+                  <AppText
+                    variant="sm"
+                    weight={sel ? 'bold' : 'normal'}
+                    color={sel ? colors.text.inverse : colors.text.muted}
+                  >
                   {col.label}
                 </AppText>
                 <View
                   style={{
-                    width: 20,
+                    minWidth: 20,
                     height: 20,
-                    borderRadius: 6,
-                    backgroundColor: sel ? col.dotColor : '#F5F5F5',
+                    borderRadius: shape.radius.sm,
+                    backgroundColor: sel ? colors.brand.primaryHover : colors.surface.disabled,
                     alignItems: 'center',
                     justifyContent: 'center',
+                    paddingHorizontal: 4,
                   }}
                 >
                   <AppText
-                    variant="small"
+                    variant="sm"
                     weight="bold"
                     color={sel ? colors.text.inverse : colors.text.muted}
                   >

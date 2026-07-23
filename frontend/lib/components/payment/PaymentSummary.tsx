@@ -32,15 +32,15 @@ export default function PaymentSummary({ items, total, tableName, orderId }: Pay
           }}
         >
           <View style={{ flex: 1, paddingRight: 8 }}>
-            <Text style={{ ...font.bodySmall, color: '#1f2937' }}>{item.product_name}</Text>
-            {item.note && <Text style={{ ...font.caption, color: '#d97706' }}>* {item.note}</Text>}
+            <Text style={{ ...font.sm, color: colors.text.primary }}>{item.product_name}</Text>
+            {item.note && <Text style={{ ...font.sm, color: colors.status.warning }}>* {item.note}</Text>}
           </View>
-          <Text style={{ ...font.bodySmall, color: '#6b7280' }}>
+          <Text style={{ ...font.sm, color: colors.text.muted }}>
             {item.quantity} x {formatPrice(item.unit_price)}
           </Text>
         </View>
       ))}
-      <View style={{ borderTopWidth: 1, borderTopColor: '#e5e7eb', marginTop: 8, paddingTop: 8 }} />
+      <View style={{ borderTopWidth: 1, borderTopColor: colors.border.default, marginTop: 8, paddingTop: 8 }} />
     </View>
   );
 }

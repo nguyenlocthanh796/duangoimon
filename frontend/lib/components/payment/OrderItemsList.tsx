@@ -23,7 +23,7 @@ export default function OrderItemsList({ items }: { items: any[] }) {
     >
       <Text
         style={{
-          ...font.label,
+          ...font.smBold,
           textTransform: 'uppercase',
           letterSpacing: 0.5,
           color: colors.text.muted,
@@ -38,10 +38,10 @@ export default function OrderItemsList({ items }: { items: any[] }) {
             key={idx}
             style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5 }}
           >
-            <Text style={{ ...font.bodySmall, color: colors.text.primary, flex: 1 }}>
+            <Text style={{ ...font.sm, color: colors.text.primary, flex: 1 }}>
               {item.quantity}x {item.product_name}
             </Text>
-            <Text style={{ ...font.bodySmall, color: colors.text.secondary }}>
+            <Text style={{ ...font.sm, color: colors.text.secondary }}>
               {formatPriceFull(item.unit_price * item.quantity)}
             </Text>
           </View>

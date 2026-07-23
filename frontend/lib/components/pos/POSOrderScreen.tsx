@@ -80,34 +80,25 @@ export default function POSOrderScreen({ tableId, tableName, onClose }: POSOrder
         <View style={{ flex: 1, flexDirection: 'row', backgroundColor: colors.surface.app }}>
           <View
             style={{
-              flex: 6,
+              flex: 7,
               position: 'relative',
               borderRightWidth: 1,
               borderRightColor: colors.border.default,
             }}
           >
-            <ScrollView
-              contentContainerStyle={{
-                paddingVertical: 16,
-                paddingHorizontal: 12,
-                paddingBottom: 32,
-              }}
-              showsVerticalScrollIndicator={false}
-            >
-              <ProductGrid
-                products={filteredItems}
-                loading={ord.loading}
-                isWide={isWide}
-                breakpoint={breakpoint}
-                panelWidth={panelWidth}
-                onProductPress={ord.handleProductPress}
-                onQuickAdd={ord.quickAdd}
-                onQuickSubtract={ord.quickSubtract}
-                getItemCartCount={ord.getItemCartCount}
-              />
-            </ScrollView>
+            <ProductGrid
+              products={filteredItems}
+              loading={ord.loading}
+              isWide={isWide}
+              breakpoint={breakpoint}
+              panelWidth={panelWidth}
+              onProductPress={ord.handleProductPress}
+              onQuickAdd={ord.quickAdd}
+              onQuickSubtract={ord.quickSubtract}
+              getItemCartCount={ord.getItemCartCount}
+            />
           </View>
-          <View style={{ flex: 4, backgroundColor: colors.surface.card }}>
+          <View style={{ flex: 3, backgroundColor: colors.surface.card }}>
             <CartPanel
               cart={ord.cart}
               total={ord.total}
@@ -140,24 +131,17 @@ export default function POSOrderScreen({ tableId, tableName, onClose }: POSOrder
         </View>
       ) : (
         <View style={{ flex: 1, position: 'relative', minHeight: 0 }}>
-          <ScrollView
-            style={{ flex: 1 }}
-            contentContainerStyle={{ paddingVertical: 6, paddingBottom: 90 }}
-            showsVerticalScrollIndicator={false}
-          >
-            <ProductGrid
-              products={filteredItems}
-              loading={ord.loading}
-              isWide={isWide}
-              breakpoint={breakpoint}
-              panelWidth={panelWidth}
-              onProductPress={ord.handleProductPress}
-              onQuickAdd={ord.quickAdd}
-              onQuickSubtract={ord.quickSubtract}
-              getItemCartCount={ord.getItemCartCount}
-            />
-          </ScrollView>
-
+          <ProductGrid
+            products={filteredItems}
+            loading={ord.loading}
+            isWide={isWide}
+            breakpoint={breakpoint}
+            panelWidth={panelWidth}
+            onProductPress={ord.handleProductPress}
+            onQuickAdd={ord.quickAdd}
+            onQuickSubtract={ord.quickSubtract}
+            getItemCartCount={ord.getItemCartCount}
+          />
           <MobileCartBar
             itemCount={ord.itemCount}
             total={ord.total}

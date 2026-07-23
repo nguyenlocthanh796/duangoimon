@@ -31,7 +31,7 @@ const fmt = (n: number) => Intl.NumberFormat('vi-VN').format(n);
 function TxBadge({ type }: { type: string }) {
   const isThu = type === 'thu';
   return (
-    <AppText variant="small" weight="bold" color={isThu ? colors.status.success : colors.status.danger}>
+    <AppText variant="sm" weight="bold" color={isThu ? colors.status.success : colors.status.danger}>
       {isThu ? 'Thu' : 'Chi'}
     </AppText>
   );
@@ -40,7 +40,7 @@ function TxBadge({ type }: { type: string }) {
 function InvBadge({ status }: { status: string }) {
   const ok = status === 'da_xuat' || status === 'exported';
   return (
-    <AppText variant="small" weight="bold" color={ok ? colors.status.success : colors.status.warning}>
+    <AppText variant="sm" weight="bold" color={ok ? colors.status.success : colors.status.warning}>
       {ok ? 'Đã xuất' : 'Nháp'}
     </AppText>
   );
@@ -75,13 +75,13 @@ function StatCell({
         <View style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: iconBg, alignItems: 'center', justifyContent: 'center' }}>
           <Icon name={icon as any} size={18} color={iconColor} />
         </View>
-        <AppText variant="medium" weight="bold" color={valueColor ?? colors.text.primary}
+        <AppText variant="md" weight="bold" color={valueColor ?? colors.text.primary}
           numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.55} style={{ flex: 1 }}>
           {value}
         </AppText>
       </View>
-      <AppText variant="small" color={colors.text.muted}>{label}</AppText>
-      {trend && <AppText variant="small" color={colors.text.muted}>{trend}</AppText>}
+      <AppText variant="sm" color={colors.text.muted}>{label}</AppText>
+      {trend && <AppText variant="sm" color={colors.text.muted}>{trend}</AppText>}
     </View>
   );
 }
@@ -152,9 +152,9 @@ export default function KeToanHub() {
         {loadError && (
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.surface.danger, borderRadius: 0, padding: 10, marginBottom: 8, borderWidth: 1, borderColor: colors.border.danger }}>
             <Icon name="alert-circle-outline" size={16} color={colors.status.danger} />
-            <AppText variant="base" color={colors.status.danger} style={{ flex: 1 }}>{loadError}</AppText>
+            <AppText variant="md" color={colors.status.danger} style={{ flex: 1 }}>{loadError}</AppText>
             <TouchableOpacity onPress={() => { setLoading(true); load(); }} style={{ paddingHorizontal: 32, paddingVertical: 5, borderRadius: 8, backgroundColor: colors.brand.primary }}>
-              <AppText variant="small" weight="bold" color={colors.text.inverse}>Thử lại</AppText>
+              <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thử lại</AppText>
             </TouchableOpacity>
           </View>
         )}
@@ -183,7 +183,7 @@ export default function KeToanHub() {
         <SectionBlock padding={false}><View style={{ padding: isWide ? 16 : 12 }}>
           <View style={{ flexDirection: isWide ? 'row' : 'column', gap: 16 }}>
             <View style={{ flex: 3 }}>
-              <AppText variant="small" weight="bold" color={colors.text.muted} style={{ textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>Doanh thu 12 tháng</AppText>
+              <AppText variant="sm" weight="bold" color={colors.text.muted} style={{ textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>Doanh thu 12 tháng</AppText>
               <View style={{ flexDirection: 'row', alignItems: 'flex-end', height: 160, gap: 6 }}>
                 {data.monthly_revenue.map((m: any, i: number) => {
                   const maxVal = Math.max(...data.monthly_revenue.map((r: any) => r.value), 1);
@@ -191,7 +191,7 @@ export default function KeToanHub() {
                   return (
                     <View key={i} style={{ flex: 1, alignItems: 'center', gap: 4 }}>
                       <View style={{ width: '75%', height: Math.max(h, 2), borderRadius: 4, backgroundColor: m.current ? colors.brand.primary : colors.border.default }} />
-                      <AppText variant="small" color={colors.text.muted} style={{ textAlign: 'center' }}>{m.label}</AppText>
+                      <AppText variant="sm" color={colors.text.muted} style={{ textAlign: 'center' }}>{m.label}</AppText>
                     </View>
                   );
                 })}
@@ -199,14 +199,14 @@ export default function KeToanHub() {
             </View>
             {isWide && data.expense_by_category.length > 0 && (
               <View style={{ flex: 2 }}>
-                <AppText variant="small" weight="bold" color={colors.text.muted} style={{ textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>Chi phí theo nhóm</AppText>
+                <AppText variant="sm" weight="bold" color={colors.text.muted} style={{ textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>Chi phí theo nhóm</AppText>
                 <DonutChart data={data.expense_by_category} size={Math.min(chartW * 0.35, 160)} />
                 <View style={{ gap: 8, marginTop: 8 }}>
                   {data.expense_by_category.slice(0, 5).map((e: any, i: number) => (
                     <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                       <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: e.color }} />
-                      <AppText variant="small" color={colors.text.muted} style={{ flex: 1 }} numberOfLines={1}>{e.category}</AppText>
-                      <AppText variant="small" weight="bold" color={colors.text.primary}>{e.pct}%</AppText>
+                      <AppText variant="sm" color={colors.text.muted} style={{ flex: 1 }} numberOfLines={1}>{e.category}</AppText>
+                      <AppText variant="sm" weight="bold" color={colors.text.primary}>{e.pct}%</AppText>
                     </View>
                   ))}
                 </View>
@@ -225,27 +225,27 @@ export default function KeToanHub() {
                 <View style={{ width: 28, height: 28, borderRadius: 8, backgroundColor: '#FFF7ED', alignItems: 'center', justifyContent: 'center' }}>
                   <Icon name="chart-bell-curve" size={14} color={colors.brand.primary} />
                 </View>
-                <AppText variant="small" color={colors.text.muted}>Phân tầng</AppText>
+                <AppText variant="sm" color={colors.text.muted}>Phân tầng</AppText>
               </View>
-              <AppText variant="medium" weight="bold" color={colors.text.primary}>{taxStatus?.tier ?? '—'}</AppText>
+              <AppText variant="md" weight="bold" color={colors.text.primary}>{taxStatus?.tier ?? '—'}</AppText>
             </View>
             <View style={{ flex: 1, paddingHorizontal: 12 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                 <View style={{ width: 28, height: 28, borderRadius: 8, backgroundColor: '#FFF7ED', alignItems: 'center', justifyContent: 'center' }}>
                   <Icon name="currency-usd" size={14} color={colors.brand.primary} />
                 </View>
-                <AppText variant="small" color={colors.text.muted}>Doanh số YTD</AppText>
+                <AppText variant="sm" color={colors.text.muted}>Doanh số YTD</AppText>
               </View>
-              <AppText variant="medium" weight="bold" color={colors.brand.primary}>{taxStatus?.revenueYtd || taxStatus?.revenue_ytd ? formatPrice(taxStatus.revenueYtd || taxStatus.revenue_ytd) : '—'}</AppText>
+              <AppText variant="md" weight="bold" color={colors.brand.primary}>{taxStatus?.revenueYtd || taxStatus?.revenue_ytd ? formatPrice(taxStatus.revenueYtd || taxStatus.revenue_ytd) : '—'}</AppText>
             </View>
             <View style={{ flex: 1, paddingLeft: 12 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                 <View style={{ width: 28, height: 28, borderRadius: 8, backgroundColor: taxStatus?.penaltyRisk ? '#FEF2F2' : '#FFF7ED', alignItems: 'center', justifyContent: 'center' }}>
                   <Icon name="calendar-alert" size={14} color={taxStatus?.penaltyRisk ? colors.status.warning : colors.brand.primary} />
                 </View>
-                <AppText variant="small" color={colors.text.muted}>Hạn nộp</AppText>
+                <AppText variant="sm" color={colors.text.muted}>Hạn nộp</AppText>
               </View>
-              <AppText variant="medium" weight="bold" color={taxStatus?.penaltyRisk ? colors.status.warning : colors.status.success}>{taxStatus?.nextDeadline ?? '—'}</AppText>
+              <AppText variant="md" weight="bold" color={taxStatus?.penaltyRisk ? colors.status.warning : colors.status.success}>{taxStatus?.nextDeadline ?? '—'}</AppText>
             </View>
           </View>
         </SectionBlock>
@@ -256,56 +256,56 @@ export default function KeToanHub() {
           <SectionBlock padding={false} style={{ flex: isWide ? 1 : undefined }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, borderBottomWidth: 1, borderBottomColor: colors.border.default }}>
               <Icon name="swap-vertical" size={18} color={colors.brand.primary} />
-              <AppText variant="medium" weight="bold" color={colors.text.primary} style={{ flex: 1 }}>Giao dịch gần đây</AppText>
+              <AppText variant="md" weight="bold" color={colors.text.primary} style={{ flex: 1 }}>Giao dịch gần đây</AppText>
               <TouchableOpacity onPress={() => open('/ke-toan/thu-chi')}>
-                <AppText variant="small" color={colors.text.muted}>Xem tất cả →</AppText>
+                <AppText variant="sm" color={colors.text.muted}>Xem tất cả →</AppText>
               </TouchableOpacity>
             </View>
             <View style={{ flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: colors.border.default }}>
-              <AppText variant="small" weight="bold" color={colors.text.muted} style={{ flex: 1, textTransform: 'uppercase' }}>Ngày</AppText>
-              <AppText variant="small" weight="bold" color={colors.text.muted} style={{ flex: 0.5, textTransform: 'uppercase' }}>Loại</AppText>
-              <AppText variant="small" weight="bold" color={colors.text.muted} style={{ flex: 1, textTransform: 'uppercase' }}>Mô tả</AppText>
-              <AppText variant="small" weight="bold" color={colors.text.muted} style={{ flex: 1, textAlign: 'right', textTransform: 'uppercase' }}>Số tiền</AppText>
+              <AppText variant="sm" weight="bold" color={colors.text.muted} style={{ flex: 1, textTransform: 'uppercase' }}>Ngày</AppText>
+              <AppText variant="sm" weight="bold" color={colors.text.muted} style={{ flex: 0.5, textTransform: 'uppercase' }}>Loại</AppText>
+              <AppText variant="sm" weight="bold" color={colors.text.muted} style={{ flex: 1, textTransform: 'uppercase' }}>Mô tả</AppText>
+              <AppText variant="sm" weight="bold" color={colors.text.muted} style={{ flex: 1, textAlign: 'right', textTransform: 'uppercase' }}>Số tiền</AppText>
             </View>
             {(data.recent_transactions || []).slice(0, isWide ? 5 : 3).map((t: any, i: number) => (
               <View key={t.id || i} style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: colors.border.default, backgroundColor: '#FFFFFF' }}>
-                <AppText variant="base" color={colors.text.muted} style={{ flex: 1 }}>{t.created_at ? t.created_at.slice(0, 10) : '—'}</AppText>
+                <AppText variant="md" color={colors.text.muted} style={{ flex: 1 }}>{t.created_at ? t.created_at.slice(0, 10) : '—'}</AppText>
                 <View style={{ flex: 0.5 }}><TxBadge type={t.type} /></View>
-                <AppText variant="base" color={colors.text.muted} style={{ flex: 1 }} numberOfLines={1}>{t.note || t.category || '—'}</AppText>
-                <AppText variant="base" weight="bold" color={colors.text.primary} style={{ flex: 1, textAlign: 'right' }}>{fmt(Number(t.amount) || 0)}₫</AppText>
+                <AppText variant="md" color={colors.text.muted} style={{ flex: 1 }} numberOfLines={1}>{t.note || t.category || '—'}</AppText>
+                <AppText variant="md" weight="bold" color={colors.text.primary} style={{ flex: 1, textAlign: 'right' }}>{fmt(Number(t.amount) || 0)}₫</AppText>
               </View>
             ))}
             {(data.recent_transactions || []).length === 0 && (
               <View style={{ padding: 20, alignItems: 'center' }}>
-                <AppText variant="base" color={colors.text.muted}>Chưa có dữ liệu giao dịch</AppText>
+                <AppText variant="md" color={colors.text.muted}>Chưa có dữ liệu giao dịch</AppText>
               </View>
             )}
           </SectionBlock>
           <SectionBlock padding={false} style={{ flex: isWide ? 1 : undefined }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12, borderBottomWidth: 1, borderBottomColor: colors.border.default }}>
               <Icon name="receipt" size={18} color={colors.brand.primary} />
-              <AppText variant="medium" weight="bold" color={colors.text.primary} style={{ flex: 1 }}>Hóa đơn gần đây</AppText>
+              <AppText variant="md" weight="bold" color={colors.text.primary} style={{ flex: 1 }}>Hóa đơn gần đây</AppText>
               <TouchableOpacity onPress={() => open('/ke-toan/invoices')}>
-                <AppText variant="small" color={colors.text.muted}>Xem tất cả →</AppText>
+                <AppText variant="sm" color={colors.text.muted}>Xem tất cả →</AppText>
               </TouchableOpacity>
             </View>
             <View style={{ flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: colors.border.default }}>
-              <AppText variant="small" weight="bold" color={colors.text.muted} style={{ flex: 1, textTransform: 'uppercase' }}>Số HĐ</AppText>
-              <AppText variant="small" weight="bold" color={colors.text.muted} style={{ flex: 1, textTransform: 'uppercase' }}>Người mua</AppText>
-              <AppText variant="small" weight="bold" color={colors.text.muted} style={{ flex: 1, textAlign: 'right', textTransform: 'uppercase' }}>Giá trị</AppText>
-              <AppText variant="small" weight="bold" color={colors.text.muted} style={{ flex: 0.8, textAlign: 'center', textTransform: 'uppercase' }}>Trạng thái</AppText>
+              <AppText variant="sm" weight="bold" color={colors.text.muted} style={{ flex: 1, textTransform: 'uppercase' }}>Số HĐ</AppText>
+              <AppText variant="sm" weight="bold" color={colors.text.muted} style={{ flex: 1, textTransform: 'uppercase' }}>Người mua</AppText>
+              <AppText variant="sm" weight="bold" color={colors.text.muted} style={{ flex: 1, textAlign: 'right', textTransform: 'uppercase' }}>Giá trị</AppText>
+              <AppText variant="sm" weight="bold" color={colors.text.muted} style={{ flex: 0.8, textAlign: 'center', textTransform: 'uppercase' }}>Trạng thái</AppText>
             </View>
             {(data.recent_invoices || []).slice(0, isWide ? 4 : 2).map((inv: any, i: number) => (
               <View key={inv.id || i} style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: colors.border.default, backgroundColor: '#FFFFFF' }}>
-                <AppText variant="base" color={colors.text.muted} style={{ flex: 1 }}>{inv.invoice_number || '—'}</AppText>
-                <AppText variant="base" color={colors.text.muted} style={{ flex: 1 }} numberOfLines={1}>{inv.buyer_name || '—'}</AppText>
-                <AppText variant="base" weight="bold" color={colors.text.primary} style={{ flex: 1, textAlign: 'right' }}>{fmt(Number(inv.total_amount) || 0)}₫</AppText>
+                <AppText variant="md" color={colors.text.muted} style={{ flex: 1 }}>{inv.invoice_number || '—'}</AppText>
+                <AppText variant="md" color={colors.text.muted} style={{ flex: 1 }} numberOfLines={1}>{inv.buyer_name || '—'}</AppText>
+                <AppText variant="md" weight="bold" color={colors.text.primary} style={{ flex: 1, textAlign: 'right' }}>{fmt(Number(inv.total_amount) || 0)}₫</AppText>
                 <View style={{ flex: 0.8, alignItems: 'center' }}><InvBadge status={inv.status} /></View>
               </View>
             ))}
             {(data.recent_invoices || []).length === 0 && (
               <View style={{ padding: 20, alignItems: 'center' }}>
-                <AppText variant="base" color={colors.text.muted}>Chưa có dữ liệu hóa đơn</AppText>
+                <AppText variant="md" color={colors.text.muted}>Chưa có dữ liệu hóa đơn</AppText>
               </View>
             )}
           </SectionBlock>
@@ -322,11 +322,11 @@ export default function KeToanHub() {
               <View key={i} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 12, gap: 12, borderBottomWidth: i < (data.deadlines?.length ?? 0) - 1 ? 1 : 0, borderBottomColor: colors.border.default }}>
                 <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: urgent ? colors.status.danger : warn ? colors.status.warning : colors.status.success }} />
                 <View style={{ flex: 1 }}>
-                  <AppText variant="base" weight="bold" color={colors.text.primary}>{d.label}</AppText>
-                  <AppText variant="small" color={colors.text.muted}>Hạn: {d.due}</AppText>
+                  <AppText variant="md" weight="bold" color={colors.text.primary}>{d.label}</AppText>
+                  <AppText variant="sm" color={colors.text.muted}>Hạn: {d.due}</AppText>
                 </View>
                 <View style={{ paddingHorizontal: 16, paddingVertical: 6, borderRadius: 8, backgroundColor: urgent ? '#FEF2F2' : warn ? '#FFFBEB' : '#F0FDF4' }}>
-                  <AppText variant="small" weight="bold" color={urgent ? colors.status.danger : warn ? colors.status.warning : colors.status.success}>Còn {d.days_left} ngày</AppText>
+                  <AppText variant="sm" weight="bold" color={urgent ? colors.status.danger : warn ? colors.status.warning : colors.status.success}>Còn {d.days_left} ngày</AppText>
                 </View>
               </View>
             );

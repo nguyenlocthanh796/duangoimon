@@ -94,7 +94,7 @@ export default function ModuleTabs({ tabs, activeTab, onSelectTab }: ModuleTabsP
                 color={active ? colors.text.inverse : colors.text.secondary}
               />
               <AppText
-                variant="medium"
+                variant="md"
                 weight={active ? 'bold' : 'normal'}
                 color={active ? colors.text.inverse : colors.text.secondary}
               >

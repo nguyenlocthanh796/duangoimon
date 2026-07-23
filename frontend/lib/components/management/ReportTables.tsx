@@ -39,24 +39,24 @@ export function DailyReportTable({ data }: { data: DayData[] }) {
   return (
     <View style={s.section}>
       <View style={{flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8}}>
-        <AppText variant="large" style={{color: colors.text.primary}}>📋 Chi tiết theo ngày</AppText>
+        <AppText variant="lg" style={{color: colors.text.primary}}>📋 Chi tiết theo ngày</AppText>
       </View>
       <View style={s.tableHeader}>
-        <AppText variant="small" style={[s.thCell, { flex: 1.5 }]}>Ngày</AppText>
-        <AppText variant="small" style={[s.thCell, { flex: 1, textAlign: 'center' }]}>Đơn</AppText>
-        <AppText variant="small" style={[s.thCell, { flex: 2, textAlign: 'right' }]}>Doanh thu</AppText>
+        <AppText variant="sm" style={[s.thCell, { flex: 1.5 }]}>Ngày</AppText>
+        <AppText variant="sm" style={[s.thCell, { flex: 1, textAlign: 'center' }]}>Đơn</AppText>
+        <AppText variant="sm" style={[s.thCell, { flex: 2, textAlign: 'right' }]}>Doanh thu</AppText>
       </View>
       {data.map((d, i) => (
         <View key={i} style={[s.tableRow, i % 2 === 0 && { backgroundColor: colors.surface.app }]}>
-          <AppText variant="base" style={[s.tdCell, { flex: 1.5 }]}>
+          <AppText variant="md" style={[s.tdCell, { flex: 1.5 }]}>
             {formatDayLabel(d.date)} {formatDate(d.date)}
           </AppText>
           <View style={{ flex: 1, alignItems: 'center' }}>
             <View style={s.ordersBadge}>
-              <AppText variant="small" style={s.ordersCount}>{d.orders}</AppText>
+              <AppText variant="sm" style={s.ordersCount}>{d.orders}</AppText>
             </View>
           </View>
-          <AppText variant="base" style={[s.revCell, { flex: 2 }]}>{formatFullVND(d.revenue)}</AppText>
+          <AppText variant="md" style={[s.revCell, { flex: 2 }]}>{formatFullVND(d.revenue)}</AppText>
         </View>
       ))}
     </View>
@@ -72,33 +72,33 @@ export function TopProductsTable({ data }: { data: TopProduct[] }) {
   return (
     <View style={s.section}>
       <View style={{flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8}}>
-        <AppText variant="large" style={{color: colors.text.primary}}>🏆 Top sản phẩm bán chạy</AppText>
+        <AppText variant="lg" style={{color: colors.text.primary}}>🏆 Top sản phẩm bán chạy</AppText>
       </View>
       {data.length === 0 ? (
         <View style={s.emptyBox}>
           <Icon name="inbox" size={40} color="#CBD5E1" />
-          <AppText variant="base" style={s.emptyText}>Không có dữ liệu</AppText>
+          <AppText variant="md" style={s.emptyText}>Không có dữ liệu</AppText>
         </View>
       ) : (
         <>
           <View style={s.tableHeader}>
-            <AppText variant="small" style={[s.thCell, { width: 36 }]}>#</AppText>
-            <AppText variant="small" style={[s.thCell, { flex: 1 }]}>Sản phẩm</AppText>
-            <AppText variant="small" style={[s.thCell, { width: 60, textAlign: 'center' }]}>SL</AppText>
-            <AppText variant="small" style={[s.thCell, { width: 90, textAlign: 'right' }]}>Doanh thu</AppText>
+            <AppText variant="sm" style={[s.thCell, { width: 36 }]}>#</AppText>
+            <AppText variant="sm" style={[s.thCell, { flex: 1 }]}>Sản phẩm</AppText>
+            <AppText variant="sm" style={[s.thCell, { width: 60, textAlign: 'center' }]}>SL</AppText>
+            <AppText variant="sm" style={[s.thCell, { width: 90, textAlign: 'right' }]}>Doanh thu</AppText>
           </View>
           {data.map((p, i) => (
             <View key={i} style={[s.tableRow, i % 2 === 0 && { backgroundColor: colors.surface.app }]}>
-              <AppText variant="base" style={[s.rankCell, { width: 36 }]}>{i < 3 ? MEDAL[i] : `${i + 1}`}</AppText>
-              <AppText variant="base" style={[s.tdCell, { flex: 1 }]} numberOfLines={1}>
+              <AppText variant="md" style={[s.rankCell, { width: 36 }]}>{i < 3 ? MEDAL[i] : `${i + 1}`}</AppText>
+              <AppText variant="md" style={[s.tdCell, { flex: 1 }]} numberOfLines={1}>
                 {p.name}
               </AppText>
               <View style={{ width: 60, alignItems: 'center' }}>
                 <View style={s.qtyBadge}>
-                  <AppText variant="small" style={s.qtyText}>{p.quantity}</AppText>
+                  <AppText variant="sm" style={s.qtyText}>{p.quantity}</AppText>
                 </View>
               </View>
-              <AppText variant="base" style={[s.revCell, { width: 90 }]}>{formatVND(p.total)}</AppText>
+              <AppText variant="md" style={[s.revCell, { width: 90 }]}>{formatVND(p.total)}</AppText>
             </View>
           ))}
         </>

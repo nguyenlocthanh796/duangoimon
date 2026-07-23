@@ -229,7 +229,7 @@ function DataTableComponent<T>(props: DataTableProps<T>) {
         ]}
       >
         <View style={styles.headInner}>
-          <AppText variant="small" style={[styles.headText, active && styles.headTextActive, compact && styles.headTextCompact]} numberOfLines={1}>
+          <AppText variant="sm" style={[styles.headText, active && styles.headTextActive, compact && styles.headTextCompact]} numberOfLines={1}>
             {col.title}
           </AppText>
           {col.sortable && (
@@ -433,7 +433,7 @@ function FilterPill({
               setOpen(false);
             }}
           >
-            <AppText variant="small" style={[styles.filterItemText, !value && styles.filterItemTextActive]}>
+            <AppText variant="sm" style={[styles.filterItemText, !value && styles.filterItemTextActive]}>
               Tất cả
             </AppText>
           </TouchableOpacity>
@@ -478,7 +478,7 @@ function BulkBar({
       <TouchableOpacity onPress={onClear} style={styles.bulkClear} activeOpacity={0.7}>
         <Icon name="close-circle" size={18} color={colors.text.muted} />
       </TouchableOpacity>
-      <AppText variant="base" style={styles.bulkCount}>Đã chọn {count}</AppText>
+      <AppText variant="md" style={styles.bulkCount}>Đã chọn {count}</AppText>
       <View style={{ flex: 1 }} />
       {actions.map((a, i) => (
         <TouchableOpacity
@@ -488,7 +488,7 @@ function BulkBar({
           activeOpacity={0.8}
         >
           <Icon name={a.icon as any} size={16} color="#fff" />
-          <AppText variant="medium" style={styles.bulkBtnText}>{a.label}</AppText>
+          <AppText variant="md" style={styles.bulkBtnText}>{a.label}</AppText>
         </TouchableOpacity>
       ))}
     </View>
@@ -497,7 +497,7 @@ function BulkBar({
 
 function safeRender(node: React.ReactNode) {
   if (React.isValidElement(node)) return node;
-  return <AppText variant="base">{node}</AppText>;
+  return <AppText variant="md">{node}</AppText>;
 }
 
 function DefaultMobileCard<T>({ columns, row, compact }: { columns: Column<T>[]; row: T; compact?: boolean }) {
@@ -509,7 +509,7 @@ function DefaultMobileCard<T>({ columns, row, compact }: { columns: Column<T>[];
     <View style={[styles.mobileCard, cardPadStyle]}>
       {columns.map((col) => (
         <View key={col.key} style={[styles.mobileCardRow, rowGapStyle]}>
-          <AppText variant="small" style={styles.mobileCardLabel}>{col.title}</AppText>
+          <AppText variant="sm" style={styles.mobileCardLabel}>{col.title}</AppText>
           <View style={{ flex: 1, alignItems: 'flex-end' }}>{safeRender(col.render(row))}</View>
         </View>
       ))}
@@ -520,8 +520,8 @@ function DefaultMobileCard<T>({ columns, row, compact }: { columns: Column<T>[];
 function EmptyState({ icon, title, subtitle }: { icon: string; title: string; subtitle: string }) {
   return (
     <View style={styles.emptyBox}>
-      <Icon name={icon as any} size={48} color={colors.text.muted} /><AppText variant="base" style={[ { color: colors.text.muted, marginTop: 8, textAlign: 'center' }]}>{title}</AppText>
-      {!!subtitle && <AppText variant="small" style={[ { color: colors.text.muted, marginTop: 4, textAlign: 'center' }]}>{subtitle}</AppText>}
+      <Icon name={icon as any} size={48} color={colors.text.muted} /><AppText variant="md" style={[ { color: colors.text.muted, marginTop: 8, textAlign: 'center' }]}>{title}</AppText>
+      {!!subtitle && <AppText variant="sm" style={[ { color: colors.text.muted, marginTop: 4, textAlign: 'center' }]}>{subtitle}</AppText>}
     </View>
   );
 }
@@ -630,9 +630,9 @@ const styles = StyleSheet.create({
   headCell: { paddingVertical: 12, paddingHorizontal: 12, justifyContent: 'center' },
   headCellActive: { backgroundColor: colors.brand.primaryBg },
   headInner: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  headText: { ...font.tableHeader, color: colors.text.tableHeader, fontWeight: '600' },
+  headText: { ...font.smBold, color: colors.text.tableHeader, fontWeight: '600' },
   headTextActive: { color: colors.brand.primaryDark },
-  headTextCompact: { ...font.tableHeader, color: colors.text.tableHeader, fontWeight: '600' },
+  headTextCompact: { ...font.smBold, color: colors.text.tableHeader, fontWeight: '600' },
   bodyRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -695,7 +695,7 @@ const styles = StyleSheet.create({
     minWidth: 120,
   },
   filterItem: { paddingVertical: 8, paddingHorizontal: 10, borderRadius: shape.radius.sm },
-  filterItemText: { ...font.caption, color: colors.text.secondary },
+  filterItemText: { ...font.sm, color: colors.text.secondary },
   filterItemTextActive: { color: colors.brand.primary, fontWeight: '600' },
   // bulk
   bulkBar: {
@@ -713,7 +713,7 @@ const styles = StyleSheet.create({
     borderTopColor: colors.border.brand,
   },
   bulkClear: { padding: 4 },
-  bulkCount: { ...font.bodySmall, fontWeight: '600', color: colors.text.primary },
+  bulkCount: { ...font.sm, fontWeight: '600', color: colors.text.primary },
   bulkBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -722,7 +722,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: shape.radius.md,
   },
-  bulkBtnText: { ...font.buttonSmall, color: '#fff', fontWeight: '600' },
+  bulkBtnText: { ...font.smBold, color: '#fff', fontWeight: '600' },
   // mobile
   mobileList: { paddingHorizontal: 0, gap: 0, paddingBottom: 100, paddingTop: 0 },
   mobileCard: {
@@ -740,7 +740,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   mobileCardRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  mobileCardLabel: { ...font.caption, color: colors.text.muted, fontWeight: '600', minWidth: 90 },
+  mobileCardLabel: { ...font.sm, color: colors.text.muted, fontWeight: '600', minWidth: 90 },
   mobileSelRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingLeft: 12, paddingRight: 4, paddingVertical: 4 },
-  mobileSelText: { ...font.caption, color: colors.text.muted },
+  mobileSelText: { ...font.sm, color: colors.text.muted },
 });

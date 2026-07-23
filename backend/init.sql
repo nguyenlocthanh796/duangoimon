@@ -107,20 +107,25 @@ CREATE TABLE IF NOT EXISTS ban_hang.order_items (
 
 -- Seed products
 INSERT INTO ban_hang.products (code, name, category, price) VALUES
-    ('CF001', 'Cà phê đen', 'Đồ uống', 25000),
-    ('CF002', 'Cà phê sữa', 'Đồ uống', 30000),
-    ('TR001', 'Trà đào', 'Đồ uống', 35000),
-    ('MN001', 'Phở bò', 'Món chính', 55000),
-    ('MN002', 'Bún chả', 'Món chính', 45000)
+    ('SC01', 'Sữa chua đánh đá', 'SỮA CHUA', 20000),
+    ('TC01', 'Trà chanh truyền thống', 'TRÀ CHANH', 10000),
+    ('CHE01', 'Chè bưởi', 'CHÈ', 15000),
+    ('TS01', 'Trà sữa truyền thống', 'TRÀ SỮA', 20000),
+    ('DV01', 'Xúc xích', 'ĐỒ ĂN VẶT', 10000)
 ON CONFLICT (code) DO NOTHING;
 
--- Seed tables
+-- Seed tables (10 bàn)
 INSERT INTO ban_hang.tables (name, area, capacity) VALUES
-    ('A01', 'Trong nhà', 4),
-    ('A02', 'Trong nhà', 4),
-    ('B01', 'Sân vườn', 6),
-    ('B02', 'Sân vườn', 6),
-    ('C01', 'VIP', 8)
+    ('Bàn 1', 'Trong nhà', 4),
+    ('Bàn 2', 'Trong nhà', 4),
+    ('Bàn 3', 'Trong nhà', 4),
+    ('Bàn 4', 'Trong nhà', 4),
+    ('Bàn 5', 'Trong nhà', 4),
+    ('Bàn 6', 'Ngoài trời', 4),
+    ('Bàn 7', 'Ngoài trời', 4),
+    ('Bàn 8', 'Ngoài trời', 4),
+    ('Bàn 9', 'VIP', 6),
+    ('Bàn 10', 'VIP', 6)
 ON CONFLICT DO NOTHING;
 
 -- Default stations for KDS routing

@@ -138,7 +138,7 @@ export default function BranchPeriodFilter({
             <View style={styles.centerBox}>
               <Icon name="store-outline" size={48} color={colors.text.muted} />
               <Text
-                style={[font.body, { color: colors.text.muted, marginTop: 8, textAlign: 'center' }]}
+                style={[font.md, { color: colors.text.muted, marginTop: 8, textAlign: 'center' }]}
               >
                 Không có chi nhánh nào
               </Text>
@@ -171,7 +171,7 @@ export default function BranchPeriodFilter({
                     {b.name}
                   </Text>
                   {b.tax_code ? (
-                    <Text style={[font.caption, { color: colors.text.muted }]}>
+                    <Text style={[font.sm, { color: colors.text.muted }]}>
                       MST: {b.tax_code}
                     </Text>
                   ) : null}
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     height: 44,
   },
   branchBtnLocked: { opacity: 0.85, backgroundColor: colors.surface.disabled },
-  branchText: { ...font.body, color: colors.text.primary, flex: 1 },
+  branchText: { ...font.md, color: colors.text.primary, flex: 1 },
   placeholder: { color: colors.text.placeholder },
   inputWrap: {
     backgroundColor: colors.surface.app,
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border.default,
     paddingHorizontal: 12,
   },
-  input: { height: 44, ...font.body, color: colors.text.primary },
+  input: { height: 44, ...font.md, color: colors.text.primary },
   formRow: { flexDirection: 'row', gap: 6, width: '100%', marginTop: 4 },
   formChip: {
     flex: 1,
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   formChipActive: { backgroundColor: colors.brand.primaryBg, borderColor: colors.border.brand },
-  formChipText: { ...font.caption, color: colors.text.muted, fontWeight: '600' },
+  formChipText: { ...font.sm, color: colors.text.muted, fontWeight: '600' },
   formChipTextActive: { color: colors.brand.primary },
   centerBox: { alignItems: 'center', justifyContent: 'center', paddingVertical: 40 },
   branchItem: {
@@ -257,6 +257,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  branchItemName: { ...font.body, fontWeight: '600', color: colors.text.primary },
+  branchItemName: { ...font.md, fontWeight: '600', color: colors.text.primary },
   branchItemNameActive: { color: colors.brand.primary },
 });

@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   baseText: {
-    ...font.button,
+    ...font.mdBold,
   },
   disabled: {
     opacity: 0.5,

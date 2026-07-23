@@ -3,14 +3,14 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
-import { colors, font } from '../../lib/theme';
+import { colors, font, formatVND } from '../../lib/theme';
 import { request } from '../../lib/api/client';
 import type { ExecDashboard } from '../../lib/api/client';
 import DataTable, { type Column } from '../../lib/components/ui/DataTable';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
 import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 
-function formatVND(v: number) { return (v || 0).toLocaleString('vi-VN') + 'đ'; }
+
 
 type TabKey = 'branch' | 'daily';
 
@@ -180,23 +180,23 @@ const styles = StyleSheet.create({
   refreshBtn: { width: 44, height: 44, borderRadius: 8, backgroundColor: '#F5F5F5', alignItems: 'center', justifyContent: 'center' },
   statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
   barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
-  statValue: { ...font.bodyBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
-  statLabel: { ...font.micro, color: '#737373', lineHeight: 12 },
+  statValue: { ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
+  statLabel: { ...font.sm, color: '#737373', lineHeight: 12 },
   filterRow: { flexDirection: 'row', gap: 12, paddingHorizontal: 12, paddingVertical: 12, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
   chip: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#E5E5E5' },
   chipActive: { backgroundColor: '#F97316', borderColor: '#F97316' },
-  chipText: { ...font.badge, color: '#737373' },
+  chipText: { ...font.smBold, color: '#737373' },
   chipTextActive: { color: '#fff', fontWeight: '600' },
-  cellPrimary: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
-  cellHighlight: { ...font.bodySmall, fontWeight: '600', color: '#F97316' },
+  cellPrimary: { ...font.sm, fontWeight: '600', color: '#171717' },
+  cellHighlight: { ...font.sm, fontWeight: '600', color: '#F97316' },
   panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12},
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelHeaderText: { ...font.body, fontWeight: '600', color: '#171717' },
-  panelLabel: { ...font.caption, color: '#737373' },
-  panelValue: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
+  panelHeaderText: { ...font.md, fontWeight: '600', color: '#171717' },
+  panelLabel: { ...font.sm, color: '#737373' },
+  panelValue: { ...font.sm, fontWeight: '600', color: '#171717' },
   kpi: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, borderWidth: 1, borderColor: '#F0F0F0' },
-  kpiLabel: { ...font.caption, color: '#737373', marginBottom: 2 },
-  kpiValue: { ...font.pageTitle, fontWeight: '600', color: '#171717', marginBottom: 2 },
-  kpiChange: { ...font.badge, fontWeight: '600' },
+  kpiLabel: { ...font.sm, color: '#737373', marginBottom: 2 },
+  kpiValue: { ...font.lg, fontWeight: '600', color: '#171717', marginBottom: 2 },
+  kpiChange: { ...font.smBold, fontWeight: '600' },
   separator: { width: 1, backgroundColor: '#F0F0F0' },
 });

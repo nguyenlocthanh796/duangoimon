@@ -75,9 +75,9 @@ export default function StationsScreen() {
       sortValue: (s) => s.printer_name ? 1 : 0,
       render: (s) => s.printer_name ? (
         <View style={[styles.chipSmall, { backgroundColor: '#DCFCE7' }]}>
-          <Icon name="printer" size={10} color={'#16A34A'} /><Text style={{ ...font.micro, fontWeight: '600', color: '#16A34A' }}>Có</Text>
+          <Icon name="printer" size={10} color={'#16A34A'} /><Text style={{ ...font.sm, fontWeight: '600', color: '#16A34A' }}>Có</Text>
         </View>
-      ) : <Text style={{ ...font.caption, color: '#737373' }}>—</Text>,
+      ) : <Text style={{ ...font.sm, color: '#737373' }}>—</Text>,
     },
   ];
 
@@ -102,10 +102,10 @@ export default function StationsScreen() {
       <View style={styles.panelDivider} />
       {selected ? (
         <View style={{ gap: 12}}>
-          <Text style={{ ...font.body, fontWeight: '600', color: '#171717' }}>{selected.name}</Text>
-          <Text style={{ ...font.caption, color: '#737373' }}>Mã: {selected.code}</Text>
-          <Text style={{ ...font.caption, color: '#737373' }}>Danh mục: {(selected.categories || []).join(', ') || 'Tất cả'}</Text>
-          {selected.printer_name && <Text style={{ ...font.caption, color: '#737373' }}>🖨️ {selected.printer_name}</Text>}
+          <Text style={{ ...font.md, fontWeight: '600', color: '#171717' }}>{selected.name}</Text>
+          <Text style={{ ...font.sm, color: '#737373' }}>Mã: {selected.code}</Text>
+          <Text style={{ ...font.sm, color: '#737373' }}>Danh mục: {(selected.categories || []).join(', ') || 'Tất cả'}</Text>
+          {selected.printer_name && <Text style={{ ...font.sm, color: '#737373' }}>🖨️ {selected.printer_name}</Text>}
           <View style={{ flexDirection: 'row', gap: 16, marginTop: 4 }}>
             <TouchableOpacity onPress={() => openEdit(selected)} style={[styles.panelBtn, { backgroundColor: '#F97316' }]}><Icon name="pencil" size={14} color="#fff" /><Text style={styles.panelBtnText}>Sửa</Text></TouchableOpacity>
             <TouchableOpacity onPress={() => del(selected.id)} style={[styles.panelBtn, { backgroundColor: '#DC2626' }]}><Icon name="delete" size={14} color="#fff" /><Text style={styles.panelBtnText}>Xoá</Text></TouchableOpacity>
@@ -207,20 +207,20 @@ const styles = StyleSheet.create({
   addBtn: { width: 36, height: 36, borderRadius: 8, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center' },
   statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
   barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
-  statValue: { ...font.bodyBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
-  statLabel: { ...font.micro, color: '#737373', lineHeight: 12 },
-  cellPrimary: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
-  cellMuted: { ...font.caption, color: '#737373' },
+  statValue: { ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
+  statLabel: { ...font.sm, color: '#737373', lineHeight: 12 },
+  cellPrimary: { ...font.sm, fontWeight: '600', color: '#171717' },
+  cellMuted: { ...font.sm, color: '#737373' },
   chipSmall: { flexDirection: 'row', alignItems: 'center', gap: 3, paddingVertical: 3, paddingHorizontal: 8, borderRadius: 999},
   panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelHeaderText: { ...font.body, fontWeight: '600', color: '#171717' },
+  panelHeaderText: { ...font.md, fontWeight: '600', color: '#171717' },
   panelDivider: { height: 1, backgroundColor: '#F0F0F0' },
   panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12, paddingHorizontal: 12, borderRadius: 8},
-  panelBtnText: { ...font.buttonSmall, fontWeight: '600', color: '#fff' },
+  panelBtnText: { ...font.smBold, fontWeight: '600', color: '#fff' },
   panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16, backgroundColor: '#F97316', borderRadius: 8, paddingVertical: 12, minHeight: 44 },
-  panelCtaText: { ...font.button, color: '#fff' },
-  fieldLabel: { ...font.label, color: '#404040', marginBottom: 6 },
-  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.body, color: '#171717', backgroundColor: '#FAFAFA' },
+  panelCtaText: { ...font.mdBold, color: '#fff' },
+  fieldLabel: { ...font.smBold, color: '#404040', marginBottom: 6 },
+  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.md, color: '#171717', backgroundColor: '#FAFAFA' },
   separator: { width: 1, backgroundColor: '#F0F0F0' },
 });

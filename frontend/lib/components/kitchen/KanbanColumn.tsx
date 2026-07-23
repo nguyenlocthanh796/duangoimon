@@ -24,6 +24,12 @@ interface KanbanColumnProps {
   onMoveForward: (orderId: string) => void;
 }
 
+const EMPTY_LABELS: Record<string, string> = {
+  cho_xu_ly: 'Chưa có món chờ xử lý',
+  dang_lam: 'Chưa có món đang làm',
+  hoan_thanh: 'Chưa có món hoàn thành',
+};
+
 export default function KanbanColumn({
   col,
   orders,
@@ -31,7 +37,7 @@ export default function KanbanColumn({
   onMoveForward,
 }: KanbanColumnProps) {
   return (
-    <View style={{ flex: 1, flexDirection: 'column' }}>
+    <View style={{ flex: 1, minHeight: '100%' }}>
       {/* Column header */}
       <View
         style={{
@@ -50,7 +56,7 @@ export default function KanbanColumn({
           <Icon name={col.icon as any} size={18} color={col.headerText} />
           <Text
             style={{
-              ...font.label,
+              ...font.smBold,
               fontWeight: '600',
               color: col.headerText,
               textTransform: 'uppercase',
@@ -62,13 +68,13 @@ export default function KanbanColumn({
         </View>
         <View
           style={{
-            width: 24, height: 24, borderRadius: 6,
+            width: 24, height: 24, borderRadius: shape.radius.full,
             backgroundColor: col.dotColor,
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <Text style={{ ...font.caption, fontWeight: '600', color: colors.text.inverse }}>
+          <Text style={{ ...font.sm, fontWeight: '600', color: colors.text.inverse }}>
             {orders.length}
           </Text>
         </View>
@@ -77,7 +83,7 @@ export default function KanbanColumn({
       {/* Cards */}
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 20 }}
+        contentContainerStyle={{ paddingBottom: 20, flexGrow: 1 }}
       >
         {orders.map((order) => (
           <TicketCard
@@ -89,45 +95,25 @@ export default function KanbanColumn({
           />
         ))}
 
-        {orders.length === 0 && col.id === 'cho_xu_ly' && (
+        {orders.length === 0 && (
           <View
             style={{
-              borderWidth: 2,
+              borderWidth: 1.5,
               borderStyle: 'dashed',
-              borderColor: colors.border.strong,
-              borderRadius: shape.radius.md,
-              padding: 24,
+              borderColor: '#D1D5DB',
+              borderRadius: 12,
+              minHeight: 120,
+              backgroundColor: '#F9FAFB',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: 8,
               marginTop: 8,
+              padding: 16,
             }}
           >
-            <Image
-              source={ASSETS.images.emptyStateOrders}
-              style={{ width: 120, height: 120 }}
-              resizeMode="contain"
-            />
-            <Text style={{ ...font.bodySmall, color: colors.text.muted, textAlign: 'center' }}>
-              Không có đơn chờ
-            </Text>
-          </View>
-        )}
-        {orders.length === 0 && col.id !== 'cho_xu_ly' && (
-          <View
-            style={{
-              borderWidth: 2,
-              borderStyle: 'dashed',
-              borderColor: colors.border.strong,
-              borderRadius: shape.radius.md,
-              padding: 24,
-              alignItems: 'center',
-              gap: 8,
-              marginTop: 8,
-            }}
-          >
-            <Icon name={col.emptyIcon as any} size={36} color={colors.border.strong} />
-            <Text style={{ ...font.bodySmall, color: colors.text.muted, textAlign: 'center' }}>
-              {col.id === 'dang_lam' ? 'Chưa có món đang làm' : 'Chưa có món hoàn thành'}
+            <Icon name={col.emptyIcon as any} size={28} color="#9CA3AF" />
+            <Text style={{ ...font.sm, color: '#9CA3AF', textAlign: 'center' }}>
+              {EMPTY_LABELS[col.id] || 'Không có đơn'}
             </Text>
           </View>
         )}

@@ -45,7 +45,7 @@ export default function StatCard({
             size={compact ? 7 : 12}
             color={growth! >= 0 ? colors.status.success : colors.status.danger}
           />
-          <AppText variant="small" weight="bold" color={colors.text.primary}>
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>
             {growth! >= 0 ? '+' : ''}
             {growth}%
           </AppText>
@@ -61,7 +61,7 @@ export default function StatCard({
           <SkeletonBox w={'60%'} h={compact ? 24 : 32} />
         ) : (
           <AppText
-            variant="large"
+            variant="lg"
             weight="bold"
             color={colors.text.primary}
             numberOfLines={1}
@@ -76,7 +76,7 @@ export default function StatCard({
 
       {/* Row 2: Label */}
       <AppText
-        variant={compact ? 'small' : 'base'}
+        variant={'sm'}
         weight={compact ? 'normal' : 'bold'}
         color={colors.text.secondary}
         numberOfLines={1}
@@ -110,7 +110,7 @@ const stylesNormal = {
     backgroundColor: colors.surface.disabled,
     flexShrink: 0,
   },
-  trendBadgeText: { ...font.micro, fontWeight: '600' as const },
+  trendBadgeText: { ...font.sm, fontWeight: '600' as const },
   row1: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: 12 },
   iconBg: {
     width: 40,
@@ -120,12 +120,12 @@ const stylesNormal = {
     justifyContent: 'center' as const,
   },
   value: {
-    ...font.statNumber,
+    ...font.lg,
     color: colors.text.primary,
     flex: 1,
     flexShrink: 1,
   },
-  label: { ...font.body, color: colors.text.secondary, fontWeight: '500' as const, marginTop: 4 },
+  label: { ...font.md, color: colors.text.secondary, fontWeight: '500' as const, marginTop: 4 },
 } as const;
 
 const stylesCompact = {
@@ -151,7 +151,7 @@ const stylesCompact = {
     backgroundColor: colors.surface.disabled,
     flexShrink: 0,
   },
-  trendBadgeText: { ...font.micro, fontWeight: '600' as const },
+  trendBadgeText: { ...font.sm, fontWeight: '600' as const },
   row1: { flexDirection: 'row' as const, alignItems: 'center' as const, justifyContent: 'center' as const, gap: 6 },
   iconBg: {
     width: 30,
@@ -161,13 +161,13 @@ const stylesCompact = {
     justifyContent: 'center' as const,
   },
   value: {
-    ...font.sectionTitle,
+    ...font.lg,
     color: colors.text.primary,
     flexShrink: 1,
     textAlign: 'center' as const,
   },
   label: {
-    ...font.caption,
+    ...font.sm,
     color: colors.text.secondary,
     fontWeight: '500' as const,
     marginTop: 1,

@@ -129,19 +129,19 @@ export default function BookingScreen() {
           return (
             <TouchableOpacity key={k} style={[styles.panelRow, statusFilter === k && { backgroundColor: v.bg, borderRadius: 8, paddingHorizontal: 8 }]} onPress={() => setStatusFilter(statusFilter === k ? '' : k)}>
               <View style={{ width: 8, height: 8, borderRadius: 12, backgroundColor: v.color }} />
-              <Text style={{ flex: 1, ...font.bodySmall, color: '#171717' }}>{v.label}</Text>
-              <Text style={{ ...font.bodySmall, fontWeight: '600', color: v.color }}>{c}</Text>
+              <Text style={{ flex: 1, ...font.sm, color: '#171717' }}>{v.label}</Text>
+              <Text style={{ ...font.sm, fontWeight: '600', color: v.color }}>{c}</Text>
             </TouchableOpacity>
           );
         })}
-        {statusFilter ? <TouchableOpacity onPress={() => setStatusFilter('')} style={{ paddingVertical: 6}}><Text style={{ ...font.micro, color: '#F97316' }}>Xoá bộ lọc</Text></TouchableOpacity> : null}
+        {statusFilter ? <TouchableOpacity onPress={() => setStatusFilter('')} style={{ paddingVertical: 6}}><Text style={{ ...font.sm, color: '#F97316' }}>Xoá bộ lọc</Text></TouchableOpacity> : null}
         <View style={styles.panelDivider} />
         {selected ? (
           <View style={{ gap: 12}}>
-            <Text style={{ ...font.body, fontWeight: '600', color: '#171717' }}>{selected.customer_name}</Text>
-            <Text style={{ ...font.caption, color: '#737373' }}>{selected.phone}</Text>
-            <Text style={{ ...font.caption, color: '#737373' }}>{selected.guest_count} khách</Text>
-            {selected.note ? <Text style={{ ...font.caption, color: '#404040', fontStyle: 'italic' }}>{selected.note}</Text> : null}
+            <Text style={{ ...font.md, fontWeight: '600', color: '#171717' }}>{selected.customer_name}</Text>
+            <Text style={{ ...font.sm, color: '#737373' }}>{selected.phone}</Text>
+            <Text style={{ ...font.sm, color: '#737373' }}>{selected.guest_count} khách</Text>
+            {selected.note ? <Text style={{ ...font.sm, color: '#404040', fontStyle: 'italic' }}>{selected.note}</Text> : null}
             {selected.status === 'pending' && (
               <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
                 <TouchableOpacity onPress={() => handleStatusChange(selected.id, 'confirmed')} style={[styles.panelBtn, { backgroundColor: '#16A34A' }]}><Icon name="check" size={14} color="#fff" /><Text style={styles.panelBtnText}>Xác nhận</Text></TouchableOpacity>
@@ -282,35 +282,35 @@ export default function BookingScreen() {
 
 const styles = StyleSheet.create({
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, height: 44, borderRadius: 8, backgroundColor: '#F97316' },
-  addBtnText: { ...font.buttonSmall, fontWeight: '600', color: '#fff' },
+  addBtnText: { ...font.smBold, fontWeight: '600', color: '#fff' },
   statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
   barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
-  statValue: { ...font.bodyBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
-  statLabel: { ...font.micro, color: '#737373', lineHeight: 12 },
+  statValue: { ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
+  statLabel: { ...font.sm, color: '#737373', lineHeight: 12 },
   filterRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 4, paddingVertical: 8, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0', flexWrap: 'wrap' },
   chip: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#E5E5E5' },
   chipActive: { backgroundColor: '#F97316', borderColor: '#F97316' },
-  chipText: { ...font.badge, color: '#737373' },
+  chipText: { ...font.smBold, color: '#737373' },
   chipTextActive: { color: '#fff', fontWeight: '600' },
-  cellPrimary: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
-  cellSub: { ...font.micro, color: '#737373' },
-  cellNumber: { ...font.bodySmall, color: '#171717', textAlign: 'center' },
-  cellMuted: { ...font.caption, color: '#737373', textAlign: 'center' },
+  cellPrimary: { ...font.sm, fontWeight: '600', color: '#171717' },
+  cellSub: { ...font.sm, color: '#737373' },
+  cellNumber: { ...font.sm, color: '#171717', textAlign: 'center' },
+  cellMuted: { ...font.sm, color: '#737373', textAlign: 'center' },
   avatar: { width: 30, height: 30, borderRadius: 4, alignItems: 'center', justifyContent: 'center' },
   statusBadge: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 3, paddingVertical: 3, paddingHorizontal: 8, borderRadius: 999},
-  statusText: { ...font.micro, fontWeight: '600' },
+  statusText: { ...font.sm, fontWeight: '600' },
   panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12},
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelHeaderText: { ...font.body, fontWeight: '600', color: '#171717' },
-  panelStatValue: { ...font.pageTitle, fontWeight: '600', color: '#171717' },
-  panelStatLabel: { ...font.caption, color: '#737373', marginTop: 2 },
+  panelHeaderText: { ...font.md, fontWeight: '600', color: '#171717' },
+  panelStatValue: { ...font.lg, fontWeight: '600', color: '#171717' },
+  panelStatLabel: { ...font.sm, color: '#737373', marginTop: 2 },
   panelDivider: { height: 1, backgroundColor: '#F0F0F0' },
   panelRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8},
   panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 10, paddingHorizontal: 10, borderRadius: 8},
-  panelBtnText: { ...font.buttonSmall, fontWeight: '600', color: '#fff' },
+  panelBtnText: { ...font.smBold, fontWeight: '600', color: '#fff' },
   panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#F97316', borderRadius: 8, paddingVertical: 12, minHeight: 44 },
-  panelCtaText: { ...font.button, color: '#fff' },
-  fieldLabel: { ...font.label, color: '#404040', marginBottom: 6 },
-  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.body, color: '#171717', backgroundColor: '#FAFAFA' },
+  panelCtaText: { ...font.mdBold, color: '#fff' },
+  fieldLabel: { ...font.smBold, color: '#404040', marginBottom: 6 },
+  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.md, color: '#171717', backgroundColor: '#FAFAFA' },
   separator: { width: 1, backgroundColor: '#F0F0F0' },
 });

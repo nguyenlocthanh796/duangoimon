@@ -10,7 +10,7 @@ const CACHE = {
   fonts: 'posa-fonts-v1',
   images: 'posa-images-v1',
   api: 'posa-api-v1',
-  bundle: 'posa-bundle-v2',
+  bundle: 'posa-bundle-v3',
 };
 
 const STATIC_ASSETS = [
@@ -150,7 +150,7 @@ async function staleWhileRevalidate(request, cacheName) {
       if (response.ok) cache.put(request, response.clone());
       return response;
     })
-    .catch(() => cached);
+    .catch(() => undefined);
 
-  return cached || fetchPromise;
+  return cached || (await fetchPromise) || new Response('Offline', { status: 503 });
 }

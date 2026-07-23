@@ -3,7 +3,7 @@ import { cachedGet, invalidateCache } from './cache';
 
 export async function getProducts() {
   return cachedGet('products_pos', async () => {
-    const res = await request<any>('/ban-hang/products');
+    const res = await request<any>('/ban-hang/products?page_size=100');
     if (res && typeof res === 'object') {
       if (Array.isArray(res.items)) return res.items;
       if (Array.isArray(res)) return res;

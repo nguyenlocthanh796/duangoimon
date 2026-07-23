@@ -65,11 +65,9 @@ export default function PaymentScreen() {
     );
   }
 
-  const changeBg = pm.change >= 0 ? '#16A34A' : colors.surface.danger;
-  const changeBorder = pm.change >= 0 ? palette.green[350] : colors.border.danger;
-  const disabledBg = '#F5F5F5';
-  const disabledText = '#737373';
-
+  const changeBg = pm.change >= 0 ? colors.status.successBg : colors.surface.danger;
+  const changeBorder = pm.change >= 0 ? colors.border.success : colors.border.danger;
+  
   // iPad split layout
   const iPadView = (
     <View style={{ flex: 1, flexDirection: 'row' }}>
@@ -87,12 +85,12 @@ export default function PaymentScreen() {
             <View style={{ flex: 1 }}>
               <View style={{ backgroundColor: colors.surface.card, paddingHorizontal: 16, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: colors.border.default }}>
               <AppText
-                variant="medium"
+                variant="md"
                 weight="bold"
                 style={{
                   textTransform: 'uppercase',
                   letterSpacing: 1,
-                  color: '#737373',
+                  color: colors.text.muted,
                   marginBottom: 12,
                 }}
               >
@@ -102,7 +100,7 @@ export default function PaymentScreen() {
                 style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}
               >
                 <AppText color={colors.text.body}>Tên bàn</AppText>
-                <AppText weight="bold" color="#171717">
+                <AppText weight="bold" color={colors.text.primary}>
                   {tableName}
                 </AppText>
               </View>
@@ -116,22 +114,22 @@ export default function PaymentScreen() {
                   alignItems: 'center',
                 }}
               >
-                <AppText weight="bold" color="#171717">
+                <AppText weight="bold" color={colors.text.primary}>
                   Tổng thanh toán
                 </AppText>
-                <AppText variant="large" weight="bold" color="#F97316">
+                <AppText variant="lg" weight="bold" color={colors.brand.primary}>
                   {formatPriceFull(total)}
                 </AppText>
               </View>
               </View>
               <View style={{ backgroundColor: colors.surface.card, paddingHorizontal: 16, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: colors.border.default }}>
               <AppText
-                variant="medium"
+                variant="md"
                 weight="bold"
                 style={{
                   textTransform: 'uppercase',
                   letterSpacing: 1,
-                  color: '#737373',
+                  color: colors.text.muted,
                   marginBottom: 10,
                 }}
               >
@@ -148,9 +146,9 @@ export default function PaymentScreen() {
                         width: '47%',
                         paddingVertical: 12,
                         borderRadius: 0, // Flat
-                        backgroundColor: sel ? m.bg : '#FFFFFF',
+                        backgroundColor: sel ? m.bg : colors.surface.card,
                         borderWidth: 2,
-                        borderColor: sel ? m.color : '#E5E5E5',
+                        borderColor: sel ? m.color : colors.border.default,
                         alignItems: 'center',
                         gap: 12,
                       }}
@@ -172,8 +170,8 @@ export default function PaymentScreen() {
                         />
                       </View>
                       <AppText
-                        variant="medium"
-                        color={sel ? m.color : '#737373'}
+                        variant="md"
+                        color={sel ? m.color : colors.text.muted}
                         style={{ textAlign: 'center' }}
                       >
                         {m.label}
@@ -184,9 +182,9 @@ export default function PaymentScreen() {
                             position: 'absolute',
                             top: 8,
                             right: 8,
-                            width: 18,
-                            height: 18,
-                            borderRadius: 8,
+                            minWidth: 20,
+                            height: 20,
+                            borderRadius: shape.radius.full,
                             backgroundColor: m.color,
                             alignItems: 'center',
                             justifyContent: 'center',
@@ -212,7 +210,7 @@ export default function PaymentScreen() {
             {pm.method === 'tien_mat' || pm.method === 'card' ? (
               <View style={{ flex: 1 }}>
                 <AppText
-                  variant="medium"
+                  variant="md"
                   weight="bold"
                   style={{
                     color: colors.text.muted,
@@ -252,7 +250,7 @@ export default function PaymentScreen() {
                 ) : (
                   <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16}}>
                     <Icon name="file-document-outline" size={24} color={colors.icon.muted} />
-                    <Text style={{ ...font.caption, color: '#737373' }}>
+                    <Text style={{ ...font.sm, color: colors.text.muted }}>
                       Không có chi tiết món ăn
                     </Text>
                   </View>
@@ -275,7 +273,7 @@ export default function PaymentScreen() {
                 >
                   <Icon name="qrcode-scan" size={100} color={colors.text.primary} />
                 </View>
-                <AppText variant="large" weight="bold" color={colors.text.primary} style={{ textAlign: 'center' }}>
+                <AppText variant="lg" weight="bold" color={colors.text.primary} style={{ textAlign: 'center' }}>
                   Quét mã QR để thanh toán
                 </AppText>
                 <View style={{ gap: 12, width: '100%', marginTop: 8 }}>
@@ -318,12 +316,12 @@ export default function PaymentScreen() {
             <View style={{ flex: 1 }}>
               <View style={{ flex: 1 }}>
                 <AppText
-                  variant="medium"
+                  variant="md"
                   weight="bold"
                   style={{
                     textTransform: 'uppercase',
                     letterSpacing: 1,
-                    color: '#737373',
+                    color: colors.text.muted,
                     marginBottom: 12,
                   }}
                 >
@@ -340,7 +338,7 @@ export default function PaymentScreen() {
                   }}
                 >
                   <AppText
-                    variant="large"
+                    variant="lg"
                     weight="bold"
                     color={pm.cashInput ? colors.text.primary : colors.text.placeholder}
                   >
@@ -364,20 +362,20 @@ export default function PaymentScreen() {
                     <Icon
                       name={pm.change >= 0 ? 'check-circle' : 'alert-circle'}
                       size={16}
-                      color={pm.change >= 0 ? '#FFFFFF' : '#DC2626'}
+                      color={pm.change >= 0 ? colors.surface.card : colors.status.danger}
                     />
                     <AppText
-                      variant="base"
+                      variant="md"
                       weight="bold"
-                      color={pm.change >= 0 ? '#FFFFFF' : '#DC2626'}
+                      color={pm.change >= 0 ? colors.surface.card : colors.status.danger}
                     >
                       Tiền thối lại:
                     </AppText>
                   </View>
                   <AppText
-                    variant="large"
+                    variant="lg"
                     weight="bold"
-                    color={pm.change >= 0 ? '#FFFFFF' : '#DC2626'}
+                    color={pm.change >= 0 ? colors.surface.card : colors.status.danger}
                   >
                     {pm.change >= 0
                       ? formatPriceFull(pm.change)
@@ -393,14 +391,14 @@ export default function PaymentScreen() {
                       paddingVertical: 8,
                       justifyContent: 'center',
                       borderRadius: 8,
-                      backgroundColor: '#F97316',
+                      backgroundColor: colors.brand.primary,
                       borderWidth: 1.5,
                       borderColor: colors.border.brand,
                       alignItems: 'center',
                     }}
                   >
-                    <AppText variant="medium" color="#FFFFFF" numberOfLines={1}>Đúng tiền</AppText>
-                    <AppText variant="medium" weight="bold" color="#FFFFFF" numberOfLines={1}>
+                    <AppText variant="md" color="#FFFFFF" numberOfLines={1}>Đúng tiền</AppText>
+                    <AppText variant="md" weight="bold" color="#FFFFFF" numberOfLines={1}>
                       {formatPriceFull(total)}
                     </AppText>
                   </TouchableOpacity>
@@ -414,13 +412,13 @@ export default function PaymentScreen() {
                         paddingVertical: 8,
                         justifyContent: 'center',
                         borderRadius: 8,
-                        backgroundColor: '#FAFAFA',
+                        backgroundColor: colors.surface.app,
                         borderWidth: 1,
-                        borderColor: '#E5E5E5',
+                        borderColor: colors.border.default,
                         alignItems: 'center',
                       }}
                     >
-                      <AppText variant="medium" weight="bold" color={colors.text.body} numberOfLines={1}>
+                      <AppText variant="md" weight="bold" color={colors.text.body} numberOfLines={1}>
                         {formatPriceFull(amt)}
                       </AppText>
                     </TouchableOpacity>
@@ -435,26 +433,26 @@ export default function PaymentScreen() {
                   width: 100,
                   height: 64,
                   borderRadius: 12,
-                  backgroundColor: '#1E293B',
+                  backgroundColor: colors.surface.overlay,
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
               >
-                <Icon name="credit-card-chip" size={24} color="#FBBF24" />
-              <AppText variant="small" color={colors.text.muted} style={{ marginTop: 4, letterSpacing: 2 }}>
+                <Icon name="credit-card-chip" size={24} color={colors.status.warning} />
+              <AppText variant="sm" color={colors.text.muted} style={{ marginTop: 4, letterSpacing: 2 }}>
                   •••• 4242
                 </AppText>
               </View>
-              <AppText variant="large" weight="bold" color={colors.text.primary} style={{ textAlign: 'center' }}>
+              <AppText variant="lg" weight="bold" color={colors.text.primary} style={{ textAlign: 'center' }}>
                 Đang chờ quẹt thẻ
               </AppText>
               <AppText color={colors.text.muted} style={{ textAlign: 'center' }}>
                 Vui lòng đưa thẻ vào đầu đọc hoặc chạm thẻ lên màn hình.
               </AppText>
-              <AppText variant="large" weight="bold" color={colors.brand.primary}>
+              <AppText variant="lg" weight="bold" color={colors.brand.primary}>
                 {formatPriceFull(total)}
               </AppText>
-              <ActivityIndicator size="small" color={'#F97316'} />
+              <ActivityIndicator size="small" color={colors.brand.primary} />
             </View>
           ) : pm.method === 'qr' ? (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8}}>
@@ -472,13 +470,13 @@ export default function PaymentScreen() {
               >
                 <Icon name="qrcode-scan" size={90} color={colors.text.primary} />
               </View>
-              <AppText variant="large" weight="bold" color={colors.text.primary} style={{ textAlign: 'center' }}>
+              <AppText variant="lg" weight="bold" color={colors.text.primary} style={{ textAlign: 'center' }}>
                 Quét mã QR để thanh toán
               </AppText>
-              <AppText variant="large" weight="bold" color={colors.brand.primary}>
+              <AppText variant="lg" weight="bold" color={colors.brand.primary}>
                 {formatPriceFull(total)}
               </AppText>
-              <AppText variant="small" color={colors.text.muted} style={{ textAlign: 'center' }}>
+              <AppText variant="sm" color={colors.text.muted} style={{ textAlign: 'center' }}>
                 Sử dụng app ngân hàng hoặc ví điện tử quét mã trên.
               </AppText>
             </View>
@@ -489,14 +487,14 @@ export default function PaymentScreen() {
                   width: 80,
                   height: 80,
                   borderRadius: 40,
-                  backgroundColor: '#DC2626',
+                  backgroundColor: colors.status.danger,
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
               >
                 <Icon name="bank-transfer" size={40} color="#E11D48" />
               </View>
-              <AppText variant="large" weight="bold" color={colors.text.primary} style={{ textAlign: 'center' }}>
+              <AppText variant="lg" weight="bold" color={colors.text.primary} style={{ textAlign: 'center' }}>
                 Chuyển khoản ngân hàng
               </AppText>
               <View
@@ -511,36 +509,36 @@ export default function PaymentScreen() {
                 }}
               >
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <AppText variant="small" color={colors.text.muted}>Ngân hàng</AppText>
-                  <AppText variant="small" weight="bold" color={colors.text.primary}>
+                  <AppText variant="sm" color={colors.text.muted}>Ngân hàng</AppText>
+                  <AppText variant="sm" weight="bold" color={colors.text.primary}>
                     MB Bank
                   </AppText>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <AppText variant="small" color={colors.text.muted}>Số tài khoản</AppText>
-                  <AppText variant="small" weight="bold" color={colors.text.primary}>
+                  <AppText variant="sm" color={colors.text.muted}>Số tài khoản</AppText>
+                  <AppText variant="sm" weight="bold" color={colors.text.primary}>
                     0987654321
                   </AppText>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <AppText variant="small" color={colors.text.muted}>Chủ tài khoản</AppText>
-                  <AppText variant="small" weight="bold" color={colors.text.primary}>
+                  <AppText variant="sm" color={colors.text.muted}>Chủ tài khoản</AppText>
+                  <AppText variant="sm" weight="bold" color={colors.text.primary}>
                     NGUYEN VAN A
                   </AppText>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <AppText variant="small" color={colors.text.muted}>Số tiền</AppText>
-                  <AppText variant="small" weight="bold" color={colors.brand.primary}>
+                  <AppText variant="sm" color={colors.text.muted}>Số tiền</AppText>
+                  <AppText variant="sm" weight="bold" color={colors.brand.primary}>
                     {formatPriceFull(total)}
                   </AppText>
                 </View>
               </View>
-              <AppText variant="large" weight="bold" color={colors.text.primary} style={{ textAlign: 'center' }}>
+              <AppText variant="lg" weight="bold" color={colors.text.primary} style={{ textAlign: 'center' }}>
                 Nội dung chuyển khoản
               </AppText>
               <View
                 style={{
-                  backgroundColor: '#F97316',
+                  backgroundColor: colors.brand.primary,
                   borderRadius: 8,
                   paddingVertical: 16,
                   paddingHorizontal: 12,
@@ -580,7 +578,7 @@ export default function PaymentScreen() {
             ) : (
               <Icon name="check-circle" size={24} color={pm.canPay ? colors.text.inverse : colors.text.muted} />
             )}
-            <AppText variant="large" weight="bold" color={pm.canPay ? colors.text.inverse : colors.text.muted}>
+            <AppText variant="lg" weight="bold" color={pm.canPay ? colors.text.inverse : colors.text.muted}>
               {pm.paying ? 'Đang xử lý...' : 'Hoàn tất thanh toán'}
             </AppText>
           </TouchableOpacity>
@@ -595,6 +593,27 @@ export default function PaymentScreen() {
   const tabIcons = { payment: 'credit-card-outline', invoice: 'file-document-outline' };
   const iPhoneView = (
     <View style={{ flex: 1 }}>
+      {/* 4.1 — Summary bar cố định đầu màn (iPhone) */}
+      <View
+        style={{
+          backgroundColor: colors.brand.primaryBg,
+          paddingHorizontal: 16,
+          paddingVertical: 12,
+          borderBottomWidth: 1,
+          borderBottomColor: colors.border.brand,
+        }}
+      >
+        <AppText variant="sm" color={colors.text.muted}>
+          {tableName || ''} · Tại bàn · {pm.orderItems.length} món
+        </AppText>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
+          <AppText variant="md" weight="bold" color={colors.text.primary}>Tổng cộng</AppText>
+          <AppText variant="lg" weight="bold" color={colors.brand.primary}>
+            {formatPriceFull(total)}
+          </AppText>
+        </View>
+      </View>
+
       {/* Tab bar */}
       <View
         style={{
@@ -626,10 +645,10 @@ export default function PaymentScreen() {
               <Icon
                 name={tabIcons[t] as any}
                 size={18}
-                color={sel ? colors.text.inverse : '#404040'}
+                color={sel ? colors.text.inverse : colors.text.secondary}
               />
               <AppText
-                variant="medium"
+                variant="md"
                 weight="bold"
                 color={sel ? colors.brand.primary : colors.text.muted}
               >
@@ -670,7 +689,7 @@ export default function PaymentScreen() {
             <View style={{ height: 1, backgroundColor: colors.border.default, marginVertical: 4 }} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
               <AppText weight="bold" color={colors.text.primary}>Tổng cộng</AppText>
-              <AppText variant="large" weight="bold" color={colors.brand.primary}>
+              <AppText variant="lg" weight="bold" color={colors.brand.primary}>
                 {formatPriceFull(total)}
               </AppText>
             </View>
@@ -688,7 +707,7 @@ export default function PaymentScreen() {
           {/* Payment methods 2x2 grid */}
           <View style={{ backgroundColor: colors.surface.card, paddingHorizontal: 16, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: colors.border.default, gap: 12 }}>
             <AppText
-              variant="medium"
+              variant="md"
               weight="bold"
               style={{
                 textTransform: 'uppercase',
@@ -733,9 +752,9 @@ export default function PaymentScreen() {
                     />
                   </View>
                   <AppText
-                    variant="medium"
+                    variant="md"
                     weight="bold"
-                    color={sel ? m.color : '#737373'}
+                    color={sel ? m.color : colors.text.muted}
                     style={{ textAlign: 'center' }}
                   >
                     {m.label}
@@ -763,7 +782,7 @@ export default function PaymentScreen() {
           </View>
           </View>
 
-          {/* Cash — smartSuggestions replacing Numpad */}
+          {/* Cash — smartSuggestions 2×2 grid */}
           {pm.method === 'tien_mat' && (
             <View style={{ backgroundColor: colors.surface.card, paddingHorizontal: 16, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: colors.border.default, gap: 16 }}>
               <View
@@ -777,7 +796,7 @@ export default function PaymentScreen() {
                 }}
               >
                 <AppText
-                  variant="large"
+                  variant="lg"
                   weight="bold"
                   color={pm.cashInput ? colors.text.primary : colors.text.placeholder}
                 >
@@ -797,53 +816,71 @@ export default function PaymentScreen() {
                 }}
               >
                 <AppText
-                  variant="base"
+                  variant="md"
                   weight="bold"
-                  color={pm.change >= 0 ? '#FFFFFF' : '#DC2626'}
+                  color={pm.change >= 0 ? colors.surface.card : colors.status.danger}
                 >
                   Tiền thối:
                 </AppText>
                 <AppText
-                  variant="medium"
+                  variant="md"
                   weight="bold"
-                  color={pm.change >= 0 ? '#FFFFFF' : '#DC2626'}
+                  color={pm.change >= 0 ? colors.surface.card : colors.status.danger}
                 >
                   {pm.change >= 0
                     ? formatPriceFull(pm.change)
                     : `Thiếu ${formatPriceFull(Math.abs(pm.change))}`}
                 </AppText>
               </View>
-              <AppText variant="base" color={colors.text.muted}>
+              <AppText variant="md" color={colors.text.muted}>
                 Chọn số tiền khách đưa:
               </AppText>
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8}}>
-                {pm.smartSuggestions.slice(0, 6).map((amt) => (
-                  <TouchableOpacity
-                    key={amt}
-                    onPress={() => pm.setCashInput(String(amt))}
-                    style={{
-                      flex: 1,
-                      minWidth: '30%',
-                      minHeight: 40,
-                      paddingVertical: 6,
-                      borderRadius: 8, // Rectangular shape for quick amounts
-                      backgroundColor:
-                        pm.cash === amt ? '#F97316' : '#FAFAFA',
-                      borderWidth: pm.cash === amt ? 1.5 : 1,
-                      borderColor: pm.cash === amt ? '#F97316' : '#E5E5E5',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <AppText
-                      variant="medium"
-                      weight="bold"
-                      color={pm.cash === amt ? '#FFFFFF' : '#171717'}
+              {/* 4.2 — Quick amount 2×2 grid */}
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                {pm.smartSuggestions.slice(0, 4).map((amt, idx) => {
+                  const label = idx === 0 ? 'Đúng tiền' : '';
+                  return (
+                    <TouchableOpacity
+                      key={amt}
+                      onPress={() => pm.setCashInput(String(amt))}
+                      style={{
+                        width: '48%',
+                        height: 44,
+                        borderRadius: 10,
+                        backgroundColor: pm.cash === amt ? colors.brand.primaryBg : colors.surface.app,
+                        borderWidth: 1,
+                        borderColor: pm.cash === amt ? colors.brand.primary : colors.border.default,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
                     >
-                      {formatPriceFull(amt)}
-                    </AppText>
-                  </TouchableOpacity>
-                ))}
+                      {label ? (
+                        <>
+                          <AppText
+                            variant="sm"
+                            color={pm.cash === amt ? colors.brand.primary : colors.text.primary}
+                          >
+                            {label}
+                          </AppText>
+                          <AppText
+                            variant="md"
+                            color={pm.cash === amt ? colors.brand.primary : colors.text.primary}
+                          >
+                            {formatPriceFull(amt)}
+                          </AppText>
+                        </>
+                      ) : (
+                        <AppText
+                          variant="md"
+                          weight="bold"
+                          color={pm.cash === amt ? colors.brand.primary : colors.text.primary}
+                        >
+                          {formatPriceFull(amt)}
+                        </AppText>
+                      )}
+                    </TouchableOpacity>
+                  );
+                })}
               </View>
             </View>
           )}
@@ -851,112 +888,49 @@ export default function PaymentScreen() {
           {/* Card reader */}
           {pm.method === 'card' && (
             <View style={{ backgroundColor: colors.surface.card, paddingHorizontal: 16, paddingVertical: 24, borderBottomWidth: 1, borderBottomColor: colors.border.default, gap: 12, alignItems: 'center' }}>
-              <View
-                style={{
-                  width: 80,
-                  height: 52,
-                  borderRadius: 12,
-                  backgroundColor: '#1E293B',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Icon name="credit-card-chip" size={20} color="#FBBF24" />
-                <Text style={{ ...font.micro, color: '#737373', marginTop: 2, letterSpacing: 2 }}>
-                  •••• 4242
-                </Text>
+              <View style={{ width: 80, height: 52, borderRadius: 12, backgroundColor: colors.surface.overlay, alignItems: 'center', justifyContent: 'center' }}>
+                <Icon name="credit-card-chip" size={20} color={colors.status.warning} />
+                <Text style={{ ...font.sm, color: colors.text.muted, marginTop: 2, letterSpacing: 2 }}>•••• 4242</Text>
               </View>
-              <Text style={{ ...font.sectionTitle, color: '#171717' }}>Đang chờ quẹt thẻ</Text>
-              <Text style={{ ...font.priceLarge, color: '#F97316' }}>
-                {formatPriceFull(total)}
-              </Text>
-              <ActivityIndicator size="small" color={'#F97316'} />
+              <Text style={{ ...font.lg, color: colors.text.primary }}>Đang chờ quẹt thẻ</Text>
+              <Text style={{ ...font.lg, color: colors.brand.primary }}>{formatPriceFull(total)}</Text>
+              <ActivityIndicator size="small" color={colors.brand.primary} />
             </View>
           )}
 
           {/* QR code */}
           {pm.method === 'qr' && (
             <View style={{ backgroundColor: colors.surface.card, paddingHorizontal: 16, paddingVertical: 24, borderBottomWidth: 1, borderBottomColor: colors.border.default, gap: 12, alignItems: 'center' }}>
-              <View
-                style={{
-                  width: 140,
-                  height: 140,
-                  borderRadius: 0,
-                  borderWidth: 1.5,
-                  borderColor: colors.border.default,
-                  backgroundColor: colors.surface.card,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: 8,
-                }}
-              >
+              <View style={{ width: 140, height: 140, borderRadius: 0, borderWidth: 1.5, borderColor: colors.border.default, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center', padding: 8 }}>
                 <Icon name="qrcode-scan" size={100} color={colors.text.primary} />
               </View>
-              <AppText variant="large" weight="bold" color={colors.text.primary}>
-                Quét mã QR để thanh toán
-              </AppText>
-              <AppText variant="large" weight="bold" color={colors.brand.primary}>
-                {formatPriceFull(total)}
-              </AppText>
+              <AppText variant="lg" weight="bold" color={colors.text.primary}>Quét mã QR để thanh toán</AppText>
+              <AppText variant="lg" weight="bold" color={colors.brand.primary}>{formatPriceFull(total)}</AppText>
             </View>
           )}
 
-          {/* Bank transfer with QR mockup */}
+          {/* Bank transfer */}
           {pm.method === 'chuyen_khoan' && (
             <View style={{ backgroundColor: colors.surface.card, paddingHorizontal: 16, paddingVertical: 24, borderBottomWidth: 1, borderBottomColor: colors.border.default, gap: 16, alignItems: 'center' }}>
-              <View
-                style={{
-                  width: 140,
-                  height: 140,
-                  borderRadius: 0,
-                  borderWidth: 1.5,
-                  borderColor: colors.border.default,
-                  backgroundColor: colors.surface.card,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: 8,
-                }}
-              >
+              <View style={{ width: 140, height: 140, borderRadius: 0, borderWidth: 1.5, borderColor: colors.border.default, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center', padding: 8 }}>
                 <Icon name="qrcode-scan" size={100} color={colors.text.primary} />
               </View>
-              <View style={{ width: '100%', gap: 12}}>
+              <View style={{ width: '100%', gap: 12 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                   <AppText color={colors.text.muted}>Ngân hàng</AppText>
-                  <AppText weight="bold" color={colors.text.primary}>
-                    MB Bank
-                  </AppText>
+                  <AppText weight="bold" color={colors.text.primary}>MB Bank</AppText>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                   <AppText color={colors.text.muted}>Số tài khoản</AppText>
-                  <AppText weight="bold" color={colors.text.primary}>
-                    0987654321
-                  </AppText>
+                  <AppText weight="bold" color={colors.text.primary}>0987654321</AppText>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                   <AppText color={colors.text.muted}>Số tiền</AppText>
-                  <AppText weight="bold" color={colors.brand.primary}>
-                    {formatPriceFull(total)}
-                  </AppText>
+                  <AppText weight="bold" color={colors.brand.primary}>{formatPriceFull(total)}</AppText>
                 </View>
               </View>
-              <View
-                style={{
-                  backgroundColor: colors.surface.app,
-                  borderRadius: 0,
-                  paddingVertical: 16,
-                  paddingHorizontal: 12,
-                  borderWidth: 1,
-                  borderColor: colors.border.default,
-                  width: '100%',
-                  alignItems: 'center',
-                }}
-              >
-                <AppText
-                  variant="small"
-                  weight="bold"
-                  color={colors.text.muted}
-                  style={{ textAlign: 'center' }}
-                >
+              <View style={{ backgroundColor: colors.surface.app, borderRadius: 0, paddingVertical: 16, paddingHorizontal: 12, borderWidth: 1, borderColor: colors.border.default, width: '100%', alignItems: 'center' }}>
+                <AppText variant="sm" weight="bold" color={colors.text.muted} style={{ textAlign: 'center' }}>
                   TT {tableName} #{orderId?.slice(-6)}
                 </AppText>
               </View>
@@ -987,7 +961,7 @@ export default function PaymentScreen() {
             ) : (
               <Icon name="check-circle" size={24} color={pm.canPay ? colors.text.inverse : colors.text.muted} />
             )}
-            <AppText variant="large" weight="bold" color={pm.canPay ? colors.text.inverse : colors.text.muted}>
+            <AppText variant="lg" weight="bold" color={pm.canPay ? colors.text.inverse : colors.text.muted}>
               {pm.paying ? 'Đang xử lý...' : 'Hoàn tất thanh toán'}
             </AppText>
           </TouchableOpacity>
@@ -1041,25 +1015,25 @@ export default function PaymentScreen() {
               gap: 32,
             }}
           >
-            <Icon name="alert-circle" size={24} color={'#DC2626'} />
+            <Icon name="alert-circle" size={24} color={colors.status.danger} />
             <View style={{ flex: 1 }}>
               <AppText weight="bold" color={palette.red[800]}>
                 Thiếu ID đơn hàng
               </AppText>
-              <AppText variant="small" color="#DC2626" style={{ marginTop: 2 }}>
+              <AppText variant="sm" color={colors.status.danger} style={{ marginTop: 2 }}>
                 Không thể tiếp tục thanh toán vì chưa tạo được đơn hàng trên hệ thống.
               </AppText>
             </View>
             <TouchableOpacity
               onPress={() => router.back()}
               style={{
-                backgroundColor: '#DC2626',
+                backgroundColor: colors.status.danger,
                 paddingHorizontal: 12,
                 paddingVertical: 16,
                 borderRadius: 12,
               }}
             >
-              <AppText variant="small" color={colors.text.inverse}>Quay lại</AppText>
+              <AppText variant="sm" color={colors.text.inverse}>Quay lại</AppText>
             </TouchableOpacity>
           </View>
         )}

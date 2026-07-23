@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../../theme';
 import UnifiedHeader from '../ui/UnifiedHeader';
 import { useSidebar } from '../../context/SidebarContext';
+import { useResponsive } from '../../hooks/useResponsive';
 
 interface ScreenLayoutProps {
   children: React.ReactNode;
@@ -41,13 +42,14 @@ export default function ScreenLayout({
   compactHeader = false,
 }: ScreenLayoutProps) {
   const { openSidebar } = useSidebar();
+  const { pad } = useResponsive();
 
   const handleMenuPress = onMenuPress || openSidebar;
 
   const content = scrollable ? (
     <ScrollView
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={[{ paddingHorizontal: 0, paddingBottom: 40, gap: 8 }, contentContainerStyle]}
+      contentContainerStyle={[{ paddingHorizontal: pad.screen, paddingBottom: 40, gap: pad.gap }, contentContainerStyle]}
       refreshControl={
         onRefresh ? (
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand.primary} />
@@ -57,7 +59,7 @@ export default function ScreenLayout({
       {children}
     </ScrollView>
   ) : (
-    <View style={[{ flex: 1, paddingHorizontal: 0, paddingBottom: 40, gap: 8 }, contentContainerStyle]}>
+    <View style={[{ flex: 1, paddingHorizontal: pad.screen, paddingBottom: 40, gap: pad.gap }, contentContainerStyle]}>
       {children}
     </View>
   );

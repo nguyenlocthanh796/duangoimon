@@ -11,7 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import BottomSheet, { BottomSheetTextInput, BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import { COLORS, colors, palette, font, formatPrice } from '../../theme';
+import { colors, palette, font, formatPrice } from '../../theme';
 import { shape } from '../../theme/shape';
 import { MenuItem, CartItem } from './types';
 import AppText from '../ui/AppText';
@@ -90,10 +90,10 @@ export default function ModifierSheet({
           }}
         >
           <View style={{ flex: 1 }}>
-            <AppText variant="large" color={colors.text.primary} style={{ marginBottom: 4 }}>
+            <AppText variant="lg" color={colors.text.primary} style={{ marginBottom: 4 }}>
               {modalItem?.name}
             </AppText>
-            <AppText variant="large" weight="bold" color={COLORS.primary}>{formatPrice(modalPrice)}</AppText>
+            <AppText variant="lg" weight="bold" color={colors.brand.primary}>{formatPrice(modalPrice)}</AppText>
           </View>
           <TouchableOpacity
             onPress={onClose}
@@ -125,7 +125,7 @@ export default function ModifierSheet({
             }}
           >
             <AppText
-              variant="base"
+              variant="md"
               color={colors.text.secondary}
               style={{
                 textTransform: 'uppercase',
@@ -156,10 +156,10 @@ export default function ModifierSheet({
                   justifyContent: 'center',
                 }}
               >
-                <MaterialCommunityIcons name="minus" size={22} color={COLORS.primary} />
+                                <MaterialCommunityIcons name="minus" size={22} color={colors.brand.primary} />
               </TouchableOpacity>
               <AppText
-                variant="large"
+                variant="lg"
                 color={colors.text.primary}
                 style={{
                   width: 60,
@@ -181,7 +181,7 @@ export default function ModifierSheet({
                   justifyContent: 'center',
                 }}
               >
-                <MaterialCommunityIcons name="plus" size={22} color={COLORS.primary} />
+                <MaterialCommunityIcons name="plus" size={22} color={colors.brand.primary} />
               </TouchableOpacity>
             </View>
           </View>
@@ -190,8 +190,8 @@ export default function ModifierSheet({
           {modalItem && modalItem.sizes && modalItem.sizes.length > 0 && (
             <View style={{ marginBottom: 16 }}>
               <AppText
-                variant="base"
-                color={COLORS.muted}
+                variant="md"
+                color={colors.text.muted}
                 style={{
                   textTransform: 'uppercase',
                   letterSpacing: 1.2,
@@ -223,20 +223,20 @@ export default function ModifierSheet({
                           borderWidth: 2,
                           alignItems: 'center',
                           backgroundColor: sel ? colors.brand.primaryBg : colors.surface.app,
-                          borderColor: sel ? COLORS.primary : colors.border.default,
+                          borderColor: sel ? colors.brand.primary : colors.border.default,
                           minHeight: 44,
                         }}
                       >
                         <AppText
-                          variant="large"
+                          variant="lg"
                           weight="bold"
-                          color={sel ? COLORS.primary : colors.text.body}
+                          color={sel ? colors.brand.primary : colors.text.body}
                         >
                           Size {s.name}
                         </AppText>
                         <AppText
-                          variant="small"
-                          color={sel ? colors.text.brandDark : COLORS.muted}
+                          variant="sm"
+                          color={sel ? colors.text.brandDark : colors.text.muted}
                           style={{ marginTop: 4 }}
                         >
                           {deltaText}
@@ -249,7 +249,7 @@ export default function ModifierSheet({
                               right: 0,
                               width: 24,
                               height: 24,
-                              backgroundColor: COLORS.primary,
+                              backgroundColor: colors.brand.primary,
                               borderBottomLeftRadius: 2,
                               borderTopRightRadius: 4,
                               alignItems: 'center',
@@ -271,7 +271,7 @@ export default function ModifierSheet({
           {(modalItem?.toppings?.length ?? 0) > 0 && (
             <View style={{ marginBottom: 16 }}>
               <AppText
-                variant="base"
+                variant="md"
                 color={colors.text.secondary}
                 style={{
                   textTransform: 'uppercase',
@@ -296,7 +296,7 @@ export default function ModifierSheet({
                         borderRadius: shape.radius.md,
                         borderWidth: 1.5,
                         backgroundColor: sel ? colors.brand.primaryBg : colors.surface.app,
-                        borderColor: sel ? COLORS.primary : colors.border.default,
+                        borderColor: sel ? colors.brand.primary : colors.border.default,
                       }}
                     >
                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
@@ -305,9 +305,9 @@ export default function ModifierSheet({
                             width: 22,
                             height: 22,
                             borderRadius: 2,
-                            backgroundColor: sel ? COLORS.primary : colors.surface.card,
+                            backgroundColor: sel ? colors.brand.primary : colors.surface.card,
                             borderWidth: 1.5,
-                            borderColor: sel ? COLORS.primary : colors.border.strong,
+                            borderColor: sel ? colors.brand.primary : colors.border.strong,
                             alignItems: 'center',
                             justifyContent: 'center',
                           }}
@@ -317,14 +317,14 @@ export default function ModifierSheet({
                           )}
                         </View>
                         <AppText
-                          variant="medium"
+                          variant="md"
                           color={sel ? colors.text.primary : colors.text.body}
                           weight="bold"
                         >
                           {t.name}
                         </AppText>
                       </View>
-                      <AppText variant="medium" color={colors.text.secondary}>
+                      <AppText variant="md" color={colors.text.secondary}>
                         +{formatPrice(t.price)}
                       </AppText>
                     </TouchableOpacity>
@@ -337,7 +337,7 @@ export default function ModifierSheet({
           {/* Notes */}
           <View style={{ marginBottom: 12 }}>
             <AppText
-              variant="base"
+              variant="md"
               color={colors.text.secondary}
               style={{
                 textTransform: 'uppercase',
@@ -378,8 +378,8 @@ export default function ModifierSheet({
                     }}
                   >
                     <AppText
-                      variant="small"
-                      color={active ? COLORS.primary : colors.text.body}
+                      variant="sm"
+                      color={active ? colors.brand.primary : colors.text.body}
                     >
                       {q}
                     </AppText>
@@ -405,7 +405,7 @@ export default function ModifierSheet({
                   paddingVertical: 12,
                   paddingLeft: 38,
                   paddingRight: 16,
-                  ...font.bodySmall,
+                  ...font.sm,
                   color: colors.text.primary,
                   backgroundColor: colors.surface.app,
                 }}
@@ -440,7 +440,7 @@ export default function ModifierSheet({
                 alignItems: 'center',
               }}
             >
-              <AppText variant="medium" color={colors.text.body}>Hủy</AppText>
+              <AppText variant="md" color={colors.text.body}>Hủy</AppText>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={isEditMode ? onSave : onAdd}
@@ -471,7 +471,7 @@ export default function ModifierSheet({
                   size={18}
                   color={colors.text.inverse}
                 />
-                <AppText variant="medium" color={colors.text.inverse}>
+                <AppText variant="md" color={colors.text.inverse}>
                   {isEditMode ? 'Cập nhật' : 'Thêm vào giỏ'} · {formatPrice(modalPrice * modalQty)}
                 </AppText>
               </LinearGradient>
@@ -503,7 +503,7 @@ export default function ModifierSheet({
                 maxHeight: '85%',
                 borderRadius: shape.radius.md,
                 overflow: 'hidden',
-                boxShadow: '0 8px 16px rgba(0,0,0,0.25)',
+                ...shape.shadow.lg,
               }}
             >
               {renderModifierContent(false)}

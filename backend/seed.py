@@ -28,7 +28,12 @@ DATABASE_URL_ENV = os.getenv(
     "DATABASE_URL",
     "postgresql+psycopg://postgres:postgres@localhost:5432/pos_db",
 )
-SYNC_DSN = DATABASE_URL_ENV.replace("postgresql+psycopg://", "postgresql://")
+# Strip any async driver prefix for sync psycopg connection
+SYNC_DSN = (
+    DATABASE_URL_ENV
+    .replace("postgresql+asyncpg://", "postgresql://")
+    .replace("postgresql+psycopg://", "postgresql://")
+)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -162,8 +167,8 @@ CREATE TABLE IF NOT EXISTS ban_hang.stations (
 
 CREATE TABLE IF NOT EXISTS public.audit_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    branch_id UUID,
     user_id UUID NOT NULL,
-    user_name VARCHAR(50),
     action VARCHAR(20),
     resource VARCHAR(50),
     resource_id UUID,
@@ -298,21 +303,16 @@ USERS = [
 ]
 
 TABLES = [
-    # Tang 1: T01-T04
-    {"name": "T01", "area": "Tang 1", "capacity": 4, "status": "trong"},
-    {"name": "T02", "area": "Tang 1", "capacity": 4, "status": "trong"},
-    {"name": "T03", "area": "Tang 1", "capacity": 4, "status": "trong"},
-    {"name": "T04", "area": "Tang 1", "capacity": 4, "status": "trong"},
-    # Tang 2: T05-T08
-    {"name": "T05", "area": "Tang 2", "capacity": 4, "status": "trong"},
-    {"name": "T06", "area": "Tang 2", "capacity": 4, "status": "trong"},
-    {"name": "T07", "area": "Tang 2", "capacity": 4, "status": "trong"},
-    {"name": "T08", "area": "Tang 2", "capacity": 4, "status": "trong"},
-    # Ngoai Troi: N01-N04
-    {"name": "N01", "area": "Ngoai Troi", "capacity": 4, "status": "trong"},
-    {"name": "N02", "area": "Ngoai Troi", "capacity": 4, "status": "trong"},
-    {"name": "N03", "area": "Ngoai Troi", "capacity": 4, "status": "trong"},
-    {"name": "N04", "area": "Ngoai Troi", "capacity": 4, "status": "trong"},
+    {"name": "Bàn 1", "area": "Trong nhà", "capacity": 4, "status": "trong"},
+    {"name": "Bàn 2", "area": "Trong nhà", "capacity": 4, "status": "trong"},
+    {"name": "Bàn 3", "area": "Trong nhà", "capacity": 4, "status": "trong"},
+    {"name": "Bàn 4", "area": "Trong nhà", "capacity": 4, "status": "trong"},
+    {"name": "Bàn 5", "area": "Trong nhà", "capacity": 4, "status": "trong"},
+    {"name": "Bàn 6", "area": "Ngoài trời", "capacity": 4, "status": "trong"},
+    {"name": "Bàn 7", "area": "Ngoài trời", "capacity": 4, "status": "trong"},
+    {"name": "Bàn 8", "area": "Ngoài trời", "capacity": 4, "status": "trong"},
+    {"name": "Bàn 9", "area": "VIP", "capacity": 6, "status": "trong"},
+    {"name": "Bàn 10", "area": "VIP", "capacity": 6, "status": "trong"},
 ]
 
 PRODUCTS = [
@@ -803,7 +803,7 @@ def run_seed():
                 )
             conn.commit()
             print(
-                f"      [OK] {len(TABLES)} tables seeded (Tang 1: T01-T04, Tang 2: T05-T08, Ngoai Troi: N01-N04)"
+                f"      [OK] {len(TABLES)} tables seeded (Trong nhà: Bàn 1-5, Ngoài trời: Bàn 6-8, VIP: Bàn 9-10)"
             )
 
             # 4. Products
@@ -845,7 +845,7 @@ def run_seed():
     for u in USERS:
         print(f"  {u['username']:12s} / {u['plain_password']:16s}  (role: {u['role']})")
     print(f"\nDatabase : {SYNC_DSN}")
-    print("Tables   : 12 (Tang 1: T01-T04, Tang 2: T05-T08, Ngoai Troi: N01-N04)")
+    print("Tables   : 10 (Trong nhà: Bàn 1-5, Ngoài trời: Bàn 6-8, VIP: Bàn 9-10)")
     print(
         f"Products : {len(PRODUCTS)} (SỮA CHUA:7, TRÀ CHANH:6, ĐỒ ĂN VẶT:11, CHÈ:9, TRÀ SỮA:9, SODA:1, KEM:3)"
     )

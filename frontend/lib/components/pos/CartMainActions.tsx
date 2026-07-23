@@ -30,14 +30,14 @@ export default function CartMainActions({
   bulkToggleLabel,
 }: CartMainActionsProps) {
   return (
-    <View style={{ gap: 10 }}>
+    <View style={{ gap: shape.spacing.sm }}>
       {/* Temporary Print Button */}
       {onPrintTemporary && (
         <TouchableOpacity
           onPress={onPrintTemporary}
           style={{
-            height: 46,
-            borderRadius: 8,
+            height: shape.spacing.sp12,
+            borderRadius: shape.radius.md,
             backgroundColor: colors.surface.disabled,
             borderWidth: 1,
             borderColor: colors.border.default,
@@ -48,18 +48,18 @@ export default function CartMainActions({
           }}
         >
           <MaterialCommunityIcons name="printer" size={18} color={colors.text.secondary} />
-          <AppText variant="medium" color={colors.text.secondary}>IN TẠM TÍNH</AppText>
+          <AppText variant="md" color={colors.text.secondary}>IN TẠM TÍNH</AppText>
         </TouchableOpacity>
       )}
 
-      <View style={{ flexDirection: 'row', gap: 10 }}>
+      <View style={{ flexDirection: 'row', gap: shape.spacing.sm }}>
         <TouchableOpacity
           onPress={() => { haptic.impact('light'); onSendToKitchen(); }}
           disabled={!hasUnsentItems || submitting}
           style={{
             flex: 1,
             height: 50,
-            borderRadius: 8,
+            borderRadius: shape.radius.md,
             backgroundColor: hasUnsentItems ? colors.brand.primaryBg : colors.surface.disabled,
             borderWidth: 1.5,
             borderColor: hasUnsentItems ? colors.border.brand : colors.border.default,
@@ -68,7 +68,7 @@ export default function CartMainActions({
           }}
         >
           <AppText
-            variant="medium"
+            variant="md"
             color={hasUnsentItems ? colors.text.brand : colors.text.muted}
           >
             GỬI BẾP
@@ -80,7 +80,7 @@ export default function CartMainActions({
           style={{
             flex: 1,
             height: 50,
-            borderRadius: 8,
+            borderRadius: shape.radius.md,
             backgroundColor: colors.brand.primaryBg,
             borderWidth: 1.5,
             borderColor: colors.border.brand,
@@ -88,7 +88,7 @@ export default function CartMainActions({
             justifyContent: 'center',
           }}
         >
-          <AppText variant="medium" color={colors.text.brand}>LƯU HĐ</AppText>
+          <AppText variant="md" color={colors.text.brand}>LƯU HĐ</AppText>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => { haptic.impact('medium'); onPay(); }}
@@ -96,7 +96,7 @@ export default function CartMainActions({
           style={{
             flex: 1.5,
             height: 50,
-            borderRadius: 8,
+            borderRadius: shape.radius.md,
             backgroundColor: colors.brand.primary,
             alignItems: 'center',
             justifyContent: 'center',
@@ -107,7 +107,7 @@ export default function CartMainActions({
           {submitting ? (
             <ActivityIndicator size="small" color={colors.text.inverse} />
           ) : (
-            <AppText variant="medium" weight="bold" color={colors.text.inverse}>THANH TOÁN</AppText>
+            <AppText variant="md" weight="bold" color={colors.text.inverse}>THANH TOÁN</AppText>
           )}
         </TouchableOpacity>
       </View>

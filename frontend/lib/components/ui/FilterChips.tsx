@@ -31,7 +31,7 @@ export default function FilterChips({ options, selected, onSelect }: FilterChips
           >
             <Text
               style={{
-                ...font.micro,
+                ...font.sm,
                 fontWeight: '600',
                 color: active ? colors.text.inverse : colors.text.muted,
               }}

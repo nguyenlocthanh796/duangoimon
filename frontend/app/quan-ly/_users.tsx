@@ -164,7 +164,7 @@ export default function UsersScreen() {
             style={{ flex: 1, minHeight: 44, borderRadius: 8, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#E5E5E5', alignItems: 'center', justifyContent: 'center' }}
             onPress={() => setShowForm(false)}
           >
-            <Text style={{ ...font.button, color: '#404040' }}>Hủy</Text>
+            <Text style={{ ...font.mdBold, color: '#404040' }}>Hủy</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={{ flex: 1.5, minHeight: 44, borderRadius: 8, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 12}}
@@ -172,7 +172,7 @@ export default function UsersScreen() {
             disabled={saving}
           >
             {saving && <ActivityIndicator size="small" color={colors.text.inverse} />}
-            <Text style={{ ...font.button, color: colors.text.inverse }}>{editingId ? 'Cập nhật' : 'Lưu'}</Text>
+            <Text style={{ ...font.mdBold, color: colors.text.inverse }}>{editingId ? 'Cập nhật' : 'Lưu'}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -295,40 +295,40 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FAFAFA' },
 
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, height: 38, borderRadius: 8, backgroundColor: '#F97316' },
-  addBtnText: { ...font.buttonSmall, fontWeight: '600', color: colors.text.inverse },
+  addBtnText: { ...font.smBold, fontWeight: '600', color: colors.text.inverse },
 
   /* Right panel */
   panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12, boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelHeaderText: { ...font.body, fontWeight: '600', color: '#171717' },
+  panelHeaderText: { ...font.md, fontWeight: '600', color: '#171717' },
   panelStatRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  panelStatLabel: { ...font.caption, color: '#737373' },
-  panelStatValue: { ...font.sectionTitle, fontWeight: '600', color: '#171717' },
+  panelStatLabel: { ...font.sm, color: '#737373' },
+  panelStatValue: { ...font.lg, fontWeight: '600', color: '#171717' },
   panelDivider: { height: 1, backgroundColor: '#F0F0F0' },
   panelRow: { flexDirection: 'row', alignItems: 'center', gap: 32 },
   panelDot: { width: 8, height: 8, borderRadius: 12 },
-  panelLabel: { ...font.caption, color: '#737373' },
-  panelCount: { ...font.bodySmall, fontWeight: '600', marginTop: 1 },
-  panelPct: { ...font.micro },
+  panelLabel: { ...font.sm, color: '#737373' },
+  panelCount: { ...font.sm, fontWeight: '600', marginTop: 1 },
+  panelPct: { ...font.sm },
   panelFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 4 },
-  panelFooterText: { ...font.micro, color: '#737373' },
+  panelFooterText: { ...font.sm, color: '#737373' },
   panelCta: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#F97316', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 7, minHeight: 32 },
-  panelCtaText: { ...font.buttonSmall, color: colors.text.inverse },
+  panelCtaText: { ...font.smBold, color: colors.text.inverse },
 
   statusDotSmall: { width: 6, height: 6, borderRadius: 3 },
 
   /* List */
   loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
-  loadingText: { ...font.bodySmall, color: '#737373' },
+  loadingText: { ...font.sm, color: '#737373' },
 
   sectionHeader: {
     flexDirection: 'row', alignItems: 'center', gap: 16,
     marginHorizontal: 12, marginTop: 16, marginBottom: 6,
     paddingLeft: 10, borderLeftWidth: 3,
   },
-  sectionTitle: { ...font.caption, color: '#404040' },
+  sectionTitle: { ...font.sm, color: '#404040' },
   sectionCount: { paddingHorizontal: 16, paddingVertical: 4, borderRadius: 4},
-  sectionCountText: { ...font.badge, fontWeight: '600' },
+  sectionCountText: { ...font.smBold, fontWeight: '600' },
 
   userItem: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
@@ -338,15 +338,15 @@ const styles = StyleSheet.create({
     boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3,
   },
   avatar: { width: 44, height: 44, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
-  avatarText: { color: colors.text.inverse, ...font.sectionTitle },
-  userName: { ...font.bodySmall, fontWeight: '600', color: '#171717' },
-  userMeta: { ...font.caption, color: '#404040', marginTop: 1 },
+  avatarText: { color: colors.text.inverse, ...font.lg },
+  userName: { ...font.sm, fontWeight: '600', color: '#171717' },
+  userMeta: { ...font.sm, color: '#404040', marginTop: 1 },
   userRight: { alignItems: 'flex-end', gap: 5 },
   roleBadge: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16, paddingVertical: 8, borderRadius: 999},
-  roleText: { ...font.badge, fontWeight: '600' },
+  roleText: { ...font.smBold, fontWeight: '600' },
   activePill: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16, paddingVertical: 3, borderRadius: 999},
   activeDot: { width: 5, height: 5, borderRadius: 3 },
-  activeText: { ...font.badge, fontWeight: '600' },
+  activeText: { ...font.smBold, fontWeight: '600' },
 
   separator: { width: 1, backgroundColor: '#F0F0F0' },
 });

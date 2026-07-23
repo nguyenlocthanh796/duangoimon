@@ -303,21 +303,21 @@ const styles = StyleSheet.create({
   filterRow: { flexDirection: 'row', gap: 12, paddingHorizontal: 12, paddingVertical: 32, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
   chip: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#E5E5E5' },
   chipActive: { backgroundColor: '#F97316', borderColor: '#F97316' },
-  chipText: { ...font.badge, color: '#737373' },
+  chipText: { ...font.smBold, color: '#737373' },
   chipTextActive: { color: '#fff', fontWeight: '600' },
 
   /* Panel */
   panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12, boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelHeaderText: { ...font.body, fontWeight: '600', color: '#171717' },
-  panelStatLabel: { ...font.caption, color: '#737373', marginTop: 2 },
-  panelStatValue: { ...font.sectionTitle, fontWeight: '600', color: '#171717' },
+  panelHeaderText: { ...font.md, fontWeight: '600', color: '#171717' },
+  panelStatLabel: { ...font.sm, color: '#737373', marginTop: 2 },
+  panelStatValue: { ...font.lg, fontWeight: '600', color: '#171717' },
   panelDivider: { height: 1, backgroundColor: '#F0F0F0' },
   panelDividerV: { width: 1, backgroundColor: '#F0F0F0' },
-  panelLabel: { ...font.caption, color: '#737373' },
+  panelLabel: { ...font.sm, color: '#737373' },
 
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16},
-  loadingText: { ...font.bodySmall, color: '#404040' },
+  loadingText: { ...font.sm, color: '#404040' },
 
   summaryRow: { flexDirection: 'row', paddingHorizontal: 12, paddingTop: 14, gap: 16},
   summaryCard: {
@@ -328,18 +328,18 @@ const styles = StyleSheet.create({
     width: 32, height: 32, borderRadius: 8,
     alignItems: 'center', justifyContent: 'center', marginBottom: 8,
   },
-  summaryLabel: { ...font.caption, color: '#404040', fontWeight: '500' },
-  summaryValue: { ...font.sectionTitle, marginTop: 4 },
+  summaryLabel: { ...font.sm, color: '#404040', fontWeight: '500' },
+  summaryValue: { ...font.lg, marginTop: 4 },
 
   section: {
     backgroundColor: '#FFFFFF', borderRadius: 12,
     marginHorizontal: 12, marginTop: 14, padding: 16, ...CARD_SHADOW,
   },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 14 },
-  sectionTitle: { ...font.sectionTitle, color: '#171717' },
+  sectionTitle: { ...font.lg, color: '#171717' },
 
   emptyBox: { alignItems: 'center', paddingVertical: 12, gap: 16},
-  emptyText: { ...font.bodySmall, color: '#404040' },
+  emptyText: { ...font.sm, color: '#404040' },
 
   separator: { width: 1, backgroundColor: '#F0F0F0' },
 });

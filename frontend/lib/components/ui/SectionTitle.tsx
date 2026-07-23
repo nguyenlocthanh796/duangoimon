@@ -21,8 +21,8 @@ export function SectionTitle({
       <View style={styles.left}>
         {icon && <Icon name={icon as any} size={18} color={colors.brand.primary} />}
         <View>
-          <AppText variant="large" weight="bold">{title}</AppText>
-          {subtitle ? <AppText variant="small" style={{ marginTop: 2 }}>{subtitle}</AppText> : null}
+          <AppText variant="lg" weight="bold">{title}</AppText>
+          {subtitle ? <AppText variant="sm" style={{ marginTop: 2 }}>{subtitle}</AppText> : null}
         </View>
       </View>
       {right}
@@ -52,9 +52,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 4,
-    marginBottom: 10,
-    marginTop: 6,
+    paddingHorizontal: shape.spacing.xs,
+    marginBottom: shape.spacing.sm,
+    marginTop: shape.spacing.xs,
   },
   left: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   pill: {
@@ -66,6 +66,6 @@ const styles = StyleSheet.create({
     borderColor: colors.border.light,
     minWidth: 96,
   },
-  pillLabel: { ...font.caption, color: colors.text.muted, fontWeight: '600' },
-  pillValue: { ...font.sectionTitle, fontWeight: '600', marginTop: 2 },
+  pillLabel: { ...font.sm, color: colors.text.muted, fontWeight: '600' },
+  pillValue: { ...font.lg, fontWeight: '600', marginTop: 2 },
 });

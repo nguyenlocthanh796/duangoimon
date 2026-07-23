@@ -58,10 +58,10 @@ export const colors = {
     primaryDark: palette.orange[700],
   },
   surface: {
-    app: palette.slate[50],
+    app: '#EEF1F6',        // slate[100] — slightly darker for contrast
     card: palette.white,
     header: palette.white,
-    disabled: palette.slate[100],
+    disabled: '#E2E6ED',   // darker disabled bg
     overlay: 'rgba(0,0,0,0.5)',
     danger: '#FEF2F2',
     invert: '#0F172A',
@@ -73,13 +73,15 @@ export const colors = {
     tableRowAlt: '#F8FAFC',
     tableRowHover: '#FFF7ED',
     darkSecondary: '#1E293B',
+    miniCartBg: '#F1F5F9',  // darker
+    numpadKey: '#E2E6ED',   // darker
   },
   text: {
-    primary: palette.slate[900],
-    secondary: palette.slate[700],
-    body: palette.slate[700],
-    muted: palette.slate[500],
-    placeholder: palette.slate[500],
+    primary: palette.slate[900],    // #0F172A — già đậm
+    secondary: '#1E293B',           // slate[800] — tối hơn
+    body: '#334155',                // slate[700]
+    muted: '#475569',               // slate[600] — đọc rõ hơn
+    placeholder: '#64748B',         // slate[500] — rõ hơn
     inverse: palette.white,
     brand: palette.orange[500],
     brandDark: palette.orange[600],
@@ -91,15 +93,16 @@ export const colors = {
     tableHeader: palette.orange[600],
   },
   border: {
-    default: palette.slate[200],
+    default: '#C8CEDB',     // slate[300] — rõ hơn
     brand: palette.orange[500],
-    strong: palette.slate[300],
+    strong: '#A8B0C3',      // darker
     danger: '#FECACA',
     focus: palette.orange[500],
     success: '#BBF7D0',
-    light: palette.slate[100],
-    track: palette.slate[200],
+    light: '#E5E9F0',       // lighter variant but still visible
+    brandLight: palette.orange[200],
     table: palette.slate[200],
+    info: '#BAE6FD',
   },
   icon: {
     default: palette.slate[700],
@@ -118,6 +121,7 @@ export const colors = {
     warning: palette.amber[600],
     warningBg: '#FFFBEB',
     info: palette.blue[600],
+    successText: '#166534',
   },
   badge: {
     success: { bg: '#E8F5E9', text: '#2E7D32' },
@@ -157,17 +161,6 @@ export const colors = {
 // ─── ThemeColors type (for dark/light switching) ───────────
 export type ThemeColors = typeof colors;
 
-// Legacy flat COLORS (for backward compatibility)
-export const COLORS = {
-  primary: colors.brand.primary,
-  success: colors.status.available,
-  danger: colors.text.danger,
-  bg: colors.surface.app,
-  card: colors.surface.card,
-  text: colors.text.primary,
-  muted: colors.text.muted,
-  border: colors.border.default,
-};
 
 // ─── Dark Mode ──────────────────────────────────────────────
 export const paletteDark = {
@@ -211,6 +204,8 @@ export const colorsDark: typeof colors = {
     tableRowAlt: '#1E293B',
     tableRowHover: '#2D1B00',
     darkSecondary: '#1E293B',
+    miniCartBg: paletteDark.slate[200],
+    numpadKey: paletteDark.slate[300],
   },
   text: {
     primary: paletteDark.slate[900],
@@ -236,8 +231,9 @@ export const colorsDark: typeof colors = {
     focus: paletteDark.orange[500],
     success: '#166534',
     light: '#334155',
-    track: '#475569',
+    brandLight: paletteDark.orange[400],
     table: '#334155',
+    info: paletteDark.blue[600],
   },
   icon: {
     default: paletteDark.slate[700],
@@ -256,6 +252,7 @@ export const colorsDark: typeof colors = {
     warning: paletteDark.amber[600],
     warningBg: '#78350F',
     info: paletteDark.blue[600],
+    successText: '#BBF7D0',
   },
   badge: {
     success: { bg: '#052E16', text: '#BBF7D0' },

@@ -87,7 +87,7 @@ function RawMaterialPicker({
         ]}
       >
         <Text
-          style={{ ...font.caption, color: sel ? colors.text.primary : colors.text.muted, flex: 1 }}
+          style={{ ...font.sm, color: sel ? colors.text.primary : colors.text.muted, flex: 1 }}
           numberOfLines={1}
         >
           {sel ? `${sel.code || ''} ${sel.name}` : 'Chọn NL...'}
@@ -118,7 +118,7 @@ function RawMaterialPicker({
               padding: 10,
               borderBottomWidth: 1,
               borderBottomColor: colors.border.default,
-              ...font.caption,
+              ...font.sm,
             }}
           />
           <ScrollView keyboardShouldPersistTaps="handled">
@@ -140,7 +140,7 @@ function RawMaterialPicker({
                 >
                   <Text
                     style={{
-                      ...font.caption,
+                      ...font.sm,
                       fontWeight: value === m.id ? '700' : '400',
                       color: value === m.id ? colors.brand.primary : colors.text.primary,
                     }}
@@ -149,7 +149,7 @@ function RawMaterialPicker({
                     {m.name}
                   </Text>
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                    <Text style={{ ...font.micro, color: colors.text.muted }}>
+                    <Text style={{ ...font.sm, color: colors.text.muted }}>
                       Tồn: {m.current_stock} {m.unit}
                     </Text>
                     {isLowStock && (
@@ -275,14 +275,14 @@ export default function RecipeForm({
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface.card }}>
         <View style={s.modalHeader}>
           <TouchableOpacity onPress={onClose}>
-            <Text style={{ ...font.button, color: colors.text.muted }}>Huỷ</Text>
+            <Text style={{ ...font.mdBold, color: colors.text.muted }}>Huỷ</Text>
           </TouchableOpacity>
-          <Text style={{ ...font.sectionTitle, color: colors.text.primary }}>
+          <Text style={{ ...font.lg, color: colors.text.primary }}>
             {isEdit ? 'Sửa công thức' : isClone ? 'Nhân bản công thức' : 'Công thức mới'}
           </Text>
           <TouchableOpacity onPress={save} disabled={saving}>
             <Text
-              style={{ ...font.button, color: saving ? colors.text.muted : colors.brand.primary }}
+              style={{ ...font.mdBold, color: saving ? colors.text.muted : colors.brand.primary }}
             >
               {saving ? 'Đang lưu...' : 'Lưu'}
             </Text>
@@ -293,12 +293,12 @@ export default function RecipeForm({
         {salePrice > 0 && simMode && (
           <View style={s.simBar}>
             <View style={{ flexDirection: 'row', gap: 16 }}>
-              <Text style={{ ...font.caption, color: colors.text.primary }}>
+              <Text style={{ ...font.sm, color: colors.text.primary }}>
                 💰 {formatVND(totalCost)}
               </Text>
               <Text
                 style={{
-                  ...font.caption,
+                  ...font.sm,
                   color:
                     foodCostPct > 45
                       ? colors.status.danger
@@ -309,7 +309,7 @@ export default function RecipeForm({
               >
                 CP: {foodCostPct}%
               </Text>
-              <Text style={{ ...font.caption, color: colors.text.secondary }}>
+              <Text style={{ ...font.sm, color: colors.text.secondary }}>
                 LN: {formatVND(salePrice - totalCost)}
               </Text>
             </View>
@@ -362,7 +362,7 @@ export default function RecipeForm({
                     />
                     <Text
                       style={{
-                        ...font.micro,
+                        ...font.sm,
                         color: simMode ? colors.brand.primary : colors.text.muted,
                       }}
                     >
@@ -375,7 +375,7 @@ export default function RecipeForm({
                   style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
                 >
                   <Icon name="plus-circle-outline" size={18} color={colors.brand.primary} />
-                  <Text style={{ ...font.bodySmall, color: colors.brand.primary }}>Thêm</Text>
+                  <Text style={{ ...font.sm, color: colors.brand.primary }}>Thêm</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -431,7 +431,7 @@ export default function RecipeForm({
             })}
 
             {items.length === 0 && (
-              <Text style={{ ...font.caption, color: colors.text.muted, fontStyle: 'italic' }}>
+              <Text style={{ ...font.sm, color: colors.text.muted, fontStyle: 'italic' }}>
                 Chưa có nguyên liệu. Nhấn "Thêm" để bắt đầu.
               </Text>
             )}
@@ -452,13 +452,13 @@ const s = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border.default,
   },
-  label: { ...font.label, color: colors.text.secondary, marginBottom: 4 },
+  label: { ...font.smBold, color: colors.text.secondary, marginBottom: 4 },
   input: {
     borderWidth: 1.5,
     borderColor: colors.border.default,
     borderRadius: 10,
     padding: 12,
-    ...font.body,
+    ...font.md,
     color: colors.text.primary,
     backgroundColor: colors.surface.app,
   },
@@ -467,7 +467,7 @@ const s = StyleSheet.create({
     borderColor: colors.border.default,
     borderRadius: 8,
     padding: 8,
-    ...font.caption,
+    ...font.sm,
     color: colors.text.primary,
     backgroundColor: colors.surface.app,
   },

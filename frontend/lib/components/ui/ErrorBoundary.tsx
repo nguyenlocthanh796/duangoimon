@@ -60,12 +60,12 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   title: {
-    ...font.sectionTitle,
+    ...font.lg,
     color: colors.text.primary,
     marginTop: 8,
   },
   message: {
-    ...font.bodySmall,
+    ...font.sm,
     color: colors.text.muted,
     textAlign: 'center',
     marginBottom: 8,
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     borderRadius: shape.radius.md,
   },
   buttonText: {
-    ...font.button,
+    ...font.mdBold,
     color: '#fff',
   },
 });

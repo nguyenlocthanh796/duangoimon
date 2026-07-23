@@ -30,7 +30,7 @@ export default function NoteEditor({
             gap: 12,
           }}
         >
-          <AppText variant="medium" weight="bold" color={colors.text.primary}>Ghi chú món</AppText>
+          <AppText variant="md" weight="bold" color={colors.text.primary}>Ghi chú món</AppText>
           <TextInput
             value={noteText}
             onChangeText={onChangeText}
@@ -41,7 +41,7 @@ export default function NoteEditor({
               padding: 12,
               borderRadius: 8,
               backgroundColor: colors.surface.disabled,
-              ...font.body,
+              ...font.md,
               color: colors.text.primary,
               minHeight: 80,
               textAlignVertical: 'top',
@@ -59,7 +59,7 @@ export default function NoteEditor({
                 justifyContent: 'center',
               }}
             >
-              <AppText variant="medium" color={colors.text.secondary}>Huỷ</AppText>
+              <AppText variant="md" color={colors.text.secondary}>Huỷ</AppText>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={onSave}
@@ -72,7 +72,7 @@ export default function NoteEditor({
                 justifyContent: 'center',
               }}
             >
-              <AppText variant="medium" color={colors.text.inverse}>Lưu</AppText>
+              <AppText variant="md" color={colors.text.inverse}>Lưu</AppText>
             </TouchableOpacity>
           </View>
         </View>

@@ -99,7 +99,7 @@ export default function DeadlineScreen() {
       sortable: true,
       sortValue: (d) => d.form,
       render: (d) => (
-        <AppText variant="base" weight="bold" numberOfLines={1}>
+        <AppText variant="md" weight="bold" numberOfLines={1}>
           {d.form}
         </AppText>
       ),
@@ -111,7 +111,7 @@ export default function DeadlineScreen() {
       sortable: true,
       sortValue: (d) => d.period_type,
       render: (d) => (
-        <AppText variant="base" numberOfLines={1}>
+        <AppText variant="md" numberOfLines={1}>
           {d.period_type}
         </AppText>
       ),
@@ -122,7 +122,7 @@ export default function DeadlineScreen() {
       width: 110,
       sortable: true,
       sortValue: (d) => d.due_date,
-      render: (d) => <AppText variant="base">{d.due_date.slice(0, 10)}</AppText>,
+      render: (d) => <AppText variant="md">{d.due_date.slice(0, 10)}</AppText>,
     },
     {
       key: 'days',
@@ -136,7 +136,7 @@ export default function DeadlineScreen() {
         const c = urgencyColor(left);
         return (
           <View style={[styles.leftBadge, { backgroundColor: c }]}>
-            <AppText variant="base" weight="bold" color="#fff">{left > 0 ? `${left} ngày` : 'Quá hạn'}</AppText>
+            <AppText variant="md" weight="bold" color="#fff">{left > 0 ? `${left} ngày` : 'Quá hạn'}</AppText>
           </View>
         );
       },
@@ -162,7 +162,7 @@ export default function DeadlineScreen() {
                   { backgroundColor: ok ? colors.status.success : colors.surface.app },
                 ]}
               >
-                <AppText variant="small" weight="bold" color={ok ? '#fff' : colors.text.muted}>{lvl}</AppText>
+                <AppText variant="sm" weight="bold" color={ok ? '#fff' : colors.text.muted}>{lvl}</AppText>
               </View>
             );
           })}
@@ -179,11 +179,11 @@ export default function DeadlineScreen() {
       render: (d) =>
         d.submitted ? (
           <View style={[styles.badge, { backgroundColor: colors.status.success + '1A' }]}>
-            <AppText variant="small" weight="bold" style={{ color: colors.status.success }}>Đã nộp</AppText>
+            <AppText variant="sm" weight="bold" style={{ color: colors.status.success }}>Đã nộp</AppText>
           </View>
         ) : (
           <View style={[styles.badge, { backgroundColor: colors.status.warning + '1A' }]}>
-            <AppText variant="small" weight="bold" style={{ color: colors.status.warning }}>Chưa nộp</AppText>
+            <AppText variant="sm" weight="bold" style={{ color: colors.status.warning }}>Chưa nộp</AppText>
           </View>
         ),
     },
@@ -198,8 +198,8 @@ export default function DeadlineScreen() {
       <SwipeableRow rightActions={[]}>
         <View style={[styles.mRow, { borderLeftColor: c, borderLeftWidth: 4 }]}>
           <View style={{ flex: 1, paddingRight: 12 }}>
-            <AppText variant="base" weight="bold">{d.form}</AppText>
-            <AppText variant="small" color={colors.text.muted}>
+            <AppText variant="md" weight="bold">{d.form}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>
               {d.period_type} · đến hạn {d.due_date.slice(0, 10)}
             </AppText>
             <View style={[styles.progressRow, { justifyContent: 'flex-start' }]}>
@@ -217,15 +217,15 @@ export default function DeadlineScreen() {
                       { backgroundColor: ok ? colors.status.success : colors.surface.app },
                     ]}
                   >
-                    <AppText variant="small" weight="bold" color={ok ? '#fff' : colors.text.muted}>{lvl}</AppText>
+                    <AppText variant="sm" weight="bold" color={ok ? '#fff' : colors.text.muted}>{lvl}</AppText>
                   </View>
                 );
               })}
             </View>
-            <AppText variant="small" color={colors.text.muted}>{sent}/4 cấp cảnh báo đã gửi</AppText>
+            <AppText variant="sm" color={colors.text.muted}>{sent}/4 cấp cảnh báo đã gửi</AppText>
           </View>
           <View style={[styles.leftBadge, { backgroundColor: c }]}>
-            <AppText variant="base" weight="bold" color="#fff">{left > 0 ? `${left} ngày` : 'Quá hạn'}</AppText>
+            <AppText variant="md" weight="bold" color="#fff">{left > 0 ? `${left} ngày` : 'Quá hạn'}</AppText>
           </View>
         </View>
       </SwipeableRow>
