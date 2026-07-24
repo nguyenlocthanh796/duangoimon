@@ -63,7 +63,7 @@ export default function POSSettingsScreen() {
             borderRightWidth: isWide ? 1 : 0,
             borderBottomWidth: isWide ? 0 : 1,
             borderColor: colors.border.default,
-            paddingVertical: 12,
+            paddingVertical: isWide ? 12 : 8,
           }}
         >
           <ScrollView horizontal={!isWide} showsHorizontalScrollIndicator={false}>
@@ -77,18 +77,20 @@ export default function POSSettingsScreen() {
                     style={{
                       flexDirection: 'row',
                       alignItems: 'center',
-                      gap: 12,
-                      paddingHorizontal: 16,
-                      paddingVertical: 14,
+                      gap: 8,
+                      paddingHorizontal: isWide ? 16 : 12,
+                      paddingVertical: isWide ? 14 : 10,
                       borderRadius: shape.radius.md,
                       backgroundColor: active ? colors.brand.primaryBg : 'transparent',
                       borderLeftWidth: isWide && active ? 4 : 0,
                       borderLeftColor: colors.brand.primary,
+                      borderBottomWidth: !isWide && active ? 2 : 0,
+                      borderBottomColor: colors.brand.primary,
                     }}
                   >
-                    <Icon name={t.icon as any} size={22} color={active ? colors.brand.primary : colors.icon.muted} />
+                    <Icon name={t.icon as any} size={isWide ? 22 : 18} color={active ? colors.brand.primary : colors.icon.muted} />
                     <AppText
-                      variant="md"
+                      variant={isWide ? 'md' : 'sm'}
                       weight={active ? 'bold' : 'normal'}
                       color={active ? colors.brand.primary : colors.text.primary}
                     >
@@ -188,7 +190,7 @@ export default function POSSettingsScreen() {
                         borderColor: colors.border.default,
                         borderRadius: shape.radius.md,
                         paddingHorizontal: 14,
-                        paddingVertical: 10,
+                        height: 48,
                         ...font.md,
                         color: colors.text.primary,
                       }}
@@ -208,7 +210,7 @@ export default function POSSettingsScreen() {
                         borderColor: colors.border.default,
                         borderRadius: shape.radius.md,
                         paddingHorizontal: 14,
-                        paddingVertical: 10,
+                        height: 48,
                         ...font.md,
                         color: colors.text.primary,
                       }}
@@ -233,7 +235,7 @@ export default function POSSettingsScreen() {
                         paddingVertical: 10,
                         ...font.md,
                         color: colors.text.primary,
-                        height: 70,
+                        height: 72,
                       }}
                     />
                   </View>
@@ -431,31 +433,44 @@ export default function POSSettingsScreen() {
         </View>
       </View>
 
-      {/* Bottom Action Footer */}
+      {/* Bottom Action Footer - Premium 48px Buttons */}
       <View
         style={{
-          paddingHorizontal: 20,
-          paddingVertical: 14,
+          paddingHorizontal: isWide ? 24 : 14,
+          paddingVertical: 12,
           backgroundColor: colors.surface.card,
           borderTopWidth: 1,
           borderTopColor: colors.border.default,
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
+          gap: 8,
         }}
       >
-        <TouchableOpacity onPress={resetToDefaults}>
+        <TouchableOpacity
+          onPress={resetToDefaults}
+          style={{
+            height: 48,
+            paddingHorizontal: isWide ? 16 : 10,
+            borderRadius: shape.radius.md,
+            backgroundColor: colors.status.dangerBg,
+            borderWidth: 1,
+            borderColor: colors.border.danger,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
           <AppText variant="md" weight="bold" color={colors.status.danger}>
-            Khôi phục mặc định
+            {isWide ? 'Khôi phục mặc định' : 'Khôi phục'}
           </AppText>
         </TouchableOpacity>
 
-        <View style={{ flexDirection: 'row', gap: 12 }}>
+        <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
           <TouchableOpacity
             onPress={() => router.push('/ban-hang')}
             style={{
-              paddingHorizontal: 20,
               height: 48,
+              paddingHorizontal: isWide ? 20 : 14,
               borderRadius: shape.radius.md,
               borderWidth: 1,
               borderColor: colors.border.default,
@@ -464,14 +479,14 @@ export default function POSSettingsScreen() {
               justifyContent: 'center',
             }}
           >
-            <AppText variant="md" color={colors.text.secondary}>Thoát</AppText>
+            <AppText variant="md" weight="bold" color={colors.text.secondary}>Thoát</AppText>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={handleSave}
             style={{
-              paddingHorizontal: 28,
               height: 48,
+              paddingHorizontal: isWide ? 28 : 16,
               borderRadius: shape.radius.md,
               backgroundColor: colors.brand.primary,
               alignItems: 'center',
