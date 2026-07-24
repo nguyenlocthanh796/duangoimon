@@ -1,6 +1,6 @@
 'use client';
 import { useState, useCallback } from 'react';
-import { Alert } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import { api } from '../api';
 import { logger } from '../logger';
 import { MenuItem, CartItem } from '../components/pos/types';
@@ -141,15 +141,85 @@ export function useCart() {
   }, []);
 
   const toggleServiceType = useCallback((cartItemId: string) => {
-    setCart((prev) =>
-      prev.map((i) => {
-        if (i.cartItemId === cartItemId && !i.isSent) {
-          return { ...i, serviceType: i.serviceType === 'takeaway' ? 'dine_in' : 'takeaway' };
+    setCart((prev) => {
+      const idx = prev.findIndex((i) => i.cartItemId === cartItemId);
+      if (idx === -1) return prev;
+      const item = prev[idx];
+      const targetType = item.serviceType === 'takeaway' ? 'dine_in' : 'takeaway';
+      const targetLabel = targetType === 'takeaway' ? 'Mang về' : 'Tại bàn';
+
+      // If quantity is 1, toggle it immediately
+      if (item.qty === 1) {
+        return prev.map((i) =>
+          i.cartItemId === cartItemId ? { ...i, serviceType: targetType } : i
+        );
+      }
+
+      // If quantity > 1, ask the user (cross-platform helper)
+      if (typeof window !== 'undefined' && Platform.OS === 'web') {
+        const confirmAll = window.confirm(
+          `Bạn muốn chuyển tất cả ${item.qty} món sang [${targetLabel}]?\n\n- Chọn OK để chuyển tất cả.\n- Chọn Cancel để tách 1 món.`
+        );
+        const nextCart = [...prev];
+        if (confirmAll) {
+          nextCart[idx] = { ...item, serviceType: targetType };
+        } else {
+          // Reduce qty of existing item by 1
+          nextCart[idx] = { ...item, qty: item.qty - 1 };
+          // Append a new item with qty 1 and target service type
+          const newItem = {
+            ...item,
+            cartItemId: `cart_split_${genCartId()}`,
+            qty: 1,
+            serviceType: targetType,
+            isSent: false, // New split row is unsent until saved/sent
+          };
+          nextCart.push(newItem);
         }
-        return i;
-      })
-    );
-  }, []);
+        return nextCart;
+      } else {
+        // Native platforms: alert triggers state updates asynchronously
+        Alert.alert(
+          'Chuyển hình thức phục vụ',
+          `Bạn muốn chuyển ${item.qty}x ${item.name} sang [${targetLabel}] như thế nào?`,
+          [
+            { text: 'Huỷ', style: 'cancel' },
+            {
+              text: 'Tách 1 món',
+              onPress: () => {
+                setCart((current) => {
+                  const currIdx = current.findIndex((i) => i.cartItemId === cartItemId);
+                  if (currIdx === -1) return current;
+                  const currItem = current[currIdx];
+                  const nextCart = [...current];
+                  nextCart[currIdx] = { ...currItem, qty: currItem.qty - 1 };
+                  nextCart.push({
+                    ...currItem,
+                    cartItemId: `cart_split_${genCartId()}`,
+                    qty: 1,
+                    serviceType: targetType,
+                    isSent: false,
+                  });
+                  return nextCart;
+                });
+              },
+            },
+            {
+              text: 'Chuyển tất cả',
+              onPress: () => {
+                setCart((current) =>
+                  current.map((i) =>
+                    i.cartItemId === cartItemId ? { ...i, serviceType: targetType } : i
+                  )
+                );
+              },
+            },
+          ]
+        );
+        return prev;
+      }
+    });
+  }, [genCartId]);
 
   const updateItem = useCallback((cartItemId: string, updates: Partial<CartItem>) => {
     setCart((prev) => prev.map((i) => (i.cartItemId === cartItemId ? { ...i, ...updates } : i)));
