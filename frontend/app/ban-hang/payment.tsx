@@ -362,12 +362,12 @@ export default function PaymentScreen() {
                     <Icon
                       name={pm.change >= 0 ? 'check-circle' : 'alert-circle'}
                       size={16}
-                      color={pm.change >= 0 ? colors.surface.card : colors.status.danger}
+                      color={pm.change >= 0 ? colors.status.success : colors.status.danger}
                     />
                     <AppText
                       variant="md"
                       weight="bold"
-                      color={pm.change >= 0 ? colors.surface.card : colors.status.danger}
+                      color={pm.change >= 0 ? colors.status.success : colors.status.danger}
                     >
                       Tiền thối lại:
                     </AppText>
@@ -375,7 +375,7 @@ export default function PaymentScreen() {
                   <AppText
                     variant="lg"
                     weight="bold"
-                    color={pm.change >= 0 ? colors.surface.card : colors.status.danger}
+                    color={pm.change >= 0 ? colors.status.success : colors.status.danger}
                   >
                     {pm.change >= 0
                       ? formatPriceFull(pm.change)
