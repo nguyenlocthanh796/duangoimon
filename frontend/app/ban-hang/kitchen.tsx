@@ -160,13 +160,9 @@ export default function KitchenScreen() {
       if (!isMounted.current) return;
       setWsStatus('connecting');
       try {
-        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const host = window.location.hostname;
-        const port =
-          window.location.port === '8081' || window.location.port === '19006'
-            ? '8000'
-            : window.location.port;
-        const url = `${protocol}//${host}:${port}/ws/kitchen${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+        const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+        const wsHost = isLocal ? `ws://${window.location.hostname}:8000` : 'wss://pos-quanan-backend.onrender.com';
+        const url = `${wsHost}/ws/kitchen${token ? `?token=${encodeURIComponent(token)}` : ''}`;
         const socket = new WebSocket(url);
         socket.onopen = () => {
           if (isMounted.current) setWsStatus('connected');

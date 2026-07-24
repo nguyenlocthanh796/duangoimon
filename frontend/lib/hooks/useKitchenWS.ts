@@ -8,12 +8,8 @@ function getWsUrl(): string {
     if (host === 'localhost' || host === '127.0.0.1') {
       return `ws://${host}:8000/ws/kitchen`;
     }
-    if (host.endsWith('.pages.dev') || host.endsWith('.cloudflare.com')) {
-      return `${CLOUDFLARE_TUNNEL_BASE.replace(/^https/, 'wss')}/ws/kitchen`;
-    }
-    return `ws://${host}:8000/ws/kitchen`;
   }
-  return 'ws://localhost:8000/ws/kitchen';
+  return 'wss://pos-quanan-backend.onrender.com/ws/kitchen';
 }
 
 export type OrderEvent =
