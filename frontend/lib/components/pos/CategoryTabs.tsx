@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import {
+  ScrollView,
   TouchableOpacity,
   View,
   Animated,
@@ -103,14 +104,14 @@ const CategoryTabs = React.memo(function CategoryTabs({
         flexShrink: 0,
       }}
     >
-      <View
-        style={{
-          flexDirection: 'row',
-          flexWrap: 'wrap',
-          gap: 8,
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{
           paddingHorizontal: 12,
-          paddingTop: 12,
-          paddingBottom: 18, // Khoảng cách dưới rộng hơn để tránh dính sát vào lưới sản phẩm
+          paddingVertical: 10,
+          alignItems: 'center',
+          gap: 8,
         }}
       >
         {CATEGORIES.map((cat) => (
@@ -121,7 +122,7 @@ const CategoryTabs = React.memo(function CategoryTabs({
             onPress={() => onSelectCategory(cat.id)}
           />
         ))}
-      </View>
+      </ScrollView>
     </View>
   );
 });

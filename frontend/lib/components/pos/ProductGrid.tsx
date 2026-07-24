@@ -30,7 +30,7 @@ export default function ProductGrid({
   onQuickAdd,
   getItemCartCount,
 }: ProductGridProps) {
-  const CARD_GAP = 8;
+  const CARD_GAP = 12;
   const hPad = isWide ? 12 : 4;
 
   const CARD_COLS = !isWide
@@ -101,7 +101,8 @@ export default function ProductGrid({
       columnWrapperStyle={{ gap: CARD_GAP, justifyContent: 'center' }}
       contentContainerStyle={{
         paddingHorizontal: hPad,
-        paddingBottom: 20,
+        paddingBottom: 24,
+        gap: CARD_GAP,
       }}
       renderItem={renderItem}
       getItemLayout={(_, index) => ({
