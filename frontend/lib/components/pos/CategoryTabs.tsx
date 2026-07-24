@@ -91,30 +91,7 @@ const CategoryTabs = React.memo(function CategoryTabs({
   searchQuery = '',
   onSearchChange,
 }: CategoryTabsProps) {
-  const scrollRef = useRef<ScrollView>(null);
-  const [isScrollable, setIsScrollable] = useState(false);
-  const [atEnd, setAtEnd] = useState(false);
-  const fadeAnim = useRef(new Animated.Value(1)).current;
 
-  const handleScroll = useCallback(
-    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const { contentOffset, contentSize, layoutMeasurement } = e.nativeEvent;
-      const scrollable = contentSize.width > layoutMeasurement.width;
-      const endReached = contentOffset.x + layoutMeasurement.width >= contentSize.width - 5;
-      setIsScrollable(scrollable);
-      setAtEnd(endReached);
-      Animated.timing(fadeAnim, {
-        toValue: !scrollable || endReached ? 0 : 1,
-        duration: 200,
-        useNativeDriver: true,
-      }).start();
-    },
-    [fadeAnim]
-  );
-
-  const scrollRight = () => {
-    scrollRef.current?.scrollTo({ x: 200, animated: true });
-  };
 
   return (
     <View
