@@ -3,9 +3,20 @@ import { ApiError, ExpectedNotFoundError } from '../logger';
 // API URL resolution:
 // In production, EXPO_PUBLIC_API_URL is set during build via .env
 // If not set, use the Render backend URL directly
-const API_URL =
-  (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_API_URL) ||
-  'https://pos-quanan-backend.onrender.com/api/v1';
+function getApiUrl(): string {
+  if (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_API_URL) {
+    return process.env.EXPO_PUBLIC_API_URL;
+  }
+  if (typeof window !== 'undefined' && window.location) {
+    const host = window.location.hostname;
+    if (host === 'localhost' || host === '127.0.0.1') {
+      return `http://${host}:8000/api/v1`;
+    }
+  }
+  return 'https://pos-quanan-backend.onrender.com/api/v1';
+}
+
+const API_URL = getApiUrl();
 
 import { getToken as getSecureToken, setToken as setSecureToken, clearToken as clearSecureToken } from '../secure-storage';
 
