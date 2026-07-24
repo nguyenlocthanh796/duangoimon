@@ -107,9 +107,14 @@ export default function TableSelection() {
   const panelWidth = isSplitLayout ? leftPanelWidth : containerWidth;
   const cardWidth = Math.floor((panelWidth - hPad * 2 - gutter * (CARD_COLS - 1)) / CARD_COLS);
 
-  const loadData = useCallback(async (isRefresh = false) => {
-    if (isRefresh) setRefreshing(true);
-    else setLoading(true);
+  const initialLoadedRef = useRef(false);
+
+  const loadData = useCallback(async (isRefresh = false, isSilent = false) => {
+    if (isRefresh) {
+      setRefreshing(true);
+    } else if (!isSilent && !initialLoadedRef.current) {
+      setLoading(true);
+    }
     setError(null);
     try {
       const [tableData, orders] = await Promise.all([
@@ -156,8 +161,9 @@ export default function TableSelection() {
           orderTime: orderTimes[t.id] || undefined,
         }))
       );
+      initialLoadedRef.current = true;
     } catch (e: any) {
-      setError(e?.message || 'Không thể tải dữ liệu');
+      if (!isSilent) setError(e?.message || 'Không thể tải dữ liệu');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -165,14 +171,14 @@ export default function TableSelection() {
   }, []);
 
   useEffect(() => {
-    initRealtimeSync(() => loadData(false));
+    initRealtimeSync(() => loadData(false, true));
   }, [loadData]);
 
   useFocusEffect(
     useCallback(() => {
-      loadData();
+      loadData(false, initialLoadedRef.current);
       const timer = setInterval(() => {
-        loadData(false);
+        loadData(false, true);
       }, 3000);
       return () => clearInterval(timer);
     }, [loadData])
