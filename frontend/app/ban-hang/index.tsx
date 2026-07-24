@@ -21,6 +21,7 @@ import { useResponsive } from '../../lib/hooks/useResponsive';
 import { useTableOrder } from '../../lib/hooks/useTableOrder';
 import TableCard from '../../lib/components/pos/TableCard';
 import TableScreenHeader from '../../lib/components/pos/TableScreenHeader';
+import POSSettingsModal from '../../lib/components/pos/POSSettingsModal';
 import CategoryTabs from '../../lib/components/pos/CategoryTabs';
 import ProductGrid from '../../lib/components/pos/ProductGrid';
 import CartPanel from '../../lib/components/pos/CartPanel';
@@ -46,6 +47,7 @@ export default function TableSelection() {
     methodLabel?: string;
   }>();
   const [toast, setToast] = useState<{ visible: boolean; message: string; subMessage?: string } | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     if (params.payment_success === 'true') {
@@ -502,6 +504,7 @@ export default function TableSelection() {
                     minute: '2-digit',
                   })}
                   onTakeaway={() => setSelectedTable({ id: 'TAKEAWAY', name: 'Mang Về' })}
+                  onOpenSettings={() => setShowSettings(true)}
                 />
                 <View style={{ flex: 1 }}>{renderTableGrid()}</View>
               </>
@@ -564,6 +567,10 @@ export default function TableSelection() {
           onSave={saveEditFromModal}
           onAdd={addToCartFromModal}
         />
+        <POSSettingsModal
+          visible={showSettings}
+          onClose={() => setShowSettings(false)}
+        />
         {renderToast()}
       </View>
     );
@@ -584,8 +591,13 @@ export default function TableSelection() {
           hour: '2-digit',
           minute: '2-digit',
         })}
+        onOpenSettings={() => setShowSettings(true)}
       />
       {renderTableGrid()}
+      <POSSettingsModal
+        visible={showSettings}
+        onClose={() => setShowSettings(false)}
+      />
       {renderToast()}
     </SafeAreaView>
   );
