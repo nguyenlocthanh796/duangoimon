@@ -9,6 +9,7 @@ from sqlalchemy.orm import joinedload
 
 from app.core.auth import get_current_user
 from app.core.database import get_db
+from app.core.fast_cache import cached
 from app.models.ban_hang import Order, OrderItem, Table
 
 router = APIRouter(prefix="/ban-hang/kitchen-feed", tags=["ban-hang"])
@@ -17,6 +18,7 @@ THRESHOLD_MINUTES = 15
 
 
 @router.get("")
+@cached(ttl_seconds=8.0)
 async def get_kitchen_feed(
     db: AsyncSession = Depends(get_db),
     _user: dict = Depends(get_current_user),
@@ -51,7 +53,7 @@ async def get_kitchen_feed(
             "status": oi.status,
             "note": oi.note or "",
             "orderCreatedAt": order.created_at.isoformat(),
-            "ageMinutes": round(age_min, 1),
+            "ageMin": round(age_min, 1),
             "isDelayed": oi.status in ("moi", "dang_lam") and age_min > THRESHOLD_MINUTES,
         })
 

@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.auth import get_current_user
 from app.core.database import get_db
+from app.core.fast_cache import cached
 from app.core.pagination import PageParams, paginate
 from app.models.ban_hang import Table
 
@@ -13,6 +14,7 @@ router = APIRouter(prefix="/ban-hang/tables", tags=["ban-hang"])
 
 
 @router.get("")
+@cached(ttl_seconds=15.0)
 async def list_tables(
     page: PageParams = Depends(),
     db: AsyncSession = Depends(get_db),
