@@ -1,3 +1,4 @@
+import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
@@ -7,7 +8,7 @@ import SkeletonBox from '../ui/SkeletonBox';
 import { useResponsive } from '../../hooks/useResponsive';
 import type { Dashboard } from '../../api';
 
-// ── Reusable DataTable (clean professional style matching Kế Toán) ──
+// ── Reusable Borderless DataTable ──────────────────────────
 
 interface DataTableColumn {
   key: string;
@@ -88,34 +89,29 @@ function DataTable({ columns, data, maxRows = 5 }: DataTableProps) {
 
 const dtStyles = StyleSheet.create({
   wrap: {
-    borderRadius: shape.radius.lg,
+    borderRadius: shape.radius.md,
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: colors.border.light,
+    backgroundColor: colors.surface.app,
   },
   headerRow: {
     flexDirection: 'row',
     backgroundColor: colors.brand.primaryBg,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border.default,
-    paddingVertical: 6,
-    paddingHorizontal: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
   },
   headerCell: { flex: 1 },
-  headerText: { ...font.smBold, color: colors.text.tableHeader },
+  headerText: { ...font.smBold, color: colors.brand.primary },
   dataRow: {
     flexDirection: 'row',
-    paddingVertical: 8,
-    paddingHorizontal: 6,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: colors.border.light,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
   },
-  dataRowAlt: { backgroundColor: '#FAFAFA' },
+  dataRowAlt: { backgroundColor: colors.surface.card },
   dataCell: { flex: 1, justifyContent: 'center' },
   cellRight: { alignItems: 'flex-end' },
   cellCenter: { alignItems: 'center' },
   dataText: { ...font.sm, color: colors.text.primary },
-  empty: { alignItems: 'center', paddingVertical: 24 },
+  empty: { alignItems: 'center', paddingVertical: 20 },
   emptyText: { ...font.sm, color: colors.text.muted },
   statusDot: { width: 8, height: 8, borderRadius: 4 },
 });
@@ -128,7 +124,6 @@ interface TopProductsProps {
 }
 
 export function TopProductsList({ data, loading }: TopProductsProps) {
-  const { isWide } = useResponsive();
   return (
     <View style={styles.section}>
       <SectionHeader icon="chart-bar" title="Sản phẩm bán chạy" subtitle="Hôm nay" />
@@ -146,13 +141,13 @@ export function TopProductsList({ data, loading }: TopProductsProps) {
         <DataTable
           columns={[
             { key: 'rank', label: '#', flex: 0.4, align: 'center', render: (v) => (
-              <Text style={{ ...font.sm, fontWeight: '600', textAlign: 'center', color: (v <= 3) ? colors.brand.primary : colors.text.muted }}>
+              <Text style={{ ...font.sm, fontWeight: '700', textAlign: 'center', color: (v <= 3) ? colors.brand.primary : colors.text.muted }}>
                 {v}
               </Text>
             ) },
             { key: 'name', label: 'Tên món', flex: 2 },
             { key: 'quantity', label: 'SL', flex: 0.8, align: 'right', render: (v) => (
-              <Text style={{ ...font.sm, fontWeight: '600', color: colors.text.primary, textAlign: 'right' }}>{v}</Text>
+              <Text style={{ ...font.sm, fontWeight: '700', color: colors.text.primary, textAlign: 'right' }}>{v}</Text>
             ) },
           ]}
           data={(data ?? []).map((p, i) => ({ ...p, id: i, rank: i + 1 }))}
@@ -163,13 +158,13 @@ export function TopProductsList({ data, loading }: TopProductsProps) {
   );
 }
 
-// ── Navigation (Expanded) ──
+// ── Navigation Grid ──
 
 const NAV_ITEMS = [
-  { title: 'Sản Phẩm & Kho', icon: 'package-variant-closed', route: '/quan-ly/products' },
-  { title: 'Khách Hàng & Marketing', icon: 'account-group', route: '/quan-ly/crm' },
-  { title: 'Báo Cáo & Phân Tích', icon: 'chart-bar', route: '/quan-ly/analytics' },
-  { title: 'Hệ Thống & Vận Hành', icon: 'cog-outline', route: '/quan-ly/system' },
+  { title: 'Thực Đơn & Kho', icon: 'package-variant-closed', route: '/quan-ly/products', color: '#4F46E5', bg: '#EEF2FF' },
+  { title: 'Khách Hàng & CRM', icon: 'account-group', route: '/quan-ly/crm', color: '#059669', bg: '#ECFDF5' },
+  { title: 'Báo Cáo Phân Tích', icon: 'chart-bar', route: '/quan-ly/analytics', color: '#7C3AED', bg: '#F5F3FF' },
+  { title: 'Hệ Thống Vận Hành', icon: 'cog-outline', route: '/quan-ly/system', color: '#F97316', bg: '#FFF7ED' },
 ];
 
 interface NavGridProps {
@@ -178,31 +173,36 @@ interface NavGridProps {
 
 export function NavigationGrid({ compact }: NavGridProps) {
   const router = useRouter();
-  const { width, isTabletLandscape, isWide } = useResponsive();
-
-  const numCols = isTabletLandscape ? 5 : compact ? (width < 360 ? 2 : 3) : 5;
-  const cardWidth = width < 360 && compact ? '46%' : `${Math.floor(100 / numCols) - 1.5}%` as const;
+  const { width } = useResponsive();
 
   return (
     <View style={styles.section}>
       <SectionHeader
         icon="view-grid-outline"
-        title="Phân hệ quản lý"
-        subtitle={`${NAV_ITEMS.length} mục`}
+        title="Phân hệ quản lý chính"
+        subtitle={`${NAV_ITEMS.length} danh mục`}
         compact={compact}
       />
-      <View style={styles.navGrid}>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 4 }}>
         {NAV_ITEMS.map((item, i) => (
           <TouchableOpacity
             key={i}
-            style={[compact ? navCompact.navCard : navNormal.navCard, { width: cardWidth }]}
+            style={{
+              width: width > 768 ? '23.5%' : '48%',
+              backgroundColor: colors.surface.app,
+              padding: 14,
+              borderRadius: shape.radius.md,
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 10,
+            }}
             onPress={() => router.push(item.route as any)}
             activeOpacity={0.7}
           >
-            <View style={compact ? navCompact.navIconWrap : navNormal.navIconWrap}>
-              <Icon name={item.icon as any} size={compact ? 22 : 28} color={colors.text.muted} />
+            <View style={{ width: 38, height: 38, borderRadius: shape.radius.md, backgroundColor: item.bg, alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name={item.icon as any} size={20} color={item.color} />
             </View>
-            <Text style={compact ? navCompact.navLabel : navNormal.navLabel} numberOfLines={1}>
+            <Text style={{ ...font.sm, fontWeight: '600', color: colors.text.primary, flex: 1 }} numberOfLines={1}>
               {item.title}
             </Text>
           </TouchableOpacity>
@@ -212,7 +212,7 @@ export function NavigationGrid({ compact }: NavGridProps) {
   );
 }
 
-// ── Low Stock ──
+// ── Low Stock Widget ──
 
 interface LowStockItem {
   name: string;
@@ -228,7 +228,6 @@ interface LowStockWidgetProps {
 
 export function LowStockList({ items, loading }: LowStockWidgetProps) {
   const stockItems = items ?? [];
-  const { isWide } = useResponsive();
 
   if (loading) {
     return (
@@ -268,7 +267,7 @@ export function LowStockList({ items, loading }: LowStockWidgetProps) {
                 const r = row as any;
                 return (
                   <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 4 }}>
-                    <Text style={{ ...font.sm, fontWeight: '600', color: r._critical ? colors.status.danger : colors.status.warning }}>
+                    <Text style={{ ...font.sm, fontWeight: '700', color: r._critical ? colors.status.danger : colors.status.warning }}>
                       {r.current}
                     </Text>
                     <Text style={{ ...font.sm, color: colors.text.muted }}>
@@ -305,7 +304,6 @@ interface ActivitiesProps {
 
 export function RecentActivitiesList({ activities, loading }: ActivitiesProps) {
   const acts = activities ?? [];
-  const { isWide } = useResponsive();
 
   if (loading) {
     return (
@@ -348,7 +346,7 @@ export function RecentActivitiesList({ activities, loading }: ActivitiesProps) {
   );
 }
 
-// ── Revenue Bar Chart (accepts real data) ──
+// ── Revenue Bar Chart ──
 
 interface RevenueChartProps {
   data?: { hour: number; value: number }[];
@@ -358,7 +356,6 @@ interface RevenueChartProps {
 export function RevenueChart({ data, loading }: RevenueChartProps) {
   const values = data ?? [];
   const max = Math.max(...values.map((v) => v.value), 1);
-  const { isWide } = useResponsive();
 
   if (loading) {
     return (
@@ -375,13 +372,14 @@ export function RevenueChart({ data, loading }: RevenueChartProps) {
       <View style={styles.chartContainer}>
         {values.map((v, i) => {
           const h = max > 0 ? Math.round((v.value / max) * 100) : 0;
+          const isPeak = i >= values.length - 2;
           return (
             <View key={i} style={styles.chartCol}>
               <View style={styles.chartBarOuter}>
                 <View
                   style={[
                     styles.chartBar,
-                    { height: `${h}%`, backgroundColor: i >= values.length - 2 ? colors.brand.primary : '#FCD6B6' },
+                    { height: `${h}%`, backgroundColor: isPeak ? colors.brand.primary : '#FED7AA' },
                   ]}
                 />
               </View>
@@ -394,7 +392,7 @@ export function RevenueChart({ data, loading }: RevenueChartProps) {
   );
 }
 
-// ── Shared helpers ──
+// ── Shared Helpers ──
 
 function SectionHeader({
   icon: iconName,
@@ -410,7 +408,7 @@ function SectionHeader({
   return (
     <View style={styles.sectionHeader}>
       <View style={styles.sectionHeaderLeft}>
-        <Icon name={iconName as any} size={compact ? 16 : 20} color={colors.text.muted} />
+        <Icon name={iconName as any} size={compact ? 16 : 20} color={colors.brand.primary} />
         <Text style={[styles.sectionTitle, compact && font.mdBold]}>
           {title}
         </Text>
@@ -442,32 +440,24 @@ function EmptyBox({
 const styles = StyleSheet.create({
   section: {
     backgroundColor: colors.surface.card,
-    borderRadius: 0,
-    borderLeftWidth: 0,
-    borderRightWidth: 0,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: colors.border.default,
-    padding: 6,
-    boxShadow: 'none',
-    elevation: 0,
+    borderRadius: shape.radius.lg,
+    padding: 16,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 12,
   },
   sectionHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  sectionTitle: { ...font.md, fontWeight: '600', color: colors.text.primary },
+  sectionTitle: { ...font.md, fontWeight: '700', color: colors.text.primary },
   sectionSub: { ...font.sm, color: colors.text.secondary },
   emptyBox: { alignItems: 'center', paddingVertical: 24, gap: 8 },
   emptyText: { ...font.sm, color: colors.text.secondary },
 
-  navGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 6 },
   actDot: {
-    width: 30,
-    height: 30,
+    width: 28,
+    height: 28,
     borderRadius: shape.radius.md,
     alignItems: 'center',
     justifyContent: 'center',
@@ -482,66 +472,6 @@ const styles = StyleSheet.create({
   },
   chartCol: { flex: 1, alignItems: 'center' },
   chartBarOuter: { flex: 1, width: '60%', justifyContent: 'flex-end', alignItems: 'center' },
-  chartBar: { width: '100%', borderRadius: 4, minHeight: 2 },
-  chartLabel: { ...font.sm, color: colors.text.muted, marginTop: 4 },
+  chartBar: { width: '100%', borderRadius: 4, minHeight: 4 },
+  chartLabel: { ...font.sm, color: colors.text.muted, marginTop: 6 },
 });
-
-const navNormal = {
-  navCard: {
-    width: '23%' as const,
-    minWidth: 100,
-    alignItems: 'center' as const,
-    gap: 10,
-    paddingVertical: 20,
-    paddingHorizontal: 8,
-    backgroundColor: colors.surface.card,
-    borderRadius: 0,
-    borderWidth: 1,
-    borderColor: colors.border.light,
-    boxShadow: 'none',
-  },
-  navIconWrap: {
-    width: 56,
-    height: 56,
-    borderRadius: shape.radius.md,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
-    backgroundColor: '#F3F4F6',
-  },
-  navLabel: {
-    ...font.md,
-    fontWeight: '500' as const,
-    color: colors.text.primary,
-    textAlign: 'center' as const,
-  },
-} as const;
-
-const navCompact = {
-  navCard: {
-    width: '23%' as const,
-    minWidth: 76,
-    alignItems: 'center' as const,
-    gap: 6,
-    paddingVertical: 12,
-    paddingHorizontal: 4,
-    backgroundColor: colors.surface.card,
-    borderRadius: 0,
-    borderWidth: 1,
-    borderColor: colors.border.light,
-    boxShadow: 'none',
-  },
-  navIconWrap: {
-    width: 40,
-    height: 40,
-    borderRadius: shape.radius.md,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
-    backgroundColor: '#F3F4F6',
-  },
-  navLabel: {
-    ...font.smBold,
-    fontWeight: '500' as const,
-    color: colors.text.primary,
-    textAlign: 'center' as const,
-  },
-} as const;
