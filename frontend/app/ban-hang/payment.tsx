@@ -847,14 +847,14 @@ export default function PaymentScreen() {
                 <AppText
                   variant="md"
                   weight="bold"
-                  color={pm.change >= 0 ? colors.surface.card : colors.status.danger}
+                  color={pm.change >= 0 ? colors.status.success : colors.status.danger}
                 >
                   Tiền thối:
                 </AppText>
                 <AppText
                   variant="md"
                   weight="bold"
-                  color={pm.change >= 0 ? colors.surface.card : colors.status.danger}
+                  color={pm.change >= 0 ? colors.status.success : colors.status.danger}
                 >
                   {pm.change >= 0
                     ? formatPriceFull(pm.change)
