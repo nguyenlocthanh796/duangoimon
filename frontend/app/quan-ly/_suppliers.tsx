@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { TableSkeleton } from '../../lib/components/ui/Skeleton';
 import {
   View, Text, FlatList, TouchableOpacity, StyleSheet,
@@ -14,6 +14,7 @@ import ScreenHeader from '../../lib/components/ui/ScreenHeader';
 import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import FormModal from '../../lib/components/ui/FormModal';
 import EmptyState from '../../lib/components/ui/EmptyState';
+import AppText from '../../lib/components/ui/AppText';
 
 const API = '/api/v1/quan-ly';
 
@@ -84,12 +85,12 @@ export default function SuppliersScreen() {
   };
 
   const handleSave = async () => {
-    if (!form.code || !form.name) { Alert.alert('Lỗi', 'Mã và tên bắt buộc'); return; }
+    if (!form.code || !form.name) { Alert.alert('Lỗi', 'Mã và tên nhà cung cấp là bắt buộc'); return; }
     try {
       if (editing) await request(API + `/suppliers/${editing.id}`, { method: 'PUT', body: JSON.stringify(form) });
       else await request(API + '/suppliers', { method: 'POST', body: JSON.stringify(form) });
       setShowForm(false); load();
-    } catch { Alert.alert('Lỗi', 'Không thể lưu'); }
+    } catch { Alert.alert('Lỗi', 'Không thể lưu nhà cung cấp'); }
   };
 
   const deleteSupplier = (id: string) => {
@@ -108,30 +109,32 @@ export default function SuppliersScreen() {
     return (
       <View style={s.panelBox}>
         <View style={s.panelHeader}>
-          <View style={[s.panelIconBox, { backgroundColor: '#F97316' }]}>
-            <Icon name="truck" size={20} color={'#F97316'} />
+          <View style={s.panelIconBox}>
+            <Icon name="truck" size={18} color={colors.brand.primary} />
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={s.panelTitle} numberOfLines={1}>{selected.name}</Text>
-            <Text style={s.panelSub}>{selected.code}</Text>
+            <AppText variant="sm" weight="bold" color={colors.text.primary} numberOfLines={1}>{selected.name}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>{selected.code}</AppText>
           </View>
         </View>
 
-        <ContactRow icon="account-outline" label="Liên hệ" value={selected.contact_person} />
-        <ContactRow icon="phone" label="SĐT" value={selected.phone} />
-        <ContactRow icon="email-outline" label="Email" value={selected.email} />
-        <ContactRow icon="receipt" label="Mã số thuế" value={selected.tax_code} />
-        <ContactRow icon="calendar-text" label="Điều khoản TT" value={selected.payment_terms} />
-        <ContactRow icon="map-marker-outline" label="Địa chỉ" value={selected.address} multiline />
+        <View style={{ gap: 8 }}>
+          <ContactRow icon="account-outline" label="Người liên hệ" value={selected.contact_person} />
+          <ContactRow icon="phone" label="Số điện thoại" value={selected.phone} />
+          <ContactRow icon="email-outline" label="Email" value={selected.email} />
+          <ContactRow icon="receipt" label="Mã số thuế" value={selected.tax_code} />
+          <ContactRow icon="calendar-text" label="Điều khoản thanh toán" value={selected.payment_terms} />
+          <ContactRow icon="map-marker-outline" label="Địa chỉ" value={selected.address} multiline />
+        </View>
 
-        <View style={{ flexDirection: 'row', gap: 16, marginTop: 4 }}>
-          <TouchableOpacity onPress={() => openEdit(selected)} style={[s.panelBtn, { backgroundColor: '#F97316' }]}>
-            <Icon name="pencil-outline" size={14} color="#fff" />
-            <Text style={s.panelBtnText}>Sửa</Text>
+        <View style={{ flexDirection: 'row', gap: 10, marginTop: 4 }}>
+          <TouchableOpacity onPress={() => openEdit(selected)} style={[s.panelBtn, { backgroundColor: colors.brand.primary }]}>
+            <Icon name="pencil-outline" size={14} color={colors.text.inverse} />
+            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Sửa</AppText>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => deleteSupplier(selected.id)} style={[s.panelBtn, { backgroundColor: '#FEE2E2' }]}>
-            <Icon name="delete-outline" size={14} color={'#DC2626'} />
-            <Text style={{ ...s.panelBtnText, color: '#DC2626' }}>Xoá</Text>
+          <TouchableOpacity onPress={() => deleteSupplier(selected.id)} style={[s.panelBtn, { backgroundColor: colors.status.dangerBg }]}>
+            <Icon name="delete-outline" size={14} color={colors.status.danger} />
+            <AppText variant="sm" weight="bold" color={colors.status.danger}>Xoá</AppText>
           </TouchableOpacity>
         </View>
       </View>
@@ -150,29 +153,27 @@ export default function SuppliersScreen() {
     return (
       <TouchableOpacity
         onPress={() => setSelectedId(isSelected ? null : item.id)}
-        style={[s.card, isSelected && { borderColor: '#F97316' }]}
+        style={[s.card, isSelected && { backgroundColor: colors.brand.primaryBg }]}
         activeOpacity={0.7}
       >
         <View style={s.cardTop}>
-          <View style={[s.cardIcon, { backgroundColor: '#F97316' }]}>
-            <Icon name="truck" size={18} color={'#F97316'} />
+          <View style={s.cardIcon}>
+            <Icon name="truck" size={18} color={colors.brand.primary} />
           </View>
           <View style={{ flex: 1, marginLeft: 10 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12}}>
-              <Text style={s.cardName} numberOfLines={1}>{item.name}</Text>
-              <Text style={s.cardCode}>{item.code}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <AppText variant="sm" weight="bold" color={colors.text.primary} numberOfLines={1}>{item.name}</AppText>
+              <AppText variant="sm" color={colors.text.muted}>{item.code}</AppText>
             </View>
             {item.contact_person && (
-              <Text style={s.cardMeta}>
-                <Icon name="account-outline" size={11} color={'#737373'} /> {item.contact_person}
-              </Text>
+              <AppText variant="sm" color={colors.text.secondary} style={{ marginTop: 2 }}>
+                👤 {item.contact_person}
+              </AppText>
             )}
             {(item.phone || item.email) && (
-              <Text style={s.cardMeta} numberOfLines={1}>
-                <Icon name="phone" size={11} color={'#737373'} /> {item.phone || ''}
-                {item.phone && item.email ? ' · ' : ''}
-                {item.email || ''}
-              </Text>
+              <AppText variant="sm" color={colors.text.muted} numberOfLines={1} style={{ marginTop: 2 }}>
+                📞 {item.phone || ''} {item.phone && item.email ? '·' : ''} {item.email || ''}
+              </AppText>
             )}
           </View>
         </View>
@@ -180,11 +181,11 @@ export default function SuppliersScreen() {
         {/* Always-visible actions */}
         <View style={s.actionRow}>
           <TouchableOpacity onPress={() => openEdit(item)} style={s.actionBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Icon name="pencil-outline" size={15} color={'#737373'} />
+            <Icon name="pencil-outline" size={15} color={colors.icon.muted} />
           </TouchableOpacity>
           <View style={s.actionDot} />
           <TouchableOpacity onPress={() => deleteSupplier(item.id)} style={s.actionBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Icon name="delete-outline" size={15} color={'#737373'} />
+            <Icon name="delete-outline" size={15} color={colors.status.danger} />
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
@@ -194,12 +195,18 @@ export default function SuppliersScreen() {
   // ── Filters ──
   const renderSearch = () => (
     <View style={s.searchBox}>
-      <Icon name="magnify" size={16} color={'#737373'} />
-      <TextInput value={search} onChangeText={setSearch} placeholder="Tìm NCC..."
-        placeholderTextColor={'#737373'}
-        style={{ flex: 1, ...font.sm, color: '#171717', paddingVertical: 0 }} />
+      <Icon name="magnify" size={16} color={colors.icon.muted} />
+      <TextInput
+        value={search}
+        onChangeText={setSearch}
+        placeholder="Tìm nhà cung cấp theo tên, mã, SĐT..."
+        placeholderTextColor={colors.text.muted}
+        style={{ flex: 1, ...font.sm, color: colors.text.primary, paddingVertical: 0 }}
+      />
       {search !== '' && (
-        <TouchableOpacity onPress={() => setSearch('')}><Icon name="close-circle" size={16} color={'#737373'} /></TouchableOpacity>
+        <TouchableOpacity onPress={() => setSearch('')}>
+          <Icon name="close-circle" size={16} color={colors.icon.muted} />
+        </TouchableOpacity>
       )}
     </View>
   );
@@ -207,15 +214,17 @@ export default function SuppliersScreen() {
   const renderList = () => {
     if (loading) return <TableSkeleton rowCount={5} />;
     return (
-      <FlatList data={filtered} keyExtractor={item => item.id}
+      <FlatList
+        data={filtered}
+        keyExtractor={item => item.id}
         key={`cols-${numCols}`}
         numColumns={numCols}
         renderItem={({ item }) => renderCard(item as any)}
-        contentContainerStyle={{ padding: 4, gap: 16}}
-        columnWrapperStyle={numCols > 1 ? { gap: 16, marginBottom: 8 } : undefined}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={'#F97316'} />}
+        contentContainerStyle={{ padding: 4, gap: 10 }}
+        columnWrapperStyle={numCols > 1 ? { gap: 10, marginBottom: 8 } : undefined}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand.primary} />}
         ListHeaderComponent={renderSearch}
-        ListEmptyComponent={<EmptyState icon="truck" title="Chưa có NCC" subtitle="Thêm nhà cung cấp đầu tiên" />}
+        ListEmptyComponent={<EmptyState icon="truck" title="Chưa có nhà cung cấp nào" subtitle="Nhấn nút + để thêm NCC đầu tiên" />}
       />
     );
   };
@@ -224,16 +233,16 @@ export default function SuppliersScreen() {
     <ScreenContainer compact>
       <ScreenHeader
         title="Nhà cung cấp"
-        subtitle={`${suppliers.length} NCC`}
+        subtitle={`${suppliers.length} nhà cung cấp`}
         onMenuPress={openSidebar} compact
         right={
-          <View style={{ flexDirection: 'row', gap: 12}}>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
             <TouchableOpacity onPress={load} style={s.headerBtn}>
-              <Icon name="refresh" size={18} color={colors.icon.default} />
+              <Icon name="refresh" size={18} color={colors.brand.primary} />
             </TouchableOpacity>
             <TouchableOpacity onPress={openNew} style={s.addBtn}>
               <Icon name="plus" size={18} color={colors.text.inverse} />
-              {isWide && <Text style={s.addBtnText}>Thêm</Text>}
+              {isWide && <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm NCC</AppText>}
             </TouchableOpacity>
           </View>
         }
@@ -256,36 +265,67 @@ export default function SuppliersScreen() {
           <View style={s.separator} />
           <View style={{ flex: 0.4, paddingTop: 8, paddingLeft: 8, paddingRight: 12 }}>
             {selected ? renderDetail() : (
-              <View style={{ alignItems: 'center', padding: 40, gap: 16}}>
-                <Icon name="hand-pointing-up" size={36} color={'#737373'} />
-                <Text style={{ ...font.md, color: '#737373' }}>Chọn NCC để xem chi tiết</Text>
+              <View style={{ alignItems: 'center', padding: 40, gap: 12 }}>
+                <Icon name="hand-pointing-up" size={32} color={colors.icon.muted} />
+                <AppText variant="sm" color={colors.text.muted}>Chọn một NCC để xem chi tiết</AppText>
               </View>
             )}
           </View>
         </View>
       ) : renderList()}
 
-      {!isWide && <FAB onPress={openNew} />}
+      {!isWide && (
+        <TouchableOpacity onPress={openNew} style={s.fab}>
+          <Icon name="plus" size={22} color={colors.text.inverse} />
+        </TouchableOpacity>
+      )}
 
-      <FormModal visible={showForm} title={editing ? 'Sửa NCC' : 'Thêm NCC'}
-        onClose={() => setShowForm(false)} onSave={handleSave} saveLabel={editing ? 'Cập nhật' : 'Thêm'}>
-        <View style={{ gap: 12, paddingTop: 4 }}>
-          <View style={{ flexDirection: 'row', gap: 32}}>
-            <View style={{ flex: 1 }}><Label>Mã NCC *</Label><TextInput value={form.code} onChangeText={v => setForm(p => ({ ...p, code: v }))} style={s.fieldInput} placeholder="VD: NCC001" /></View>
-            <View style={{ flex: 2 }}><Label>Tên NCC *</Label><TextInput value={form.name} onChangeText={v => setForm(p => ({ ...p, name: v }))} style={s.fieldInput} placeholder="VD: Công ty ABC" /></View>
+      <FormModal
+        visible={showForm}
+        title={editing ? 'Sửa NCC' : 'Thêm NCC'}
+        onClose={() => setShowForm(false)}
+        onSave={handleSave}
+        saveLabel={editing ? 'Cập nhật' : 'Thêm'}
+      >
+        <View style={{ gap: 10, paddingTop: 4 }}>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            <View style={{ flex: 1 }}>
+              <Label>Mã NCC *</Label>
+              <TextInput value={form.code} onChangeText={v => setForm(p => ({ ...p, code: v }))} style={s.fieldInput} placeholder="VD: NCC001" placeholderTextColor={colors.text.muted} />
+            </View>
+            <View style={{ flex: 2 }}>
+              <Label>Tên NCC *</Label>
+              <TextInput value={form.name} onChangeText={v => setForm(p => ({ ...p, name: v }))} style={s.fieldInput} placeholder="VD: Công ty Thực phẩm ABC" placeholderTextColor={colors.text.muted} />
+            </View>
           </View>
+
           <Label>Người liên hệ</Label>
-          <TextInput value={form.contact_person} onChangeText={v => setForm(p => ({ ...p, contact_person: v }))} style={s.fieldInput} placeholder="Tên người LH" />
-          <View style={{ flexDirection: 'row', gap: 32}}>
-            <View style={{ flex: 1 }}><Label>SĐT</Label><TextInput value={form.phone} onChangeText={v => setForm(p => ({ ...p, phone: v }))} keyboardType="phone-pad" style={s.fieldInput} placeholder="SĐT" /></View>
-            <View style={{ flex: 1 }}><Label>Email</Label><TextInput value={form.email} onChangeText={v => setForm(p => ({ ...p, email: v }))} keyboardType="email-address" style={s.fieldInput} placeholder="Email" /></View>
+          <TextInput value={form.contact_person} onChangeText={v => setForm(p => ({ ...p, contact_person: v }))} style={s.fieldInput} placeholder="Tên người đại diện liên hệ" placeholderTextColor={colors.text.muted} />
+
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            <View style={{ flex: 1 }}>
+              <Label>Số điện thoại</Label>
+              <TextInput value={form.phone} onChangeText={v => setForm(p => ({ ...p, phone: v }))} keyboardType="phone-pad" style={s.fieldInput} placeholder="SĐT liên hệ" placeholderTextColor={colors.text.muted} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Label>Email</Label>
+              <TextInput value={form.email} onChangeText={v => setForm(p => ({ ...p, email: v }))} keyboardType="email-address" style={s.fieldInput} placeholder="Email công ty" placeholderTextColor={colors.text.muted} />
+            </View>
           </View>
-          <View style={{ flexDirection: 'row', gap: 32}}>
-            <View style={{ flex: 1 }}><Label>Mã số thuế</Label><TextInput value={form.tax_code} onChangeText={v => setForm(p => ({ ...p, tax_code: v }))} style={s.fieldInput} placeholder="MST" /></View>
-            <View style={{ flex: 1 }}><Label>Điều khoản TT</Label><TextInput value={form.payment_terms} onChangeText={v => setForm(p => ({ ...p, payment_terms: v }))} style={s.fieldInput} placeholder="COD/30 ngày" /></View>
+
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            <View style={{ flex: 1 }}>
+              <Label>Mã số thuế</Label>
+              <TextInput value={form.tax_code} onChangeText={v => setForm(p => ({ ...p, tax_code: v }))} style={s.fieldInput} placeholder="MST" placeholderTextColor={colors.text.muted} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Label>Điều khoản TT</Label>
+              <TextInput value={form.payment_terms} onChangeText={v => setForm(p => ({ ...p, payment_terms: v }))} style={s.fieldInput} placeholder="COD / 30 ngày" placeholderTextColor={colors.text.muted} />
+            </View>
           </View>
-          <Label>Địa chỉ</Label>
-          <TextInput value={form.address} onChangeText={v => setForm(p => ({ ...p, address: v }))} style={[s.fieldInput, { minHeight: 60 }]} multiline placeholder="Địa chỉ" />
+
+          <Label>Địa chỉ trụ sở</Label>
+          <TextInput value={form.address} onChangeText={v => setForm(p => ({ ...p, address: v }))} style={[s.fieldInput, { minHeight: 50 }]} multiline placeholder="Địa chỉ giao dịch" placeholderTextColor={colors.text.muted} />
         </View>
       </FormModal>
     </ScreenContainer>
@@ -294,16 +334,16 @@ export default function SuppliersScreen() {
 
 // ── Sub-components ──
 function Label({ children }: { children: string }) {
-  return <Text style={s.fieldLabel}>{children}</Text>;
+  return <AppText variant="sm" weight="bold" color={colors.text.primary} style={{ marginBottom: 4 }}>{children}</AppText>;
 }
 
 function StatItem({ icon, label, value }: { icon: string; label: string; value: string | number }) {
   return (
-    <View style={{ flex: 1, alignItems: 'center', flexDirection: 'row', gap: 12, justifyContent: 'center' }}>
-      <Icon name={icon as any} size={16} color={'#F97316'} />
+    <View style={{ flex: 1, alignItems: 'center', flexDirection: 'row', gap: 8, justifyContent: 'center' }}>
+      <Icon name={icon as any} size={16} color={colors.brand.primary} />
       <View>
-        <Text style={s.statValue}>{value}</Text>
-        <Text style={s.statLabel}>{label}</Text>
+        <AppText variant="sm" weight="bold" color={colors.text.primary}>{value}</AppText>
+        <AppText variant="sm" color={colors.text.muted}>{label}</AppText>
       </View>
     </View>
   );
@@ -312,70 +352,48 @@ function StatItem({ icon, label, value }: { icon: string; label: string; value: 
 function ContactRow({ icon, label, value, multiline }: { icon: string; label: string; value?: string | null; multiline?: boolean }) {
   if (!value) return null;
   return (
-    <View style={{ flexDirection: 'row', gap: 16, alignItems: multiline ? 'flex-start' : 'center' }}>
-      <Icon name={icon as any} size={14} color={'#737373'} style={{ marginTop: 1 }} />
+    <View style={{ flexDirection: 'row', gap: 8, alignItems: multiline ? 'flex-start' : 'center' }}>
+      <Icon name={icon as any} size={14} color={colors.icon.muted} style={{ marginTop: 1 }} />
       <View style={{ flex: 1 }}>
-        <Text style={{ ...font.sm, color: '#737373' }}>{label}</Text>
-        <Text style={{ ...font.sm, color: '#171717' }}>{value}</Text>
+        <AppText variant="sm" color={colors.text.muted}>{label}</AppText>
+        <AppText variant="sm" color={colors.text.primary}>{value}</AppText>
       </View>
     </View>
   );
 }
 
-function FAB({ onPress }: { onPress: () => void }) {
-  return (
-    <TouchableOpacity onPress={onPress} style={s.fab}>
-      <Icon name="plus" size={24} color="#fff" />
-    </TouchableOpacity>
-  );
-}
-
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FAFAFA' },
-
-  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, height: 38, borderRadius: 8, backgroundColor: '#F97316' },
-  addBtnText: { ...font.smBold, fontWeight: '600', color: '#fff' },
-  headerBtn: { width: 36, height: 36, borderRadius: 8, backgroundColor: '#F5F5F5', alignItems: 'center', justifyContent: 'center' },
+  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },
+  headerBtn: { width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' },
 
   // Stats bar
-  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
-  statValue: { ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
-  statLabel: { ...font.sm, color: '#737373', lineHeight: 12 },
+  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, marginVertical: 8 },
+  barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
 
   // Search
-  searchBox: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#FFFFFF', borderRadius: 8, paddingHorizontal: 32, height: 36, borderWidth: 1, borderColor: '#F0F0F0', marginBottom: 6 },
+  searchBox: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.surface.card, borderRadius: shape.radius.md, paddingHorizontal: 10, height: 38, marginBottom: 6 },
 
   // Card
-  card: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#F0F0F0' },
+  card: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 12 },
   cardTop: { flexDirection: 'row', alignItems: 'center' },
-  cardIcon: { width: 40, height: 40, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
-  cardName: { ...font.sm, fontWeight: '600', color: '#171717' },
-  cardCode: { ...font.sm, color: '#737373' },
-  cardMeta: { ...font.sm, color: '#737373', marginTop: 2 },
+  cardIcon: { width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' },
 
   // Actions
-  actionRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8, paddingTop: 6, borderTopWidth: 1, borderTopColor: '#F0F0F0' },
+  actionRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8, paddingTop: 6, borderTopWidth: 1, borderTopColor: colors.border.light },
   actionBtn: { padding: 4 },
-  actionDot: { width: 3, height: 3, borderRadius: 1.5, backgroundColor: '#E5E5E5' },
+  actionDot: { width: 3, height: 3, borderRadius: 1.5, backgroundColor: colors.border.light },
 
   // Panel (iPad detail)
-  panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: '#F0F0F0', gap: 16},
-  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 32, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelIconBox: { width: 40, height: 40, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
-  panelTitle: { ...font.md, fontWeight: '600', color: '#171717' },
-  panelSub: { ...font.sm, color: '#737373', marginTop: 1 },
-  panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12, paddingHorizontal: 12, borderRadius: 8},
-  panelBtnText: { ...font.sm, color: '#fff', fontWeight: '600' },
+  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, gap: 12 },
+  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.border.light },
+  panelIconBox: { width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' },
+  panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 8, paddingHorizontal: 12, borderRadius: shape.radius.md },
 
   // Form
-  fieldLabel: { ...font.smBold, color: '#404040', marginBottom: 6 },
-  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.md, color: '#171717', backgroundColor: '#FAFAFA' },
+  fieldInput: { borderRadius: shape.radius.md, paddingHorizontal: 10, paddingVertical: 8, ...font.md, color: colors.text.primary, backgroundColor: colors.surface.app },
 
-  separator: { width: 1, backgroundColor: '#F0F0F0' },
+  separator: { width: 1, backgroundColor: colors.border.light },
 
   // FAB
-  fab: { position: 'absolute', bottom: 24, right: 20, width: 56, height: 56, borderRadius: 28, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center', elevation: 4, boxShadow: "0px 4px 8px rgba(249,115,22,0.3)" },
+  fab: { position: 'absolute', bottom: 20, right: 20, width: 48, height: 48, borderRadius: 24, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center' },
 });
-
-

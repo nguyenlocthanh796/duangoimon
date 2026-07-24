@@ -1,513 +1,464 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useAuth } from '../../lib/context/AuthContext';
+import React, { useCallback, useEffect, useState } from 'react';
 import { TableSkeleton } from '../../lib/components/ui/Skeleton';
 import {
   View, Text, FlatList, TouchableOpacity, StyleSheet,
-  TextInput, Alert, RefreshControl,
+  Alert, ActivityIndicator, TextInput, ScrollView,
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
+import { api, RawMaterial } from '../../lib/api';
 import { useSidebar } from '../../lib/context/SidebarContext';
-import { useResponsive, calcGridCols } from '../../lib/hooks/useResponsive';
+import { useResponsive } from '../../lib/hooks/useResponsive';
 import { colors, font, formatVND } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
-import { request } from '../../lib/api/client';
-import ScreenHeader from '../../lib/components/ui/ScreenHeader';
-import ScreenContainer from '../../lib/components/ui/ScreenContainer';
+import AppText from '../../lib/components/ui/AppText';
 import FormModal from '../../lib/components/ui/FormModal';
+import FAB from '../../lib/components/ui/FAB';
 import EmptyState from '../../lib/components/ui/EmptyState';
 
-const API = '/api/v1/quan-ly';
+type FormState = {
+  code: string; name: string; category: string; current_stock: string;
+  min_stock: string; unit: string; cost_price: string;
+};
 
+const EMPTY_FORM: FormState = {
+  code: '', name: '', category: 'Thịt & Hải sản', current_stock: '0',
+  min_stock: '10', unit: 'kg', cost_price: '0',
+};
 
-function stockLevel(stock: number, min: number) {
-  if (min <= 0) return { bg: '#EFF6FF', text: '#2563EB', label: 'Không ngưỡng' };
-  const ratio = stock / min;
-  if (ratio > 2) return { bg: '#F3F4F6', text: '#16A34A', label: 'Ổn định' };
-  if (ratio > 1) return { bg: '#FEF3C7', text: '#D97706', label: 'Sắp hết' };
-  return { bg: '#FEE2E2', text: '#DC2626', label: 'Cảnh báo' };
-}
+const CATEGORIES = [
+  'Thịt & Hải sản', 'Rau củ quả', 'Gia vị & Khác', 'Đồ uống & Trái cây',
+  'Bao bì & Dụng cụ', 'Cà phê & Trà', 'Sữa & Bơ phô mai',
+];
 
 export default function StockScreen() {
-  const { openSidebar } = useSidebar();
-  const { isWide, containerWidth, gutter, hPad } = useResponsive();
-  const [materials, setMaterials] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
+  const { isWide } = useResponsive();
+  const [materials, setMaterials] = useState<RawMaterial[]>([]);
   const [search, setSearch] = useState('');
+  const [catFilter, setCatFilter] = useState<string | null>(null);
+  const [lowOnly, setLowOnly] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [editing, setEditing] = useState<any | null>(null);
-  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
-  const [catFilter, setCatFilter] = useState<string>('all');
-  const [wsStatus, setWsStatus] = useState<'connected' | 'disconnected'>('disconnected');
-
-  const { token } = useAuth();
-  const wsRef = useRef<WebSocket | null>(null);
-  useEffect(() => {
-    if (!token) return;
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const host = window.location.hostname;
-    const port = (window.location.port === '8081' || window.location.port === '19006') ? '8000' : window.location.port;
-    const url = `${protocol}//${host}:${port}/ws/inventory?token=${encodeURIComponent(token)}`;
-    const ws = new WebSocket(url);
-    ws.onopen = () => setWsStatus('connected');
-    ws.onclose = () => setWsStatus('disconnected');
-    ws.onmessage = (ev) => {
-      try {
-        const msg = JSON.parse(ev.data);
-        if (msg.event === 'stock_alert') {
-          Alert.alert('⚠️ Cảnh báo tồn kho', msg.data.map((d: any) =>
-            `${d.raw_material}: còn ${d.current_stock} (tối thiểu ${d.min_stock})`
-          ).join('\n'));
-          load();
-        }
-      } catch {}
-    };
-    wsRef.current = ws;
-    return () => ws.close();
-  }, [token]);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form, setForm] = useState<FormState>(EMPTY_FORM);
 
   const load = useCallback(async () => {
-    try { setLoading(true); setMaterials(await request<any[]>(API + '/raw-materials')); }
-    catch { /* ignore */ }
-    finally { setLoading(false); }
+    try {
+      setLoading(true);
+      const d = await api.getRawMaterials();
+      setMaterials(d);
+    } catch (e: any) {
+      Alert.alert('Lỗi', e.message || 'Không thể tải kho');
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => { load(); }, [load]);
 
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    try { setMaterials(await request<any[]>(API + '/raw-materials')); }
-    catch { } finally { setRefreshing(false); }
-  }, []);
-
-  // Categories for filter
-  const categories = useMemo(() => {
-    const cats = new Set<string>();
-    materials.forEach(m => { if (m.category) cats.add(m.category); });
-    return ['all', ...Array.from(cats).sort()];
-  }, [materials]);
-
-  const filtered = useMemo(() => {
-    let list = materials;
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      list = list.filter(m => m.name.toLowerCase().includes(q) || m.code.toLowerCase().includes(q));
-    }
-    if (catFilter !== 'all') list = list.filter(m => m.category === catFilter);
-    return list;
-  }, [materials, search, catFilter]);
-
-  const selectedItem = useMemo(() => {
-    if (!selectedItemId) return null;
-    return materials.find(m => m.id === selectedItemId);
-  }, [materials, selectedItemId]);
-
-  // Stats
-  const stats = useMemo(() => ({
-    total: materials.length,
-    critical: materials.filter(m => m.min_stock > 0 && m.current_stock <= m.min_stock).length,
-    totalValue: materials.reduce((s, m) => s + (m.current_stock * (m.default_cost || 0)), 0),
-  }), [materials]);
-
-  const [formFields, setFormFields] = useState({
-    code: '', name: '', category: '', unit: 'kg',
-    default_cost: '0', current_stock: '0', min_stock: '0',
-  });
-
-  const openAdd = () => {
-    setEditing(null);
-    setFormFields({ code: '', name: '', category: '', unit: 'kg', default_cost: '0', current_stock: '0', min_stock: '0' });
-    setShowForm(true);
-  };
-
-  const openEdit = (m: any) => {
-    setEditing(m);
-    setFormFields({
-      code: m.code, name: m.name, category: m.category || '', unit: m.unit || 'kg',
-      default_cost: String(m.default_cost || 0), current_stock: String(m.current_stock || 0), min_stock: String(m.min_stock || 0),
+  const openAdd = () => { setEditingId(null); setForm(EMPTY_FORM); setShowForm(true); };
+  const openEdit = (m: RawMaterial) => {
+    setEditingId(m.id);
+    setForm({
+      code: m.code, name: m.name, category: m.category ?? 'Thịt & Hải sản',
+      current_stock: String(m.current_stock), min_stock: String(m.min_stock),
+      unit: m.unit, cost_price: String(m.cost_price),
     });
     setShowForm(true);
   };
 
   const handleSave = async () => {
-    const { code, name, category, unit, default_cost, current_stock, min_stock } = formFields;
-    if (!code || !name) { Alert.alert('Thiếu thông tin', 'Mã và tên là bắt buộc.'); return; }
+    if (!form.code.trim() || !form.name.trim()) {
+      Alert.alert('Lỗi', 'Mã và tên nguyên liệu không được để trống'); return;
+    }
+    setSaving(true);
     try {
-      const body = {
-        code, name, category: category || undefined, unit,
-        default_cost: parseFloat(default_cost) || 0,
-        current_stock: parseFloat(current_stock) || 0,
-        min_stock: parseFloat(min_stock) || 0,
+      const payload = {
+        ...form,
+        current_stock: parseFloat(form.current_stock) || 0,
+        min_stock: parseFloat(form.min_stock) || 0,
+        cost_price: parseFloat(form.cost_price) || 0,
       };
-      if (editing) await request(`${API}/raw-materials/${editing.id}`, { method: 'PUT', body: JSON.stringify(body) });
-      else await request(API + '/raw-materials', { method: 'POST', body: JSON.stringify(body) });
-      setShowForm(false); setEditing(null); load();
-    } catch { Alert.alert('Lỗi', 'Không thể lưu nguyên liệu.'); }
+      if (editingId) await api.updateRawMaterial(editingId, payload);
+      else await api.createRawMaterial(payload);
+      setShowForm(false); setForm(EMPTY_FORM); load();
+    } catch (e: any) {
+      Alert.alert('Lỗi', e.message || 'Không thể lưu');
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const deleteMaterial = (id: string) => {
-    Alert.alert('Xác nhận', 'Xoá nguyên liệu này?', [
-      { text: 'Huỷ', style: 'cancel' },
-      { text: 'Xoá', style: 'destructive', onPress: async () => {
-        setSelectedItemId(null);
-        load();
-      } },
+  const handleDelete = (id: string, name: string) => {
+    Alert.alert('Xác nhận xóa', `Xóa nguyên liệu "${name}"?`, [
+      { text: 'Hủy', style: 'cancel' },
+      { text: 'Xóa', style: 'destructive', onPress: async () => { try { await api.deleteRawMaterial(id); load(); } catch (e: any) { Alert.alert('Lỗi', e.message); } } },
     ]);
   };
 
-  // ── Detail panel (iPad right) ──
-  const renderDetail = () => {
-    if (!selectedItem) return null;
-    const lv = stockLevel(selectedItem.current_stock, selectedItem.min_stock);
+  const filtered = materials.filter(m => {
+    const matchSearch = m.name.toLowerCase().includes(search.toLowerCase()) || m.code.toLowerCase().includes(search.toLowerCase());
+    const matchCat = !catFilter || m.category === catFilter;
+    const matchLow = !lowOnly || m.current_stock <= m.min_stock;
+    return matchSearch && matchCat && matchLow;
+  });
 
+  const lowCount = materials.filter(m => m.current_stock <= m.min_stock).length;
+  const totalValue = materials.reduce((sum, m) => sum + (m.current_stock * m.cost_price), 0);
+
+  // ── Render Form Fields ──
+  const renderStockForm = () => (
+    <View style={{ gap: 10, paddingTop: 4 }}>
+      <View style={{ flexDirection: 'row', gap: 10 }}>
+        <View style={{ flex: 1 }}>
+          <AppText variant="sm" weight="bold" color={colors.text.primary} style={{ marginBottom: 4 }}>Mã NL *</AppText>
+          <TextInput
+            value={form.code}
+            onChangeText={v => setForm(f => ({ ...f, code: v }))}
+            style={styles.fieldInput}
+            placeholder="VD: NL001"
+            placeholderTextColor={colors.text.muted}
+          />
+        </View>
+        <View style={{ flex: 2 }}>
+          <AppText variant="sm" weight="bold" color={colors.text.primary} style={{ marginBottom: 4 }}>Tên nguyên liệu *</AppText>
+          <TextInput
+            value={form.name}
+            onChangeText={v => setForm(f => ({ ...f, name: v }))}
+            style={styles.fieldInput}
+            placeholder="VD: Thịt bò tươi"
+            placeholderTextColor={colors.text.muted}
+          />
+        </View>
+      </View>
+
+      <View style={{ flexDirection: 'row', gap: 10 }}>
+        <View style={{ flex: 1 }}>
+          <AppText variant="sm" weight="bold" color={colors.text.primary} style={{ marginBottom: 4 }}>Tồn kho hiện tại</AppText>
+          <TextInput
+            value={form.current_stock}
+            onChangeText={v => setForm(f => ({ ...f, current_stock: v }))}
+            keyboardType="numeric"
+            style={styles.fieldInput}
+            placeholder="0"
+            placeholderTextColor={colors.text.muted}
+          />
+        </View>
+        <View style={{ flex: 1 }}>
+          <AppText variant="sm" weight="bold" color={colors.text.primary} style={{ marginBottom: 4 }}>Tồn tối thiểu</AppText>
+          <TextInput
+            value={form.min_stock}
+            onChangeText={v => setForm(f => ({ ...f, min_stock: v }))}
+            keyboardType="numeric"
+            style={styles.fieldInput}
+            placeholder="10"
+            placeholderTextColor={colors.text.muted}
+          />
+        </View>
+        <View style={{ flex: 1 }}>
+          <AppText variant="sm" weight="bold" color={colors.text.primary} style={{ marginBottom: 4 }}>Đơn vị tính</AppText>
+          <TextInput
+            value={form.unit}
+            onChangeText={v => setForm(f => ({ ...f, unit: v }))}
+            style={styles.fieldInput}
+            placeholder="kg, lít, hộp"
+            placeholderTextColor={colors.text.muted}
+          />
+        </View>
+      </View>
+
+      <AppText variant="sm" weight="bold" color={colors.text.primary} style={{ marginBottom: 4 }}>Giá vốn đơn vị (VNĐ)</AppText>
+      <TextInput
+        value={form.cost_price}
+        onChangeText={v => setForm(f => ({ ...f, cost_price: v }))}
+        keyboardType="numeric"
+        style={styles.fieldInput}
+        placeholder="0"
+        placeholderTextColor={colors.text.muted}
+      />
+    </View>
+  );
+
+  // ── Stats Panel (iPad right) ──
+  const renderStatsPanel = () => {
     return (
-      <View style={s.panelBox}>
-        <View style={s.panelHeader}>
-          <View style={[s.panelIconBox, { backgroundColor: lv.bg }]}>
-            <Icon name="package-variant" size={20} color={lv.text} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={s.panelTitle} numberOfLines={1}>{selectedItem.name}</Text>
-            <Text style={s.panelSub}>{selectedItem.code}</Text>
-          </View>
-          <View style={[s.badge, { backgroundColor: lv.bg }]}>
-            <Text style={{ ...font.sm, fontWeight: '600', color: lv.text }}>{lv.label}</Text>
-          </View>
+      <View style={styles.panelBox}>
+        <View style={styles.panelHeader}>
+          <Icon name="package-variant-closed" size={18} color={colors.brand.primary} />
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>Tổng quan kho hàng</AppText>
         </View>
 
-        <View style={s.detailRow}>
-          <View style={s.detailItem}>
-            <Text style={s.detailValue}>{selectedItem.current_stock}</Text>
-            <Text style={s.detailLabel}>{selectedItem.unit} tồn</Text>
-          </View>
-          <View style={s.detailDivider} />
-          <View style={s.detailItem}>
-            <Text style={s.detailValue}>{selectedItem.min_stock}</Text>
-            <Text style={s.detailLabel}>Tối thiểu</Text>
-          </View>
-          <View style={s.detailDivider} />
-          <View style={s.detailItem}>
-            <Text style={s.detailValue}>{formatVND(selectedItem.default_cost)}</Text>
-            <Text style={s.detailLabel}>Giá mua</Text>
-          </View>
+        <View style={styles.panelStatRow}>
+          <AppText variant="sm" color={colors.text.secondary}>Tổng số mặt hàng</AppText>
+          <AppText variant="md" weight="bold" color={colors.text.primary}>{materials.length}</AppText>
+        </View>
+        <View style={styles.panelStatRow}>
+          <AppText variant="sm" color={colors.text.secondary}>Sắp hết kho (Cảnh báo)</AppText>
+          <AppText variant="md" weight="bold" color={lowCount > 0 ? colors.status.danger : colors.status.success}>{lowCount}</AppText>
+        </View>
+        <View style={styles.panelStatRow}>
+          <AppText variant="sm" color={colors.text.secondary}>Tổng giá trị kho</AppText>
+          <AppText variant="md" weight="bold" color={colors.brand.primary}>{formatVND(totalValue)}</AppText>
         </View>
 
-        {/* Stock bar */}
-        {selectedItem.min_stock > 0 && (
-          <View>
-            <View style={s.stockBar}>
-              <View style={[s.stockBarFill, {
-                width: `${Math.min(150, (selectedItem.current_stock / selectedItem.min_stock) * 100)}%`,
-                backgroundColor: lv.text,
-              }]} />
-            </View>
-            <Text style={{ ...font.sm, color: '#737373', marginTop: 2 }}>
-              {selectedItem.current_stock >= selectedItem.min_stock
-                ? 'Đạt ngưỡng tối thiểu'
-                : `Thiếu ${(selectedItem.min_stock - selectedItem.current_stock).toFixed(1)} ${selectedItem.unit}`}
-            </Text>
-          </View>
-        )}
+        <View style={styles.panelDivider} />
 
-        <View style={{ flexDirection: 'row', gap: 16, marginTop: 4 }}>
-          <TouchableOpacity onPress={() => openEdit(selectedItem)} style={[s.panelBtn, { backgroundColor: '#F97316' }]}>
-            <Icon name="pencil-outline" size={14} color="#fff" />
-            <Text style={s.panelBtnText}>Sửa</Text>
+        {/* Filter chips */}
+        <TouchableOpacity
+          style={[styles.filterRow, lowOnly && { backgroundColor: colors.status.dangerBg }]}
+          onPress={() => setLowOnly(!lowOnly)}
+        >
+          <Icon name="alert-circle-outline" size={16} color={lowOnly ? colors.status.danger : colors.icon.muted} />
+          <AppText variant="sm" color={lowOnly ? colors.status.danger : colors.text.primary} style={{ flex: 1 }}>
+            Chỉ xem mặt hàng sắp hết
+          </AppText>
+          {lowOnly && <Icon name="check" size={14} color={colors.status.danger} />}
+        </TouchableOpacity>
+
+        <View style={styles.panelDivider} />
+
+        <TouchableOpacity style={styles.panelCta} onPress={openAdd}>
+          <Icon name="plus" size={16} color={colors.text.inverse} />
+          <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm nguyên liệu</AppText>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  const renderInlineForm = () => {
+    return (
+      <View style={[styles.panelBox, { flex: 1, marginHorizontal: 12 }]}>
+        <View style={styles.panelHeader}>
+          <Icon name={editingId ? 'pencil' : 'plus'} size={18} color={colors.brand.primary} />
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>{editingId ? 'Chỉnh sửa nguyên liệu' : 'Thêm nguyên liệu'}</AppText>
+        </View>
+        <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, marginVertical: 10 }}>
+          {renderStockForm()}
+        </ScrollView>
+        <View style={{ flexDirection: 'row', gap: 12, marginTop: 8 }}>
+          <TouchableOpacity
+            style={{ flex: 1, height: 42, borderRadius: shape.radius.md, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' }}
+            onPress={() => setShowForm(false)}
+          >
+            <AppText variant="sm" color={colors.text.secondary}>Hủy</AppText>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => deleteMaterial(selectedItem.id)} style={[s.panelBtn, { backgroundColor: '#FEE2E2' }]}>
-            <Icon name="delete-outline" size={14} color={'#DC2626'} />
-            <Text style={{ ...s.panelBtnText, color: '#DC2626' }}>Xoá</Text>
+          <TouchableOpacity
+            style={{ flex: 1.5, height: 42, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }}
+            onPress={handleSave}
+            disabled={saving}
+          >
+            {saving && <ActivityIndicator size="small" color={colors.text.inverse} />}
+            <AppText variant="sm" weight="bold" color={colors.text.inverse}>{editingId ? 'Cập nhật' : 'Lưu'}</AppText>
           </TouchableOpacity>
         </View>
       </View>
     );
   };
 
-  // ── Stats bar ──
-  const numCols = useMemo(() => {
-    if (!isWide) return 1;
-    return calcGridCols(containerWidth, 280, hPad, gutter);
-  }, [isWide, containerWidth, hPad, gutter]);
-
-  // ── Card ──
-  const renderCard = (item: any) => {
-    const lv = stockLevel(item.current_stock, item.min_stock);
-    const isSelected = selectedItemId === item.id;
-    const barRatio = item.min_stock > 0 ? Math.min(100, (item.current_stock / item.min_stock) * 100) : 100;
-
+  // ── Stock Item Card ──
+  const renderItem = ({ item }: { item: RawMaterial }) => {
+    const isLow = item.current_stock <= item.min_stock;
     return (
-      <TouchableOpacity
-        onPress={() => setSelectedItemId(isSelected ? null : item.id)}
-        style={[s.card, isSelected && { borderColor: '#F97316' }]}
-        activeOpacity={0.7}
-      >
-        <View style={s.cardTop}>
-          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 32}}>
-            <View style={[s.cardIcon, { backgroundColor: lv.bg }]}>
-              <Icon name="package-variant" size={18} color={lv.text} />
+      <TouchableOpacity style={styles.item} onPress={() => openEdit(item)} activeOpacity={0.7}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, gap: 10 }}>
+          <View style={[styles.codeTag, { backgroundColor: isLow ? colors.status.dangerBg : colors.surface.app }]}>
+            <AppText variant="sm" weight="bold" color={isLow ? colors.status.danger : colors.text.secondary}>{item.code}</AppText>
+          </View>
+          <View style={{ flex: 1 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <AppText variant="sm" weight="bold" color={colors.text.primary} numberOfLines={1}>{item.name}</AppText>
+              {isLow && (
+                <View style={styles.lowBadge}>
+                  <AppText variant="sm" weight="bold" color={colors.status.danger}>Sắp hết</AppText>
+                </View>
+              )}
             </View>
-            <View style={{ flex: 1 }}>
-              <Text style={s.cardName} numberOfLines={1}>{item.name}</Text>
-              <Text style={s.cardCode}>{item.code} · {item.unit}</Text>
-            </View>
-          </View>
-          <View style={[s.badge, { backgroundColor: lv.bg }]}>
-            <Text style={[s.badgeText, { color: lv.text }]}>{lv.label}</Text>
+            <AppText variant="sm" color={colors.text.muted} style={{ marginTop: 2 }}>{item.category || 'Khác'} · Min: {item.min_stock} {item.unit}</AppText>
           </View>
         </View>
-
-        <View style={s.stockBar}>
-          <View style={[s.stockBarFill, { width: `${barRatio}%`, backgroundColor: lv.text }]} />
-        </View>
-
-        <View style={s.cardStats}>
-          <View style={s.cardStatItem}>
-            <Text style={s.cardStatValue}>{item.current_stock}</Text>
-            <Text style={s.cardStatLabel}>Tồn</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <View style={{ alignItems: 'flex-end' }}>
+            <AppText variant="sm" weight="bold" color={isLow ? colors.status.danger : colors.text.primary}>
+              {item.current_stock} {item.unit}
+            </AppText>
+            <AppText variant="sm" color={colors.text.muted}>{formatVND(item.cost_price)}/{item.unit}</AppText>
           </View>
-          <View style={s.cardStatItem}>
-            <Text style={s.cardStatValue}>{item.min_stock}</Text>
-            <Text style={s.cardStatLabel}>Min</Text>
-          </View>
-          <View style={s.cardStatItem}>
-            <Text style={s.cardStatValue}>{formatVND(item.default_cost)}</Text>
-            <Text style={s.cardStatLabel}>Giá</Text>
-          </View>
-          <View style={s.cardStatItem}>
-            <Text style={s.cardStatValue}>{formatVND(item.current_stock * (item.default_cost || 0))}</Text>
-            <Text style={s.cardStatLabel}>Trị giá</Text>
-          </View>
-        </View>
-
-        {/* Always-visible actions */}
-        <View style={s.actionRow}>
-          <TouchableOpacity onPress={() => openEdit(item)} style={s.actionBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Icon name="pencil-outline" size={15} color={'#737373'} />
-          </TouchableOpacity>
-          <View style={s.actionDot} />
-          <TouchableOpacity onPress={() => deleteMaterial(item.id)} style={s.actionBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Icon name="delete-outline" size={15} color={'#737373'} />
+          <TouchableOpacity onPress={() => handleDelete(item.id, item.name)} style={styles.deleteBtn} hitSlop={8}>
+            <Icon name="trash-can-outline" size={18} color={colors.status.danger} />
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
     );
   };
 
-  // ── Filter area ──
-  const renderFilters = () => (
-    <View style={s.filterBar}>
-      <View style={s.searchBox}>
-        <Icon name="magnify" size={16} color={'#737373'} />
-        <TextInput value={search} onChangeText={setSearch} placeholder="Tìm nguyên liệu..."
-          placeholderTextColor={'#737373'}
-          style={{ flex: 1, ...font.sm, color: '#171717', paddingVertical: 0 }} />
-        {search !== '' && (
-          <TouchableOpacity onPress={() => setSearch('')}><Icon name="close-circle" size={16} color={'#737373'} /></TouchableOpacity>
-        )}
-      </View>
-      {categories.length > 1 && (
-        <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
-          {categories.map(cat => (
-            <TouchableOpacity key={cat} onPress={() => setCatFilter(cat)}
-              style={[s.chip, catFilter === cat && s.chipActive]}>
-              <Text style={[s.chipText, catFilter === cat && s.chipTextActive]}>
-                {cat === 'all' ? 'Tất cả' : cat}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+  const renderSearch = () => (
+    <View style={styles.searchWrap}>
+      <Icon name="magnify" size={18} color={colors.icon.muted} />
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Tìm nguyên liệu theo tên, mã..."
+        placeholderTextColor={colors.text.muted}
+        value={search}
+        onChangeText={setSearch}
+      />
+      {search.length > 0 && (
+        <TouchableOpacity onPress={() => setSearch('')}>
+          <Icon name="close" size={16} color={colors.icon.muted} />
+        </TouchableOpacity>
       )}
     </View>
   );
 
   const renderList = () => {
-    if (loading) return <TableSkeleton rowCount={5} />;
+    if (loading) return (
+      <View style={styles.center}>
+        <TableSkeleton rowCount={5} />
+        <AppText variant="sm" color={colors.text.muted}>Đang tải tồn kho...</AppText>
+      </View>
+    );
     return (
-      <FlatList data={filtered} keyExtractor={item => item.id}
-        key={`cols-${numCols}`}
-        numColumns={numCols}
-        renderItem={({ item }) => renderCard(item as any)}
-        contentContainerStyle={{ padding: 4, gap: 16}}
-        columnWrapperStyle={numCols > 1 ? { gap: 16, marginBottom: 8 } : undefined}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={'#F97316'} />}
-        ListHeaderComponent={renderFilters}
-        ListEmptyComponent={<EmptyState icon="package-variant" title="Chưa có nguyên liệu" subtitle="Nhấn + để thêm nguyên liệu đầu tiên" />}
+      <FlatList
+        data={filtered}
+        keyExtractor={item => item.id}
+        renderItem={renderItem}
+        contentContainerStyle={{ paddingBottom: 100, paddingTop: 4 }}
+        ListHeaderComponent={renderSearch}
+        ListEmptyComponent={
+          <EmptyState
+            title="Kho trống"
+            subtitle="Chưa có nguyên liệu nào trong kho"
+          />
+        }
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       />
     );
   };
 
   return (
-    <ScreenContainer compact>
-      <ScreenHeader
-        title="Kho hàng"
-        subtitle={`${stats.total} mặt hàng · ${stats.critical} cảnh báo`}
-        onMenuPress={openSidebar} compact
-        right={
-          <View style={{ flexDirection: 'row', gap: 12}}>
-            <TouchableOpacity onPress={load} style={s.headerBtn}>
-              <Icon name="refresh" size={18} color={colors.icon.default} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={openAdd} style={s.addBtn}>
-              <Icon name="plus" size={18} color={colors.text.inverse} />
-              {isWide && <Text style={s.addBtnText}>Thêm</Text>}
-            </TouchableOpacity>
-          </View>
-        }
-      />
-
-      {/* Stats bar */}
-      <View style={s.statsBar}>
-        <StatItem icon="package-variant" label="Mặt hàng" value={stats.total} />
-        <View style={s.barDivider} />
-        <StatItem icon="alert-circle-outline" label="Cảnh báo" value={stats.critical} valueColor={stats.critical > 0 ? '#DC2626' : '#16A34A'} />
-        <View style={s.barDivider} />
-        <StatItem icon="currency-usd" label="Tổng giá trị" value={formatVND(stats.totalValue)} />
-      </View>
-
+    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
       {isWide ? (
-        <View style={{ flex: 1, flexDirection: 'row' }}>
-          <View style={{ flex: 0.6 }}>
-            {renderList()}
-          </View>
-          <View style={s.separator} />
-          <View style={{ flex: 0.4, paddingTop: 8, paddingLeft: 8, paddingRight: 12 }}>
-            {selectedItem ? renderDetail() : (
-              <View style={{ alignItems: 'center', padding: 40, gap: 16}}>
-                <Icon name="hand-pointing-up" size={36} color={'#737373'} />
-                <Text style={{ ...font.md, color: '#737373' }}>Chọn nguyên liệu để xem chi tiết</Text>
-              </View>
-            )}
+        <View style={{ flex: 1, flexDirection: 'row', padding: 12, gap: 12 }}>
+          <View style={{ flex: 0.55 }}>{renderList()}</View>
+          <View style={{ flex: 0.45 }}>
+            {showForm ? renderInlineForm() : renderStatsPanel()}
           </View>
         </View>
       ) : renderList()}
-
       {!isWide && <FAB onPress={openAdd} />}
-
-      <FormModal
-        visible={showForm}
-        title={editing ? 'Sửa nguyên liệu' : 'Thêm nguyên liệu'}
-        onClose={() => { setShowForm(false); setEditing(null); }}
-        onSave={handleSave}
-        saveLabel={editing ? 'Cập nhật' : 'Thêm'}
-        saving={false}
-      >
-        <View style={{ gap: 12, paddingTop: 4 }}>
-          <TextInputField label="Mã" value={formFields.code} onChange={(v) => setFormFields({...formFields, code: v})} placeholder="VD: BOTL001" />
-          <TextInputField label="Tên" value={formFields.name} onChange={(v) => setFormFields({...formFields, name: v})} placeholder="VD: Thịt bò" />
-          <TextInputField label="Danh mục" value={formFields.category} onChange={(v) => setFormFields({...formFields, category: v})} placeholder="Thịt, Rau, Gia vị..." />
-          <View style={{ flexDirection: 'row', gap: 32}}>
-            <TextInputField label="ĐVT" value={formFields.unit} onChange={(v) => setFormFields({...formFields, unit: v})} placeholder="kg" flex={1} />
-            <TextInputField label="Giá mua" value={formFields.default_cost} onChange={(v) => setFormFields({...formFields, default_cost: v})} placeholder="0" keyboard="decimal-pad" flex={1} />
-          </View>
-          <View style={{ flexDirection: 'row', gap: 32}}>
-            <TextInputField label="Tồn hiện tại" value={formFields.current_stock} onChange={(v) => setFormFields({...formFields, current_stock: v})} placeholder="0" keyboard="decimal-pad" flex={1} />
-            <TextInputField label="Tồn tối thiểu" value={formFields.min_stock} onChange={(v) => setFormFields({...formFields, min_stock: v})} placeholder="0" keyboard="decimal-pad" flex={1} />
-          </View>
-        </View>
-      </FormModal>
-    </ScreenContainer>
-  );
-}
-
-// ── Sub-components ──
-function StatItem({ icon, label, value, valueColor }: { icon: string; label: string; value: string | number; valueColor?: string }) {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', flexDirection: 'row', gap: 12, justifyContent: 'center' }}>
-      <Icon name={icon as any} size={16} color={'#F97316'} />
-      <View>
-        <Text style={[s.statValue, valueColor ? { color: valueColor } : undefined]}>{value}</Text>
-        <Text style={s.statLabel}>{label}</Text>
-      </View>
+      {!isWide && (
+        <FormModal
+          visible={showForm}
+          title={editingId ? 'Chỉnh sửa nguyên liệu' : 'Thêm nguyên liệu'}
+          onClose={() => setShowForm(false)}
+          onSave={handleSave}
+          saveLabel={editingId ? 'Cập nhật' : 'Thêm'}
+          saving={saving}
+        >
+          {renderStockForm()}
+        </FormModal>
+      )}
     </View>
   );
 }
 
-function TextInputField({ label, value, onChange, placeholder, keyboard, flex }: {
-  label: string; value: string; onChange: (v: string) => void;
-  placeholder?: string; keyboard?: any; flex?: number;
-}) {
-  return (
-    <View style={{ flex: flex ?? undefined }}>
-      <Text style={s.fieldLabel}>{label}</Text>
-      <TextInput value={value} onChangeText={onChange} placeholder={placeholder}
-        placeholderTextColor={'#737373'} keyboardType={keyboard || 'default'}
-        style={s.fieldInput} />
-    </View>
-  );
-}
+// ── Styles ──
+const styles = StyleSheet.create({
+  /* Right panel */
+  panelBox: {
+    backgroundColor: colors.surface.card,
+    borderRadius: shape.radius.lg,
+    padding: 16,
+    gap: 14,
+  },
+  panelHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
+  },
+  panelStatRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 4,
+  },
+  panelDivider: { height: 1, backgroundColor: colors.border.light, marginVertical: 4 },
+  filterRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    borderRadius: shape.radius.md,
+  },
+  panelCta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: colors.brand.primary,
+    borderRadius: shape.radius.md,
+    height: 42,
+    marginTop: 4,
+  },
 
-const FAB = ({ onPress }: { onPress: () => void }) => (
-  <TouchableOpacity onPress={onPress} style={s.fab}>
-    <Icon name="plus" size={24} color="#fff" />
-  </TouchableOpacity>
-);
+  /* Search */
+  searchWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: colors.surface.card,
+    marginHorizontal: 12,
+    marginBottom: 10,
+    borderRadius: shape.radius.md,
+    paddingHorizontal: 12,
+    height: 42,
+  },
+  searchInput: {
+    flex: 1,
+    ...font.md,
+    color: colors.text.primary,
+  },
 
-const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FAFAFA' },
+  center: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 40,
+    gap: 12,
+  },
 
-  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, height: 38, borderRadius: 8, backgroundColor: '#F97316' },
-  addBtnText: { ...font.smBold, fontWeight: '600', color: '#fff' },
-  headerBtn: { width: 36, height: 36, borderRadius: 8, backgroundColor: '#F5F5F5', alignItems: 'center', justifyContent: 'center' },
-
-  // Stats bar
-  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
-  statValue: { ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
-  statLabel: { ...font.sm, color: '#737373', lineHeight: 12 },
-
-  // Filters
-  filterBar: { paddingHorizontal: 12, paddingVertical: 12, backgroundColor: '#FAFAFA', gap: 12},
-  searchBox: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#FFFFFF', borderRadius: 8, paddingHorizontal: 32, height: 36, borderWidth: 1, borderColor: '#F0F0F0' },
-  chip: { paddingHorizontal: 32, paddingVertical: 5, borderRadius: 999, backgroundColor: '#F5F5F5' },
-  chipActive: { backgroundColor: '#F97316' },
-  chipText: { ...font.sm, fontWeight: '600', color: '#737373' },
-  chipTextActive: { color: colors.text.inverse },
-
-  // Card
-  card: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#F0F0F0' },
-  cardTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
-  cardIcon: { width: 36, height: 36, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
-  cardName: { ...font.sm, fontWeight: '600', color: '#171717' },
-  cardCode: { ...font.sm, color: '#737373', marginTop: 1 },
-  badge: { paddingHorizontal: 16, paddingVertical: 3, borderRadius: 999},
-  badgeText: { ...font.sm, fontWeight: '600' },
-
-  // Stock bar
-  stockBar: { height: 5, backgroundColor: '#F1F5F9', borderRadius: 2.5, overflow: 'hidden' },
-  stockBarFill: { height: '100%', borderRadius: 2.5, minWidth: 3 },
-
-  // Card stats
-  cardStats: { flexDirection: 'row', gap: 16, marginTop: 8, borderTopWidth: 1, borderTopColor: '#F0F0F0', paddingTop: 8 },
-  cardStatItem: { flex: 1, alignItems: 'center' },
-  cardStatValue: { ...font.sm, fontWeight: '600', color: '#171717' },
-  cardStatLabel: { ...font.sm, color: '#737373' },
-
-  // Actions
-  actionRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 6, paddingTop: 6, borderTopWidth: 1, borderTopColor: '#F0F0F0' },
-  actionBtn: { padding: 4 },
-  actionDot: { width: 3, height: 3, borderRadius: 1.5, backgroundColor: '#E5E5E5' },
-
-  // Panel (iPad detail)
-  panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 14, marginBottom: 10, borderWidth: 1, borderColor: '#F0F0F0', gap: 32},
-  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 32, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelIconBox: { width: 40, height: 40, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
-  panelTitle: { ...font.md, fontWeight: '600', color: '#171717' },
-  panelSub: { ...font.sm, color: '#737373', marginTop: 1 },
-  panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12, paddingHorizontal: 12, borderRadius: 8},
-  panelBtnText: { ...font.sm, color: '#fff', fontWeight: '600' },
-  detailRow: { flexDirection: 'row', gap: 16},
-  detailItem: { flex: 1, alignItems: 'center' },
-  detailValue: { ...font.sm, fontWeight: '600', color: '#171717' },
-  detailLabel: { ...font.sm, color: '#737373' },
-  detailDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 4 },
-
-  // Form
-  fieldLabel: { ...font.smBold, color: '#404040', marginBottom: 4 },
-  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.md, color: '#171717', backgroundColor: '#FAFAFA' },
-
-  separator: { width: 1, backgroundColor: '#F0F0F0' },
-
-  // FAB
-  fab: { position: 'absolute', bottom: 24, right: 20, width: 56, height: 56, borderRadius: 28, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center', elevation: 4, boxShadow: "0px 4px 8px rgba(249,115,22,0.3)" },
+  /* Item card */
+  item: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surface.card,
+    marginHorizontal: 12,
+    marginBottom: 8,
+    borderRadius: shape.radius.lg,
+    padding: 12,
+  },
+  codeTag: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: shape.radius.sm,
+  },
+  lowBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: shape.radius.sm,
+    backgroundColor: colors.status.dangerBg,
+  },
+  deleteBtn: { padding: 4 },
+  fieldInput: {
+    borderRadius: shape.radius.md,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    ...font.md,
+    color: colors.text.primary,
+    backgroundColor: colors.surface.app,
+  },
 });
-
