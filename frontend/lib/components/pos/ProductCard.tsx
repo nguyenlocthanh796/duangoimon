@@ -88,33 +88,32 @@ export default React.memo(function ProductCard({
 
       {/* Bottom text overlay - transparent LinearGradient transition */}
       <LinearGradient
-        colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.88)']}
+        colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.92)']}
         style={{
           position: 'absolute',
           bottom: 0,
           left: 0,
           right: 0,
-          paddingHorizontal: 6,
-          paddingTop: 16,
-          paddingBottom: 6,
+          paddingHorizontal: 8,
+          paddingTop: 24,
+          paddingBottom: 8,
           justifyContent: 'flex-end',
         }}
       >
         <AppText
-          variant="xs"
-          weight="medium"
+          variant="sm"
           color={colors.text.inverse}
-          style={{ textAlign: 'center', lineHeight: 14 }}
-          numberOfLines={1}
+          style={{ textAlign: 'center' }}
+          numberOfLines={2}
           ellipsizeMode="tail"
         >
           {item.name}
         </AppText>
         <AppText
-          variant="xs"
+          variant="sm"
           weight="bold"
           color={palette.orange[300]}
-          style={{ textAlign: 'center', marginTop: 1, lineHeight: 14 }}
+          style={{ textAlign: 'center', marginTop: 4 }}
           numberOfLines={1}
         >
           {formatPrice(item.price)}
