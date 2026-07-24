@@ -874,8 +874,8 @@ export default function PaymentScreen() {
                       onPress={() => pm.setCashInput(String(amt))}
                       style={{
                         width: '48%',
-                        height: 44,
-                        borderRadius: 10,
+                        height: 52,
+                        borderRadius: shape.radius.md,
                         backgroundColor: pm.cash === amt ? colors.brand.primaryBg : colors.surface.app,
                         borderWidth: 1,
                         borderColor: pm.cash === amt ? colors.brand.primary : colors.border.default,
