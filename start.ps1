@@ -1,11 +1,6 @@
 #!/usr/bin/env pwsh
 # POS F&B start script
 # If execution policy blocks: powershell -ExecutionPolicy Bypass -File start.ps1
-#
-# Usage:
-#   .\start.ps1           Dev mode (Expo hot-reload)
-#   .\start.ps1 -Build    Production build + serve (fast page load)
-#   .\start.ps1 -Serve    Serve dist/ only (no rebuild)
 
 param(
   [switch]$Build,
@@ -28,17 +23,30 @@ Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue | Where-Object 
 }
 Start-Sleep -Seconds 1
 
-# -- 9Router check --
-try {
-  $r = curl.exe -s http://localhost:20128/v1/models 2>$null
-  if ($r) { Ok "9Router running on :20128" } else { Warn "9Router not responding on :20128" }
-} catch { Warn "9Router not found on :20128" }
+# -- Load .env file --
+$envFile = if ($Build -or $Serve) { "$root\.env" } else { "$root\.env.development" }
+if (-not (Test-Path $envFile)) { Die "File env '$envFile' is missing." }
+
+Info "Loading environment variables from '$((Get-Item $envFile).Name)'..."
+Get-Content $envFile | ForEach-Object {
+  $line = $_.Trim()
+  if ($line -and -not $line.StartsWith("#")) {
+    $parts = $line.Split("=", 2)
+    if ($parts.Count -eq 2) {
+      $key = $parts[0].Trim()
+      $val = $parts[1].Trim()
+      if ($key) {
+        [System.Environment]::SetEnvironmentVariable($key, $val, "Process")
+      }
+    }
+  }
+}
 
 # -- Backend --
 Info "Starting Backend (uvicorn) on port 8000..."
 Start-Process powershell -WindowStyle Normal -ArgumentList @(
   "-NoExit", "-Command",
-  "cd '$root\backend'; `$env:PYTHONIOENCODING='utf-8'; python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+  "cd '$root\backend'; `$env:PYTHONPATH='$root'; python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --env-file '$envFile'"
 )
 
 for ($i = 0; $i -lt 15; $i++) {
@@ -48,7 +56,7 @@ for ($i = 0; $i -lt 15; $i++) {
 
 $frontendDir = "$root\frontend"
 
-# -- Production build + serve --
+# -- Production build --
 if ($Build) {
   if (-not (Test-Path "$frontendDir\node_modules")) { Die "node_modules missing. Run 'cd frontend; npm install' first." }
   Info "Building production bundle (expo export)..."
@@ -85,18 +93,14 @@ if ($Build -or $Serve) {
 }
 
 # -- Dev mode (Expo hot-reload) --
-if (Test-Path "$frontendDir\package.json") {
-  Info "Starting Frontend (Expo dev) on port 8081..."
-  Start-Process powershell -WindowStyle Normal -ArgumentList @(
-    "-NoExit", "-Command",
-    "cd '$frontendDir'; npx expo start --web"
-  )
-}
+Info "Starting Frontend (Expo dev) on port 8081..."
+Start-Process powershell -WindowStyle Normal -ArgumentList @(
+  "-NoExit", "-Command",
+  "cd '$frontendDir'; npx expo start --web"
+)
 
 Ok "==========================="
 Ok "  Backend : http://localhost:8000"
-Ok "  Frontend: http://localhost:8081 (dev mode -- slow first load)"
+Ok "  Frontend: http://localhost:8081 (dev mode)"
 Ok "  API docs: http://localhost:8000/docs"
-Ok "==========================="
-Ok "  For production: .\start.ps1 -Build"
 Ok "==========================="
