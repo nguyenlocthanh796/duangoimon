@@ -1,3 +1,4 @@
+import React from 'react';
 import { View } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors } from '../../theme';
@@ -28,9 +29,8 @@ export default function StatCard({
   growth,
   cardStyle,
   hideTrend,
-  compact,
 }: StatCardProps) {
-  const showTrend = !hideTrend && growth !== undefined && !compact;
+  const showTrend = !hideTrend && growth !== undefined;
 
   return (
     <View style={[styles.card, cardStyle]}>
@@ -52,18 +52,18 @@ export default function StatCard({
       {/* Row 1: Icon + Value */}
       <View style={styles.row1}>
         <View style={[styles.iconBg, { backgroundColor: bgColor }]}>
-          <Icon name={icon as any} size={20} color={color} />
+          <Icon name={icon as any} size={18} color={color} />
         </View>
         {loading ? (
-          <SkeletonBox w={'60%'} h={26} />
+          <SkeletonBox w={'60%'} h={22} />
         ) : (
           <AppText
-            variant="lg"
+            variant="md"
             weight="bold"
             color={colors.text.primary}
             numberOfLines={1}
             adjustsFontSizeToFit
-            minimumFontScale={0.7}
+            minimumFontScale={0.75}
             style={{ flex: 1, flexShrink: 1 }}
           >
             {value}
@@ -76,7 +76,7 @@ export default function StatCard({
         variant="sm"
         color={colors.text.secondary}
         numberOfLines={1}
-        style={{ marginTop: 6 }}
+        style={{ marginTop: 4 }}
       >
         {label}
       </AppText>
@@ -88,25 +88,25 @@ const styles = {
   card: {
     backgroundColor: colors.surface.card,
     borderRadius: shape.radius.lg,
-    padding: 14,
+    padding: 12,
     justifyContent: 'center' as const,
   },
   trendBadge: {
     position: 'absolute' as const,
-    top: 10,
-    right: 10,
+    top: 8,
+    right: 8,
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
-    gap: 3,
-    paddingHorizontal: 6,
-    paddingVertical: 3,
+    gap: 2,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
     borderRadius: shape.radius.sm,
     backgroundColor: colors.surface.app,
   },
-  row1: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: 10 },
+  row1: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: 8 },
   iconBg: {
-    width: 36,
-    height: 36,
+    width: 32,
+    height: 32,
     borderRadius: shape.radius.md,
     alignItems: 'center' as const,
     justifyContent: 'center' as const,

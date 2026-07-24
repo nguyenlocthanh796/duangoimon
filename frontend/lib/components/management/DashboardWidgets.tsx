@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font } from '../../theme';
@@ -96,22 +96,22 @@ const dtStyles = StyleSheet.create({
   headerRow: {
     flexDirection: 'row',
     backgroundColor: colors.brand.primaryBg,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
   },
   headerCell: { flex: 1 },
-  headerText: { ...font.smBold, color: colors.brand.primary },
+  headerText: { ...font.sm, color: colors.text.secondary, fontWeight: '600' },
   dataRow: {
     flexDirection: 'row',
-    paddingVertical: 10,
-    paddingHorizontal: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 8,
   },
   dataRowAlt: { backgroundColor: colors.surface.card },
   dataCell: { flex: 1, justifyContent: 'center' },
   cellRight: { alignItems: 'flex-end' },
   cellCenter: { alignItems: 'center' },
   dataText: { ...font.sm, color: colors.text.primary },
-  empty: { alignItems: 'center', paddingVertical: 20 },
+  empty: { alignItems: 'center', paddingVertical: 18 },
   emptyText: { ...font.sm, color: colors.text.muted },
   statusDot: { width: 8, height: 8, borderRadius: 4 },
 });
@@ -141,17 +141,17 @@ export function TopProductsList({ data, loading }: TopProductsProps) {
         <DataTable
           columns={[
             { key: 'rank', label: '#', flex: 0.4, align: 'center', render: (v) => (
-              <Text style={{ ...font.sm, fontWeight: '700', textAlign: 'center', color: (v <= 3) ? colors.brand.primary : colors.text.muted }}>
+              <Text style={{ ...font.sm, fontWeight: '600', textAlign: 'center', color: (v <= 3) ? colors.brand.primary : colors.text.muted }}>
                 {v}
               </Text>
             ) },
             { key: 'name', label: 'Tên món', flex: 2 },
             { key: 'quantity', label: 'SL', flex: 0.8, align: 'right', render: (v) => (
-              <Text style={{ ...font.sm, fontWeight: '700', color: colors.text.primary, textAlign: 'right' }}>{v}</Text>
+              <Text style={{ ...font.sm, fontWeight: '600', color: colors.text.primary, textAlign: 'right' }}>{v}</Text>
             ) },
           ]}
           data={(data ?? []).map((p, i) => ({ ...p, id: i, rank: i + 1 }))}
-          maxRows={6}
+          maxRows={5}
         />
       )}
     </View>
@@ -180,29 +180,29 @@ export function NavigationGrid({ compact }: NavGridProps) {
       <SectionHeader
         icon="view-grid-outline"
         title="Phân hệ quản lý chính"
-        subtitle={`${NAV_ITEMS.length} danh mục`}
+        subtitle={`${NAV_ITEMS.length} mục`}
         compact={compact}
       />
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 4 }}>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 2 }}>
         {NAV_ITEMS.map((item, i) => (
           <TouchableOpacity
             key={i}
             style={{
               width: width > 768 ? '23.5%' : '48%',
               backgroundColor: colors.surface.app,
-              padding: 14,
+              padding: 12,
               borderRadius: shape.radius.md,
               flexDirection: 'row',
               alignItems: 'center',
-              gap: 10,
+              gap: 8,
             }}
             onPress={() => router.push(item.route as any)}
             activeOpacity={0.7}
           >
-            <View style={{ width: 38, height: 38, borderRadius: shape.radius.md, backgroundColor: item.bg, alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name={item.icon as any} size={20} color={item.color} />
+            <View style={{ width: 34, height: 34, borderRadius: shape.radius.md, backgroundColor: item.bg, alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name={item.icon as any} size={18} color={item.color} />
             </View>
-            <Text style={{ ...font.sm, fontWeight: '600', color: colors.text.primary, flex: 1 }} numberOfLines={1}>
+            <Text style={{ ...font.sm, color: colors.text.primary, flex: 1 }} numberOfLines={1}>
               {item.title}
             </Text>
           </TouchableOpacity>
@@ -250,7 +250,7 @@ export function LowStockList({ items, loading }: LowStockWidgetProps) {
             {
               key: 'name', label: 'Nguyên liệu', flex: 2,
               render: (v, row) => (
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                   <View
                     style={[
                       dtStyles.statusDot,
@@ -267,7 +267,7 @@ export function LowStockList({ items, loading }: LowStockWidgetProps) {
                 const r = row as any;
                 return (
                   <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 4 }}>
-                    <Text style={{ ...font.sm, fontWeight: '700', color: r._critical ? colors.status.danger : colors.status.warning }}>
+                    <Text style={{ ...font.sm, fontWeight: '600', color: r._critical ? colors.status.danger : colors.status.warning }}>
                       {r.current}
                     </Text>
                     <Text style={{ ...font.sm, color: colors.text.muted }}>
@@ -327,9 +327,9 @@ export function RecentActivitiesList({ activities, loading }: ActivitiesProps) {
             {
               key: 'text', label: 'Sự kiện', flex: 2.5,
               render: (v, row) => (
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                   <View style={[styles.actDot, { backgroundColor: ((row as any).color ?? '#CBD5E1') + '20' }]}>
-                    <Icon name={(row as any).icon as any} size={14} color={(row as any).color ?? '#CBD5E1'} />
+                    <Icon name={(row as any).icon as any} size={13} color={(row as any).color ?? '#CBD5E1'} />
                   </View>
                   <Text style={dtStyles.dataText} numberOfLines={2}>{v}</Text>
                 </View>
@@ -398,7 +398,6 @@ function SectionHeader({
   icon: iconName,
   title,
   subtitle,
-  compact,
 }: {
   icon: string;
   title: string;
@@ -408,8 +407,8 @@ function SectionHeader({
   return (
     <View style={styles.sectionHeader}>
       <View style={styles.sectionHeaderLeft}>
-        <Icon name={iconName as any} size={compact ? 16 : 20} color={colors.brand.primary} />
-        <Text style={[styles.sectionTitle, compact && font.mdBold]}>
+        <Icon name={iconName as any} size={18} color={colors.brand.primary} />
+        <Text style={styles.sectionTitle}>
           {title}
         </Text>
       </View>
@@ -429,7 +428,7 @@ function EmptyBox({
 }) {
   return (
     <View style={styles.emptyBox}>
-      <Icon name={iconName as any} size={28} color={iconColor ?? '#CBD5E1'} />
+      <Icon name={iconName as any} size={24} color={iconColor ?? '#CBD5E1'} />
       <Text style={[styles.emptyText, iconColor ? { color: iconColor } : undefined]}>{text}</Text>
     </View>
   );
@@ -441,23 +440,23 @@ const styles = StyleSheet.create({
   section: {
     backgroundColor: colors.surface.card,
     borderRadius: shape.radius.lg,
-    padding: 16,
+    padding: 14,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 10,
   },
   sectionHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  sectionTitle: { ...font.md, fontWeight: '700', color: colors.text.primary },
+  sectionTitle: { ...font.smBold, color: colors.text.primary },
   sectionSub: { ...font.sm, color: colors.text.secondary },
-  emptyBox: { alignItems: 'center', paddingVertical: 24, gap: 8 },
+  emptyBox: { alignItems: 'center', paddingVertical: 18, gap: 6 },
   emptyText: { ...font.sm, color: colors.text.secondary },
 
   actDot: {
-    width: 28,
-    height: 28,
+    width: 26,
+    height: 26,
     borderRadius: shape.radius.md,
     alignItems: 'center',
     justifyContent: 'center',
@@ -467,11 +466,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'space-between',
-    height: 120,
-    paddingTop: 8,
+    height: 110,
+    paddingTop: 6,
   },
   chartCol: { flex: 1, alignItems: 'center' },
   chartBarOuter: { flex: 1, width: '60%', justifyContent: 'flex-end', alignItems: 'center' },
   chartBar: { width: '100%', borderRadius: 4, minHeight: 4 },
-  chartLabel: { ...font.sm, color: colors.text.muted, marginTop: 6 },
+  chartLabel: { ...font.sm, color: colors.text.muted, marginTop: 4 },
 });

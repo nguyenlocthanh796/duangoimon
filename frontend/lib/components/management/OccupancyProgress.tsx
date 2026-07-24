@@ -1,6 +1,8 @@
-import { View, Text } from 'react-native';
+import React from 'react';
+import { View } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { colors, font } from '../../theme';
+import { colors } from '../../theme';
+import AppText from '../ui/AppText';
 
 interface OccupancyProgressProps {
   trong: number;
@@ -22,53 +24,51 @@ export default function OccupancyProgress({ trong, coKhach, daDat }: OccupancyPr
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: 12,
+          marginBottom: 10,
         }}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <Icon name="chart-donut" size={18} color={colors.brand.primary} />
-          <Text style={{ ...font.lg, color: colors.text.primary }}>Mật độ bàn ăn</Text>
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>Mật độ bàn ăn</AppText>
         </View>
-        <Text style={{ ...font.sm, color: colors.text.secondary }}>
+        <AppText variant="sm" color={colors.text.secondary}>
           {coKhach}/{total} bàn đang dùng
-        </Text>
+        </AppText>
       </View>
 
       <View
         style={{
           flexDirection: 'row',
-          height: 12,
-          borderRadius: 6,
-          backgroundColor: colors.surface.disabled,
+          height: 10,
+          borderRadius: 5,
+          backgroundColor: colors.surface.app,
           overflow: 'hidden',
-          marginBottom: 14,
+          marginBottom: 12,
         }}
       >
         {pctTrong > 0 && (
-          <View style={{ width: `${pctTrong}%`, height: '100%', backgroundColor: '#10B981' }} />
+          <View style={{ width: `${pctTrong}%`, height: '100%', backgroundColor: colors.status.success }} />
         )}
         {pctCoKhach > 0 && (
-          <View style={{ width: `${pctCoKhach}%`, height: '100%', backgroundColor: '#F97316' }} />
+          <View style={{ width: `${pctCoKhach}%`, height: '100%', backgroundColor: colors.brand.primary }} />
         )}
         {pctDaDat > 0 && (
-          <View style={{ width: `${pctDaDat}%`, height: '100%', backgroundColor: '#64748B' }} />
+          <View style={{ width: `${pctDaDat}%`, height: '100%', backgroundColor: colors.text.muted }} />
         )}
       </View>
 
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-          <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#10B981' }} />
-          <Text style={{ ...font.sm, color: colors.text.secondary }}>Trống: {trong}</Text>
+          <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.status.success }} />
+          <AppText variant="sm" color={colors.text.secondary}>Trống: {trong}</AppText>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-          <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#F97316' }} />
-          <Text style={{ ...font.sm, color: colors.text.secondary }}>
-            Có khách: {coKhach}
-          </Text>
+          <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.brand.primary }} />
+          <AppText variant="sm" color={colors.text.secondary}>Có khách: {coKhach}</AppText>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-          <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#64748B' }} />
-          <Text style={{ ...font.sm, color: colors.text.secondary }}>Đã đặt: {daDat}</Text>
+          <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.text.muted }} />
+          <AppText variant="sm" color={colors.text.secondary}>Đã đặt: {daDat}</AppText>
         </View>
       </View>
     </View>
