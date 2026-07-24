@@ -164,7 +164,11 @@ export default function TableSelection() {
   useFocusEffect(
     useCallback(() => {
       loadData();
-    }, [])
+      const timer = setInterval(() => {
+        loadData(false);
+      }, 3000);
+      return () => clearInterval(timer);
+    }, [loadData])
   );
 
   const areas = [

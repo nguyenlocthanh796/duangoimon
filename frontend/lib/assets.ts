@@ -1,1 +1,20 @@
-Ly8gQXNzZXRzIGluZGV4IC0gbm8gaW1hZ2UgcmVxdWlyZXMgZm9yIFJlbmRlciBjb21wYXRpYmlsaXR5CmV4cG9ydCBjb25zdCBBU1NFVFMgPSB7CiAgYnJhbmQ6IHsKICAgIGxvZ29NYXJrOiBudWxsLAogIH0sCiAgaW1hZ2VzOiB7CiAgICBmb29kUGxhY2Vob2xkZXI6IG51bGwsCiAgICBlbXB0eVN0YXRlTWVudTogbnVsbCwKICAgIGVtcHR5U3RhdGVPcmRlcnM6IG51bGwsCiAgICBsb2FkaW5nRm9vZDogbnVsbCwKICAgIHNlYXJjaEVtcHR5OiBudWxsLAogICAgY2F0ZWdvcnlTdWFDaHVhOiBudWxsLAogICAgY2F0ZWdvcnlUcmFDaGFuaDogbnVsbCwKICAgIGNhdGVnb3J5RG9BblZhdDogbnVsbCwKICAgIGNhdGVnb3J5Q2hlOiBudWxsLAogICAgY2F0ZWdvcnlUcmFTdWE6IG51bGwsCiAgICBjYXRlZ29yeVNvZGE6IG51bGwsCiAgICBjYXRlZ29yeUtlbTogbnVsbCwKICB9LAp9IGFzIGNvbnN0Owo=
+// Assets index - no image requires for build compatibility
+export const ASSETS = {
+  brand: {
+    logoMark: null,
+  },
+  images: {
+    foodPlaceholder: null,
+    emptyStateMenu: null,
+    emptyStateOrders: null,
+    loadingFood: null,
+    searchEmpty: null,
+    categorySuaChua: null,
+    categoryTraChanh: null,
+    categoryDoAnVat: null,
+    categoryChe: null,
+    categoryTraSua: null,
+    categorySoda: null,
+    categoryKem: null,
+  },
+} as const;

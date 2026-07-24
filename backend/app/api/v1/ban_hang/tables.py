@@ -14,7 +14,6 @@ router = APIRouter(prefix="/ban-hang/tables", tags=["ban-hang"])
 
 
 @router.get("")
-@cached(ttl_seconds=15.0)
 async def list_tables(
     page: PageParams = Depends(),
     db: AsyncSession = Depends(get_db),
