@@ -254,7 +254,9 @@ async def pos_ws(websocket: WebSocket):
     await ws_manager.connect(websocket, "pos")
     try:
         while True:
-            await websocket.receive_text()
+            data = await websocket.receive_text()
+            if data == "ping" or '"type":"ping"' in data:
+                await websocket.send_text('{"type":"pong"}')
     except WebSocketDisconnect:
         ws_manager.disconnect(websocket, "pos")
 

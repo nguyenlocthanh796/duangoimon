@@ -1,16 +1,20 @@
 /**
  * Supabase Realtime WebSocket Listener for Multi-Device POS Sync.
  * Enables sub-100ms live order updates across all restaurant tablets.
+ * Upgraded to industrial-grade: AppState wake reconnect, ping-pong heartbeat, exponential backoff.
  */
 
+import { AppState, AppStateStatus } from 'react-native';
 import { logger } from '../logger';
 import { invalidateCache, mutateCacheSync } from '../api/cache';
 import { getToken } from '../api/client';
-import { CLOUDFLARE_TUNNEL_BASE } from '../api/serverConfig';
 
 let _webSocket: WebSocket | null = null;
-let _reconnectCount = 0;
-const MAX_RECONNECT = 5;
+let _reconnectAttempts = 0;
+let _reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+let _heartbeatTimer: ReturnType<typeof setInterval> | null = null;
+let _pongTimeoutTimer: ReturnType<typeof setTimeout> | null = null;
+
 const _listeners = new Set<(data: any) => void>();
 
 function getWsBaseUrl(): string {
@@ -26,8 +30,57 @@ function getWsBaseUrl(): string {
   return 'wss://pos-quanan-backend.onrender.com/ws';
 }
 
+function startHeartbeat() {
+  stopHeartbeat();
+  _heartbeatTimer = setInterval(() => {
+    if (_webSocket && _webSocket.readyState === WebSocket.OPEN) {
+      try {
+        _webSocket.send(JSON.stringify({ type: 'ping' }));
+      } catch (err) {
+        logger.warn('realtimeSync', 'Failed to send ping:', err);
+      }
+
+      // Expect pong response within 10s
+      _pongTimeoutTimer = setTimeout(() => {
+        logger.warn('realtimeSync', 'Heartbeat pong timeout. Closing stale WebSocket.');
+        closeWebSocket();
+      }, 10000);
+    }
+  }, 25000);
+}
+
+function stopHeartbeat() {
+  if (_heartbeatTimer) {
+    clearInterval(_heartbeatTimer);
+    _heartbeatTimer = null;
+  }
+  if (_pongTimeoutTimer) {
+    clearTimeout(_pongTimeoutTimer);
+    _pongTimeoutTimer = null;
+  }
+}
+
+function closeWebSocket() {
+  stopHeartbeat();
+  if (_webSocket) {
+    try {
+      _webSocket.close();
+    } catch {
+      /* ignore */
+    }
+    _webSocket = null;
+  }
+}
+
 function connectWebSocket() {
   if (typeof window === 'undefined') return;
+
+  // Clear existing reconnect timers
+  if (_reconnectTimer) {
+    clearTimeout(_reconnectTimer);
+    _reconnectTimer = null;
+  }
+
   if (_webSocket && (_webSocket.readyState === WebSocket.OPEN || _webSocket.readyState === WebSocket.CONNECTING)) {
     return;
   }
@@ -41,13 +94,24 @@ function connectWebSocket() {
     _webSocket = new WebSocket(fullWsUrl);
 
     _webSocket.onopen = () => {
-      _reconnectCount = 0;
+      _reconnectAttempts = 0;
       logger.info('realtimeSync', 'WebSocket connected for live multi-device sync');
+      startHeartbeat();
     };
 
     _webSocket.onmessage = (event) => {
       try {
         const message = JSON.parse(event.data);
+
+        // Intercept pong response
+        if (message && message.type === 'pong') {
+          if (_pongTimeoutTimer) {
+            clearTimeout(_pongTimeoutTimer);
+            _pongTimeoutTimer = null;
+          }
+          return;
+        }
+
         if (message && (message.event === 'order_updated' || message.event === 'table_updated')) {
           if (message.table_id) {
             mutateCacheSync<any[]>('tables_ban_hang', (tables) => {
@@ -87,14 +151,34 @@ function connectWebSocket() {
 
     _webSocket.onclose = () => {
       _webSocket = null;
-      if (_reconnectCount < MAX_RECONNECT) {
-        _reconnectCount++;
-        setTimeout(() => connectWebSocket(), 5000);
-      }
+      stopHeartbeat();
+
+      // Exponential Backoff: delay starts at 1s, grows up to 30s
+      const delay = Math.min(30000, 1000 * Math.pow(2, _reconnectAttempts));
+      _reconnectAttempts++;
+
+      logger.info('realtimeSync', `WebSocket closed. Retrying in ${delay}ms (attempt ${_reconnectAttempts})...`);
+      
+      _reconnectTimer = setTimeout(() => {
+        connectWebSocket();
+      }, delay);
     };
   } catch (e) {
     logger.warn('realtimeSync', 'Failed to connect WebSocket:', e);
   }
+}
+
+// ── AppState Integration for Mobile Wake/Sleep ─────────────────────────────
+if (typeof window !== 'undefined') {
+  AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
+    if (nextAppState === 'active') {
+      logger.info('realtimeSync', 'App active, ensuring WebSocket connection');
+      connectWebSocket();
+    } else if (nextAppState === 'background') {
+      logger.info('realtimeSync', 'App sent to background, closing WebSocket');
+      closeWebSocket();
+    }
+  });
 }
 
 export function subscribeRealtimeSync(listener: (data: any) => void): () => void {
@@ -104,6 +188,9 @@ export function subscribeRealtimeSync(listener: (data: any) => void): () => void
   // Return unsubscribe function
   return () => {
     _listeners.delete(listener);
+    if (_listeners.size === 0) {
+      closeWebSocket();
+    }
   };
 }
 
