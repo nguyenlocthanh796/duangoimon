@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
@@ -260,39 +260,39 @@ export default function PaymentScreen() {
               <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 8}}>
                 <View
                   style={{
-                    width: 140,
-                    height: 140,
-                    borderRadius: 0,
+                    width: 180,
+                    height: 180,
+                    borderRadius: 12,
                     borderWidth: 1.5,
                     borderColor: colors.border.default,
-                    backgroundColor: colors.surface.card,
+                    backgroundColor: '#FFFFFF',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    padding: 8,
+                    padding: 6,
                   }}
                 >
-                  <Icon name="qrcode-scan" size={100} color={colors.text.primary} />
+                  <Image
+                    source={{
+                      uri: `https://img.vietqr.io/image/MB-0382348548-compact2.png?amount=${total}&addInfo=${encodeURIComponent(`TT ${tableName || ''} ${orderId ? orderId.slice(0, 6) : ''}`)}&accountName=POS%20QUAN%20AN`,
+                    }}
+                    style={{ width: 168, height: 168, borderRadius: 8 }}
+                    resizeMode="contain"
+                  />
                 </View>
-                <AppText variant="lg" weight="bold" color={colors.text.primary} style={{ textAlign: 'center' }}>
-                  Quét mã QR để thanh toán
+                <AppText variant="md" weight="bold" color={colors.text.primary} style={{ textAlign: 'center' }}>
+                  Quét mã VietQR tự động điền tiền
                 </AppText>
-                <View style={{ gap: 12, width: '100%', marginTop: 8 }}>
+                <View style={{ gap: 10, width: '100%', marginTop: 6 }}>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <AppText color={colors.text.muted}>Ngân hàng</AppText>
                     <AppText weight="bold" color={colors.text.primary}>
                       MB Bank
                     </AppText>
                   </View>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      marginVertical: 2,
-                    }}
-                  >
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                     <AppText color={colors.text.muted}>Số tài khoản</AppText>
                     <AppText weight="bold" color={colors.text.primary}>
-                      0987654321
+                      0382348548
                     </AppText>
                   </View>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
