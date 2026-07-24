@@ -14,7 +14,6 @@ interface TableScreenHeaderProps {
   onRefresh: () => void;
   lastRefreshTime?: string;
   onTakeaway?: () => void;
-  onOpenSettings?: () => void;
 }
 
 export default function TableScreenHeader({
@@ -24,7 +23,6 @@ export default function TableScreenHeader({
   onRefresh,
   lastRefreshTime,
   onTakeaway,
-  onOpenSettings,
 }: TableScreenHeaderProps) {
   const btnSize = 44;
   const iconSize = isWide ? 20 : 18;
@@ -43,22 +41,6 @@ export default function TableScreenHeader({
         }}
       >
         <Icon name="refresh" size={iconSize} color={colors.brand.primary} />
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        onPress={onOpenSettings || (() => router.push('/ban-hang/settings'))}
-        style={{
-          width: btnSize,
-          height: btnSize,
-          borderRadius: shape.radius.md,
-          backgroundColor: colors.surface.app,
-          borderWidth: 1,
-          borderColor: colors.border.default,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Icon name="cog-outline" size={iconSize} color={colors.text.secondary} />
       </TouchableOpacity>
 
       {onTakeaway ? (
