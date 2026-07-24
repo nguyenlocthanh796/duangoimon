@@ -104,7 +104,7 @@ export default function MobileCartBar({
           disabled={!hasUnsentItems || submitting}
           style={{
             flex: 1,
-            height: 44,
+            height: 52,
             borderRadius: shape.radius.md,
             backgroundColor: hasUnsentItems ? colors.surface.card : colors.surface.disabled,
             borderWidth: 1.5,
@@ -115,7 +115,7 @@ export default function MobileCartBar({
         >
           <Text
             style={{
-              ...font.smBold,
+              ...font.mdBold,
               color: hasUnsentItems ? colors.brand.primary : colors.text.placeholder,
             }}
           >
@@ -129,7 +129,7 @@ export default function MobileCartBar({
           disabled={submitting}
           style={{
             flex: 1,
-            height: 44,
+            height: 52,
             borderRadius: shape.radius.md,
             backgroundColor: colors.surface.card,
             borderWidth: 1.5,
@@ -140,7 +140,7 @@ export default function MobileCartBar({
         >
           <Text
             style={{
-              ...font.smBold,
+              ...font.mdBold,
               color: colors.text.secondary,
             }}
           >
@@ -153,8 +153,8 @@ export default function MobileCartBar({
           onPress={onPay}
           disabled={submitting}
           style={{
-            flex: 1.5,
-            height: 44,
+            flex: 1.8,
+            height: 52,
             borderRadius: shape.radius.md,
             backgroundColor: colors.brand.primary,
             alignItems: 'center',
@@ -166,10 +166,10 @@ export default function MobileCartBar({
           <Text
             style={{
               color: colors.text.inverse,
-              ...font.smBold,
+              ...font.mdBold,
             }}
           >
-            {hasItems ? formatPrice(total) : 'Thanh toán'}
+            {hasItems ? `Thanh toán (${formatPrice(total)})` : 'Thanh toán'}
           </Text>
         </TouchableOpacity>
       </View>
