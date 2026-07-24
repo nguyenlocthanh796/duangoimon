@@ -10,7 +10,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useFocusEffect } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api } from '../../lib/api';
@@ -149,18 +149,35 @@ export default function TableSelection() {
         }
       });
 
-      setTables(
-        tableData.map((t: any) => ({
-          id: t.id,
-          name: t.name,
-          capacity: t.capacity || 4,
-          area: t.area || t.location || undefined,
-          status: (t.status === 'dang_su_dung' ? 'co_khach' : t.status) as TableStatus,
-          orderTotal: orderTotals[t.id],
-          orderItemCount: orderItemCounts[t.id] || 0,
-          orderTime: orderTimes[t.id] || undefined,
-        }))
-      );
+      const newTables: Table[] = tableData.map((t: any) => ({
+        id: t.id,
+        name: t.name,
+        capacity: t.capacity || 4,
+        area: t.area || t.location || undefined,
+        status: (t.status === 'dang_su_dung' ? 'co_khach' : t.status) as TableStatus,
+        orderTotal: orderTotals[t.id],
+        orderItemCount: orderItemCounts[t.id] || 0,
+        orderTime: orderTimes[t.id] || undefined,
+      }));
+
+      setTables((prev) => {
+        if (prev.length === newTables.length) {
+          const isSame = prev.every((pt, idx) => {
+            const nt = newTables[idx];
+            return (
+              pt.id === nt.id &&
+              pt.name === nt.name &&
+              pt.status === nt.status &&
+              pt.orderTotal === nt.orderTotal &&
+              pt.orderItemCount === nt.orderItemCount &&
+              pt.orderTime === nt.orderTime &&
+              pt.area === nt.area
+            );
+          });
+          if (isSame) return prev;
+        }
+        return newTables;
+      });
       initialLoadedRef.current = true;
     } catch (e: any) {
       if (!isSilent) setError(e?.message || 'Không thể tải dữ liệu');
@@ -179,7 +196,7 @@ export default function TableSelection() {
       loadData(false, initialLoadedRef.current);
       const timer = setInterval(() => {
         loadData(false, true);
-      }, 3000);
+      }, 10000);
       return () => clearInterval(timer);
     }, [loadData])
   );
