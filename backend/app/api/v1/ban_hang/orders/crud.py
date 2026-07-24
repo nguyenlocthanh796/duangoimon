@@ -307,11 +307,18 @@ async def update_order(
         select(Order).options(selectinload(Order.items)).where(Order.id == parse_uuid(order_id))
     )
     order = result.scalar_one_or_none()
-    if not order:
-        raise HTTPException(status_code=404, detail="Order not found")
-
-    if order.status == "da_thanh_toan":
-        raise HTTPException(status_code=400, detail="Order already paid")
+    if order.status in ("da_thanh_toan", "da_gop", "da_huy"):
+        # If the order is already closed/paid, do not fail with 400 Bad Request.
+        # If new items exist, spawn a new active order for the table; otherwise return existing order.
+        if body.items and order.table_id:
+            from app.schemas.ban_hang import OrderCreate
+            new_order_body = OrderCreate(
+                table_id=str(order.table_id),
+                items=body.items,
+                note=body.note,
+            )
+            return await create_order(new_order_body, request=None, db=db, current_user=_user)
+        return order
 
     await db.execute(delete(OrderItem).where(OrderItem.order_id == order.id))
 
@@ -391,7 +398,7 @@ async def get_active_order_for_table(
         select(Order)
         .options(selectinload(Order.items))
         .where(Order.table_id == _uuid(table_id))
-        .where(Order.status != "da_thanh_toan")
+        .where(Order.status.notin_(["da_thanh_toan", "da_gop", "da_huy"]))
         .order_by(Order.created_at.desc())
     )
     order = result.scalars().first()
