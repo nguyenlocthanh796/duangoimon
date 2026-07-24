@@ -53,10 +53,9 @@ export default function ProductGrid({
         isWide={isWide}
         inCartCount={getItemCartCount(item.id)}
         onPress={() => onProductPress(item)}
-        onQuickAdd={() => onQuickAdd?.(item)}
+        onQuickAdd={() => onQuickAdd ? onQuickAdd(item) : onProductPress(item)}
       />
     ),
-    // cardSize & isWide thay đổi khi panelWidth/breakpoint → re-create
     [cardSize, isWide, onProductPress, onQuickAdd, getItemCartCount],
   );
 
