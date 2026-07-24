@@ -99,8 +99,8 @@ export default function QuanLyDashboard() {
 
   // Quick Action Buttons
   const QUICK_ACTIONS = [
-    { title: 'Thêm món', icon: 'plus-circle-outline', route: '/quan-ly/products', color: '#4F46E5', bg: '#EEF2FF' },
-    { title: 'Nhập kho', icon: 'package-down', route: '/quan-ly/stock', color: '#059669', bg: '#ECFDF5' },
+    { title: 'Thêm món mới', icon: 'plus-circle-outline', route: '/quan-ly/products', color: '#4F46E5', bg: '#EEF2FF' },
+    { title: 'Nhập kho nhanh', icon: 'package-down', route: '/quan-ly/stock', color: '#059669', bg: '#ECFDF5' },
     { title: 'Ca làm việc', icon: 'clock-outline', route: '/quan-ly/shifts', color: '#F97316', bg: '#FFF7ED' },
     { title: 'Đặt bàn mới', icon: 'calendar-plus', route: '/quan-ly/booking', color: '#7C3AED', bg: '#F5F3FF' },
   ];
@@ -111,24 +111,24 @@ export default function QuanLyDashboard() {
         <Icon name="flash-outline" size={18} color={colors.brand.primary} />
         <Text style={{ ...font.smBold, color: colors.text.primary }}>Thao tác nhanh</Text>
       </View>
-      <View style={{ flexDirection: 'row', gap: 8 }}>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
         {QUICK_ACTIONS.map((act, i) => (
           <TouchableOpacity
             key={i}
             onPress={() => router.push(act.route as any)}
             style={{
-              flex: 1,
+              width: isWide ? '23.8%' : '48.5%',
+              height: 44,
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 6,
-              paddingVertical: 10,
-              paddingHorizontal: 8,
+              gap: 8,
+              paddingHorizontal: 10,
               backgroundColor: act.bg,
               borderRadius: shape.radius.md,
             }}
           >
-            <Icon name={act.icon as any} size={16} color={act.color} />
+            <Icon name={act.icon as any} size={18} color={act.color} />
             <Text style={{ ...font.smBold, color: act.color }} numberOfLines={1}>
               {act.title}
             </Text>
@@ -145,9 +145,8 @@ export default function QuanLyDashboard() {
           <View
             key={i}
             style={{
-              width: isWide ? '23.8%' : '48%',
+              width: isWide ? '23.8%' : '48.5%',
               backgroundColor: colors.surface.card,
-              padding: 16,
               borderRadius: shape.radius.lg,
             }}
           >
@@ -155,8 +154,8 @@ export default function QuanLyDashboard() {
               {...s}
               loading={loading}
               hideTrend={!s.growth}
-              compact={true}
-              cardStyle={{ borderWidth: 0, padding: 0, borderRadius: 0, boxShadow: 'none' }}
+              compact={false}
+              cardStyle={{ borderWidth: 0, boxShadow: 'none' }}
             />
           </View>
         ))}

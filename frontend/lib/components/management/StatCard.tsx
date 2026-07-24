@@ -1,6 +1,6 @@
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { colors, font } from '../../theme';
+import { colors } from '../../theme';
 import { shape } from '../../theme/shape';
 import SkeletonBox from '../ui/SkeletonBox';
 import AppText from '../ui/AppText';
@@ -30,19 +30,16 @@ export default function StatCard({
   hideTrend,
   compact,
 }: StatCardProps) {
-  const s = compact ? stylesCompact : stylesNormal;
   const showTrend = !hideTrend && growth !== undefined && !compact;
-  // Estimated badge width: icon(~13) + gap(2) + padding(4) + text(~8px per char)
-  const badgeWidth = compact ? 0 : 82;
 
   return (
-    <View style={[s.card, cardStyle, showTrend && { paddingRight: 16 + badgeWidth }]}>
-      {/* Trend Badge - absolute top-right */}
+    <View style={[styles.card, cardStyle]}>
+      {/* Trend Badge */}
       {showTrend && (
-        <View style={s.trendBadge}>
+        <View style={styles.trendBadge}>
           <Icon
             name={growth! >= 0 ? 'arrow-top-right' : 'arrow-bottom-right'}
-            size={compact ? 7 : 12}
+            size={12}
             color={growth! >= 0 ? colors.status.success : colors.status.danger}
           />
           <AppText variant="sm" weight="bold" color={colors.text.primary}>
@@ -53,12 +50,12 @@ export default function StatCard({
       )}
 
       {/* Row 1: Icon + Value */}
-      <View style={s.row1}>
-        <View style={[s.iconBg, { backgroundColor: bgColor }]}>
-          <Icon name={icon as any} size={compact ? 18 : 20} color={color} />
+      <View style={styles.row1}>
+        <View style={[styles.iconBg, { backgroundColor: bgColor }]}>
+          <Icon name={icon as any} size={20} color={color} />
         </View>
         {loading ? (
-          <SkeletonBox w={'60%'} h={compact ? 24 : 32} />
+          <SkeletonBox w={'60%'} h={26} />
         ) : (
           <AppText
             variant="lg"
@@ -66,8 +63,8 @@ export default function StatCard({
             color={colors.text.primary}
             numberOfLines={1}
             adjustsFontSizeToFit
-            minimumFontScale={0.55}
-            style={{ flex: 1, flexShrink: 1, textAlign: compact ? 'center' : 'left' }}
+            minimumFontScale={0.7}
+            style={{ flex: 1, flexShrink: 1 }}
           >
             {value}
           </AppText>
@@ -76,11 +73,10 @@ export default function StatCard({
 
       {/* Row 2: Label */}
       <AppText
-        variant={'sm'}
-        weight={compact ? 'normal' : 'bold'}
+        variant="sm"
         color={colors.text.secondary}
         numberOfLines={1}
-        style={{ marginTop: compact ? 1 : 4, textAlign: compact ? 'center' : 'left' }}
+        style={{ marginTop: 6 }}
       >
         {label}
       </AppText>
@@ -88,89 +84,31 @@ export default function StatCard({
   );
 }
 
-const stylesNormal = {
+const styles = {
   card: {
     backgroundColor: colors.surface.card,
-    borderRadius: 0,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: colors.border.light,
+    borderRadius: shape.radius.lg,
+    padding: 14,
     justifyContent: 'center' as const,
   },
   trendBadge: {
     position: 'absolute' as const,
-    top: 12,
-    right: 12,
+    top: 10,
+    right: 10,
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
     gap: 3,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
     borderRadius: shape.radius.sm,
-    backgroundColor: colors.surface.disabled,
-    flexShrink: 0,
+    backgroundColor: colors.surface.app,
   },
-  trendBadgeText: { ...font.sm, fontWeight: '600' as const },
-  row1: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: 12 },
+  row1: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: 10 },
   iconBg: {
-    width: 40,
-    height: 40,
+    width: 36,
+    height: 36,
     borderRadius: shape.radius.md,
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
-  },
-  value: {
-    ...font.lg,
-    color: colors.text.primary,
-    flex: 1,
-    flexShrink: 1,
-  },
-  label: { ...font.md, color: colors.text.secondary, fontWeight: '500' as const, marginTop: 4 },
-} as const;
-
-const stylesCompact = {
-  card: {
-    backgroundColor: colors.surface.card,
-    borderRadius: 0,
-    padding: 4,
-    borderWidth: 1,
-    borderColor: colors.border.light,
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
-  },
-  trendBadge: {
-    position: 'absolute' as const,
-    top: 5,
-    right: 5,
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    gap: 2,
-    paddingHorizontal: 3,
-    paddingVertical: 2,
-    borderRadius: 3,
-    backgroundColor: colors.surface.disabled,
-    flexShrink: 0,
-  },
-  trendBadgeText: { ...font.sm, fontWeight: '600' as const },
-  row1: { flexDirection: 'row' as const, alignItems: 'center' as const, justifyContent: 'center' as const, gap: 6 },
-  iconBg: {
-    width: 30,
-    height: 30,
-    borderRadius: shape.radius.sm,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
-  },
-  value: {
-    ...font.lg,
-    color: colors.text.primary,
-    flexShrink: 1,
-    textAlign: 'center' as const,
-  },
-  label: {
-    ...font.sm,
-    color: colors.text.secondary,
-    fontWeight: '500' as const,
-    marginTop: 1,
-    textAlign: 'center' as const,
   },
 } as const;
