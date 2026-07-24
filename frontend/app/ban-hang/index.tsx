@@ -30,6 +30,7 @@ import OrderHeader from '../../lib/components/pos/OrderHeader';
 import OverviewPanel from '../../lib/components/pos/OverviewPanel';
 import AppText from '../../lib/components/ui/AppText';
 import type { Table, TableStatus } from '../../lib/components/pos/TableCard';
+import { initRealtimeSync } from '../../lib/sync/realtimeSync';
 
 export default function TableSelection() {
   const { openSidebar } = useSidebar();
@@ -160,6 +161,10 @@ export default function TableSelection() {
       setRefreshing(false);
     }
   }, []);
+
+  useEffect(() => {
+    initRealtimeSync(() => loadData(false));
+  }, [loadData]);
 
   useFocusEffect(
     useCallback(() => {

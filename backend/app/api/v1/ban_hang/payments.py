@@ -149,6 +149,9 @@ async def process_payment(
         request=request,
     )
 
+    from app.core.fast_cache import invalidate_fast_cache
+    invalidate_fast_cache()
+
     from app.core.ws_manager import ws_manager
 
     await ws_manager.broadcast(
@@ -158,5 +161,14 @@ async def process_payment(
             "order": {"id": str(order.id), "status": "da_thanh_toan"},
         },
     )
+
+    if order.table_id:
+        await ws_manager.broadcast(
+            "kitchen",
+            {
+                "event": "table_updated",
+                "table": {"id": str(order.table_id), "status": "trong"},
+            },
+        )
 
     return {"status": "ok", "order_id": str(order.id)}

@@ -12,13 +12,22 @@ import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import FormModal from '../../lib/components/ui/FormModal';
 import FAB from '../../lib/components/ui/FAB';
 
+import { Switch } from 'react-native';
+import { getKitchenModuleEnabled, setKitchenModuleEnabled } from '../../lib/utils/kitchenSettings';
+
 const API = '/api/v1/quan-ly';
 
 export default function StationsScreen() {
   const { openSidebar } = useSidebar();
   const { isWide } = useResponsive();
+  const [kitchenEnabled, setKitchenEnabled] = useState(getKitchenModuleEnabled());
   const [items, setItems] = useState<Station[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const handleToggleKitchen = (val: boolean) => {
+    setKitchenEnabled(val);
+    setKitchenModuleEnabled(val);
+  };
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Station | null>(null);
   const [selected, setSelected] = useState<Station | null>(null);
@@ -83,6 +92,17 @@ export default function StationsScreen() {
 
   const renderPanel = () => (
     <View style={styles.panelBox}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 8, paddingHorizontal: 12, backgroundColor: kitchenEnabled ? '#FFF7ED' : '#F5F5F5', borderRadius: 8, marginBottom: 12 }}>
+        <View style={{ flex: 1, paddingRight: 8 }}>
+          <Text style={{ ...font.sm, fontWeight: '700', color: kitchenEnabled ? '#EA580C' : '#525252' }}>
+            {kitchenEnabled ? 'Bật Module Bếp / Bar' : 'Tắt Module Bếp'}
+          </Text>
+          <Text style={{ ...font.xs, color: '#737373', marginTop: 2 }}>
+            {kitchenEnabled ? 'Bắt buộc gửi đơn xuống Bếp' : 'Bỏ qua Bếp, tính tiền trực tiếp'}
+          </Text>
+        </View>
+        <Switch value={kitchenEnabled} onValueChange={handleToggleKitchen} trackColor={{ false: '#D4D4D4', true: '#FB923C' }} thumbColor={kitchenEnabled ? '#EA580C' : '#F5F5F5'} />
+      </View>
       <View style={styles.panelHeader}><Icon name="stove" size={18} color={'#F97316'} /><Text style={styles.panelHeaderText}>Trạm bếp</Text></View>
       <View style={{ flexDirection: 'row', gap: 12}}>
         <View style={{ alignItems: 'center', flex: 1 }}>

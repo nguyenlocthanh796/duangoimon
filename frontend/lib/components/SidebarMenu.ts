@@ -238,13 +238,16 @@ export const allMenuItems: Record<string, SidebarItem> = {
 export type ActiveModule = 'ban-hang' | 'quan-ly' | 'ke-toan';
 
 // ─── Pre-built sections per module ────────────────────────
+import { getKitchenModuleEnabled } from '../utils/kitchenSettings';
+
 export function getSections(module: ActiveModule): SidebarGroup[] {
+  const showKitchen = getKitchenModuleEnabled();
   switch (module) {
     case 'ban-hang':
       return [
         {
           label: 'Bán Hàng',
-          items: [allMenuItems.pos, allMenuItems.kitchen],
+          items: showKitchen ? [allMenuItems.pos, allMenuItems.kitchen] : [allMenuItems.pos],
         },
         {
           label: 'Khác',

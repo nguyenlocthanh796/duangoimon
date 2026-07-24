@@ -19,13 +19,8 @@ function getWsBaseUrl(): string {
     if (host === 'localhost' || host === '127.0.0.1') {
       return `ws://${host}:8000/ws`;
     }
-    if (host.endsWith('.pages.dev') || host.endsWith('.cloudflare.com')) {
-      // Cloudflare Pages -> connect via tunnel with wss
-      return `${CLOUDFLARE_TUNNEL_BASE.replace(/^https/, 'wss')}/ws`;
-    }
-    return `ws://${host}:8000/ws`;
   }
-  return 'ws://localhost:8000/ws';
+  return 'wss://pos-quanan-backend.onrender.com/ws';
 }
 
 export function initRealtimeSync(onOrderUpdated?: (data: any) => void) {
