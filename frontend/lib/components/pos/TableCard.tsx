@@ -95,15 +95,21 @@ export default React.memo(function TableCard({ table, onPress, selected, isWide,
   const pad = isWide ? 12 : 10;
   const sm = 'sm';
 
+  const isReserved = table.status === 'da_dat';
+
   const borderColor = selected
-    ? colors.brand.primary
+    ? '#EA580C'
     : isOccupied
-      ? colors.border.brand
-      : colors.border.default;
+      ? '#F97316'
+      : isReserved
+        ? '#2563EB'
+        : '#10B981';
 
   const cardBg = isOccupied
-    ? colors.brand.primaryBg
-    : '#F2F4F8';
+    ? '#FFF7ED'
+    : isReserved
+      ? '#EFF6FF'
+      : '#F0FDF4';
 
   return (
     <>
@@ -124,60 +130,62 @@ export default React.memo(function TableCard({ table, onPress, selected, isWide,
             borderColor,
             overflow: 'hidden',
             padding: pad,
+            justifyContent: 'space-between',
             ...(isOccupied || selected ? shape.shadow.sm : {}),
           }}
         >
           {isOccupied ? (
-            /* ── Occupied ─────────────────────────── */
-            <View style={{ flex: 1 }}>
-              {/* Top row: time (left) · items (right) · dot */}
+            /* ── Occupied Card (Kỷ luật Orange) ─────────────────── */
+            <View style={{ flex: 1, justifyContent: 'space-between' }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                {/* Time — left aligned */}
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                  {table.orderTime && (
-                    <>
-                      <Icon name="clock-outline" size={11} color={colors.text.muted} />
-                      <AppText variant={sm} color={colors.text.muted} numberOfLines={1}>{table.orderTime}</AppText>
-                    </>
-                  )}
-                </View>
-
-                {/* Items + dot — right aligned */}
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                  <AppText variant={sm} color={colors.text.secondary} numberOfLines={1}>
-                    {table.orderItemCount || 0}{isWide ? ' món' : ''}
+                <View style={{ backgroundColor: '#FDBA74', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 }}>
+                  <AppText variant="xs" weight="bold" color="#9A3412">
+                    {table.orderTime || 'Đang dùng'}
                   </AppText>
-                  <View style={{
-                    width: 8, height: 8, borderRadius: 4,
-                    backgroundColor: colors.status.available,
-                    borderWidth: 1.5, borderColor: colors.surface.card,
-                  }} />
+                </View>
+                <View style={{ backgroundColor: '#EA580C', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 }}>
+                  <AppText variant="xs" weight="bold" color="#FFFFFF">
+                    {table.orderItemCount || 0} món
+                  </AppText>
                 </View>
               </View>
 
-              {/* Center: table name — big & bold */}
-              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <AppText style={titleToken} numberOfLines={1} color={colors.text.primary} adjustsFontSizeToFit={true} minimumFontScale={0.7}>
+              <View style={{ alignItems: 'center', marginVertical: 4 }}>
+                <AppText style={titleToken} numberOfLines={1} color="#1C1917" adjustsFontSizeToFit={true} minimumFontScale={0.7}>
                   {table.name}
+                </AppText>
+                <AppText variant="xs" color="#78350F" numberOfLines={1}>
+                  {table.area || 'Khu vực'}
                 </AppText>
               </View>
 
-              {/* Bottom: price — big & brand color */}
-              <View style={{ alignItems: 'center' }}>
-                <AppText style={priceToken} numberOfLines={1} color={colors.brand.primary} adjustsFontSizeToFit={true} minimumFontScale={0.7}>
+              <View style={{ alignItems: 'center', backgroundColor: '#FFEDD5', paddingVertical: 4, borderRadius: 6 }}>
+                <AppText style={priceToken} numberOfLines={1} color="#EA580C" adjustsFontSizeToFit={true} minimumFontScale={0.7}>
                   {table.orderTotal ? formatPrice(table.orderTotal) : '0đ'}
                 </AppText>
               </View>
             </View>
           ) : (
-            /* ── Empty / Available ────────────────── */
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 6 }}>
-              <Icon name="table-furniture" size={isWide ? 24 : 20} color={colors.icon.muted} />
-              <AppText style={titleToken} numberOfLines={1} color={colors.text.secondary} adjustsFontSizeToFit={true} minimumFontScale={0.7}>
-                {table.name}
-              </AppText>
-              <AppText variant={sm} color={colors.text.placeholder} numberOfLines={1}>
-                Trống
+            /* ── Empty Card (Kỷ luật Green) ────────────────────── */
+            <View style={{ flex: 1, justifyContent: 'space-between', alignItems: 'center' }}>
+              <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <View style={{ backgroundColor: '#D1FAE5', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 }}>
+                  <AppText variant="xs" weight="bold" color="#065F46">
+                    Sẵn sàng
+                  </AppText>
+                </View>
+                <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#10B981' }} />
+              </View>
+
+              <View style={{ alignItems: 'center' }}>
+                <Icon name="table-furniture" size={isWide ? 26 : 22} color="#059669" />
+                <AppText style={titleToken} numberOfLines={1} color="#064E3B" adjustsFontSizeToFit={true} minimumFontScale={0.7}>
+                  {table.name}
+                </AppText>
+              </View>
+
+              <AppText variant="xs" color="#047857" numberOfLines={1}>
+                {table.area || 'Bàn trống'} ({table.capacity} ghế)
               </AppText>
             </View>
           )}
