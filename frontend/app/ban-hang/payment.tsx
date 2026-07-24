@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -50,18 +50,26 @@ export default function PaymentScreen() {
     orderId: orderId || '',
   });
 
+  useEffect(() => {
+    if (pm.paid) {
+      const methodLabel = pm.method === 'tien_mat' ? 'Tiền mặt' : pm.method === 'qr' ? 'QR Code' : pm.method === 'chuyen_khoan' ? 'Chuyển khoản' : 'Thẻ';
+      router.replace({
+        pathname: '/ban-hang',
+        params: {
+          payment_success: 'true',
+          tableName: tableName || '',
+          total: String(total),
+          methodLabel,
+        }
+      });
+    }
+  }, [pm.paid, tableName, total, pm.method]);
+
   if (pm.paid) {
     return (
-      <PaymentSuccessScreen
-        tableName={tableName || ''}
-        total={total}
-        method={pm.method}
-        cash={pm.cash}
-        change={pm.change}
-        countdown={pm.countdown}
-        onPrint={pm.handlePrint}
-        onGoBack={() => router.replace('/ban-hang')}
-      />
+      <View style={{ flex: 1, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator size="large" color={colors.brand.primary} />
+      </View>
     );
   }
 

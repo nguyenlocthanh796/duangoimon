@@ -8,7 +8,7 @@ import {
   FlatList,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { router, useFocusEffect } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -39,6 +39,42 @@ export default function TableSelection() {
   const gridPaddingBottom = 32;
   const insets = useSafeAreaInsets();
   const { isWide, isLandscape, width, breakpoint, containerWidth } = useResponsive();
+  const params = useLocalSearchParams<{
+    payment_success?: string;
+    tableName?: string;
+    total?: string;
+    methodLabel?: string;
+  }>();
+  const [toast, setToast] = useState<{ visible: boolean; message: string; subMessage?: string } | null>(null);
+
+  useEffect(() => {
+    if (params.payment_success === 'true') {
+      const successTable = params.tableName || '';
+      const successTotal = params.total || '0';
+      const successMethod = params.methodLabel || 'Tiền mặt';
+
+      setToast({
+        visible: true,
+        message: `Thanh toán thành công ${successTable}`,
+        subMessage: `Tổng: ${formatPrice(Number(successTotal))} đ · ${successMethod}`,
+      });
+
+      // Clear parameters from url so they don't pop up again
+      router.setParams({
+        payment_success: undefined,
+        tableName: undefined,
+        total: undefined,
+        methodLabel: undefined,
+      });
+
+      const timer = setTimeout(() => {
+        setToast(null);
+      }, 4000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [params.payment_success]);
+
   const [selectedTable, setSelectedTable] = useState<{ id: string; name: string } | null>(null);
   const [tables, setTables] = useState<Table[]>([]);
   const [loading, setLoading] = useState(true);
@@ -352,6 +388,62 @@ export default function TableSelection() {
     );
   };
 
+  const renderToast = () => {
+    if (!toast || !toast.visible) return null;
+    return (
+      <View
+        style={{
+          position: 'absolute',
+          top: insets.top + 16,
+          right: isWide ? 24 : 16,
+          left: isWide ? undefined : 16,
+          width: isWide ? 380 : undefined,
+          backgroundColor: '#FFFFFF',
+          borderRadius: 12,
+          paddingHorizontal: 16,
+          paddingVertical: 14,
+          shadowColor: '#000000',
+          shadowOffset: { width: 0, height: 6 },
+          shadowOpacity: 0.15,
+          shadowRadius: 10,
+          elevation: 6,
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 12,
+          borderWidth: 1.5,
+          borderColor: '#BBF7D0',
+          zIndex: 9999,
+        }}
+      >
+        <View
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: 18,
+            backgroundColor: '#F0FDF4',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Icon name="check-circle" size={24} color="#16A34A" />
+        </View>
+        <View style={{ flex: 1 }}>
+          <AppText variant="md" weight="bold" color={colors.text.primary}>
+            {toast.message}
+          </AppText>
+          {toast.subMessage && (
+            <AppText variant="sm" color={colors.text.muted} style={{ marginTop: 2 }}>
+              {toast.subMessage}
+            </AppText>
+          )}
+        </View>
+        <TouchableOpacity onPress={() => setToast(null)}>
+          <Icon name="close" size={20} color={colors.icon.muted} />
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
   // iPad Landscape / Desktop: 62/38 Master-Detail Split Layout
   if (isSplitLayout) {
     return (
@@ -472,6 +564,7 @@ export default function TableSelection() {
           onSave={saveEditFromModal}
           onAdd={addToCartFromModal}
         />
+        {renderToast()}
       </View>
     );
   }
@@ -493,6 +586,7 @@ export default function TableSelection() {
         })}
       />
       {renderTableGrid()}
+      {renderToast()}
     </SafeAreaView>
   );
 }
