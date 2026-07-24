@@ -194,8 +194,8 @@ export default function SplitItemModal({
                       onPress={() => handleSetSplitQty(item.cartItemId, item.qty, -1)}
                       disabled={splitQty <= 0}
                       style={{
-                        width: 32,
-                        height: 32,
+                        width: 38,
+                        height: 38,
                         borderRadius: shape.radius.sm,
                         backgroundColor: splitQty > 0 ? colors.surface.card : 'transparent',
                         alignItems: 'center',
@@ -204,12 +204,12 @@ export default function SplitItemModal({
                     >
                       <Icon
                         name="minus"
-                        size={16}
+                        size={18}
                         color={splitQty > 0 ? colors.text.primary : colors.text.muted}
                       />
                     </TouchableOpacity>
 
-                    <View style={{ width: 44, alignItems: 'center' }}>
+                    <View style={{ width: 48, alignItems: 'center' }}>
                       <AppText variant="sm" weight="bold" color={isSelected ? colors.brand.primary : colors.text.primary}>
                         {splitQty} / {item.qty}
                       </AppText>
@@ -219,8 +219,8 @@ export default function SplitItemModal({
                       onPress={() => handleSetSplitQty(item.cartItemId, item.qty, 1)}
                       disabled={splitQty >= item.qty}
                       style={{
-                        width: 32,
-                        height: 32,
+                        width: 38,
+                        height: 38,
                         borderRadius: shape.radius.sm,
                         backgroundColor: splitQty < item.qty ? colors.brand.primaryBg : 'transparent',
                         alignItems: 'center',
@@ -229,7 +229,7 @@ export default function SplitItemModal({
                     >
                       <Icon
                         name="plus"
-                        size={16}
+                        size={18}
                         color={splitQty < item.qty ? colors.brand.primary : colors.text.muted}
                       />
                     </TouchableOpacity>

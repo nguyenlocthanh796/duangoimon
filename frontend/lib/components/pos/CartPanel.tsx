@@ -479,7 +479,7 @@ export default function CartPanel({
     </View>
   );
 
-  const rightActions = hasMoreActions ? (
+  const rightActions = (hasMoreActions && cart.length > 0) ? (
     <TouchableOpacity
       onPress={() => setShowMoreMenu(true)}
       style={{

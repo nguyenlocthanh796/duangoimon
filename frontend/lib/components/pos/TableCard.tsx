@@ -111,6 +111,17 @@ export default React.memo(function TableCard({ table, onPress, selected, isWide,
       ? '#EFF6FF'
       : '#F0FDF4';
 
+  const abbreviateArea = (areaName?: string) => {
+    if (!areaName) return '';
+    if (isWide) return areaName;
+    // Map of common area abbreviations
+    const lower = areaName.toLowerCase();
+    if (lower.includes('trong nhà') || lower.includes('trong nha')) return 'T.Nhà';
+    if (lower.includes('ngoài trời') || lower.includes('ngoai troi')) return 'N.Trời';
+    if (lower.includes('vip')) return 'VIP';
+    return areaName;
+  };
+
   return (
     <>
       <Animated.View style={{ transform: [{ scale: scaleAnim }], width: '100%' }}>
@@ -155,7 +166,7 @@ export default React.memo(function TableCard({ table, onPress, selected, isWide,
                   {table.name}
                 </AppText>
                 <AppText variant="xs" color="#78350F" numberOfLines={1}>
-                  {table.area || 'Khu vực'}
+                  {abbreviateArea(table.area) || 'Khu vực'}
                 </AppText>
               </View>
 
@@ -185,7 +196,7 @@ export default React.memo(function TableCard({ table, onPress, selected, isWide,
               </View>
 
               <AppText variant="xs" color="#047857" numberOfLines={1}>
-                {table.area || 'Bàn trống'} ({table.capacity} ghế)
+                {abbreviateArea(table.area) || 'Bàn trống'} · {table.capacity}g
               </AppText>
             </View>
           )}

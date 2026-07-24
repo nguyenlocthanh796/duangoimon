@@ -25,6 +25,16 @@ export default function VisualTablePicker({
   const [selectedArea, setSelectedArea] = useState('Tất cả');
   const [searchQuery, setSearchQuery] = useState('');
 
+  const abbreviateArea = (areaName?: string) => {
+    if (!areaName) return '';
+    // Map of common area abbreviations
+    const lower = areaName.toLowerCase();
+    if (lower.includes('trong nhà') || lower.includes('trong nha')) return 'T.Nhà';
+    if (lower.includes('ngoài trời') || lower.includes('ngoai troi')) return 'N.Trời';
+    if (lower.includes('vip')) return 'VIP';
+    return areaName;
+  };
+
   // Unique areas
   const areas = ['Tất cả', ...Array.from(new Set(tables.map((t) => t.area).filter(Boolean) as string[]))];
 
@@ -185,7 +195,7 @@ export default function VisualTablePicker({
 
                 {/* Subtitle: Area / Capacity */}
                 <AppText variant="xs" color={colors.text.muted} numberOfLines={1}>
-                  {table.area || 'Khu vực chung'} · {table.capacity || 4} chỗ
+                  {abbreviateArea(table.area) || 'Khu vực chung'} · {table.capacity || 4} chỗ
                 </AppText>
 
                 {/* Order total if occupied */}
