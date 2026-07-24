@@ -1,7 +1,7 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, StyleSheet, useWindowDimensions } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { colors } from '../../theme';
+import { colors, font } from '../../theme';
 import { shape } from '../../theme/shape';
 import SkeletonBox from '../ui/SkeletonBox';
 import AppText from '../ui/AppText';
@@ -14,9 +14,8 @@ interface StatCardProps {
   bgColor: string;
   loading: boolean;
   growth?: number;
-  cardStyle?: any;
+  style?: any;
   hideTrend?: boolean;
-  compact?: boolean;
 }
 
 export default function StatCard({
@@ -27,13 +26,15 @@ export default function StatCard({
   bgColor,
   loading,
   growth,
-  cardStyle,
+  style,
   hideTrend,
 }: StatCardProps) {
+  const { width } = useWindowDimensions();
+  const isWide = width >= 768;
   const showTrend = !hideTrend && growth !== undefined;
 
   return (
-    <View style={[styles.card, cardStyle]}>
+    <View style={[styles.card, { padding: isWide ? 16 : 12 }, style]}>
       {/* Trend Badge */}
       {showTrend && (
         <View style={styles.trendBadge}>
@@ -42,7 +43,7 @@ export default function StatCard({
             size={12}
             color={growth! >= 0 ? colors.status.success : colors.status.danger}
           />
-          <AppText variant="sm" weight="bold" color={colors.text.primary}>
+          <AppText variant="sm" weight="bold" color={growth! >= 0 ? colors.status.success : colors.status.danger}>
             {growth! >= 0 ? '+' : ''}
             {growth}%
           </AppText>
@@ -55,7 +56,7 @@ export default function StatCard({
           <Icon name={icon as any} size={18} color={color} />
         </View>
         {loading ? (
-          <SkeletonBox w={'60%'} h={22} />
+          <SkeletonBox w={'60%'} h={24} />
         ) : (
           <AppText
             variant="md"
@@ -64,7 +65,7 @@ export default function StatCard({
             numberOfLines={1}
             adjustsFontSizeToFit
             minimumFontScale={0.75}
-            style={{ flex: 1, flexShrink: 1 }}
+            style={styles.valueText}
           >
             {value}
           </AppText>
@@ -84,31 +85,37 @@ export default function StatCard({
   );
 }
 
-const styles = {
+const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.surface.card,
     borderRadius: shape.radius.lg,
-    padding: 12,
-    justifyContent: 'center' as const,
+    justifyContent: 'center',
   },
   trendBadge: {
-    position: 'absolute' as const,
+    position: 'absolute',
     top: 8,
     right: 8,
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 2,
-    paddingHorizontal: 5,
+    paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: shape.radius.sm,
     backgroundColor: colors.surface.app,
   },
-  row1: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: 8 },
+  row1: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   iconBg: {
     width: 32,
     height: 32,
     borderRadius: shape.radius.md,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-} as const;
+  valueText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.text.primary,
+    flex: 1,
+    flexShrink: 1,
+  },
+});

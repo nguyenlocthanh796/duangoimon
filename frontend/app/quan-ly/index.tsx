@@ -143,22 +143,13 @@ export default function QuanLyDashboard() {
     return (
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
         {stats.map((s, i) => (
-          <View
+          <StatCard
             key={i}
-            style={{
-              width: isWide ? '23.8%' : '48.5%',
-              backgroundColor: colors.surface.card,
-              borderRadius: shape.radius.lg,
-            }}
-          >
-            <StatCard
-              {...s}
-              loading={loading}
-              hideTrend={!s.growth}
-              compact={false}
-              cardStyle={{ borderWidth: 0, boxShadow: 'none' }}
-            />
-          </View>
+            {...s}
+            loading={loading}
+            hideTrend={!s.growth}
+            style={{ width: isWide ? '23.8%' : '48.5%' }}
+          />
         ))}
       </View>
     );
