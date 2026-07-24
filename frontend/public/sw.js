@@ -75,6 +75,11 @@ function isImageRequest(url) {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
+  // Skip local development from Service Worker caching to prevent stale bundle crashes
+  if (url.hostname === 'localhost' || url.hostname === '127.0.0.1' || url.port === '8081' || url.port === '8000') {
+    return;
+  }
+
   // Skip non-GET and extensionless
   if (event.request.method !== 'GET') return;
 
