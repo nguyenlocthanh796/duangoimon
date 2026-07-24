@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, palette, font } from '../../theme/index';
 import { formatPrice } from '../../utils/format';
@@ -8,7 +9,6 @@ import { shape } from '../../theme/shape';
 import { MenuItem } from './types';
 import AppText from '../ui/AppText';
 import { ASSETS } from '../../assets';
-import { ImageSourcePropType } from 'react-native';
 
 interface ProductCardProps {
   item: MenuItem;
@@ -18,6 +18,17 @@ interface ProductCardProps {
   onPress: () => void;
   onQuickAdd: () => void;
 }
+
+const CATEGORY_STYLES: Record<string, { colors: [string, string]; icon: string; accent: string }> = {
+  'sua-chua': { colors: ['#EFF6FF', '#DBEAFE'], icon: 'cow', accent: '#2563EB' },
+  'tra-chanh': { colors: ['#FEFCE8', '#FEF9C3'], icon: 'leaf', accent: '#CA8A04' },
+  'do-an-vat': { colors: ['#FFF7ED', '#FFEDD5'], icon: 'food-croissant', accent: '#EA580C' },
+  che: { colors: ['#FDF2F8', '#FCE7F3'], icon: 'bowl-mix', accent: '#DB2777' },
+  'tra-sua': { colors: ['#FAF5FF', '#F3E8FF'], icon: 'bubble-tea', accent: '#9333EA' },
+  soda: { colors: ['#ECFDF5', '#D1FAE5'], icon: 'bottle-soda-glowing', accent: '#059669' },
+  kem: { colors: ['#FFF1F2', '#FFE4E6'], icon: 'ice-cream', accent: '#E11D48' },
+  default: { colors: ['#F5F5F7', '#E5E5EA'], icon: 'silverware-fork-knife', accent: '#8E8E93' },
+};
 
 export default React.memo(function ProductCard({
   item,
@@ -30,15 +41,8 @@ export default React.memo(function ProductCard({
   const hasModifiers = !!(item.sizes?.length || item.toppings?.length);
   const [imageError, setImageError] = React.useState(false);
 
-  const categoryImage: Record<string, ImageSourcePropType> = {
-    'sua-chua': ASSETS.images.categorySuaChua,
-    'tra-chanh': ASSETS.images.categoryTraChanh,
-    'do-an-vat': ASSETS.images.categoryDoAnVat,
-    che: ASSETS.images.categoryChe,
-    'tra-sua': ASSETS.images.categoryTraSua,
-    soda: ASSETS.images.categorySoda,
-    kem: ASSETS.images.categoryKem,
-  };
+  const catStyle = CATEGORY_STYLES[item.category] || CATEGORY_STYLES.default;
+  const showPlaceholder = !item.image || imageError;
 
   return (
     <TouchableOpacity
@@ -50,20 +54,37 @@ export default React.memo(function ProductCard({
         borderRadius: shape.radius.lg,
         overflow: 'hidden',
         backgroundColor: colors.surface.card,
-        borderWidth: StyleSheet.hairlineWidth,
-        borderColor: colors.border.default,
+        borderWidth: 1.5,
+        borderColor: showPlaceholder ? catStyle.accent + '25' : colors.border.default,
         position: 'relative',
       }}
     >
-      {/* Background Image Layer */}
-      <Image
-        source={item.image && !imageError ? item.image : (categoryImage[item.category] || ASSETS.images.foodPlaceholder)}
-        style={{ position: 'absolute', width: '100%', height: '100%' }}
-        contentFit="cover"
-        transition={200}
-        cachePolicy="memory-disk"
-        onError={() => setImageError(true)}
-      />
+      {/* Background Layer: Image or Gradient */}
+      {showPlaceholder ? (
+        <LinearGradient
+          colors={catStyle.colors}
+          style={{
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <View style={{ marginBottom: 28, opacity: 0.15 }}>
+            <Icon name={catStyle.icon as any} size={cardSize * 0.32} color={catStyle.accent} />
+          </View>
+        </LinearGradient>
+      ) : (
+        <Image
+          source={item.image}
+          style={{ position: 'absolute', width: '100%', height: '100%' }}
+          contentFit="cover"
+          transition={200}
+          cachePolicy="memory-disk"
+          onError={() => setImageError(true)}
+        />
+      )}
 
       {/* Bottom text overlay — chiều cao CỐ ĐỊNH 48pt */}
       <View
@@ -73,7 +94,7 @@ export default React.memo(function ProductCard({
           left: 0,
           right: 0,
           height: 48,
-          backgroundColor: 'rgba(0, 0, 0, 0.72)',
+          backgroundColor: 'rgba(0, 0, 0, 0.76)',
           paddingHorizontal: shape.spacing.sm,
           paddingVertical: shape.spacing.xs,
           justifyContent: 'center',
@@ -136,11 +157,13 @@ export default React.memo(function ProductCard({
           hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
           style={{
             position: 'absolute',
-            top: 4,
-            right: 4,
-            padding: 4,
-            backgroundColor: 'rgba(0,0,0,0.4)',
-            borderRadius: 8,
+            bottom: 52, // Đưa nút lên trên phần text overlay
+            right: 6,
+            padding: 6,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            borderRadius: shape.radius.md,
+            borderWidth: 1,
+            borderColor: 'rgba(255,255,255,0.2)'
           }}
         >
           <Icon name="tune" size={16} color={colors.text.inverse} />

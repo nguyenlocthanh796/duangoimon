@@ -560,7 +560,23 @@ export default function CartPanel({
   );
 
   if (isWide) {
-    return <View style={{ flex: 1, backgroundColor: colors.surface.card }}>{content}</View>;
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: colors.surface.card,
+          borderLeftWidth: 1,
+          borderLeftColor: colors.border.default,
+          shadowColor: '#000000',
+          shadowOffset: { width: -3, height: 0 },
+          shadowOpacity: 0.04,
+          shadowRadius: 10,
+          elevation: 3,
+        }}
+      >
+        {content}
+      </View>
+    );
   }
 
   return (
