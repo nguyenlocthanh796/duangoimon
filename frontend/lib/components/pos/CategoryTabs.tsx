@@ -3,6 +3,7 @@ import {
   ScrollView,
   TouchableOpacity,
   View,
+  TextInput,
   Animated,
   NativeSyntheticEvent,
   NativeScrollEvent,
@@ -83,12 +84,16 @@ interface CategoryTabsProps {
   activeCategory: string;
   onSelectCategory: (id: string) => void;
   isWide: boolean;
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
 }
 
 const CategoryTabs = React.memo(function CategoryTabs({
   activeCategory,
   onSelectCategory,
   isWide,
+  searchQuery = '',
+  onSearchChange,
 }: CategoryTabsProps) {
   const scrollRef = useRef<ScrollView>(null);
   const [isScrollable, setIsScrollable] = useState(false);
@@ -126,6 +131,44 @@ const CategoryTabs = React.memo(function CategoryTabs({
         position: 'relative',
       }}
     >
+      {/* Quick Search Bar */}
+      {onSearchChange && (
+        <View style={{ paddingHorizontal: 12, pt: 8, paddingTop: 8 }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: colors.surface.app,
+              borderRadius: shape.radius.md,
+              borderWidth: 1,
+              borderColor: colors.border.default,
+              paddingHorizontal: 10,
+              height: 38,
+              gap: 6,
+            }}
+          >
+            <MaterialCommunityIcons name="magnify" size={18} color={colors.text.secondary} />
+            <TextInput
+              value={searchQuery}
+              onChangeText={onSearchChange}
+              placeholder="Tìm tên món nhanh (ví dụ: sữa chua, cafe)..."
+              placeholderTextColor={colors.text.tertiary}
+              style={{
+                flex: 1,
+                fontSize: 13,
+                color: colors.text.primary,
+                padding: 0,
+              }}
+            />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity onPress={() => onSearchChange('')}>
+                <MaterialCommunityIcons name="close-circle" size={16} color={colors.text.tertiary} />
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+      )}
+
       <ScrollView
         ref={scrollRef}
         horizontal
@@ -135,7 +178,7 @@ const CategoryTabs = React.memo(function CategoryTabs({
         contentContainerStyle={{
           paddingHorizontal: 12,
           paddingRight: 36,
-          paddingVertical: 10,
+          paddingVertical: 8,
           alignItems: 'center',
           gap: 8,
         }}
@@ -156,8 +199,8 @@ const CategoryTabs = React.memo(function CategoryTabs({
         style={{
           position: 'absolute',
           right: 0,
-          top: 0,
           bottom: 0,
+          height: 52,
           width: 48,
           flexDirection: 'row',
           alignItems: 'center',

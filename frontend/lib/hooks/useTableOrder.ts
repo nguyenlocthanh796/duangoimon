@@ -90,11 +90,16 @@ export function useTableOrder(tableId: string, tableName: string, onClose?: () =
     onOrderCreated: useCallback((orderId: string) => cart.setActiveOrderId(orderId), [cart]),
   });
 
-  const filteredItems = useMemo(
-    () =>
-      activeCategory === 'all' ? products : products.filter((i) => i.category === activeCategory),
-    [activeCategory, products]
-  );
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredItems = useMemo(() => {
+    let list = activeCategory === 'all' ? products : products.filter((i) => i.category === activeCategory);
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      list = list.filter((i) => i.name.toLowerCase().includes(q));
+    }
+    return list;
+  }, [activeCategory, products, searchQuery]);
 
   const handleProductPress = useCallback(
     (item: MenuItem) => {
@@ -318,8 +323,9 @@ export function useTableOrder(tableId: string, tableName: string, onClose?: () =
     addToCartFromModal,
     closeModifierSheet: mod.close,
     toggleServiceType: cart.toggleServiceType,
+    searchQuery,
+    setSearchQuery,
     splitTable: moveItemToTable,
     mergeTable: mergeBill,
-    moveItem: useCallback(() => {}, []),
   };
 }

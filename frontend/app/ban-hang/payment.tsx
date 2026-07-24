@@ -558,12 +558,33 @@ export default function PaymentScreen() {
           )}
           <Numpad method={pm.method} onKey={pm.handleKey} />
         </View>
-        <View style={{ marginTop: 16 }}>
+        <View style={{ marginTop: 16, flexDirection: 'row', gap: 10 }}>
+          <TouchableOpacity
+            onPress={() => pm.handlePrint()}
+            style={{
+              flex: 1,
+              height: 56,
+              borderRadius: 8,
+              backgroundColor: colors.surface.disabled,
+              borderWidth: 1,
+              borderColor: colors.border.default,
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexDirection: 'row',
+              gap: 6,
+            }}
+          >
+            <Icon name="printer-eye" size={20} color={colors.text.primary} />
+            <AppText variant="md" weight="bold" color={colors.text.primary}>
+              In Thử K80
+            </AppText>
+          </TouchableOpacity>
+
           <TouchableOpacity
             onPress={() => pm.handlePay()}
             disabled={!pm.canPay || pm.paying}
             style={{
-              width: '100%',
+              flex: 2,
               height: 56,
               borderRadius: 8,
               backgroundColor: pm.canPay ? colors.brand.primary : colors.surface.disabled,

@@ -55,6 +55,8 @@ export default function TableSelection() {
     products: menuProducts,
     loading: menuLoading,
     filteredItems,
+    searchQuery,
+    setSearchQuery,
     cart,
     total,
     itemCount,
@@ -351,6 +353,8 @@ export default function TableSelection() {
                   activeCategory={activeCategory}
                   onSelectCategory={setActiveCategory}
                   isWide={isWide}
+                  searchQuery={searchQuery}
+                  onSearchChange={setSearchQuery}
                 />
                 <ScrollView
                   style={{ flex: 1, marginTop: 4 }}
