@@ -30,7 +30,7 @@ import OrderHeader from '../../lib/components/pos/OrderHeader';
 import OverviewPanel from '../../lib/components/pos/OverviewPanel';
 import AppText from '../../lib/components/ui/AppText';
 import type { Table, TableStatus } from '../../lib/components/pos/TableCard';
-import { initRealtimeSync } from '../../lib/sync/realtimeSync';
+import { subscribeRealtimeSync } from '../../lib/sync/realtimeSync';
 
 export default function TableSelection() {
   const { openSidebar } = useSidebar();
@@ -188,7 +188,8 @@ export default function TableSelection() {
   }, []);
 
   useEffect(() => {
-    initRealtimeSync(() => loadData(false, true));
+    const unsubscribe = subscribeRealtimeSync(() => loadData(false, true));
+    return () => unsubscribe();
   }, [loadData]);
 
   useFocusEffect(

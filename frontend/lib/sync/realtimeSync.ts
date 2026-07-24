@@ -11,6 +11,7 @@ import { CLOUDFLARE_TUNNEL_BASE } from '../api/serverConfig';
 let _webSocket: WebSocket | null = null;
 let _reconnectCount = 0;
 const MAX_RECONNECT = 5;
+const _listeners = new Set<(data: any) => void>();
 
 function getWsBaseUrl(): string {
   if (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_WS_URL) {
@@ -25,14 +26,13 @@ function getWsBaseUrl(): string {
   return 'wss://pos-quanan-backend.onrender.com/ws';
 }
 
-export function initRealtimeSync(onOrderUpdated?: (data: any) => void) {
+function connectWebSocket() {
   if (typeof window === 'undefined') return;
+  if (_webSocket && (_webSocket.readyState === WebSocket.OPEN || _webSocket.readyState === WebSocket.CONNECTING)) {
+    return;
+  }
 
   try {
-    if (_webSocket && (_webSocket.readyState === WebSocket.OPEN || _webSocket.readyState === WebSocket.CONNECTING)) {
-      return;
-    }
-
     const token = getToken();
     const tokenQuery = token ? `?token=${encodeURIComponent(token)}` : '';
     const baseWsUrl = getWsBaseUrl();
@@ -66,7 +66,15 @@ export function initRealtimeSync(onOrderUpdated?: (data: any) => void) {
             invalidateCache('orders_ban_hang');
             invalidateCache('tables_ban_hang');
           }
-          if (onOrderUpdated) onOrderUpdated(message.order || message);
+          
+          // Notify all active listeners
+          _listeners.forEach((listener) => {
+            try {
+              listener(message.order || message);
+            } catch (err) {
+              logger.warn('realtimeSync', 'Listener error:', err);
+            }
+          });
         }
       } catch {
         /* ignore */
@@ -81,10 +89,29 @@ export function initRealtimeSync(onOrderUpdated?: (data: any) => void) {
       _webSocket = null;
       if (_reconnectCount < MAX_RECONNECT) {
         _reconnectCount++;
-        setTimeout(() => initRealtimeSync(onOrderUpdated), 5000);
+        setTimeout(() => connectWebSocket(), 5000);
       }
     };
   } catch (e) {
     logger.warn('realtimeSync', 'Failed to connect WebSocket:', e);
+  }
+}
+
+export function subscribeRealtimeSync(listener: (data: any) => void): () => void {
+  _listeners.add(listener);
+  connectWebSocket();
+
+  // Return unsubscribe function
+  return () => {
+    _listeners.delete(listener);
+  };
+}
+
+// Deprecated legacy exporter to prevent compile errors in old references
+export function initRealtimeSync(onOrderUpdated?: (data: any) => void) {
+  if (onOrderUpdated) {
+    subscribeRealtimeSync(onOrderUpdated);
+  } else {
+    connectWebSocket();
   }
 }
