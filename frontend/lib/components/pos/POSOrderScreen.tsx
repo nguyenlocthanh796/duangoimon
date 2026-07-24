@@ -184,6 +184,7 @@ export default function POSOrderScreen({ tableId, tableName, onClose }: POSOrder
             onToggleServiceType={ord.toggleServiceType}
             onEditNote={ord.handleEditNote}
             tableId={tableId}
+            tableName={tableName}
           />
         </View>
       )}

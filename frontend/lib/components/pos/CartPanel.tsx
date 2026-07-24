@@ -45,6 +45,7 @@ interface CartPanelProps {
   onEditNote?: (cartItemId: string, note: string) => void;
   serviceChargePercent?: number;
   tableId?: string;
+  tableName?: string;
 }
 
 export default function CartPanel({
@@ -74,6 +75,7 @@ export default function CartPanel({
   onEditNote,
   serviceChargePercent = 0,
   tableId,
+  tableName,
 }: CartPanelProps) {
   const insets = useSafeAreaInsets();
 
@@ -375,7 +377,7 @@ export default function CartPanel({
       <SplitItemModal
         visible={showSplitModal}
         cart={cart}
-        tableName={tableId || 'bàn'}
+        tableName={tableName || 'bàn'}
         onClose={() => setShowSplitModal(false)}
         onConfirmSplit={(items) => {
           setPendingSplitItems(items);
