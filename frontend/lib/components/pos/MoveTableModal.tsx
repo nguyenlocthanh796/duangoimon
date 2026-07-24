@@ -1,9 +1,11 @@
-import React from 'react';
-import { View, TouchableOpacity, Modal, ActivityIndicator, TextInput } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import React, { useState, useEffect } from 'react';
+import { View, TouchableOpacity, Modal, ActivityIndicator } from 'react-native';
+import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api } from '../../api';
-import { colors, font } from '../../theme';
+import { colors, font, shape, formatPrice } from '../../theme';
 import AppText from '../ui/AppText';
+import VisualTablePicker from './VisualTablePicker';
+import type { Table, TableStatus } from './TableCard';
 
 interface MoveTableModalProps {
   visible: boolean;
@@ -18,153 +20,207 @@ export default function MoveTableModal({
   visible,
   onClose,
   onSelectTable,
-  title = 'Chọn bàn',
+  title = 'Chọn Bàn Đích',
   excludeTableId,
   filterOccupied,
 }: MoveTableModalProps) {
-  const [tables, setTables] = React.useState<any[]>([]);
-  const [loading, setLoading] = React.useState(false);
-  const [search, setSearch] = React.useState('');
+  const [tables, setTables] = useState<Table[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedTable, setSelectedTable] = useState<Table | null>(null);
 
-  React.useEffect(() => {
-    if (!visible) return;
-    setSearch('');
+  useEffect(() => {
+    if (!visible) {
+      setSelectedTable(null);
+      return;
+    }
     (async () => {
       setLoading(true);
       try {
-        const data = await api.getTables();
-        setTables(data?.filter ? data.filter((t: any) => t.id !== excludeTableId) : []);
+        const [tableData, orders] = await Promise.all([
+          api.getTables(),
+          api.getOrders().catch(() => []),
+        ]);
+
+        const orderTotals: Record<string, number> = {};
+        (orders || []).forEach((o: any) => {
+          if (o.status !== 'da_thanh_toan' && o.table_id) {
+            orderTotals[o.table_id] = (orderTotals[o.table_id] || 0) + Number(o.total_amount);
+          }
+        });
+
+        const mapped: Table[] = (tableData || []).map((t: any) => ({
+          id: t.id,
+          name: t.name,
+          capacity: t.capacity || 4,
+          area: t.area || t.location || undefined,
+          status: (t.status === 'dang_su_dung' ? 'co_khach' : t.status) as TableStatus,
+          orderTotal: orderTotals[t.id],
+        }));
+
+        setTables(mapped);
       } catch {
         setTables([]);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     })();
-  }, [visible, excludeTableId]);
+  }, [visible]);
 
-  const filtered = tables.filter((t: any) => {
-    const matchesSearch = !search || t.name?.toLowerCase().includes(search.toLowerCase());
-    if (filterOccupied) return matchesSearch && t.status === 'co_khach';
-    return matchesSearch;
-  });
+  const handleConfirm = () => {
+    if (!selectedTable) return;
+    onSelectTable(selectedTable.id, selectedTable.name);
+    onClose();
+  };
 
   return (
-    <Modal visible={visible} transparent animationType="slide">
-      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' }}>
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 16 }}>
         <View
           style={{
+            width: '100%',
+            maxWidth: 540,
             backgroundColor: colors.surface.card,
-            borderTopLeftRadius: 16,
-            borderTopRightRadius: 16,
-            maxHeight: '70%',
+            borderRadius: shape.radius.lg,
+            overflow: 'hidden',
             padding: 16,
-            gap: 8,
+            gap: 12,
+            maxHeight: '85%',
           }}
         >
+          {/* Header */}
           <View
             style={{
               flexDirection: 'row',
               justifyContent: 'space-between',
               alignItems: 'center',
-              marginBottom: 8,
+              borderBottomWidth: 1,
+              borderBottomColor: colors.border.default,
+              paddingBottom: 10,
             }}
           >
-            <AppText variant="lg" color={colors.text.primary} weight="bold">{title}</AppText>
+            <View>
+              <AppText variant="lg" color={colors.text.primary} weight="bold">
+                {title}
+              </AppText>
+              <AppText variant="xs" color={colors.text.muted}>
+                Chọn bàn từ sơ đồ khu vực trực quan bên dưới
+              </AppText>
+            </View>
+
             <TouchableOpacity
               onPress={onClose}
               style={{
                 width: 32,
                 height: 32,
-                borderRadius: 8,
+                borderRadius: shape.radius.md,
                 backgroundColor: colors.surface.disabled,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
-              <MaterialCommunityIcons name="close" size={20} color={colors.icon.default} />
+              <Icon name="close" size={20} color={colors.icon.default} />
             </TouchableOpacity>
           </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              paddingHorizontal: 10,
-              height: 40,
-              borderRadius: 8,
-              backgroundColor: colors.surface.app,
-              borderWidth: 1,
-              borderColor: colors.border.default,
-              marginBottom: 8,
-            }}
-          >
-            <MaterialCommunityIcons name="magnify" size={18} color={colors.icon.muted} />
-            <TextInput
-              value={search}
-              onChangeText={setSearch}
-              placeholder="Tìm bàn..."
-              placeholderTextColor={colors.text.muted}
-              style={{ flex: 1, ...font.md, color: colors.text.primary, marginLeft: 6 }}
-            />
-          </View>
+
+          {/* Loading or Visual Table Picker */}
           {loading ? (
-            <View style={{ paddingVertical: 40, alignItems: 'center' }}>
-              <ActivityIndicator size="small" />
+            <View style={{ paddingVertical: 48, alignItems: 'center', gap: 8 }}>
+              <ActivityIndicator size="large" color={colors.brand.primary} />
+              <AppText variant="sm" color={colors.text.muted}>Đang tải sơ đồ bàn...</AppText>
             </View>
           ) : (
-            <View style={{ gap: 4, maxHeight: 350 }}>
-              {filtered.map((t: any) => (
-                <TouchableOpacity
-                  key={t.id}
-                  onPress={() => {
-                    onSelectTable(t.id, t.name);
-                    onClose();
-                  }}
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    gap: 12,
-                    paddingVertical: 12,
-                    paddingHorizontal: 8,
-                    borderRadius: 8,
-                  }}
-                >
-                  <View
-                    style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: 8,
-                      backgroundColor: t.status === 'co_khach' ? '#f0f9ff' : '#f0fdf4',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <MaterialCommunityIcons name="table-furniture"
-                      size={18}
-                      color={t.status === 'co_khach' ? '#0284c7' : '#16a34a'}
-                    />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <AppText variant="md" color={colors.text.primary}>{t.name}</AppText>
-                    <AppText variant="sm" color={colors.text.secondary}>
-                      {t.status === 'co_khach' ? 'Có khách' : 'Trống'} · {t.area || 'Không khu vực'}
-                    </AppText>
-                  </View>
-                  <MaterialCommunityIcons name="chevron-right" size={20} color={colors.icon.muted} />
-                </TouchableOpacity>
-              ))}
-              {filtered.length === 0 && (
+            <VisualTablePicker
+              tables={tables}
+              selectedTableId={selectedTable?.id || null}
+              onSelectTable={(table) => setSelectedTable(table)}
+              excludeTableId={excludeTableId}
+              filterStatus={filterOccupied ? 'co_khach' : 'all'}
+              containerHeight={320}
+            />
+          )}
+
+          {/* Selected Preview Box & Footer Action */}
+          <View
+            style={{
+              borderTopWidth: 1,
+              borderTopColor: colors.border.default,
+              paddingTop: 12,
+              gap: 10,
+            }}
+          >
+            {selectedTable ? (
+              <View
+                style={{
+                  padding: 10,
+                  borderRadius: shape.radius.md,
+                  backgroundColor: colors.brand.primaryBg,
+                  borderWidth: 1,
+                  borderColor: colors.border.brand,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <View style={{ gap: 2 }}>
+                  <AppText variant="sm" weight="bold" color={colors.brand.primary}>
+                    Bàn đã chọn: {selectedTable.name}
+                  </AppText>
+                  <AppText variant="xs" color={colors.text.muted}>
+                    {selectedTable.area || 'Khu vực chung'} · Trạng thái: {selectedTable.status === 'co_khach' ? 'Đã có khách' : 'Bàn trống'}
+                  </AppText>
+                </View>
+
+                {selectedTable.orderTotal ? (
+                  <AppText variant="sm" weight="bold" color={colors.status.danger}>
+                    {formatPrice(selectedTable.orderTotal)}
+                  </AppText>
+                ) : null}
+              </View>
+            ) : (
+              <AppText variant="xs" color={colors.text.muted} style={{ textAlign: 'center' }}>
+                Vui lòng bấm chọn một bàn trên sơ đồ
+              </AppText>
+            )}
+
+            <View style={{ flexDirection: 'row', gap: 10 }}>
+              <TouchableOpacity
+                onPress={onClose}
+                style={{
+                  flex: 1,
+                  height: 44,
+                  borderRadius: shape.radius.md,
+                  backgroundColor: colors.surface.disabled,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <AppText variant="sm" weight="bold" color={colors.text.secondary}>
+                  Huỷ
+                </AppText>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleConfirm}
+                disabled={!selectedTable}
+                style={{
+                  flex: 2,
+                  height: 44,
+                  borderRadius: shape.radius.md,
+                  backgroundColor: selectedTable ? colors.brand.primary : colors.surface.disabled,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
                 <AppText
                   variant="sm"
-                  color={colors.text.muted}
-                  style={{
-                    paddingVertical: 30,
-                    textAlign: 'center',
-                  }}
+                  weight="bold"
+                  color={selectedTable ? colors.text.inverse : colors.text.muted}
                 >
-                  {filterOccupied ? 'Không có bàn có khách phù hợp' : 'Không tìm thấy bàn'}
+                  Xác Nhận Thao Tác
                 </AppText>
-              )}
+              </TouchableOpacity>
             </View>
-          )}
+          </View>
         </View>
       </View>
     </Modal>

@@ -9,6 +9,7 @@ import CartItemRow from './CartItemRow';
 import NoteEditor from './NoteEditor';
 import MoreMenu from './MoreMenu';
 import MoveTableModal from './MoveTableModal';
+import SplitItemModal from './SplitItemModal';
 import CartSummary from './CartSummary';
 import CartMainActions from './CartMainActions';
 import CartSplitActions from './CartSplitActions';
@@ -82,6 +83,10 @@ export default function CartPanel({
   const [splitMode, setSplitMode] = React.useState(false);
   const [selectedItems, setSelectedItems] = React.useState<Set<string>>(new Set());
   const [showMoreMenu, setShowMoreMenu] = React.useState(false);
+  const [showSplitModal, setShowSplitModal] = React.useState(false);
+  const [pendingSplitItems, setPendingSplitItems] = React.useState<
+    { cartItemId: string; splitQty: number }[]
+  >([]);
   const [moveAction, setMoveAction] = React.useState<
     'move_table' | 'split_table' | 'merge_bill' | 'merge_table' | 'move_item' | null
   >(null);
@@ -367,31 +372,52 @@ export default function CartPanel({
         />
       )}
 
+      <SplitItemModal
+        visible={showSplitModal}
+        cart={cart}
+        tableName={tableId || 'bàn'}
+        onClose={() => setShowSplitModal(false)}
+        onConfirmSplit={(items) => {
+          setPendingSplitItems(items);
+          setShowSplitModal(false);
+          setMoveAction('split_table');
+        }}
+      />
+
       <MoveTableModal
         visible={moveAction !== null}
         onClose={() => setMoveAction(null)}
-        onSelectTable={(tableId, tableName) => {
+        onSelectTable={(targetTableId, tableName) => {
           switch (moveAction) {
             case 'move_table':
-              onMoveTable?.(tableId);
+              onMoveTable?.(targetTableId);
               break;
             case 'merge_bill':
               Alert.alert('Xác nhận', `Gộp hoá đơn từ bàn ${tableName}?`, [
                 { text: 'Huỷ', style: 'cancel' },
-                { text: 'Gộp', onPress: () => onMergeBill?.(tableId) },
+                { text: 'Gộp', onPress: () => onMergeBill?.(targetTableId) },
               ]);
               break;
             case 'split_table':
-              if (selectedItems.size < 1) {
+              const idsToSplit = pendingSplitItems.length > 0
+                ? pendingSplitItems.map((i) => i.cartItemId)
+                : Array.from(selectedItems);
+
+              if (idsToSplit.length < 1) {
                 Alert.alert('Chọn món', 'Vui lòng chọn món cần tách trước.');
                 return;
               }
-              onSplitTable?.(tableId, Array.from(selectedItems)[0]);
+              if (onSplitTable) {
+                onSplitTable(idsToSplit[0], targetTableId);
+              } else if (onSplitBill) {
+                onSplitBill(idsToSplit);
+              }
+              setPendingSplitItems([]);
               break;
             case 'merge_table':
               Alert.alert('Xác nhận', `Gộp tất cả món từ bàn ${tableName}?`, [
                 { text: 'Huỷ', style: 'cancel' },
-                { text: 'Gộp', onPress: () => onMergeTable?.(tableId) },
+                { text: 'Gộp', onPress: () => onMergeTable?.(targetTableId) },
               ]);
               break;
             case 'move_item':
@@ -402,14 +428,14 @@ export default function CartPanel({
         }}
         title={
           moveAction === 'move_table'
-            ? 'Chọn bàn đích'
+            ? 'Chọn Bàn Đích Cần Chuyển'
             : moveAction === 'merge_bill'
-              ? 'Chọn hoá đơn cần gộp'
+              ? 'Chọn Bàn Cần Gộp Hoá Đơn'
               : moveAction === 'split_table'
-                ? 'Chọn bàn mới'
+                ? 'Chọn Bàn Đích Nhận Món Tách'
                 : moveAction === 'merge_table'
-                  ? 'Chọn bàn cần gộp'
-                  : 'Chọn bàn'
+                  ? 'Chọn Bàn Cần Gộp Món'
+                  : 'Chọn Bàn'
         }
         filterOccupied={moveAction === 'merge_bill' || moveAction === 'merge_table'}
         excludeTableId={tableId}
@@ -522,10 +548,10 @@ export default function CartPanel({
       <MoreMenu
         visible={showMoreMenu}
         onClose={() => setShowMoreMenu(false)}
-        onSplitBill={onSplitBill ? () => setSplitMode(true) : undefined}
+        onSplitBill={onSplitBill ? () => setShowSplitModal(true) : undefined}
         onMergeBill={onMergeBill ? () => setMoveAction('merge_bill') : undefined}
         onMoveTable={onMoveTable ? () => setMoveAction('move_table') : undefined}
-        onSplitTable={onSplitTable ? () => setMoveAction('split_table') : undefined}
+        onSplitTable={onSplitTable ? () => setShowSplitModal(true) : undefined}
         onMergeTable={onMergeTable ? () => setMoveAction('merge_table') : undefined}
       />
     </>
