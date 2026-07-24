@@ -1,12 +1,8 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef } from 'react';
 import {
-  ScrollView,
   TouchableOpacity,
   View,
-  TextInput,
   Animated,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors } from '../../theme/colors';
@@ -128,59 +124,16 @@ const CategoryTabs = React.memo(function CategoryTabs({
         borderBottomColor: colors.border.default,
         flexGrow: 0,
         flexShrink: 0,
-        position: 'relative',
       }}
     >
-      {/* Quick Search Bar */}
-      {onSearchChange && (
-        <View style={{ paddingHorizontal: 12, pt: 8, paddingTop: 8 }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              backgroundColor: colors.surface.app,
-              borderRadius: shape.radius.md,
-              borderWidth: 1,
-              borderColor: colors.border.default,
-              paddingHorizontal: 10,
-              height: 38,
-              gap: 6,
-            }}
-          >
-            <MaterialCommunityIcons name="magnify" size={18} color={colors.text.secondary} />
-            <TextInput
-              value={searchQuery}
-              onChangeText={onSearchChange}
-              placeholder="Tìm tên món nhanh (ví dụ: sữa chua, cafe)..."
-              placeholderTextColor={colors.text.tertiary}
-              style={{
-                flex: 1,
-                fontSize: 13,
-                color: colors.text.primary,
-                padding: 0,
-              }}
-            />
-            {searchQuery.length > 0 && (
-              <TouchableOpacity onPress={() => onSearchChange('')}>
-                <MaterialCommunityIcons name="close-circle" size={16} color={colors.text.tertiary} />
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
-      )}
-
-      <ScrollView
-        ref={scrollRef}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        onScroll={handleScroll}
-        scrollEventThrottle={100}
-        contentContainerStyle={{
-          paddingHorizontal: 12,
-          paddingRight: 36,
-          paddingVertical: 8,
-          alignItems: 'center',
+      <View
+        style={{
+          flexDirection: 'row',
+          flexWrap: 'wrap',
           gap: 8,
+          paddingHorizontal: 12,
+          paddingTop: 12,
+          paddingBottom: 18, // Khoảng cách dưới rộng hơn để tránh dính sát vào lưới sản phẩm
         }}
       >
         {CATEGORIES.map((cat) => (
@@ -191,44 +144,7 @@ const CategoryTabs = React.memo(function CategoryTabs({
             onPress={() => onSelectCategory(cat.id)}
           />
         ))}
-      </ScrollView>
-
-      {/* Scroll hint fade + arrow */}
-      <Animated.View
-        pointerEvents={isScrollable && !atEnd ? 'auto' : 'none'}
-        style={{
-          position: 'absolute',
-          right: 0,
-          bottom: 0,
-          height: 52,
-          width: 48,
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'flex-end',
-          opacity: fadeAnim,
-          backgroundColor: 'transparent',
-        }}
-      >
-        <TouchableOpacity
-          onPress={scrollRight}
-          activeOpacity={0.7}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          style={{
-            width: 32,
-            height: 32,
-            borderRadius: shape.radius.md,
-            backgroundColor: colors.brand.primary,
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginRight: 4,
-            ...shape.shadow.sm,
-          }}
-          accessibilityLabel="Xem thêm danh mục"
-          accessibilityRole="button"
-        >
-          <MaterialCommunityIcons name="chevron-right" size={20} color={colors.text.inverse} />
-        </TouchableOpacity>
-      </Animated.View>
+      </View>
     </View>
   );
 });
