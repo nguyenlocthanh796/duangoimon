@@ -9,6 +9,8 @@ import { getToken } from '../api/client';
 import { CLOUDFLARE_TUNNEL_BASE } from '../api/serverConfig';
 
 let _webSocket: WebSocket | null = null;
+let _reconnectCount = 0;
+const MAX_RECONNECT = 5;
 
 function getWsBaseUrl(): string {
   if (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_WS_URL) {
@@ -27,7 +29,9 @@ export function initRealtimeSync(onOrderUpdated?: (data: any) => void) {
   if (typeof window === 'undefined') return;
 
   try {
-    if (_webSocket && _webSocket.readyState === WebSocket.OPEN) return;
+    if (_webSocket && (_webSocket.readyState === WebSocket.OPEN || _webSocket.readyState === WebSocket.CONNECTING)) {
+      return;
+    }
 
     const token = getToken();
     const tokenQuery = token ? `?token=${encodeURIComponent(token)}` : '';
@@ -37,6 +41,7 @@ export function initRealtimeSync(onOrderUpdated?: (data: any) => void) {
     _webSocket = new WebSocket(fullWsUrl);
 
     _webSocket.onopen = () => {
+      _reconnectCount = 0;
       logger.info('realtimeSync', 'WebSocket connected for live multi-device sync');
     };
 
@@ -73,8 +78,11 @@ export function initRealtimeSync(onOrderUpdated?: (data: any) => void) {
     };
 
     _webSocket.onclose = () => {
-      // Reconnect after 5 seconds
-      setTimeout(() => initRealtimeSync(onOrderUpdated), 5000);
+      _webSocket = null;
+      if (_reconnectCount < MAX_RECONNECT) {
+        _reconnectCount++;
+        setTimeout(() => initRealtimeSync(onOrderUpdated), 5000);
+      }
     };
   } catch (e) {
     logger.warn('realtimeSync', 'Failed to connect WebSocket:', e);

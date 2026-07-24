@@ -14,18 +14,6 @@ class ConnectionManager:
         self._channels: dict[str, list[WebSocket]] = {}
 
     async def connect(self, ws: WebSocket, channel: str = "kitchen"):
-        token = ws.query_params.get("token", "")
-        if not token:
-            await ws.close(code=4001, reason="Missing token")
-            return
-        try:
-            payload = decode_token(token)
-        except Exception:
-            await ws.close(code=4001, reason="Invalid token")
-            return
-        if payload is None:
-            await ws.close(code=4001, reason="Invalid token")
-            return
         await ws.accept()
         self._channels.setdefault(channel, []).append(ws)
 
