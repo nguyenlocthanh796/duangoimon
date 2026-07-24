@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors } from '../../lib/theme';
 import { useSidebar } from '../../lib/context/SidebarContext';
@@ -18,13 +19,15 @@ const tabs: ModuleTab[] = [
   { id: 'execDashboard', name: 'Điều hành', icon: 'view-dashboard' },
   { id: 'reports', name: 'Báo cáo', icon: 'file-chart' },
   { id: 'biReports', name: 'Báo cáo BI', icon: 'google-analytics' },
-  { id: 'menuEng', name: 'Phân tích thực đơn', icon: 'chart-pie' },
+  { id: 'menuEng', name: 'Menu Eng BCG', icon: 'chart-pie' },
   { id: 'forecast', name: 'Dự báo', icon: 'chart-timeline-variant' },
   { id: 'shifts', name: 'Ca làm việc', icon: 'clock-outline' },
 ];
 
 export default function AnalyticsModule() {
   const { openSidebar } = useSidebar();
+  const { width } = useWindowDimensions();
+  const isWide = width >= 768;
   const [activeTab, setActiveTab] = useState('execDashboard');
 
   const renderContent = () => {
@@ -40,20 +43,26 @@ export default function AnalyticsModule() {
   };
 
   return (
-    <View style={styles.container}>
-      <ScreenHeader title="Báo cáo & Phân tích" onMenuPress={openSidebar} right={
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <ScreenHeader
+        title="Báo cáo & Phân tích"
+        subtitle="Phân tích báo cáo điều hành, BI, P&L & dự báo doanh thu"
+        onMenuPress={openSidebar}
+        compact={!isWide}
+        right={
           <TouchableOpacity 
             disabled={true}
             style={{ padding: 8, opacity: 0.3 }}
           >
-            <Icon name="magnify" size={24} color={colors.text.primary} />
+            <Icon name="magnify" size={22} color={colors.text.primary} />
           </TouchableOpacity>
-        } />
+        }
+      />
       <ModuleTabs tabs={tabs} activeTab={activeTab} onSelectTab={setActiveTab} />
       <View style={styles.content}>
         {renderContent()}
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

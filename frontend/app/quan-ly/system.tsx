@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors } from '../../lib/theme';
 import { useSidebar } from '../../lib/context/SidebarContext';
@@ -23,6 +24,8 @@ const tabs: ModuleTab[] = [
 
 export default function SystemModule() {
   const { openSidebar } = useSidebar();
+  const { width } = useWindowDimensions();
+  const isWide = width >= 768;
   const [activeTab, setActiveTab] = useState('users');
 
   const renderContent = () => {
@@ -37,20 +40,26 @@ export default function SystemModule() {
   };
 
   return (
-    <View style={styles.container}>
-      <ScreenHeader title="Hệ thống & Vận hành" onMenuPress={openSidebar} right={
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <ScreenHeader
+        title="Hệ thống & Vận hành"
+        subtitle="Quản lý tài khoản nhân viên, sơ đồ bàn & cấu hình trạm bếp"
+        onMenuPress={openSidebar}
+        compact={!isWide}
+        right={
           <TouchableOpacity 
             disabled={true}
             style={{ padding: 8, opacity: 0.3 }}
           >
-            <Icon name="magnify" size={24} color={colors.text.primary} />
+            <Icon name="magnify" size={22} color={colors.text.primary} />
           </TouchableOpacity>
-        } />
+        }
+      />
       <ModuleTabs tabs={tabs} activeTab={activeTab} onSelectTab={setActiveTab} />
       <View style={styles.content}>
         {renderContent()}
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 

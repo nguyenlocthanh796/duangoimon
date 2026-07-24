@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import {
   ScrollView,
   TouchableOpacity,
@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors } from '../../theme/colors';
+import { shape } from '../../theme/shape';
 import AppText from '../ui/AppText';
 
 export interface ModuleTab {
@@ -25,8 +26,8 @@ interface ModuleTabsProps {
 
 export default function ModuleTabs({ tabs, activeTab, onSelectTab }: ModuleTabsProps) {
   const scrollRef = useRef<ScrollView>(null);
-  const [isScrollable, setIsScrollable] = useState(false);
-  const [atEnd, setAtEnd] = useState(false);
+  const [, setIsScrollable] = useState(false);
+  const [, setAtEnd] = useState(false);
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
   const handleScroll = useCallback(
@@ -49,10 +50,9 @@ export default function ModuleTabs({ tabs, activeTab, onSelectTab }: ModuleTabsP
     <View
       style={{
         backgroundColor: colors.surface.card,
-        borderBottomWidth: 1,
-        borderBottomColor: colors.border.default,
         flexGrow: 0,
         flexShrink: 0,
+        paddingVertical: 4,
       }}
     >
       <ScrollView
@@ -62,8 +62,8 @@ export default function ModuleTabs({ tabs, activeTab, onSelectTab }: ModuleTabsP
         onScroll={handleScroll}
         scrollEventThrottle={100}
         contentContainerStyle={{
-          paddingHorizontal: 16,
-          paddingVertical: 6,
+          paddingHorizontal: 12,
+          paddingVertical: 4,
           alignItems: 'center',
         }}
       >
@@ -76,27 +76,25 @@ export default function ModuleTabs({ tabs, activeTab, onSelectTab }: ModuleTabsP
               onPress={() => onSelectTab(tab.id)}
               style={{
                 flexDirection: 'row',
-                paddingHorizontal: 16,
-                height: 36,
+                paddingHorizontal: 14,
+                height: 38,
                 justifyContent: 'center',
                 alignItems: 'center',
-                borderRadius: 8,
+                borderRadius: shape.radius.md,
                 marginRight: isLast ? 0 : 8,
-                backgroundColor: active ? colors.brand.primary : colors.surface.card,
-                borderWidth: 1,
-                borderColor: active ? colors.brand.primary : colors.border.default,
+                backgroundColor: active ? colors.brand.primaryBg : colors.surface.app,
                 gap: 6,
               }}
             >
               <Icon
                 name={tab.icon as any}
-                size={16}
-                color={active ? colors.text.inverse : colors.text.secondary}
+                size={18}
+                color={active ? colors.brand.primary : colors.icon.muted}
               />
               <AppText
-                variant="md"
+                variant="sm"
                 weight={active ? 'bold' : 'normal'}
-                color={active ? colors.text.inverse : colors.text.secondary}
+                color={active ? colors.brand.primary : colors.text.secondary}
               >
                 {tab.name}
               </AppText>

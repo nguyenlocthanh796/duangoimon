@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors } from '../../lib/theme';
 import { useSidebar } from '../../lib/context/SidebarContext';
@@ -15,17 +16,18 @@ import PurchaseOrdersScreen from './_purchase-orders';
 
 const tabs: ModuleTab[] = [
   { id: 'menu', name: 'Thực đơn', icon: 'food' },
-  { id: 'recipes', name: 'Công thức', icon: 'flask-outline' },
+  { id: 'recipes', name: 'Công thức BOM', icon: 'flask-outline' },
   { id: 'stock', name: 'Tồn kho', icon: 'package-variant-closed' },
   { id: 'suppliers', name: 'Nhà cung cấp', icon: 'truck-delivery' },
-  { id: 'purchaseOrders', name: 'Nhập hàng', icon: 'file-document-outline' },
+  { id: 'purchaseOrders', name: 'Nhập hàng PO', icon: 'file-document-outline' },
 ];
 
 export default function ProductsModule() {
   const { openSidebar } = useSidebar();
+  const { width } = useWindowDimensions();
+  const isWide = width >= 768;
   const [activeTab, setActiveTab] = useState('menu');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-
 
   const searchableTabs = ['menu', 'recipes', 'stock', 'suppliers', 'purchaseOrders'];
   const isSearchable = searchableTabs.includes(activeTab);
@@ -33,7 +35,6 @@ export default function ProductsModule() {
   const toggleSearch = () => {
     if (isSearchable) setIsSearchOpen(!isSearchOpen);
   };
-
 
   const renderContent = () => {
     switch (activeTab) {
@@ -47,17 +48,19 @@ export default function ProductsModule() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <ScreenHeader 
-        title="Sản phẩm & Kho hàng" 
+        title="Sản phẩm & Kho hàng"
+        subtitle="Quản lý thực đơn, công thức định lượng & đơn nhập kho"
         onMenuPress={openSidebar} 
+        compact={!isWide}
         right={
           <TouchableOpacity 
             onPress={toggleSearch} 
             disabled={!isSearchable}
             style={{ padding: 8, opacity: isSearchable ? 1 : 0.3 }}
           >
-            <Icon name={isSearchOpen ? "close" : "magnify"} size={24} color={colors.text.primary} />
+            <Icon name={isSearchOpen ? "close" : "magnify"} size={22} color={colors.text.primary} />
           </TouchableOpacity>
         }
       />
@@ -65,7 +68,7 @@ export default function ProductsModule() {
       <View style={styles.content}>
         {renderContent()}
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
