@@ -459,7 +459,7 @@ export default function CartPanel({
 
   const titleComponent = (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-      <AppText variant={'lg'} color={colors.text.primary} weight="bold">
+      <AppText variant={'md'} color={colors.text.primary} weight="bold">
         Giỏ hàng
       </AppText>
       {itemCount > 0 && (
@@ -471,7 +471,7 @@ export default function CartPanel({
             borderRadius: shape.radius.xs,
           }}
         >
-          <AppText variant={'md'} color={colors.brand.primary} weight="bold">
+          <AppText variant={'sm'} color={colors.brand.primary} weight="bold">
             {itemCount} món
           </AppText>
         </View>
