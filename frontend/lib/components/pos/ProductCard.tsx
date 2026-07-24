@@ -24,8 +24,8 @@ const CATEGORY_STYLES: Record<string, { colors: [string, string]; icon: string; 
   'tra-chanh': { colors: ['#FEFCE8', '#FEF9C3'], icon: 'leaf', accent: '#CA8A04' },
   'do-an-vat': { colors: ['#FFF7ED', '#FFEDD5'], icon: 'food-croissant', accent: '#EA580C' },
   che: { colors: ['#FDF2F8', '#FCE7F3'], icon: 'bowl-mix', accent: '#DB2777' },
-  'tra-sua': { colors: ['#FAF5FF', '#F3E8FF'], icon: 'bubble-tea', accent: '#9333EA' },
-  soda: { colors: ['#ECFDF5', '#D1FAE5'], icon: 'bottle-soda-glowing', accent: '#059669' },
+  'tra-sua': { colors: ['#FAF5FF', '#F3E8FF'], icon: 'cup', accent: '#9333EA' },
+  soda: { colors: ['#ECFDF5', '#D1FAE5'], icon: 'bottle-soda', accent: '#059669' },
   kem: { colors: ['#FFF1F2', '#FFE4E6'], icon: 'ice-cream', accent: '#E11D48' },
   default: { colors: ['#F5F5F7', '#E5E5EA'], icon: 'silverware-fork-knife', accent: '#8E8E93' },
 };
@@ -86,39 +86,40 @@ export default React.memo(function ProductCard({
         />
       )}
 
-      {/* Bottom text overlay — chiều cao CỐ ĐỊNH 48pt */}
-      <View
+      {/* Bottom text overlay - transparent LinearGradient transition */}
+      <LinearGradient
+        colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.88)']}
         style={{
           position: 'absolute',
           bottom: 0,
           left: 0,
           right: 0,
-          height: 48,
-          backgroundColor: 'rgba(0, 0, 0, 0.76)',
-          paddingHorizontal: shape.spacing.sm,
-          paddingVertical: shape.spacing.xs,
-          justifyContent: 'center',
-          overflow: 'hidden',
+          paddingHorizontal: 6,
+          paddingTop: 16,
+          paddingBottom: 6,
+          justifyContent: 'flex-end',
         }}
       >
         <AppText
-          variant="sm"
+          variant="xs"
+          weight="medium"
           color={colors.text.inverse}
-          style={{ textAlign: 'center' }}
-          numberOfLines={2}
+          style={{ textAlign: 'center', lineHeight: 14 }}
+          numberOfLines={1}
           ellipsizeMode="tail"
         >
           {item.name}
         </AppText>
         <AppText
-          variant="sm"
+          variant="xs"
+          weight="bold"
           color={palette.orange[300]}
-          style={{ textAlign: 'center', marginTop: 2 }}
+          style={{ textAlign: 'center', marginTop: 1, lineHeight: 14 }}
           numberOfLines={1}
         >
           {formatPrice(item.price)}
         </AppText>
-      </View>
+      </LinearGradient>
 
       {/* Badge số lượng — 24pt, viền trắng 2pt */}
       {inCartCount > 0 && (
