@@ -150,12 +150,12 @@ export default React.memo(function TableCard({ table, onPress, selected, isWide,
             <View style={{ flex: 1, justifyContent: 'space-between' }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <View style={{ backgroundColor: '#FDBA74', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 }}>
-                  <AppText variant="xs" weight="bold" color="#9A3412">
+                  <AppText variant="sm" weight="bold" color="#9A3412">
                     {table.orderTime || 'Đang dùng'}
                   </AppText>
                 </View>
                 <View style={{ backgroundColor: '#EA580C', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 }}>
-                  <AppText variant="xs" weight="bold" color="#FFFFFF">
+                  <AppText variant="sm" weight="bold" color="#FFFFFF">
                     {table.orderItemCount || 0} món
                   </AppText>
                 </View>
@@ -165,7 +165,7 @@ export default React.memo(function TableCard({ table, onPress, selected, isWide,
                 <AppText style={titleToken} numberOfLines={1} color="#1C1917" adjustsFontSizeToFit={true} minimumFontScale={0.7}>
                   {table.name}
                 </AppText>
-                <AppText variant="xs" color="#78350F" numberOfLines={1}>
+                <AppText variant="sm" color="#78350F" numberOfLines={1}>
                   {abbreviateArea(table.area) || 'Khu vực'}
                 </AppText>
               </View>
@@ -181,7 +181,7 @@ export default React.memo(function TableCard({ table, onPress, selected, isWide,
             <View style={{ flex: 1, justifyContent: 'space-between', alignItems: 'center' }}>
               <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <View style={{ backgroundColor: '#D1FAE5', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6 }}>
-                  <AppText variant="xs" weight="bold" color="#065F46">
+                  <AppText variant="sm" weight="bold" color="#065F46">
                     Sẵn sàng
                   </AppText>
                 </View>
@@ -195,7 +195,7 @@ export default React.memo(function TableCard({ table, onPress, selected, isWide,
                 </AppText>
               </View>
 
-              <AppText variant="xs" color="#047857" numberOfLines={1}>
+              <AppText variant="sm" color="#047857" numberOfLines={1}>
                 {abbreviateArea(table.area) || 'Bàn trống'} · {table.capacity}g
               </AppText>
             </View>
