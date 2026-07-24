@@ -11,6 +11,7 @@ from sqlalchemy.orm import selectinload
 
 from app.core.auth import get_current_user
 from app.core.database import get_db
+from app.core.fast_cache import invalidate_fast_cache
 from app.core.pagination import PageParams, paginate
 from app.models.ban_hang import Order, OrderItem, Product, Table
 from app.schemas.ban_hang import OrderOut
@@ -210,10 +211,12 @@ async def create_order(
                 "table_id": str(order.table_id),
                 "total": float(order.total_amount),
                 "note": order.note,
-                "created_at": str(order.created_at),
             },
         },
     )
+
+    # Invalidate in-memory caches so GET /tables, /kitchen-feed, /orders immediately show fresh data
+    invalidate_fast_cache()
 
     return order
 

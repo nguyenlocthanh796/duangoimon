@@ -14,4 +14,8 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
 
+        # Add browser micro-cache headers for GET requests to achieve 0ms browser latency
+        if request.method == "GET" and "/api/v1/" in request.url.path:
+            response.headers["Cache-Control"] = "private, max-age=5, stale-while-revalidate=15"
+
         return response

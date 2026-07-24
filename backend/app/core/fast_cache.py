@@ -1,32 +1,48 @@
-"""In-memory high-speed Micro-Cache for FastAPI endpoints.
+"""In-memory high-speed Micro-Cache with Stale-While-Revalidate (SWR).
 Bypasses WAN latency to Cloud Postgres for read-heavy F&B operations.
 """
 
+import asyncio
 import functools
 import hashlib
 import inspect
 import json
+import logging
 import time
 from typing import Any, Callable, Optional
 
-_cache: dict[str, tuple[float, Any]] = {}
+logger = logging.getLogger(__name__)
+
+# Cache structure: key -> (expire_time, stale_until_time, value)
+_cache: dict[str, tuple[float, float, Any]] = {}
+_revalidating_keys: set[str] = set()
 
 
-def get_fast_cache(key: str) -> Optional[Any]:
-    """Retrieve cached item if not expired."""
+def get_fast_cache(key: str) -> tuple[Optional[Any], bool]:
+    """Retrieve cached item. Returns (value, is_stale).
+    If valid: (value, False)
+    If stale but usable: (value, True)
+    If completely expired/missing: (None, False)
+    """
     entry = _cache.get(key)
     if not entry:
-        return None
-    expire_time, val = entry
-    if time.time() > expire_time:
+        return None, False
+    expire_time, stale_until, val = entry
+    now = time.time()
+
+    if now <= expire_time:
+        return val, False  # Fresh hit
+    elif now <= stale_until:
+        return val, True   # Stale hit (can serve while revalidating in background)
+    else:
         _cache.pop(key, None)
-        return None
-    return val
+        return None, False # Fully expired
 
 
-def set_fast_cache(key: str, value: Any, ttl_seconds: float = 10.0) -> None:
-    """Store item in fast cache with TTL."""
-    _cache[key] = (time.time() + ttl_seconds, value)
+def set_fast_cache(key: str, value: Any, ttl_seconds: float = 10.0, stale_seconds: float = 60.0) -> None:
+    """Store item in fast cache with TTL and SWR window."""
+    now = time.time()
+    _cache[key] = (now + ttl_seconds, now + ttl_seconds + stale_seconds, value)
 
 
 def invalidate_fast_cache(prefix: Optional[str] = None) -> None:
@@ -41,12 +57,10 @@ def invalidate_fast_cache(prefix: Optional[str] = None) -> None:
 
 def _make_cache_key(func: Callable, args: tuple, kwargs: dict) -> str:
     """Build a stable string key from function name + JSON args."""
-    # Skip the first argument if it's `self` or `request` (DB session, Request obj)
     sig = inspect.signature(func)
     bound = sig.bind_partial(*args, **kwargs)
     bound.apply_defaults()
 
-    # Build a dict of param_name -> value for JSON-serializable params
     params = {}
     for p_name, p_val in bound.arguments.items():
         if p_name in ("request", "self", "cls"):
@@ -57,24 +71,38 @@ def _make_cache_key(func: Callable, args: tuple, kwargs: dict) -> str:
     return hashlib.md5(raw.encode("utf-8")).hexdigest()
 
 
-def cached(ttl_seconds: float = 10.0):
-    """Decorator: cache async function results in-memory with TTL.
+async def _async_revalidate(func: Callable, args: tuple, kwargs: dict, key: str, ttl_seconds: float, stale_seconds: float):
+    """Background task to fetch fresh data from DB and update cache."""
+    try:
+        result = await func(*args, **kwargs)
+        set_fast_cache(key, result, ttl_seconds=ttl_seconds, stale_seconds=stale_seconds)
+    except Exception as e:
+        logger.warning(f"Background SWR revalidation failed for {func.__qualname__}: {e}")
+    finally:
+        _revalidating_keys.discard(key)
 
-    Usage:
-        @cached(ttl_seconds=30.0)
-        async def get_products(db: AsyncSession):
-            ...
+
+def cached(ttl_seconds: float = 10.0, stale_seconds: float = 60.0):
+    """Decorator: SWR (Stale-While-Revalidate) async in-memory cache.
+    Returns stale data instantly (0ms server latency) while refreshing DB in background!
     """
     def decorator(func: Callable):
         @functools.wraps(func)
         async def wrapper(*args, **kwargs):
             key = _make_cache_key(func, args, kwargs)
-            hit = get_fast_cache(key)
-            if hit is not None:
-                return hit
+            val, is_stale = get_fast_cache(key)
+
+            if val is not None:
+                if is_stale and key not in _revalidating_keys:
+                    _revalidating_keys.add(key)
+                    asyncio.create_task(_async_revalidate(func, args, kwargs, key, ttl_seconds, stale_seconds))
+                return val
+
+            # Cache miss: fetch synchronously
             result = await func(*args, **kwargs)
-            set_fast_cache(key, result, ttl_seconds=ttl_seconds)
+            set_fast_cache(key, result, ttl_seconds=ttl_seconds, stale_seconds=stale_seconds)
             return result
         return wrapper
     return decorator
+
 
