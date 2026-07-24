@@ -9,6 +9,13 @@ export const allMenuItems: Record<string, SidebarItem> = {
     description: 'Bàn & đặt món',
     isActive: (segs) => segs[0] === 'ban-hang' && segs[1] !== 'kitchen',
   },
+  posSettings: {
+    path: '/ban-hang/settings',
+    icon: 'cog-outline',
+    label: 'Cài Đặt Bán Hàng',
+    description: 'Cấu hình in, VAT, POS',
+    isActive: (segs) => segs[0] === 'ban-hang' && segs[1] === 'settings',
+  },
   kitchen: {
     path: '/ban-hang/kitchen',
     icon: 'chef-hat',
@@ -247,7 +254,9 @@ export function getSections(module: ActiveModule): SidebarGroup[] {
       return [
         {
           label: 'Bán Hàng',
-          items: showKitchen ? [allMenuItems.pos, allMenuItems.kitchen] : [allMenuItems.pos],
+          items: showKitchen
+            ? [allMenuItems.pos, allMenuItems.kitchen, allMenuItems.posSettings]
+            : [allMenuItems.pos, allMenuItems.posSettings],
         },
         {
           label: 'Khác',
@@ -313,19 +322,19 @@ const quanLySubGroups: SidebarSubGroup[] = [
 ];
 
 export const menuByRole: Record<string, SidebarGroup[]> = {
-  cashier: [{ label: 'Bán Hàng', items: [allMenuItems.pos, allMenuItems.kitchen] }],
+  cashier: [{ label: 'Bán Hàng', items: [allMenuItems.pos, allMenuItems.kitchen, allMenuItems.posSettings] }],
   kitchen: [{ label: 'Nhà Bếp', items: [allMenuItems.kitchen] }],
   accountant: [
     { label: 'Kế toán & Thuế', items: keToanThueItems },
     { label: 'Quản Lý', items: [allMenuItems.quanLy] },
   ],
   admin: [
-    { label: 'Bán Hàng', items: [allMenuItems.pos, allMenuItems.kitchen] },
+    { label: 'Bán Hàng', items: [allMenuItems.pos, allMenuItems.kitchen, allMenuItems.posSettings] },
     { label: 'Kế toán & Thuế', items: keToanThueItems },
     { label: 'Quản Lý', items: quanLySubGroups },
   ],
   manager: [
-    { label: 'Bán Hàng', items: [allMenuItems.pos, allMenuItems.kitchen] },
+    { label: 'Bán Hàng', items: [allMenuItems.pos, allMenuItems.kitchen, allMenuItems.posSettings] },
     { label: 'Kế toán & Thuế', items: keToanThueItems },
     { label: 'Quản Lý', items: quanLySubGroups },
   ],
