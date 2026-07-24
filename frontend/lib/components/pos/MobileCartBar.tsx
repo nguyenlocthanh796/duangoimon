@@ -169,7 +169,7 @@ export default function MobileCartBar({
               ...font.mdBold,
             }}
           >
-            {hasItems ? `Thanh toán (${formatPrice(total)})` : 'Thanh toán'}
+            {hasItems ? formatPrice(total) : 'Thanh toán'}
           </Text>
         </TouchableOpacity>
       </View>
