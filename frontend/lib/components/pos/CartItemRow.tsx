@@ -81,7 +81,11 @@ const MemoCartItemRow = React.memo(function CartItemRow({
           alignItems: 'center',
         }}
       >
-        <View style={{ flex: 1 }}>
+        <TouchableOpacity
+          onPress={() => onOpenModifier(item)}
+          activeOpacity={0.7}
+          style={{ flex: 1 }}
+        >
           <AppText
             variant="md"
             color={colors.text.primary}
@@ -89,12 +93,12 @@ const MemoCartItemRow = React.memo(function CartItemRow({
           >
             {item.name}
           </AppText>
-          {item.selectedSize && (
+          {item.selectedSize ? (
             <AppText variant="sm" color={colors.text.muted}>
               {item.selectedSize}
             </AppText>
-          )}
-        </View>
+          ) : null}
+        </TouchableOpacity>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <TouchableOpacity
@@ -230,7 +234,26 @@ const MemoCartItemRow = React.memo(function CartItemRow({
   }
 
   const card = (
-    <TouchableOpacity onPress={() => onOpenModifier(item)} disabled={isCancelled} activeOpacity={0.85} style={{ padding: 8, backgroundColor: isCancelled ? colors.status.dangerBg : isKitchenLocked ? colors.surface.app : colors.surface.card, borderWidth: 0, borderBottomWidth: 1, borderColor: isCancelled ? colors.border.danger : isKitchenLocked ? colors.border.default : colors.border.default, borderRadius: 0, marginBottom: 0, opacity: isCancelled ? 0.7 : 1 }}>
+    <TouchableOpacity
+      onPress={() => onOpenModifier(item)}
+      disabled={isCancelled}
+      activeOpacity={0.85}
+      style={{
+        padding: 8,
+        backgroundColor: isCancelled
+          ? colors.status.dangerBg
+          : isKitchenLocked
+          ? colors.surface.app
+          : colors.surface.card,
+        borderBottomWidth: 1,
+        borderColor: isCancelled
+          ? colors.border.danger
+          : isKitchenLocked
+          ? colors.border.default
+          : colors.border.default,
+        opacity: isCancelled ? 0.7 : 1,
+      }}
+    >
       <View style={{ flexDirection: 'row', gap: 8 }}>
         <View style={{ width: 64, height: 64, borderRadius: 6, backgroundColor: colors.surface.disabled, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>
           {item.image && !imageError ? (
@@ -239,8 +262,8 @@ const MemoCartItemRow = React.memo(function CartItemRow({
             <Icon name="silverware-fork-knife" size={22} color={colors.icon.muted} />
           )}
           {item.qty > 1 && !isCancelled && (
-            <View style={{ position: 'absolute', top: 0, left: 0, backgroundColor: colors.brand.primary + '0.9', paddingHorizontal: 4, paddingVertical: 1, borderBottomRightRadius: 6 }}>
-              <AppText variant="sm" color={colors.text.inverse}>x{item.qty}</AppText>
+            <View style={{ position: 'absolute', top: 0, left: 0, backgroundColor: colors.brand.primary, paddingHorizontal: 4, paddingVertical: 1, borderBottomRightRadius: 6 }}>
+              <AppText variant="sm" weight="bold" color={colors.text.inverse}>x{item.qty}</AppText>
             </View>
           )}
           {isKitchenLocked && !isCancelled && (
