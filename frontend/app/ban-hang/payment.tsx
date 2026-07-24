@@ -402,7 +402,7 @@ export default function PaymentScreen() {
                       {formatPriceFull(total)}
                     </AppText>
                   </TouchableOpacity>
-                  {suggestions.map((amt) => (
+                  {suggestions.filter(amt => amt !== total).map((amt) => (
                     <TouchableOpacity
                       key={amt}
                       onPress={() => pm.setCashInput(String(amt))}
@@ -599,7 +599,7 @@ export default function PaymentScreen() {
             ) : (
               <Icon name="check-circle" size={24} color={pm.canPay ? colors.text.inverse : colors.text.muted} />
             )}
-            <AppText variant="lg" weight="bold" color={pm.canPay ? colors.text.inverse : colors.text.muted}>
+            <AppText variant="md" weight="bold" color={pm.canPay ? colors.text.inverse : colors.text.muted}>
               {pm.paying ? 'Đang xử lý...' : 'Hoàn tất thanh toán'}
             </AppText>
           </TouchableOpacity>
