@@ -100,7 +100,7 @@ const dtStyles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   headerCell: { flex: 1 },
-  headerText: { ...font.sm, color: colors.text.secondary, fontWeight: '600' },
+  headerText: { ...font.sm, color: colors.text.secondary, fontWeight: 'normal' },
   dataRow: {
     flexDirection: 'row',
     paddingVertical: 8,
@@ -141,13 +141,13 @@ export function TopProductsList({ data, loading }: TopProductsProps) {
         <DataTable
           columns={[
             { key: 'rank', label: '#', flex: 0.4, align: 'center', render: (v) => (
-              <Text style={{ ...font.sm, fontWeight: '600', textAlign: 'center', color: (v <= 3) ? colors.brand.primary : colors.text.muted }}>
+              <Text style={{ ...font.sm, fontWeight: 'bold', textAlign: 'center', color: (v <= 3) ? colors.brand.primary : colors.text.muted }}>
                 {v}
               </Text>
             ) },
             { key: 'name', label: 'Tên món', flex: 2 },
             { key: 'quantity', label: 'SL', flex: 0.8, align: 'right', render: (v) => (
-              <Text style={{ ...font.sm, fontWeight: '600', color: colors.text.primary, textAlign: 'right' }}>{v}</Text>
+              <Text style={{ ...font.sm, fontWeight: 'bold', color: colors.text.primary, textAlign: 'right' }}>{v}</Text>
             ) },
           ]}
           data={(data ?? []).map((p, i) => ({ ...p, id: i, rank: i + 1 }))}
@@ -183,14 +183,14 @@ export function NavigationGrid({ compact }: NavGridProps) {
         subtitle={`${NAV_ITEMS.length} mục`}
         compact={compact}
       />
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 2 }}>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 2 }}>
         {NAV_ITEMS.map((item, i) => (
           <TouchableOpacity
             key={i}
             style={{
-              width: width > 768 ? '23.5%' : '48%',
+              width: width > 768 ? '23.8%' : '48.5%',
               backgroundColor: colors.surface.app,
-              padding: 12,
+              padding: 10,
               borderRadius: shape.radius.md,
               flexDirection: 'row',
               alignItems: 'center',
@@ -267,7 +267,7 @@ export function LowStockList({ items, loading }: LowStockWidgetProps) {
                 const r = row as any;
                 return (
                   <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 4 }}>
-                    <Text style={{ ...font.sm, fontWeight: '600', color: r._critical ? colors.status.danger : colors.status.warning }}>
+                    <Text style={{ ...font.sm, fontWeight: 'bold', color: r._critical ? colors.status.danger : colors.status.warning }}>
                       {r.current}
                     </Text>
                     <Text style={{ ...font.sm, color: colors.text.muted }}>
@@ -407,7 +407,7 @@ function SectionHeader({
   return (
     <View style={styles.sectionHeader}>
       <View style={styles.sectionHeaderLeft}>
-        <Icon name={iconName as any} size={18} color={colors.brand.primary} />
+        <Icon name={iconName as any} size={16} color={colors.brand.primary} />
         <Text style={styles.sectionTitle}>
           {title}
         </Text>
@@ -440,23 +440,23 @@ const styles = StyleSheet.create({
   section: {
     backgroundColor: colors.surface.card,
     borderRadius: shape.radius.lg,
-    padding: 14,
+    padding: 10,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 8,
   },
   sectionHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   sectionTitle: { ...font.smBold, color: colors.text.primary },
   sectionSub: { ...font.sm, color: colors.text.secondary },
-  emptyBox: { alignItems: 'center', paddingVertical: 18, gap: 6 },
+  emptyBox: { alignItems: 'center', paddingVertical: 14, gap: 6 },
   emptyText: { ...font.sm, color: colors.text.secondary },
 
   actDot: {
-    width: 26,
-    height: 26,
+    width: 24,
+    height: 24,
     borderRadius: shape.radius.md,
     alignItems: 'center',
     justifyContent: 'center',
@@ -466,7 +466,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'space-between',
-    height: 110,
+    height: 100,
     paddingTop: 6,
   },
   chartCol: { flex: 1, alignItems: 'center' },
