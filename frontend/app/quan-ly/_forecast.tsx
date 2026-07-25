@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useResponsive } from '../../lib/hooks/useResponsive';
-import { colors, font } from '../../lib/theme';
+import { colors } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import DataTable, { type Column } from '../../lib/components/ui/DataTable';
@@ -17,14 +17,19 @@ export default function ForecastScreen() {
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
   const load = useCallback(async () => {
-    try { setLoading(true); setData(await request<any[]>(`/api/v1/quan-ly/forecast/demand?days_ahead=${days}`)); }
-    catch { /* ignore */ } finally { setLoading(false); }
+    try {
+      setLoading(true);
+      const res: any = await request(`/api/v1/quan-ly/forecast/demand?days_ahead=${days}`);
+      setData(Array.isArray(res) ? res : res?.items || res?.forecast || []);
+    }
+    catch { setData([]); } finally { setLoading(false); }
   }, [days]);
   useEffect(() => { load(); }, [load]);
 
-  const total = data.reduce((s, d) => s + (d.forecast || 0), 0);
-  const avg = data.length ? Math.round(total / data.length) : 0;
-  const avgConf = data.length ? Math.round(data.reduce((s, d) => s + (d.confidence || 0), 0) / data.length) : 0;
+  const safeData = Array.isArray(data) ? data : [];
+  const total = safeData.reduce((s, d) => s + (d.forecast || 0), 0);
+  const avg = safeData.length ? Math.round(total / safeData.length) : 0;
+  const avgConf = safeData.length ? Math.round(safeData.reduce((s, d) => s + (d.confidence || 0), 0) / safeData.length) : 0;
 
   const renderConfidence = (c: number) => (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, justifyContent: 'flex-end' }}>
@@ -87,7 +92,7 @@ export default function ForecastScreen() {
         <AppText variant="sm" color={colors.text.muted}>Chỉ số tin cậy trung bình</AppText>
       </View>
       <View style={styles.panelDivider} />
-      {data.slice(0, 7).map((item, i) => {
+      {safeData.slice(0, 7).map((item, i) => {
         const c = item.confidence || 0;
         return (
           <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 2 }}>
@@ -153,7 +158,7 @@ export default function ForecastScreen() {
           <View style={{ flex: 0.55 }}>
             <DataTable<any>
               columns={columns}
-              data={data}
+              data={safeData}
               getRowId={(r: any) => r?.id || r?.date || String(Math.random())}
               loading={loading}
               sortKey={sortKey}
@@ -172,7 +177,7 @@ export default function ForecastScreen() {
         <View style={{ flex: 1, paddingHorizontal: 8 }}>
           <DataTable<any>
             columns={columns}
-            data={data}
+            data={safeData}
             getRowId={(r: any) => r?.id || r?.date || String(Math.random())}
             loading={loading}
             sortKey={sortKey}
