@@ -959,7 +959,7 @@ export default function PaymentScreen() {
                 </View>
               </View>
               <View style={{ backgroundColor: colors.surface.app, borderRadius: 0, paddingVertical: 16, paddingHorizontal: 12, borderWidth: 1, borderColor: colors.border.default, width: '100%', alignItems: 'center' }}>
-                <AppText variant="sm" weight="bold" color={colors.text.muted} style={{ textAlign: 'center' }}>
+                <AppText variant="sm" color={colors.text.muted} style={{ textAlign: 'center' }}>
                   TT {tableName} #{orderId?.slice(-6)}
                 </AppText>
               </View>

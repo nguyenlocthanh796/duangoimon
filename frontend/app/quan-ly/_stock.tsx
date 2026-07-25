@@ -206,7 +206,7 @@ export default function StockScreen() {
         </View>
       </View>
 
-      <AppText variant="sm" weight="bold" color={colors.text.primary} style={{ marginBottom: 4 }}>Đơn vị tính</AppText>
+      <AppText variant="sm" color={colors.text.primary} style={{ marginBottom: 4 }}>Đơn vị tính</AppText>
       <TextInput
         value={form.unit}
         onChangeText={v => setForm(f => ({ ...f, unit: v }))}
@@ -215,7 +215,7 @@ export default function StockScreen() {
         placeholderTextColor={colors.text.muted}
       />
 
-      <AppText variant="sm" weight="bold" color={colors.text.primary} style={{ marginBottom: 4 }}>Giá vốn đơn vị (VNĐ)</AppText>
+      <AppText variant="sm" color={colors.text.primary} style={{ marginBottom: 4 }}>Giá vốn đơn vị (VNĐ)</AppText>
       <TextInput
         value={form.cost_price}
         onChangeText={v => setForm(f => ({ ...f, cost_price: v }))}

@@ -37,7 +37,7 @@ export function DailyReportTable({ data }: { data: DayData[] }) {
     <View style={s.section}>
       <View style={s.sectionHeader}>
         <Icon name="calendar-month-outline" size={16} color={colors.brand.primary} />
-        <AppText variant="sm" weight="bold" color={colors.text.primary}>Chi tiết doanh thu theo ngày</AppText>
+        <AppText variant="md" weight="bold" color={colors.text.primary}>Chi tiết doanh thu theo ngày</AppText>
       </View>
       <View style={s.tableHeader}>
         <AppText variant="sm" color={colors.text.secondary} style={{ flex: 1.5 }}>Ngày</AppText>

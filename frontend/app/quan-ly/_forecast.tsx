@@ -86,7 +86,7 @@ export default function ForecastScreen() {
       align: 'right',
       sortable: true,
       sortValue: (r: any) => r.predicted_orders || 0,
-      render: (r: any) => <AppText variant="sm" weight="bold" color={colors.brand.primary}>{r.predicted_orders || 0} đơn</AppText>,
+      render: (r: any) => <AppText variant="sm" color={colors.brand.primary}>{r.predicted_orders || 0} đơn</AppText>,
     },
     {
       key: 'confidence',
@@ -117,17 +117,17 @@ export default function ForecastScreen() {
         <View style={{ gap: 10, paddingTop: 4 }}>
           <View style={styles.pnlRow}>
             <AppText variant="sm" color={colors.text.secondary}>Tổng nhu cầu dự kiến</AppText>
-            <AppText variant="sm" weight="bold" color={colors.brand.primary}>{total} đơn</AppText>
+            <AppText variant="sm" color={colors.brand.primary}>{total} đơn</AppText>
           </View>
           <View style={styles.pnlRow}>
             <AppText variant="sm" color={colors.text.secondary}>Trung bình / ngày</AppText>
-            <AppText variant="sm" weight="bold" color="#050505">{Math.round(total / days)} đơn/ngày</AppText>
+            <AppText variant="sm" color="#050505">{Math.round(total / days)} đơn/ngày</AppText>
           </View>
         </View>
 
         <View style={styles.panelDivider} />
 
-        <AppText variant="sm" weight="bold" color="#050505">Biểu đồ dự báo đơn hàng AI</AppText>
+        <AppText variant="md" weight="bold" color="#050505">Biểu đồ dự báo đơn hàng AI</AppText>
         <ScrollView style={{ maxHeight: 220 }} showsVerticalScrollIndicator={false}>
           {safeData.map((item: any, i: number) => (
             <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 4 }}>

@@ -52,7 +52,7 @@ export default function InvoiceFormContent({
             <Text
               style={{
                 flex: 1,
-                fontSize: 15,
+                fontSize: 16,
                 color: form.order_id ? colors.text.primary : colors.text.placeholder,
               }}
               numberOfLines={1}
@@ -157,14 +157,14 @@ const styles = StyleSheet.create({
     borderColor: colors.border.default,
     borderRadius: shape.radius.md,
     padding: 12,
-    fontSize: 15,
+    fontSize: 16,
     color: colors.text.primary,
     minHeight: 44,
     backgroundColor: colors.surface.disabled,
     marginBottom: 4,
   },
   inputError: { borderColor: colors.status.danger },
-  errorText: { fontSize: 11, color: colors.status.danger, marginBottom: 8, marginLeft: 2 },
+  errorText: { fontSize: 13, color: colors.status.danger, marginBottom: 8, marginLeft: 2 },
   pickerRow: { flexDirection: 'row', alignItems: 'center' },
   overlay: { flex: 1, backgroundColor: colors.surface.overlay },
   sheet: {

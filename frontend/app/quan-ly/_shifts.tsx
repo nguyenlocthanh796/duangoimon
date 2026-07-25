@@ -286,7 +286,7 @@ export default function ShiftsScreen() {
         <View style={{ gap: 10, paddingTop: 4 }}>
           <AppText variant="sm" weight="bold" color={colors.text.primary}>Tiền mặt bàn giao ban đầu (VNĐ)</AppText>
           <TextInput value={initialCash} onChangeText={setInitialCash} style={styles.fieldInput} keyboardType="numeric" placeholder="1000000" placeholderTextColor={colors.text.muted} />
-          <AppText variant="sm" weight="bold" color={colors.text.primary}>Ghi chú mở ca</AppText>
+          <AppText variant="sm" color={colors.text.primary}>Ghi chú mở ca</AppText>
           <TextInput value={note} onChangeText={setNote} style={styles.fieldInput} placeholder="Tình trạng ca mở..." placeholderTextColor={colors.text.muted} />
         </View>
       </FormModal>
@@ -296,7 +296,7 @@ export default function ShiftsScreen() {
         <View style={{ gap: 10, paddingTop: 4 }}>
           <AppText variant="sm" weight="bold" color={colors.text.primary}>Tổng tiền mặt thực tế trong két (VNĐ)</AppText>
           <TextInput value={actualCash} onChangeText={setActualCash} style={styles.fieldInput} keyboardType="numeric" placeholder="0" placeholderTextColor={colors.text.muted} />
-          <AppText variant="sm" weight="bold" color={colors.text.primary}>Ghi chú bàn giao</AppText>
+          <AppText variant="sm" color={colors.text.primary}>Ghi chú bàn giao</AppText>
           <TextInput value={note} onChangeText={setNote} style={styles.fieldInput} placeholder="Lý do chênh lệch (nếu có)..." placeholderTextColor={colors.text.muted} />
         </View>
       </FormModal>

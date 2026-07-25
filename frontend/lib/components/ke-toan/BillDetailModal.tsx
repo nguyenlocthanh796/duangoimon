@@ -155,7 +155,7 @@ export default function BillDetailModal({ visible, orderId, onClose }: BillDetai
             <Text
               style={[
                 styles.summaryVal,
-                { fontSize: 18, fontWeight: '600', color: colors.brand.primary },
+                { fontSize: 16, fontWeight: '600', color: colors.brand.primary },
               ]}
             >
               {formatPrice(order.total_amount)}
@@ -278,13 +278,13 @@ const styles = StyleSheet.create({
     boxShadow: '0px 2px 8px rgba(0,0,0,0.05)',
   },
   shopName: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     color: '#171717',
     textAlign: 'center',
   },
   shopSub: {
-    fontSize: 11,
+    fontSize: 13,
     color: '#737373',
     textAlign: 'center',
     marginTop: 2,
@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
     marginVertical: 12,
   },
   receiptTitle: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
     color: '#171717',
     textAlign: 'center',
@@ -309,11 +309,11 @@ const styles = StyleSheet.create({
     marginVertical: 2,
   },
   infoLabel: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#737373',
   },
   infoVal: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600',
     color: '#171717',
   },
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   headCell: {
-    fontSize: 11,
+    fontSize: 13,
     fontWeight: '600',
     color: '#404040',
   },
@@ -333,17 +333,17 @@ const styles = StyleSheet.create({
     borderBottomColor: '#E5E5E5',
   },
   itemName: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600',
     color: '#171717',
   },
   itemOps: {
-    fontSize: 10,
+    fontSize: 13,
     color: colors.text.brand,
     marginTop: 2,
   },
   cellText: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#171717',
   },
   summaryRow: {
@@ -361,7 +361,7 @@ const styles = StyleSheet.create({
     color: '#171717',
   },
   thankyou: {
-    fontSize: 11,
+    fontSize: 13,
     fontWeight: '600',
     color: '#737373',
     textAlign: 'center',

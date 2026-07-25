@@ -180,7 +180,7 @@ export default function CustomersScreen() {
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 4 }}>
             <AppText variant="sm" color="#65676B">Số đơn hoàn thành</AppText>
-            <AppText variant="sm" weight="bold" color="#050505">{c.total_orders || 0} đơn hàng</AppText>
+            <AppText variant="sm" color="#050505">{c.total_orders || 0} đơn hàng</AppText>
           </View>
         </View>
 
@@ -222,7 +222,7 @@ export default function CustomersScreen() {
       <View style={{ flexDirection: 'row', gap: 8, paddingHorizontal: 12, paddingTop: 8 }}>
         <TouchableOpacity style={styles.panelBtnSecondary} onPress={() => setSelected(c)}>
           <Icon name="account-details" size={14} color={colors.brand.primary} />
-          <AppText variant="sm" weight="bold" color={colors.brand.primary}>Chi tiết</AppText>
+          <AppText variant="sm" color={colors.brand.primary}>Chi tiết</AppText>
         </TouchableOpacity>
         <TouchableOpacity style={styles.panelBtnSecondary} onPress={() => { Alert.alert('Khách hàng', `SĐT: ${c.phone || 'Không có'}`); }}>
           <Icon name="phone" size={14} color={colors.brand.primary} />

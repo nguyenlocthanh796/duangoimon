@@ -276,7 +276,7 @@ export default function BookingScreen() {
           )}
           <TouchableOpacity style={styles.panelBtnSecondary} onPress={() => setSelected(b)}>
             <Icon name="eye" size={14} color={colors.brand.primary} />
-            <AppText variant="sm" weight="bold" color={colors.brand.primary}>Chi tiết</AppText>
+            <AppText variant="sm" color={colors.brand.primary}>Chi tiết</AppText>
           </TouchableOpacity>
           {b.status !== 'cancelled' && b.status !== 'completed' && (
             <TouchableOpacity style={styles.panelBtnDanger} onPress={() => updateStatus(b.id, 'cancelled')}>

@@ -189,7 +189,7 @@ export default function MarketingScreen() {
         </TouchableOpacity>
         <TouchableOpacity style={styles.panelBtnSecondary} onPress={() => setSelected(c)}>
           <Icon name="pencil" size={14} color={colors.brand.primary} />
-          <AppText variant="sm" weight="bold" color={colors.brand.primary}>Chi tiết</AppText>
+          <AppText variant="sm" color={colors.brand.primary}>Chi tiết</AppText>
         </TouchableOpacity>
       </View>
     </View>

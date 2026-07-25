@@ -183,7 +183,7 @@ export default function KeToanHub() {
         <SectionBlock padding={false}><View style={{ padding: isWide ? 16 : 12 }}>
           <View style={{ flexDirection: isWide ? 'row' : 'column', gap: 16 }}>
             <View style={{ flex: 3 }}>
-              <AppText variant="sm" weight="bold" color={colors.text.muted} style={{ textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>Doanh thu 12 tháng</AppText>
+              <AppText variant="sm" color={colors.text.muted} style={{ textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>Doanh thu 12 tháng</AppText>
               <View style={{ flexDirection: 'row', alignItems: 'flex-end', height: 160, gap: 6 }}>
                 {data.monthly_revenue.map((m: any, i: number) => {
                   const maxVal = Math.max(...data.monthly_revenue.map((r: any) => r.value), 1);
@@ -199,7 +199,7 @@ export default function KeToanHub() {
             </View>
             {isWide && data.expense_by_category.length > 0 && (
               <View style={{ flex: 2 }}>
-                <AppText variant="sm" weight="bold" color={colors.text.muted} style={{ textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>Chi phí theo nhóm</AppText>
+                <AppText variant="sm" color={colors.text.muted} style={{ textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>Chi phí theo nhóm</AppText>
                 <DonutChart data={data.expense_by_category} size={Math.min(chartW * 0.35, 160)} />
                 <View style={{ gap: 8, marginTop: 8 }}>
                   {data.expense_by_category.slice(0, 5).map((e: any, i: number) => (
@@ -262,10 +262,10 @@ export default function KeToanHub() {
               </TouchableOpacity>
             </View>
             <View style={{ flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: colors.border.default }}>
-              <AppText variant="sm" weight="bold" color={colors.text.muted} style={{ flex: 1, textTransform: 'uppercase' }}>Ngày</AppText>
-              <AppText variant="sm" weight="bold" color={colors.text.muted} style={{ flex: 0.5, textTransform: 'uppercase' }}>Loại</AppText>
-              <AppText variant="sm" weight="bold" color={colors.text.muted} style={{ flex: 1, textTransform: 'uppercase' }}>Mô tả</AppText>
-              <AppText variant="sm" weight="bold" color={colors.text.muted} style={{ flex: 1, textAlign: 'right', textTransform: 'uppercase' }}>Số tiền</AppText>
+              <AppText variant="sm" color={colors.text.muted} style={{ flex: 1, textTransform: 'uppercase' }}>Ngày</AppText>
+              <AppText variant="sm" color={colors.text.muted} style={{ flex: 0.5, textTransform: 'uppercase' }}>Loại</AppText>
+              <AppText variant="sm" color={colors.text.muted} style={{ flex: 1, textTransform: 'uppercase' }}>Mô tả</AppText>
+              <AppText variant="sm" color={colors.text.muted} style={{ flex: 1, textAlign: 'right', textTransform: 'uppercase' }}>Số tiền</AppText>
             </View>
             {(data.recent_transactions || []).slice(0, isWide ? 5 : 3).map((t: any, i: number) => (
               <View key={t.id || i} style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: colors.border.default, backgroundColor: '#FFFFFF' }}>
@@ -290,10 +290,10 @@ export default function KeToanHub() {
               </TouchableOpacity>
             </View>
             <View style={{ flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: colors.border.default }}>
-              <AppText variant="sm" weight="bold" color={colors.text.muted} style={{ flex: 1, textTransform: 'uppercase' }}>Số HĐ</AppText>
-              <AppText variant="sm" weight="bold" color={colors.text.muted} style={{ flex: 1, textTransform: 'uppercase' }}>Người mua</AppText>
-              <AppText variant="sm" weight="bold" color={colors.text.muted} style={{ flex: 1, textAlign: 'right', textTransform: 'uppercase' }}>Giá trị</AppText>
-              <AppText variant="sm" weight="bold" color={colors.text.muted} style={{ flex: 0.8, textAlign: 'center', textTransform: 'uppercase' }}>Trạng thái</AppText>
+              <AppText variant="sm" color={colors.text.muted} style={{ flex: 1, textTransform: 'uppercase' }}>Số HĐ</AppText>
+              <AppText variant="sm" color={colors.text.muted} style={{ flex: 1, textTransform: 'uppercase' }}>Người mua</AppText>
+              <AppText variant="sm" color={colors.text.muted} style={{ flex: 1, textAlign: 'right', textTransform: 'uppercase' }}>Giá trị</AppText>
+              <AppText variant="sm" color={colors.text.muted} style={{ flex: 0.8, textAlign: 'center', textTransform: 'uppercase' }}>Trạng thái</AppText>
             </View>
             {(data.recent_invoices || []).slice(0, isWide ? 4 : 2).map((inv: any, i: number) => (
               <View key={inv.id || i} style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: colors.border.default, backgroundColor: '#FFFFFF' }}>
@@ -326,7 +326,7 @@ export default function KeToanHub() {
                   <AppText variant="sm" color={colors.text.muted}>Hạn: {d.due}</AppText>
                 </View>
                 <View style={{ paddingHorizontal: 16, paddingVertical: 6, borderRadius: 8, backgroundColor: urgent ? '#FEF2F2' : warn ? '#FFFBEB' : '#F0FDF4' }}>
-                  <AppText variant="sm" weight="bold" color={urgent ? colors.status.danger : warn ? colors.status.warning : colors.status.success}>Còn {d.days_left} ngày</AppText>
+                  <AppText variant="sm" color={urgent ? colors.status.danger : warn ? colors.status.warning : colors.status.success}>Còn {d.days_left} ngày</AppText>
                 </View>
               </View>
             );

@@ -214,7 +214,7 @@ export default function PurchaseOrdersScreen() {
           <View style={{ flexDirection: 'row', gap: 8, paddingHorizontal: 12, paddingTop: 8 }}>
             <TouchableOpacity style={s.panelBtnSecondary} onPress={() => setSelectedPo(item)}>
               <Icon name="eye" size={14} color={colors.brand.primary} />
-              <AppText variant="sm" weight="bold" color={colors.brand.primary}>Chi tiết</AppText>
+              <AppText variant="sm" color={colors.brand.primary}>Chi tiết</AppText>
             </TouchableOpacity>
             {item.status !== 'received' && (
               <TouchableOpacity style={s.panelBtnPrimary} onPress={() => { setSelectedPo(item); setShowReceive(true); }}>

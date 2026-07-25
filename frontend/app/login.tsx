@@ -127,7 +127,7 @@ const s = StyleSheet.create({
   },
   title: {
     ...font.lg,
-    fontSize: 32,
+    fontSize: 22,
     lineHeight: 42,
     textAlign: 'center',
     marginBottom: 4,

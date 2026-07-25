@@ -173,7 +173,7 @@ export default function MenuEngScreen() {
         <AppText variant="md" weight="bold" color={colors.brand.primary}>{products.length} món</AppText>
       </View>
       <View style={styles.panelDivider} />
-      <AppText variant="sm" weight="bold" color="#050505">Phân loại theo nhóm thực đơn</AppText>
+      <AppText variant="md" weight="bold" color="#050505">Phân loại theo nhóm thực đơn</AppText>
       <View style={{ gap: 8 }}>
         {catCounts.map(c => (
           <View key={c.key} style={styles.catRow}>
