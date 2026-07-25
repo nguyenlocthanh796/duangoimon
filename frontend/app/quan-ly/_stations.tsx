@@ -76,7 +76,7 @@ export default function StationsScreen() {
           <View style={styles.stationAvatar}>
             <Icon name="stove" size={16} color={colors.brand.primary} />
           </View>
-          <AppText variant="sm" weight="bold" color={colors.text.primary} numberOfLines={1}>{s.name}</AppText>
+          <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>{s.name}</AppText>
         </View>
       ),
     },
@@ -112,7 +112,7 @@ export default function StationsScreen() {
         </View>
         <View style={{ flex: 1 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <AppText variant="sm" weight="bold" color={colors.text.primary} numberOfLines={1}>{s.name}</AppText>
+            <AppText variant="md" weight="bold" color="#050505" style={{ fontSize: 15 }} numberOfLines={1}>{s.name}</AppText>
             <View style={styles.codeBadge}>
               <AppText variant="sm" color={colors.text.muted}>{s.code}</AppText>
             </View>
@@ -163,11 +163,11 @@ export default function StationsScreen() {
 
       <View style={styles.panelHeader}>
         <Icon name="stove" size={18} color={colors.brand.primary} />
-        <AppText variant="sm" weight="bold" color={colors.text.primary}>Thống kê khu vực bếp</AppText>
+        <AppText variant="md" weight="bold" color="#050505">Thống kê khu vực bếp</AppText>
       </View>
       <View style={{ flexDirection: 'row', gap: 8 }}>
         <View style={{ alignItems: 'center', flex: 1 }}>
-          <AppText variant="md" weight="bold" color={colors.text.primary}>{stats.total}</AppText>
+          <AppText variant="md" weight="bold" color="#050505">{stats.total}</AppText>
           <AppText variant="sm" color={colors.text.muted}>Tổng trạm</AppText>
         </View>
         <View style={styles.barDivider} />
@@ -179,7 +179,7 @@ export default function StationsScreen() {
       <View style={styles.panelDivider} />
       {selected ? (
         <View style={{ gap: 8 }}>
-          <AppText variant="md" weight="bold" color={colors.text.primary}>{selected.name}</AppText>
+          <AppText variant="md" weight="bold" color="#050505">{selected.name}</AppText>
           <AppText variant="sm" color={colors.text.muted}>Mã trạm: {selected.code}</AppText>
           <AppText variant="sm" color={colors.text.muted}>Danh mục: {(selected.categories || []).join(', ') || 'Tất cả'}</AppText>
           {selected.printer_name && <AppText variant="sm" color={colors.status.success}>🖨️ {selected.printer_name}</AppText>}
@@ -213,7 +213,7 @@ export default function StationsScreen() {
       {/* Top Action Bar on Mobile */}
       {!isWide && (
         <View style={styles.mobileActionRow}>
-          <AppText variant="sm" color={colors.text.muted}>{stats.total} trạm bếp</AppText>
+          <AppText variant="md" weight="bold" color="#050505">{stats.total} trạm bếp</AppText>
           <TouchableOpacity onPress={openNew} style={styles.addBtn}>
             <Icon name="plus" size={16} color={colors.text.inverse} />
             <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm trạm</AppText>
@@ -226,7 +226,7 @@ export default function StationsScreen() {
         <View style={styles.statItem}>
           <Icon name="stove" size={16} color={colors.brand.primary} />
           <View>
-            <AppText variant="sm" weight="bold" color={colors.text.primary}>{stats.total}</AppText>
+            <AppText variant="md" weight="bold" color="#050505">{stats.total}</AppText>
             <AppText variant="sm" color={colors.text.muted}>Tổng trạm</AppText>
           </View>
         </View>
@@ -234,7 +234,7 @@ export default function StationsScreen() {
         <View style={styles.statItem}>
           <Icon name="printer" size={16} color={colors.status.success} />
           <View>
-            <AppText variant="sm" weight="bold" color={colors.status.success}>{stats.hasPrinter}</AppText>
+            <AppText variant="md" weight="bold" color={colors.status.success}>{stats.hasPrinter}</AppText>
             <AppText variant="sm" color={colors.text.muted}>Có máy in</AppText>
           </View>
         </View>
@@ -308,7 +308,7 @@ export default function StationsScreen() {
 }
 
 const styles = StyleSheet.create({
-  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light, marginBottom: 8 },
+  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light, marginBottom: 8 },
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 36, borderRadius: 999, backgroundColor: colors.brand.primary },
   stationAvatar: { width: 38, height: 38, borderRadius: 19, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' },
   codeBadge: { paddingHorizontal: 6, paddingVertical: 1, borderRadius: 4, backgroundColor: colors.surface.app },

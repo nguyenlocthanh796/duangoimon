@@ -61,7 +61,7 @@ export default function BranchesScreen() {
             <Icon name="storefront-outline" size={16} color={colors.brand.primary} />
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="sm" weight="bold" color={colors.text.primary} numberOfLines={1}>{b.name}</AppText>
+            <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>{b.name}</AppText>
             {b.address ? <AppText variant="sm" color={colors.text.muted} numberOfLines={1}>📍 {b.address}</AppText> : null}
           </View>
         </View>
@@ -106,7 +106,7 @@ export default function BranchesScreen() {
         </View>
         <View style={{ flex: 1 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <AppText variant="sm" weight="bold" color={colors.text.primary} numberOfLines={1}>{b.name}</AppText>
+            <AppText variant="md" weight="bold" color="#050505" style={{ fontSize: 15 }} numberOfLines={1}>{b.name}</AppText>
             <View style={styles.codeBadge}>
               <AppText variant="sm" color={colors.text.muted}>{b.code}</AppText>
             </View>
@@ -145,7 +145,7 @@ export default function BranchesScreen() {
       <View style={styles.panelBox}>
         <View style={styles.panelHeader}>
           <Icon name="storefront" size={18} color={colors.brand.primary} />
-          <AppText variant="sm" weight="bold" color={colors.text.primary}>
+          <AppText variant="md" weight="bold" color="#050505">
             {selected ? selected.name : 'Thống kê chi nhánh'}
           </AppText>
         </View>
@@ -155,7 +155,7 @@ export default function BranchesScreen() {
             <View style={{ gap: 8 }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <AppText variant="sm" color={colors.text.muted}>Mã chi nhánh</AppText>
-                <AppText variant="sm" weight="bold" color={colors.text.primary}>{selected.code}</AppText>
+                <AppText variant="sm" weight="bold" color="#050505">{selected.code}</AppText>
               </View>
               <View style={styles.panelDivider} />
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -167,13 +167,13 @@ export default function BranchesScreen() {
               <View style={styles.panelDivider} />
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <AppText variant="sm" color={colors.text.muted}>Số điện thoại</AppText>
-                <AppText variant="sm" weight="bold" color={colors.text.primary}>{selected.phone || 'Chưa cập nhật'}</AppText>
+                <AppText variant="sm" weight="bold" color="#050505">{selected.phone || 'Chưa cập nhật'}</AppText>
               </View>
               {selected.address && (
                 <>
                   <View style={styles.panelDivider} />
                   <AppText variant="sm" color={colors.text.muted}>Địa chỉ</AppText>
-                  <AppText variant="sm" color={colors.text.primary}>📍 {selected.address}</AppText>
+                  <AppText variant="sm" color="#050505">📍 {selected.address}</AppText>
                 </>
               )}
             </View>
@@ -198,7 +198,7 @@ export default function BranchesScreen() {
           <>
             <View style={{ flexDirection: 'row', gap: 8 }}>
               <View style={{ alignItems: 'center', flex: 1 }}>
-                <AppText variant="md" weight="bold" color={colors.text.primary}>{stats.total}</AppText>
+                <AppText variant="md" weight="bold" color="#050505">{stats.total}</AppText>
                 <AppText variant="sm" color={colors.text.muted}>Tổng số</AppText>
               </View>
               <View style={styles.barDivider} />
@@ -250,7 +250,7 @@ export default function BranchesScreen() {
       {/* Top Action Bar on Mobile */}
       {!isWide && (
         <View style={styles.mobileActionRow}>
-          <AppText variant="sm" color={colors.text.muted}>{stats.total} chi nhánh</AppText>
+          <AppText variant="md" weight="bold" color="#050505">{stats.total} chi nhánh</AppText>
           <TouchableOpacity onPress={() => { setEditing(null); setForm({ name: '', code: '', address: '', phone: '', is_active: true }); setShowForm(true); }} style={styles.addBtn}>
             <Icon name="plus" size={16} color={colors.text.inverse} />
             <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm chi nhánh</AppText>
@@ -263,7 +263,7 @@ export default function BranchesScreen() {
         <View style={styles.statItem}>
           <Icon name="storefront" size={16} color={colors.brand.primary} />
           <View>
-            <AppText variant="sm" weight="bold" color={colors.text.primary}>{stats.total}</AppText>
+            <AppText variant="md" weight="bold" color="#050505">{stats.total}</AppText>
             <AppText variant="sm" color={colors.text.muted}>Tổng chi nhánh</AppText>
           </View>
         </View>
@@ -271,7 +271,7 @@ export default function BranchesScreen() {
         <View style={styles.statItem}>
           <Icon name="check-circle" size={16} color={colors.status.success} />
           <View>
-            <AppText variant="sm" weight="bold" color={colors.status.success}>{stats.active}</AppText>
+            <AppText variant="md" weight="bold" color={colors.status.success}>{stats.active}</AppText>
             <AppText variant="sm" color={colors.text.muted}>Đang mở</AppText>
           </View>
         </View>
@@ -279,7 +279,7 @@ export default function BranchesScreen() {
         <View style={styles.statItem}>
           <Icon name="close-circle" size={16} color={colors.status.danger} />
           <View>
-            <AppText variant="sm" weight="bold" color={colors.status.danger}>{stats.inactive}</AppText>
+            <AppText variant="md" weight="bold" color={colors.status.danger}>{stats.inactive}</AppText>
             <AppText variant="sm" color={colors.text.muted}>Tạm ngừng</AppText>
           </View>
         </View>
@@ -357,7 +357,7 @@ export default function BranchesScreen() {
 }
 
 const styles = StyleSheet.create({
-  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light, marginBottom: 8 },
+  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light, marginBottom: 8 },
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 36, borderRadius: 999, backgroundColor: colors.brand.primary },
   branchAvatarCircle: { width: 38, height: 38, borderRadius: 19, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' },
 

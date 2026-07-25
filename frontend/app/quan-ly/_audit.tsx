@@ -59,7 +59,7 @@ export default function AuditScreen() {
             </View>
             <View style={{ flex: 1 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                <AppText variant="sm" weight="bold" color={color} style={{ textTransform: 'capitalize' }}>{l.action}</AppText>
+                <AppText variant="md" weight="bold" color="#050505" style={{ textTransform: 'capitalize' }}>{l.action}</AppText>
                 {l.resource ? <AppText variant="sm" color={colors.text.secondary}>· {l.resource}</AppText> : null}
               </View>
               <AppText variant="sm" color={colors.text.muted}>@{l.user_name || 'Hệ thống'}</AppText>
@@ -94,7 +94,7 @@ export default function AuditScreen() {
         </View>
         <View style={{ flex: 1 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <AppText variant="sm" weight="bold" color={color} style={{ textTransform: 'capitalize' }}>{l.action}</AppText>
+            <AppText variant="md" weight="bold" color="#050505" style={{ textTransform: 'capitalize', fontSize: 15 }}>{l.action}</AppText>
             {l.resource ? <AppText variant="sm" color={colors.text.secondary}>· {l.resource}</AppText> : null}
           </View>
           <AppText variant="sm" color={colors.text.muted}>@{l.user_name || 'Hệ thống'}</AppText>
@@ -119,7 +119,7 @@ export default function AuditScreen() {
       <View style={styles.panelBox}>
         <View style={styles.panelHeader}>
           <Icon name="clipboard-text-outline" size={18} color={colors.brand.primary} />
-          <AppText variant="sm" weight="bold" color={colors.text.primary}>
+          <AppText variant="md" weight="bold" color="#050505">
             {selectedLog ? 'Chi tiết log kiểm toán' : 'Thống kê kiểm toán hệ thống'}
           </AppText>
         </View>
@@ -133,17 +133,17 @@ export default function AuditScreen() {
             <View style={styles.panelDivider} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <AppText variant="sm" color={colors.text.muted}>Người thực hiện</AppText>
-              <AppText variant="sm" weight="bold" color={colors.text.primary}>@{selectedLog.user_name || 'Hệ thống'}</AppText>
+              <AppText variant="sm" weight="bold" color="#050505">@{selectedLog.user_name || 'Hệ thống'}</AppText>
             </View>
             <View style={styles.panelDivider} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <AppText variant="sm" color={colors.text.muted}>Tài nguyên</AppText>
-              <AppText variant="sm" weight="bold" color={colors.text.primary}>{selectedLog.resource || '—'}</AppText>
+              <AppText variant="sm" weight="bold" color="#050505">{selectedLog.resource || '—'}</AppText>
             </View>
             <View style={styles.panelDivider} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <AppText variant="sm" color={colors.text.muted}>Thời gian ghi nhận</AppText>
-              <AppText variant="sm" color={colors.text.primary}>{selectedLog.created_at ? new Date(selectedLog.created_at).toLocaleString('vi-VN') : '—'}</AppText>
+              <AppText variant="sm" color="#050505">{selectedLog.created_at ? new Date(selectedLog.created_at).toLocaleString('vi-VN') : '—'}</AppText>
             </View>
             <View style={styles.panelDivider} />
             <TouchableOpacity style={styles.panelCtaSecondary} onPress={() => setSelectedLog(null)}>
@@ -153,7 +153,7 @@ export default function AuditScreen() {
         ) : (
           <>
             <View style={{ alignItems: 'center', paddingVertical: 4 }}>
-              <AppText variant="lg" weight="bold" color={colors.text.primary}>{total}</AppText>
+              <AppText variant="lg" weight="bold" color="#050505">{total}</AppText>
               <AppText variant="sm" color={colors.text.muted}>Lượt ghi nhận log</AppText>
             </View>
             <View style={styles.panelDivider} />
@@ -196,7 +196,7 @@ export default function AuditScreen() {
         <View style={styles.statItem}>
           <Icon name="clipboard-text" size={16} color={colors.brand.primary} />
           <View>
-            <AppText variant="sm" weight="bold" color={colors.text.primary}>{logs.length}</AppText>
+            <AppText variant="md" weight="bold" color="#050505">{logs.length}</AppText>
             <AppText variant="sm" color={colors.text.muted}>Tổng log</AppText>
           </View>
         </View>
@@ -204,7 +204,7 @@ export default function AuditScreen() {
         <View style={styles.statItem}>
           <Icon name="plus-circle" size={16} color={colors.status.success} />
           <View>
-            <AppText variant="sm" weight="bold" color={colors.status.success}>{counts['create'] || 0}</AppText>
+            <AppText variant="md" weight="bold" color={colors.status.success}>{counts['create'] || 0}</AppText>
             <AppText variant="sm" color={colors.text.muted}>Tạo mới</AppText>
           </View>
         </View>
@@ -212,7 +212,7 @@ export default function AuditScreen() {
         <View style={styles.statItem}>
           <Icon name="pencil" size={16} color={colors.status.warning} />
           <View>
-            <AppText variant="sm" weight="bold" color={colors.status.warning}>{counts['update'] || 0}</AppText>
+            <AppText variant="md" weight="bold" color={colors.status.warning}>{counts['update'] || 0}</AppText>
             <AppText variant="sm" color={colors.text.muted}>Cập nhật</AppText>
           </View>
         </View>
@@ -220,7 +220,7 @@ export default function AuditScreen() {
         <View style={styles.statItem}>
           <Icon name="delete-circle" size={16} color={colors.status.danger} />
           <View>
-            <AppText variant="sm" weight="bold" color={colors.status.danger}>{counts['delete'] || 0}</AppText>
+            <AppText variant="md" weight="bold" color={colors.status.danger}>{counts['delete'] || 0}</AppText>
             <AppText variant="sm" color={colors.text.muted}>Xóa</AppText>
           </View>
         </View>

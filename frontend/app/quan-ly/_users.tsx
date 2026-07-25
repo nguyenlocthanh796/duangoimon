@@ -102,11 +102,11 @@ export default function UsersScreen() {
     <View style={styles.panelBox}>
       <View style={styles.panelHeader}>
         <Icon name="account-group" size={18} color={colors.brand.primary} />
-        <AppText variant="sm" weight="bold" color={colors.text.primary}>Thống kê nhân sự</AppText>
+        <AppText variant="md" weight="bold" color="#050505">Thống kê nhân sự</AppText>
       </View>
       <View style={styles.panelStatRow}>
         <AppText variant="sm" color={colors.text.muted}>Tổng nhân viên</AppText>
-        <AppText variant="md" weight="bold" color={colors.text.primary}>{users.length}</AppText>
+        <AppText variant="md" weight="bold" color="#050505">{users.length}</AppText>
       </View>
       <View style={styles.panelDivider} />
       {ROLES.filter(r => users.some(u => u.role === r.key)).map(r => {
@@ -116,7 +116,7 @@ export default function UsersScreen() {
           <View key={r.key} style={styles.panelRow}>
             <View style={[styles.panelDot, { backgroundColor: r.color }]} />
             <View style={{ flex: 1 }}>
-              <AppText variant="sm" color={colors.text.primary}>{r.label}</AppText>
+              <AppText variant="sm" weight="bold" color="#050505">{r.label}</AppText>
               <AppText variant="sm" weight="bold" color={r.color}>{count} người</AppText>
             </View>
             <AppText variant="sm" color={colors.text.muted}>{active}/{count} hoạt động</AppText>
@@ -147,7 +147,7 @@ export default function UsersScreen() {
     <View style={styles.panelBox}>
       <View style={styles.panelHeader}>
         <Icon name={editingId ? 'pencil' : 'plus'} size={18} color={colors.brand.primary} />
-        <AppText variant="sm" weight="bold" color={colors.text.primary}>{editingId ? 'Chỉnh sửa nhân viên' : 'Thêm nhân viên mới'}</AppText>
+        <AppText variant="md" weight="bold" color="#050505">{editingId ? 'Chỉnh sửa nhân viên' : 'Thêm nhân viên mới'}</AppText>
       </View>
       <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, marginVertical: 8 }}>
         <UserFormContent
@@ -182,16 +182,16 @@ export default function UsersScreen() {
           </View>
           <View style={{ flex: 1 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <AppText variant="sm" weight="bold" color={colors.text.primary}>{item.full_name || item.username}</AppText>
+              <AppText variant="md" weight="bold" color="#050505" style={styles.fbPostTitle}>{item.full_name || item.username}</AppText>
               <View style={[styles.roleBadge, { backgroundColor: rc.bg }]}>
                 <Icon name={rc.icon as any} size={11} color={rc.color} />
                 <AppText variant="sm" weight="bold" color={rc.color}>{rc.label}</AppText>
               </View>
             </View>
-            <AppText variant="sm" color={colors.text.muted}>@{item.username} · {item.is_active ? 'Đang hoạt động' : 'Tạm khóa'}</AppText>
+            <AppText variant="sm" color="#65676B" style={{ marginTop: 1 }}>@{item.username} · {item.is_active ? 'Đang hoạt động' : 'Tạm khóa'}</AppText>
           </View>
           <TouchableOpacity style={styles.actionCircleBtn} onPress={() => openEdit(item)}>
-            <Icon name="dots-horizontal" size={18} color={colors.text.secondary} />
+            <Icon name="dots-horizontal" size={20} color="#050505" />
           </TouchableOpacity>
         </View>
 
@@ -215,9 +215,9 @@ export default function UsersScreen() {
 
   const renderSectionHeader = ({ section }: { section: { role: typeof ROLES[0]; data: User[] } }) => (
     <View style={styles.sectionHeader}>
-      <Icon name={section.role.icon as any} size={15} color={section.role.color} />
-      <AppText variant="sm" weight="bold" color={colors.text.primary}>{section.role.label}</AppText>
-      <AppText variant="sm" color={colors.text.muted}>({section.data.length})</AppText>
+      <Icon name={section.role.icon as any} size={16} color={section.role.color} />
+      <AppText variant="md" weight="bold" color="#050505" style={styles.sectionTitleText}>{section.role.label}</AppText>
+      <AppText variant="sm" weight="bold" color="#65676B">({section.data.length})</AppText>
     </View>
   );
 
@@ -246,7 +246,7 @@ export default function UsersScreen() {
       {/* Top Bar on Mobile */}
       {!isWide && (
         <View style={styles.mobileActionRow}>
-          <AppText variant="sm" color={colors.text.muted}>{users.length} nhân viên</AppText>
+          <AppText variant="md" weight="bold" color="#050505">{users.length} nhân viên</AppText>
           <TouchableOpacity onPress={openAdd} style={styles.addBtn}>
             <Icon name="plus" size={16} color={colors.text.inverse} />
             <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm nhân viên</AppText>
@@ -287,7 +287,7 @@ export default function UsersScreen() {
 }
 
 const styles = StyleSheet.create({
-  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light, marginBottom: 8 },
+  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light, marginBottom: 8 },
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 36, borderRadius: 999, backgroundColor: colors.brand.primary },
 
   panelBox: { backgroundColor: colors.surface.card, borderRadius: 16, padding: 16, gap: 12 },
@@ -304,7 +304,8 @@ const styles = StyleSheet.create({
 
   loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 20 },
 
-  sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 8, marginBottom: 6, paddingHorizontal: 12 },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 10, marginBottom: 8, paddingHorizontal: 12 },
+  sectionTitleText: { fontSize: 15, fontWeight: '700', color: '#050505' },
 
   /* Mobile Full-Width Edge-to-Edge Facebook Post Block */
   userCardFbFullWidth: {
@@ -325,6 +326,7 @@ const styles = StyleSheet.create({
     padding: 12,
   },
 
+  fbPostTitle: { fontSize: 15, fontWeight: '700', color: '#050505' },
   cardHeaderRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   avatarContainer: { position: 'relative', width: 42, height: 42 },
   avatarCircle: { width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center' },
