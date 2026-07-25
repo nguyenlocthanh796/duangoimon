@@ -264,6 +264,6 @@ const styles = StyleSheet.create({
   panelDividerV: { width: 1, backgroundColor: colors.border.light },
   panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 8, paddingHorizontal: 12, borderRadius: shape.radius.md },
   fieldInput: { borderRadius: shape.radius.md, paddingHorizontal: 10, paddingVertical: 8, ...font.md, color: colors.text.primary, backgroundColor: colors.surface.app },
-  typeChip: { flex: 1, height: 38, borderRadius: shape.radius.md, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
+  typeChip: { flex: 1, height: 44, borderRadius: shape.radius.md, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
   typeChipActive: { backgroundColor: colors.brand.primaryBg },
 });

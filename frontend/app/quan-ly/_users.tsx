@@ -300,12 +300,12 @@ const styles = StyleSheet.create({
   panelCta: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: colors.brand.primary, borderRadius: 999, paddingHorizontal: 14, height: 34 },
   statusDotSmall: { width: 6, height: 6, borderRadius: 3 },
   cancelBtn: { flex: 1, height: 40, borderRadius: 999, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
-  saveBtn: { flex: 1.5, height: 40, borderRadius: 999, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 },
+  saveBtn: { flex: 1.5, height: 44, borderRadius: 999, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 },
 
   loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 20 },
 
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 10, marginBottom: 8, paddingHorizontal: 12 },
-  sectionTitleText: { fontSize: 15, fontWeight: '700', color: '#050505' },
+  sectionTitleText: { ...font.mdBold, color: '#050505' },
 
   /* Mobile Full-Width Edge-to-Edge Facebook Post Block */
   userCardFbFullWidth: {
@@ -326,7 +326,7 @@ const styles = StyleSheet.create({
     padding: 12,
   },
 
-  fbPostTitle: { fontSize: 15, fontWeight: '700', color: '#050505' },
+  fbPostTitle: { ...font.mdBold, color: '#050505' },
   cardHeaderRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   avatarContainer: { position: 'relative', width: 42, height: 42 },
   avatarCircle: { width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center' },

@@ -225,7 +225,7 @@ export default function MenuEngScreen() {
 }
 
 const styles = StyleSheet.create({
-  searchBox: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.surface.card, borderRadius: shape.radius.md, paddingHorizontal: 10, height: 42, marginBottom: 8 },
+  searchBox: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.surface.card, borderRadius: shape.radius.md, paddingHorizontal: 10, height: 44, marginBottom: 8 },
   searchInput: { flex: 1, ...font.md, color: colors.text.primary, paddingVertical: 0 },
   card: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 12, marginBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   codeTag: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: shape.radius.sm },
@@ -237,6 +237,6 @@ const styles = StyleSheet.create({
   panelDivider: { height: 1, backgroundColor: colors.border.light },
   catRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 6, paddingHorizontal: 8, borderRadius: shape.radius.md },
   catDot: { width: 8, height: 8, borderRadius: 4 },
-  panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, height: 42 },
+  panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, height: 44 },
   panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 8, paddingHorizontal: 12, borderRadius: shape.radius.md },
 });

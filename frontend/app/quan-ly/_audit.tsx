@@ -91,13 +91,13 @@ export default function AuditScreen() {
           </View>
           <View style={{ flex: 1 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <AppText variant="md" weight="bold" color="#050505" style={{ textTransform: 'capitalize', fontSize: 16 }}>{l.action}</AppText>
+              <AppText variant="md" weight="bold" color="#050505" style={{ textTransform: 'capitalize' }}>{l.action}</AppText>
               {l.resource ? <AppText variant="sm" color="#65676B">· {l.resource}</AppText> : null}
             </View>
             <AppText variant="sm" color="#65676B">@{l.user_name || 'Hệ thống'}</AppText>
           </View>
           <View style={{ alignItems: 'flex-end', gap: 4 }}>
-            <AppText variant="sm" color="#65676B" style={{ fontSize: 12 }}>
+            <AppText variant="sm" color="#65676B">
               {l.created_at ? new Date(l.created_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : ''}
             </AppText>
           </View>
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
   },
 
   filterRow: { marginVertical: 4, marginBottom: 8 },
-  chip: { paddingHorizontal: 14, height: 34, borderRadius: 999, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center' },
+  chip: { paddingHorizontal: 14, height: 36, borderRadius: 999, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center' },
   chipActive: { backgroundColor: colors.brand.primaryBg, borderWidth: 1, borderColor: '#FFEDD5' },
   actionBadgeCircle: { width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center' },
   actionCircleBtn: { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
@@ -359,5 +359,5 @@ const styles = StyleSheet.create({
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   panelDivider: { height: 1, backgroundColor: colors.border.light },
   panelRowDot: { width: 6, height: 6, borderRadius: 3 },
-  panelCtaSecondary: { height: 38, borderRadius: 999, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center', marginTop: 4 },
+  panelCtaSecondary: { height: 44, borderRadius: 999, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center', marginTop: 4 },
 });

@@ -109,7 +109,7 @@ export default function TablesScreen() {
           </View>
           <View style={{ flex: 1 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <AppText variant="md" weight="bold" color="#050505" style={{ fontSize: 16 }}>{table.name}</AppText>
+              <AppText variant="md" weight="bold" color="#050505">{table.name}</AppText>
               <View style={[styles.statusChip, { backgroundColor: isOccupied ? colors.brand.primaryBg : '#ECFDF5' }]}>
                 <View style={[styles.statusDot, { backgroundColor: isOccupied ? colors.brand.primary : colors.status.success }]} />
                 <AppText variant="sm" weight="bold" color={isOccupied ? colors.brand.primary : colors.status.success}>
@@ -285,9 +285,7 @@ export default function TablesScreen() {
                     variant="sm"
                     color={active ? colors.brand.primary : '#65676B'}
                     weight="bold"
-                    style={{ fontSize: 11 }}
-                  >
-                    {count}
+                    >                    {count}
                   </AppText>
                 </View>
               </TouchableOpacity>
@@ -321,7 +319,7 @@ export default function TablesScreen() {
                       }}
                     >
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <AppText variant="md" weight="bold" color={isOccupied ? colors.brand.primary : '#050505'} style={{ fontSize: 16, fontWeight: '700' }}>{table.name}</AppText>
+                        <AppText variant="md" weight="bold" color={isOccupied ? colors.brand.primary : '#050505'}>{table.name}</AppText>
                         {isOccupied && (
                           <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.brand.primary }} />
                         )}

@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
   statItem: { flex: 1, alignItems: 'center', flexDirection: 'row', gap: 6, justifyContent: 'center' },
   barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
   filterRow: { flexDirection: 'row', gap: 6, paddingHorizontal: 8, marginBottom: 8, flexWrap: 'wrap' },
-  chip: { paddingHorizontal: 12, height: 32, borderRadius: shape.radius.md, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center' },
+  chip: { paddingHorizontal: 12, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center' },
   chipActive: { backgroundColor: colors.brand.primaryBg },
   avatar: { width: 28, height: 28, borderRadius: shape.radius.sm, alignItems: 'center', justifyContent: 'center' },
   statusBadge: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 2, paddingHorizontal: 8, borderRadius: shape.radius.sm },
@@ -328,6 +328,6 @@ const styles = StyleSheet.create({
   panelDivider: { height: 1, backgroundColor: colors.border.light },
   panelRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 6 },
   panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 6, paddingHorizontal: 10, borderRadius: shape.radius.md },
-  panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, height: 42 },
+  panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, height: 44 },
   fieldInput: { borderRadius: shape.radius.md, paddingHorizontal: 10, paddingVertical: 8, ...font.md, color: colors.text.primary, backgroundColor: colors.surface.app },
 });
