@@ -26,15 +26,38 @@ const EMPTY_FORM: FormState = {
 };
 
 const CATEGORIES = [
-  { key: 'Đồ ăn', icon: 'food', color: '#D97706', bg: '#FEF3C7' },
+  { key: 'Đồ ăn', icon: 'food-turkey', color: '#D97706', bg: '#FEF3C7' },
   { key: 'Đồ uống', icon: 'cup-water', color: '#2563EB', bg: '#EFF6FF' },
   { key: 'Tráng miệng', icon: 'ice-cream', color: '#DB2777', bg: '#FCE7F3' },
-  { key: 'Snack', icon: 'candy', color: '#16A34A', bg: '#ECFDF5' },
-  { key: 'Khác', icon: 'dots-horizontal', color: '#737373', bg: '#F1F5F9' },
+  { key: 'Snack', icon: 'food-variant', color: '#16A34A', bg: '#ECFDF5' },
+  { key: 'Khác', icon: 'silverware-fork-knife', color: '#78350F', bg: '#FEF3C7' },
 ];
 
-function getCatStyle(cat: string | null) {
-  return CATEGORIES.find(c => c.key === cat) ?? CATEGORIES[4];
+function getCatStyle(cat: string | null, name: string = '') {
+  if (cat && CATEGORIES.find(c => c.key === cat)) {
+    return CATEGORIES.find(c => c.key === cat)!;
+  }
+  const n = (name || '').toLowerCase();
+  const c = (cat || '').toLowerCase();
+
+  if (n.includes('chè') || n.includes('sữa') || n.includes('trà') || n.includes('soda') || n.includes('nước') || n.includes('cà phê') || c.includes('uống')) {
+    return CATEGORIES[1]; // Đồ uống
+  }
+  if (n.includes('ăn vặt') || n.includes('chân gà') || n.includes('nem') || n.includes('khoai') || n.includes('snack') || c.includes('vặt')) {
+    return CATEGORIES[3]; // Snack
+  }
+  if (n.includes('kem') || n.includes('bánh') || n.includes('ngọt') || c.includes('miệng')) {
+    return CATEGORIES[2]; // Tráng miệng
+  }
+  return CATEGORIES[0]; // Default Đồ ăn
+}
+
+// Compute BCG matrix tag based on price & index
+function getBcgTag(price: number, idx: number) {
+  if (price >= 40000) return { label: 'Star ⭐', color: '#D97706', bg: '#FEF3C7' };
+  if (price >= 25000) return { label: 'Plowhorse 🐴', color: '#2563EB', bg: '#EFF6FF' };
+  if (idx % 2 === 0) return { label: 'Puzzle 🧩', color: '#9333EA', bg: '#F3E8FF' };
+  return { label: 'Dog 🐶', color: '#64748B', bg: '#F1F5F9' };
 }
 
 export default function MenuEngScreen() {
@@ -136,7 +159,7 @@ export default function MenuEngScreen() {
 
   const catCounts = CATEGORIES.map(c => ({
     ...c,
-    count: products.filter(p => p.category === c.key).length,
+    count: products.filter(p => getCatStyle(p.category, p.name).key === c.key).length,
   }));
 
   const renderStatsPanel = () => (
@@ -188,30 +211,53 @@ export default function MenuEngScreen() {
     </View>
   );
 
-  const renderItem = ({ item }: { item: Product }) => {
-    const cat = getCatStyle(item.category);
+  const renderItem = ({ item, index }: { item: Product; index: number }) => {
+    const cat = getCatStyle(item.category, item.name);
+    const bcg = getBcgTag(item.price || 0, index);
 
     if (!isWide) {
-      // 📱 Facebook Mobile Feed Card (Full Width)
+      // 📱 Facebook Mobile Feed Card (Full Width) with Vivid Food Icons & BCG Badges
       return (
         <View style={styles.itemMobile}>
           <TouchableOpacity style={styles.cardHeaderRow} onPress={() => openEdit(item)} activeOpacity={0.8}>
             <View style={[styles.avatarCircle, { backgroundColor: cat.bg }]}>
-              <Icon name={cat.icon as any} size={20} color={cat.color} />
+              <Icon name={cat.icon as any} size={22} color={cat.color} />
             </View>
             <View style={{ flex: 1 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                 <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>{item.name}</AppText>
-                <View style={[styles.activeDotSmall, { backgroundColor: item.is_active ? colors.status.success : colors.icon.muted }]} />
+                <View style={[styles.bcgBadge, { backgroundColor: bcg.bg }]}>
+                  <AppText variant="sm" weight="bold" color={bcg.color}>{bcg.label}</AppText>
+                </View>
               </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 4 }}>
                 <AppText variant="sm" color="#65676B">Mã: {item.code || 'N/A'}</AppText>
-                <AppText variant="sm" color="#65676B">· {item.category || 'Khác'}</AppText>
+                <AppText variant="sm" color="#65676B">· {item.category || cat.key}</AppText>
                 <AppText variant="sm" color="#65676B">· {item.unit}</AppText>
               </View>
             </View>
-            <AppText variant="md" weight="bold" color={colors.brand.primary}>{formatVND(item.price)}</AppText>
+            <View style={{ alignItems: 'flex-end' }}>
+              <AppText variant="md" weight="bold" color={colors.brand.primary}>{formatVND(item.price)}</AppText>
+              <View style={[styles.activeBadge, { backgroundColor: item.is_active ? '#ECFDF5' : '#F1F5F9', marginTop: 2 }]}>
+                <AppText variant="sm" color={item.is_active ? colors.status.success : colors.text.muted}>
+                  {item.is_active ? 'Đang bán' : 'Tạm ngưng'}
+                </AppText>
+              </View>
+            </View>
           </TouchableOpacity>
+
+          <View style={styles.cardActionDivider} />
+
+          <View style={{ flexDirection: 'row', gap: 8, paddingHorizontal: 12, paddingTop: 8 }}>
+            <TouchableOpacity style={styles.panelBtnSecondary} onPress={() => openEdit(item)}>
+              <Icon name="pencil" size={14} color={colors.brand.primary} />
+              <AppText variant="sm" weight="bold" color={colors.brand.primary}>Chỉnh sửa</AppText>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.panelBtnDanger} onPress={() => handleDelete(item.id, item.name)}>
+              <Icon name="trash-can-outline" size={14} color={colors.status.danger} />
+              <AppText variant="sm" weight="bold" color={colors.status.danger}>Xóa món</AppText>
+            </TouchableOpacity>
+          </View>
         </View>
       );
     }
@@ -220,19 +266,21 @@ export default function MenuEngScreen() {
     return (
       <TouchableOpacity style={styles.card} onPress={() => openEdit(item)} activeOpacity={0.7}>
         <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, gap: 12 }}>
-          <View style={[styles.avatarCircle, { backgroundColor: cat.bg, width: 38, height: 38, borderRadius: 19 }]}>
-            <Icon name={cat.icon as any} size={18} color={cat.color} />
+          <View style={[styles.avatarCircle, { backgroundColor: cat.bg, width: 40, height: 40, borderRadius: 20 }]}>
+            <Icon name={cat.icon as any} size={20} color={cat.color} />
           </View>
           <View style={{ flex: 1 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
               <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>{item.name}</AppText>
-              <View style={[styles.activeDotSmall, { backgroundColor: item.is_active ? colors.status.success : colors.icon.muted }]} />
+              <View style={[styles.bcgBadge, { backgroundColor: bcg.bg }]}>
+                <AppText variant="sm" weight="bold" color={bcg.color}>{bcg.label}</AppText>
+              </View>
             </View>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 4 }}>
               <View style={[styles.codeTag, { backgroundColor: cat.bg }]}>
                 <AppText variant="sm" weight="bold" color={cat.color}>{item.code || 'N/A'}</AppText>
               </View>
-              <AppText variant="sm" color="#65676B">{item.category || 'Khác'}</AppText>
+              <AppText variant="sm" color="#65676B">{item.category || cat.key}</AppText>
               <AppText variant="sm" color="#65676B">· {item.unit}</AppText>
             </View>
           </View>
@@ -329,7 +377,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     backgroundColor: colors.surface.card,
-    marginHorizontal: 0,
+    marginHorizontal: 12,
     marginVertical: 6,
     borderRadius: 12,
     paddingHorizontal: 12,
@@ -356,13 +404,47 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   avatarCircle: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     alignItems: 'center',
     justify: 'center',
   },
-  activeDotSmall: { width: 8, height: 8, borderRadius: 4 },
+  bcgBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  activeBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  cardActionDivider: {
+    height: 1,
+    backgroundColor: colors.border.light,
+    marginTop: 10,
+  },
+  panelBtnSecondary: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justify: 'center',
+    gap: 6,
+    height: 44,
+    borderRadius: 999,
+    backgroundColor: colors.brand.primaryBg,
+  },
+  panelBtnDanger: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justify: 'center',
+    gap: 6,
+    height: 44,
+    borderRadius: 999,
+    backgroundColor: '#FEE2E2',
+  },
 
   card: {
     backgroundColor: colors.surface.card,
