@@ -76,11 +76,11 @@ export default function ModuleTabs({ tabs, activeTab, onSelectTab }: ModuleTabsP
               onPress={() => onSelectTab(tab.id)}
               style={{
                 flexDirection: 'row',
-                paddingHorizontal: 14,
-                height: 38,
+                paddingHorizontal: 16,
+                height: 36,
                 justifyContent: 'center',
                 alignItems: 'center',
-                borderRadius: shape.radius.md,
+                borderRadius: 999,
                 marginRight: isLast ? 0 : 8,
                 backgroundColor: active ? colors.brand.primaryBg : colors.surface.app,
                 gap: 6,
@@ -88,7 +88,7 @@ export default function ModuleTabs({ tabs, activeTab, onSelectTab }: ModuleTabsP
             >
               <Icon
                 name={tab.icon as any}
-                size={18}
+                size={16}
                 color={active ? colors.brand.primary : colors.icon.muted}
               />
               <AppText

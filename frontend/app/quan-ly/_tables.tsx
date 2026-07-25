@@ -28,9 +28,9 @@ const TableCard = ({ table, onPress }: { table: Table; onPress: () => void }) =>
         width: '31.3%',
         aspectRatio: 1,
         margin: '1%',
-        borderRadius: shape.radius.lg,
+        borderRadius: 16,
         backgroundColor: isOccupied ? colors.brand.primaryBg : colors.surface.card,
-        padding: 10,
+        padding: 12,
         justifyContent: 'space-between',
       }}
     >
@@ -325,34 +325,34 @@ export default function TablesScreen() {
 
 const styles = StyleSheet.create({
   mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 8 },
-  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },
+  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 36, borderRadius: 999, backgroundColor: colors.brand.primary },
 
   filterRow: { paddingHorizontal: 8, marginVertical: 4 },
-  areaTab: { paddingHorizontal: 12, height: 32, borderRadius: shape.radius.md, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center' },
+  areaTab: { paddingHorizontal: 14, height: 34, borderRadius: 999, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center' },
   areaTabActive: { backgroundColor: colors.brand.primaryBg },
 
   statsBar: {
     flexDirection: 'row',
     paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingVertical: 10,
     backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.lg,
+    borderRadius: 16,
     marginHorizontal: 8,
     marginBottom: 8,
   },
   statItem: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   barDivider: { width: 1, backgroundColor: colors.border.light },
 
-  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, gap: 12 },
+  panelBox: { backgroundColor: colors.surface.card, borderRadius: 16, padding: 16, gap: 12 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   panelDivider: { height: 1, backgroundColor: colors.border.light },
 
-  fieldInput: { borderRadius: shape.radius.md, paddingHorizontal: 10, paddingVertical: 8, ...font.md, color: colors.text.primary, backgroundColor: colors.surface.app },
-  areaChip: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: shape.radius.sm, backgroundColor: colors.surface.app },
+  fieldInput: { borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10, ...font.md, color: colors.text.primary, backgroundColor: colors.surface.app },
+  areaChip: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, backgroundColor: colors.surface.app },
   areaChipActive: { backgroundColor: colors.brand.primaryBg },
-  capChip: { width: 36, height: 32, borderRadius: shape.radius.sm, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
+  capChip: { width: 40, height: 34, borderRadius: 999, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
   capChipActive: { backgroundColor: colors.brand.primaryBg },
 
-  cancelBtn: { flex: 1, height: 40, borderRadius: shape.radius.md, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
-  saveBtn: { flex: 1.5, height: 40, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 },
+  cancelBtn: { flex: 1, height: 40, borderRadius: 999, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
+  saveBtn: { flex: 1.5, height: 40, borderRadius: 999, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 },
 });

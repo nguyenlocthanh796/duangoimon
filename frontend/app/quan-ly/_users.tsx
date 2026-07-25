@@ -265,32 +265,32 @@ export default function UsersScreen() {
 
 const styles = StyleSheet.create({
   mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 8 },
-  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },
+  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 36, borderRadius: 999, backgroundColor: colors.brand.primary },
 
-  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, gap: 12 },
+  panelBox: { backgroundColor: colors.surface.card, borderRadius: 16, padding: 16, gap: 12 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   panelStatRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   panelDivider: { height: 1, backgroundColor: colors.border.light },
   panelRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   panelDot: { width: 8, height: 8, borderRadius: 4 },
   panelFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 4 },
-  panelCta: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, paddingHorizontal: 12, height: 32 },
+  panelCta: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: colors.brand.primary, borderRadius: 999, paddingHorizontal: 14, height: 34 },
   statusDotSmall: { width: 6, height: 6, borderRadius: 3 },
-  cancelBtn: { flex: 1, height: 40, borderRadius: shape.radius.md, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
-  saveBtn: { flex: 1.5, height: 40, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 },
+  cancelBtn: { flex: 1, height: 40, borderRadius: 999, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
+  saveBtn: { flex: 1.5, height: 40, borderRadius: 999, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 },
 
   loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 20 },
 
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 10, marginBottom: 4, paddingLeft: 8, borderLeftWidth: 3 },
-  sectionCount: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: shape.radius.sm },
+  sectionCount: { paddingHorizontal: 10, paddingVertical: 2, borderRadius: 999 },
 
   userItem: {
-    flexDirection: 'row', alignItems: 'center', gap: 10,
-    backgroundColor: colors.surface.card, marginBottom: 6,
-    borderRadius: shape.radius.lg, padding: 10,
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: colors.surface.card, marginBottom: 8,
+    borderRadius: 16, padding: 12,
   },
-  avatar: { width: 40, height: 40, borderRadius: shape.radius.md, alignItems: 'center', justifyContent: 'center' },
+  avatar: { width: 42, height: 42, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
   userRight: { alignItems: 'flex-end', gap: 4 },
-  roleBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: shape.radius.sm },
+  roleBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999 },
   activeDot: { width: 6, height: 6, borderRadius: 3 },
 });
