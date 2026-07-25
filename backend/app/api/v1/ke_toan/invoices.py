@@ -172,3 +172,20 @@ async def export_invoice(
     await db.commit()
     await db.refresh(inv)
     return _inv_dict(inv)
+
+
+@router.delete("/{invoice_id}")
+async def delete_invoice(
+    invoice_id: str,
+    db: AsyncSession = Depends(get_db),
+    _user: dict = Depends(require_role("admin", "ke_toan")),
+):
+    result = await db.execute(select(Invoice).where(Invoice.id == parse_uuid(invoice_id)))
+    inv = result.scalar_one_or_none()
+    if not inv:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+    if inv.status == "da_xuat":
+        raise HTTPException(status_code=400, detail="Không thể xóa hóa đơn đã phát hành VAT")
+    await db.delete(inv)
+    await db.commit()
+    return {"status": "ok", "deleted": invoice_id}

@@ -57,6 +57,7 @@ export const api = {
   processPayment: paymentsFns.processPayment,
   getTransactions: paymentsFns.getTransactions,
   createTransaction: paymentsFns.createTransaction,
+  updateTransaction: paymentsFns.updateTransaction,
   getInvoices: paymentsFns.getInvoices,
   createInvoice: paymentsFns.createInvoice,
   exportInvoice: paymentsFns.exportInvoice,

@@ -115,6 +115,7 @@ async def process_payment(
 
     # 2. Create Transaction for general ledger
     transaction = Transaction(
+        branch_id=order.branch_id,
         type="thu",
         category="ban_hang",
         amount=order.total_amount,

@@ -27,6 +27,7 @@ class TransactionCreate(BaseModel):
 async def list_transactions(
     type_filter: str | None = Query(None, alias="type"),
     category: str | None = None,
+    branch_id: str | None = Query(None),
     db: AsyncSession = Depends(get_db),
     _user: dict = Depends(get_current_user),
 ):
@@ -36,6 +37,12 @@ async def list_transactions(
         base = base.where(Transaction.type == type_filter)
     if category:
         base = base.where(Transaction.category == category)
+    if branch_id:
+        try:
+            b_uuid = parse_uuid(branch_id)
+            base = base.where(Transaction.branch_id == b_uuid)
+        except ValueError:
+            pass
 
     result = await db.execute(base.order_by(Transaction.created_at.desc()).limit(100))
     rows = result.scalars().all()
@@ -59,6 +66,51 @@ async def list_transactions(
         "total": len(rows),
         "total_thu": float(total_thu),
         "total_chi": float(total_chi),
+    }
+
+
+class TransactionUpdate(BaseModel):
+    type: str | None = Field(None, pattern="^(thu|chi)$")
+    category: str | None = Field(None, max_length=100)
+    amount: Decimal | None = Field(None, gt=Decimal(0), max_digits=14, decimal_places=2)
+    note: str | None = Field(None, max_length=500)
+
+
+@router.patch("/{tx_id}")
+async def update_transaction(
+    tx_id: str,
+    body: TransactionUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(require_role("admin", "ke_toan")),
+):
+    try:
+        uuid_val = parse_uuid(tx_id)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid transaction id")
+
+    result = await db.execute(select(Transaction).where(Transaction.id == uuid_val))
+    tx = result.scalar_one_or_none()
+    if not tx:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+
+    if body.type is not None:
+        tx.type = body.type
+    if body.category is not None:
+        tx.category = body.category
+    if body.amount is not None:
+        tx.amount = body.amount
+    if body.note is not None:
+        tx.note = body.note
+
+    await db.commit()
+    await db.refresh(tx)
+    return {
+        "id": str(tx.id),
+        "type": tx.type,
+        "category": tx.category,
+        "amount": float(tx.amount),
+        "note": tx.note,
+        "status": "ok",
     }
 
 

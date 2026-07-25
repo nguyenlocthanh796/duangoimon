@@ -10,8 +10,12 @@ export function processPayment(data: {
   return request<any>('/ban-hang/payments', { method: 'POST', body: JSON.stringify(data) });
 }
 
-export async function getTransactions(type?: string) {
-  const res = await request<any>(`/ke-toan/transactions${type ? `?type=${type}` : ''}`);
+export async function getTransactions(type?: string, branch_id?: string) {
+  const params = new URLSearchParams();
+  if (type) params.append('type', type);
+  if (branch_id) params.append('branch_id', branch_id);
+  const qs = params.toString() ? `?${params.toString()}` : '';
+  const res = await request<any>(`/ke-toan/transactions${qs}`);
   if (res && typeof res === 'object') {
     if (Array.isArray(res.items)) return res.items;
     if (Array.isArray(res)) return res;
@@ -27,6 +31,21 @@ export function createTransaction(data: {
 }) {
   return request<Transaction>('/ke-toan/transactions', {
     method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export function updateTransaction(
+  id: string,
+  data: {
+    type?: string;
+    category?: string;
+    amount?: number;
+    note?: string;
+  }
+) {
+  return request<Transaction>(`/ke-toan/transactions/${id}`, {
+    method: 'PATCH',
     body: JSON.stringify(data),
   });
 }
