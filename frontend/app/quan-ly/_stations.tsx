@@ -362,6 +362,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border.light,
     marginBottom: 8,
+    maxWidth: 480,
   },
   fbMetricCard: {
     flex: 1,
@@ -378,7 +379,7 @@ const styles = StyleSheet.create({
     height: 34,
     borderRadius: 17,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
 
   /* Mobile Full-Width Edge-to-Edge Facebook Post Block */

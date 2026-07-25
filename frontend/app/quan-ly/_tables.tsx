@@ -321,7 +321,7 @@ export default function TablesScreen() {
                       }}
                     >
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <AppText variant="md" weight="bold" color={isOccupied ? colors.brand.primary : '#050505'}>{table.name}</AppText>
+                        <AppText variant="md" weight="bold" color={isOccupied ? colors.brand.primary : '#050505'} style={{ fontSize: 16, fontWeight: '700' }}>{table.name}</AppText>
                         {isOccupied && (
                           <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.brand.primary }} />
                         )}
@@ -432,6 +432,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border.light,
     marginBottom: 8,
+    maxWidth: 600,
   },
   fbMetricCard: {
     flex: 1,
@@ -448,7 +449,7 @@ const styles = StyleSheet.create({
     height: 34,
     borderRadius: 17,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
 
   filterRow: { marginVertical: 4, marginBottom: 8 },

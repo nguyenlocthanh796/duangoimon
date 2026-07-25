@@ -377,6 +377,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border.light,
     marginBottom: 8,
+    maxWidth: 560,
   },
   fbMetricCard: {
     flex: 1,
@@ -393,7 +394,7 @@ const styles = StyleSheet.create({
     height: 34,
     borderRadius: 17,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
 
   statsBar: {
