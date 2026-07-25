@@ -93,34 +93,79 @@ export default function ReportsScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+      {/* Top Action Bar on Mobile */}
+      {!isWide && (
+        <View style={styles.mobileActionRow}>
+          <AppText variant="md" weight="bold" color="#050505">Báo cáo bán hàng</AppText>
+          <TouchableOpacity onPress={load} style={styles.addBtn}>
+            <Icon name="refresh" size={16} color={colors.text.inverse} />
+            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Làm mới</AppText>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* Facebook Story Highlight Metric Cards */}
+      <View style={styles.fbMetricContainer}>
+        <View style={styles.fbMetricCard}>
+          <View style={[styles.fbMetricIcon, { backgroundColor: '#ECFDF5' }]}>
+            <Icon name="currency-usd" size={18} color={colors.status.success} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <AppText variant="md" weight="bold" color={colors.status.success}>{formatVND(totalRevenue)}</AppText>
+            <AppText variant="sm" color="#65676B">Doanh thu</AppText>
+          </View>
+        </View>
+
+        <View style={styles.fbMetricCard}>
+          <View style={[styles.fbMetricIcon, { backgroundColor: '#EEF2FF' }]}>
+            <Icon name="receipt" size={18} color={colors.brand.primary} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <AppText variant="md" weight="bold" color="#050505">{totalOrders}</AppText>
+            <AppText variant="sm" color="#65676B">Số đơn</AppText>
+          </View>
+        </View>
+
+        <View style={styles.fbMetricCard}>
+          <View style={[styles.fbMetricIcon, { backgroundColor: '#FFF7ED' }]}>
+            <Icon name="chart-line" size={18} color="#F97316" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <AppText variant="md" weight="bold" color="#F97316">{formatVND(avgRevenuePerDay)}</AppText>
+            <AppText variant="sm" color="#65676B">TB/Ngày</AppText>
+          </View>
+        </View>
+      </View>
+
       {/* Date Filter Row */}
-      <View style={styles.filterRow}>
-        {[
-          { id: '7d', label: '7 ngày' },
-          { id: '30d', label: '30 ngày' },
-          { id: 'thisMonth', label: 'Tháng này' },
-          { id: 'lastMonth', label: 'Tháng trước' },
-        ].map(r => {
-          const active = dateRange === r.id;
-          return (
-            <TouchableOpacity
-              key={r.id}
-              onPress={() => setDateRange(r.id as any)}
-              style={[styles.chip, active && styles.chipActive]}
-            >
-              <AppText variant="sm" color={active ? colors.brand.primary : colors.text.secondary} weight={active ? 'bold' : 'normal'}>
-                {r.label}
-              </AppText>
-            </TouchableOpacity>
-          );
-        })}
+      <View style={{ marginVertical: 4, marginBottom: 8 }}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 12, gap: 8 }}>
+          {[
+            { id: '7d', label: '7 ngày' },
+            { id: '30d', label: '30 ngày' },
+            { id: 'thisMonth', label: 'Tháng này' },
+            { id: 'lastMonth', label: 'Tháng trước' },
+          ].map(r => {
+            const active = dateRange === r.id;
+            return (
+              <TouchableOpacity
+                key={r.id}
+                onPress={() => setDateRange(r.id as any)}
+                style={[styles.chip, active && styles.chipActive]}
+              >
+                <AppText variant="sm" color={active ? colors.brand.primary : "#050505"} weight={active ? 'bold' : 'normal'}>
+                  {r.label}
+                </AppText>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
       </View>
 
       {isWide ? (
         <View style={{ flex: 1, flexDirection: 'row', padding: 12, gap: 12 }}>
           <View style={{ flex: 0.55 }}>
             <ScrollView showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand.primary} />}>
-              {/* Bar Chart */}
               <View style={styles.section}>
                 <View style={styles.sectionHeader}>
                   <Icon name="chart-bar" size={18} color={colors.brand.primary} />
@@ -136,34 +181,15 @@ export default function ReportsScreen() {
                 )}
               </View>
 
-              {/* Daily Table */}
               {(data?.daily?.length ?? 0) > 0 && <DailyReportTable data={data!.daily} />}
-              {/* Top Products */}
               <TopProductsTable data={data?.top_products ?? []} />
             </ScrollView>
           </View>
           <View style={{ flex: 0.45 }}>{renderKpiPanel()}</View>
         </View>
       ) : (
-        <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, paddingHorizontal: 8 }} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand.primary} />}>
-          {/* Quick Summary Cards on Mobile */}
-          <View style={styles.mobileSummaryRow}>
-            <View style={styles.mobileSummaryCard}>
-              <AppText variant="sm" color={colors.text.muted}>Tổng doanh thu</AppText>
-              <AppText variant="md" weight="bold" color={colors.brand.primary}>{formatVND(totalRevenue)}</AppText>
-            </View>
-            <View style={styles.mobileSummaryCard}>
-              <AppText variant="sm" color={colors.text.muted}>Đơn hàng</AppText>
-              <AppText variant="md" weight="bold" color={colors.text.primary}>{totalOrders}</AppText>
-            </View>
-            <View style={styles.mobileSummaryCard}>
-              <AppText variant="sm" color={colors.text.muted}>TB/ngày</AppText>
-              <AppText variant="md" weight="bold" color={colors.status.success}>{formatVND(avgRevenuePerDay)}</AppText>
-            </View>
-          </View>
-
-          {/* Bar Chart */}
-          <View style={styles.section}>
+        <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand.primary} />}>
+          <View style={styles.sectionMobile}>
             <View style={styles.sectionHeader}>
               <Icon name="chart-bar" size={18} color={colors.brand.primary} />
               <AppText variant="sm" weight="bold" color={colors.text.primary}>Doanh thu theo ngày</AppText>
@@ -178,11 +204,9 @@ export default function ReportsScreen() {
             )}
           </View>
 
-          {/* Daily Table */}
           {(data?.daily?.length ?? 0) > 0 && <DailyReportTable data={data!.daily} />}
-          {/* Top Products */}
           <TopProductsTable data={data?.top_products ?? []} />
-          <View style={{ height: 32 }} />
+          <View style={{ height: 40 }} />
         </ScrollView>
       )}
     </View>
@@ -190,19 +214,66 @@ export default function ReportsScreen() {
 }
 
 const styles = StyleSheet.create({
-  filterRow: { flexDirection: 'row', gap: 6, paddingHorizontal: 8, marginVertical: 8 },
-  chip: { paddingHorizontal: 12, height: 32, borderRadius: shape.radius.md, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center' },
-  chipActive: { backgroundColor: colors.brand.primaryBg },
+  mobileActionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: colors.surface.card,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
+  },
+  addBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
+    height: 44,
+    borderRadius: 999,
+    backgroundColor: colors.brand.primary,
+  },
 
-  mobileSummaryRow: { flexDirection: 'row', gap: 6, marginBottom: 8 },
-  mobileSummaryCard: { flex: 1, backgroundColor: colors.surface.card, borderRadius: shape.radius.md, padding: 8, alignItems: 'center' },
+  /* Facebook Story Highlight Metric Cards Container */
+  fbMetricContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 8,
+    backgroundColor: colors.surface.card,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
+    marginBottom: 8,
+    maxWidth: 520,
+  },
+  fbMetricCard: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: colors.surface.card,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+  },
+  fbMetricIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justify: 'center',
+  },
 
-  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, gap: 12 },
+  chip: { paddingHorizontal: 14, height: 36, borderRadius: 999, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center' },
+  chipActive: { backgroundColor: colors.brand.primaryBg, borderWidth: 1, borderColor: '#FFEDD5' },
+
+  panelBox: { backgroundColor: colors.surface.card, borderRadius: 16, padding: 14, gap: 12 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   panelDivider: { height: 1, backgroundColor: colors.border.light },
   panelDividerV: { width: 1, backgroundColor: colors.border.light },
 
-  section: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 12, marginBottom: 8 },
+  section: { backgroundColor: colors.surface.card, borderRadius: 16, padding: 12, marginBottom: 8 },
+  sectionMobile: { backgroundColor: colors.surface.card, width: '100%', padding: 12, marginBottom: 8, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.border.light },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
   emptyBox: { alignItems: 'center', paddingVertical: 18, gap: 6 },
 });

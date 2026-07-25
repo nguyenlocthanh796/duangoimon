@@ -1,21 +1,20 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { TableSkeleton } from '../../lib/components/ui/Skeleton';
 import {
-  View, Text, FlatList, TouchableOpacity, StyleSheet,
+  View, FlatList, TouchableOpacity, StyleSheet,
   Alert, ActivityIndicator, TextInput, ScrollView,
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { api } from '../../lib/api';
+import { api, Product } from '../../lib/api';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import { colors, font, formatVND } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
+import AppText from '../../lib/components/ui/AppText';
 import FormModal from '../../lib/components/ui/FormModal';
 import FAB from '../../lib/components/ui/FAB';
 import EmptyState from '../../lib/components/ui/EmptyState';
-import { ASSETS } from '../../lib/assets';
+import { TableSkeleton } from '../../lib/components/ui/Skeleton';
 import MenuFormContent from '../../lib/components/quan-ly/menu/MenuFormContent';
-import type { Product } from '../../lib/api';
-import AppText from '../../lib/components/ui/AppText';
+import ASSETS from '../../lib/assets';
 
 type FormState = {
   code: string; name: string; category: string; price: string;
@@ -24,15 +23,15 @@ type FormState = {
 
 const EMPTY_FORM: FormState = {
   code: '', name: '', category: '', price: '0',
-  cost_price: '0', unit: 'serving', is_active: true,
+  cost_price: '0', unit: 'phần', is_active: true,
 };
 
 const CATEGORIES = [
-  { key: 'Food', icon: 'food', color: '#D97706', bg: '#FEF3C7' },
-  { key: 'Drinks', icon: 'cup-water', color: '#2563EB', bg: '#EFF6FF' },
-  { key: 'Desserts', icon: 'ice-cream', color: '#DB2777', bg: '#FCE7F3' },
+  { key: 'Đồ ăn', icon: 'food', color: '#D97706', bg: '#FEF3C7' },
+  { key: 'Đồ uống', icon: 'cup-water', color: '#2563EB', bg: '#EFF6FF' },
+  { key: 'Tráng miệng', icon: 'ice-cream', color: '#DB2777', bg: '#FCE7F3' },
   { key: 'Snack', icon: 'candy', color: '#16A34A', bg: '#ECFDF5' },
-  { key: 'Other', icon: 'dots-horizontal', color: '#737373', bg: colors.surface.app },
+  { key: 'Khác', icon: 'dots-horizontal', color: '#737373', bg: '#F1F5F9' },
 ];
 
 function getCatStyle(cat: string | null) {
@@ -43,7 +42,6 @@ export default function MenuEngScreen() {
   const { isWide } = useResponsive();
   const [products, setProducts] = useState<Product[]>([]);
   const [search, setSearch] = useState('');
-  const [catFilter, setCatFilter] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -51,73 +49,122 @@ export default function MenuEngScreen() {
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
 
   const load = useCallback(async () => {
-    try { setLoading(true); const d = await api.getQuanLyProducts(); setProducts(d); }
-    catch (e: any) { Alert.alert('Lỗi', e.message || 'Không thể tải danh sách thực đơn'); }
-    finally { setLoading(false); }
+    try {
+      setLoading(true);
+      const d = await api.getProducts();
+      setProducts(d);
+    } catch (e: any) {
+      Alert.alert('Lỗi', e.message || 'Không thể tải thực đơn');
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => { load(); }, [load]);
 
-  const openAdd = () => { setEditingId(null); setForm(EMPTY_FORM); setShowForm(true); };
+  const openAdd = () => {
+    setEditingId(null);
+    setForm(EMPTY_FORM);
+    setShowForm(true);
+  };
+
   const openEdit = (p: Product) => {
     setEditingId(p.id);
-    setForm({ code: p.code, name: p.name, category: p.category ?? '', price: String(p.price), cost_price: String(p.cost_price), unit: p.unit, is_active: p.is_active });
+    setForm({
+      code: p.code || '',
+      name: p.name || '',
+      category: p.category || '',
+      price: String(p.price || 0),
+      cost_price: String(p.cost_price || 0),
+      unit: p.unit || 'phần',
+      is_active: p.is_active ?? true,
+    });
     setShowForm(true);
   };
 
   const handleSave = async () => {
-    if (!form.code.trim() || !form.name.trim()) { Alert.alert('Lỗi', 'Mã và tên món là bắt buộc'); return; }
-    setSaving(true);
+    if (!form.name.trim()) {
+      Alert.alert('Lỗi', 'Tên món không được để trống');
+      return;
+    }
     try {
-      const payload = { ...form, price: parseFloat(form.price) || 0, cost_price: parseFloat(form.cost_price) || 0 };
-      if (editingId) await api.updateProduct(editingId, payload); else await api.createProduct(payload);
-      setShowForm(false); setForm(EMPTY_FORM); load();
-    } catch (e: any) { Alert.alert('Lỗi', e.message || 'Không thể lưu món'); }
-    finally { setSaving(false); }
+      setSaving(true);
+      const payload = {
+        code: form.code,
+        name: form.name,
+        category: form.category,
+        price: parseFloat(form.price) || 0,
+        cost_price: parseFloat(form.cost_price) || 0,
+        unit: form.unit,
+        is_active: form.is_active,
+      };
+      if (editingId) {
+        await api.updateProduct(editingId, payload);
+      } else {
+        await api.createProduct(payload);
+      }
+      setShowForm(false);
+      load();
+    } catch (e: any) {
+      Alert.alert('Lỗi', e.message || 'Không thể lưu thông tin món');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleDelete = (id: string, name: string) => {
-    Alert.alert('Xác nhận xoá', `Xoá món "${name}" khỏi thực đơn?`, [
-      { text: 'Huỷ', style: 'cancel' },
-      { text: 'Xoá', style: 'destructive', onPress: async () => { try { await api.deleteProduct(id); load(); } catch (e: any) { Alert.alert('Lỗi', e.message); } } },
+    Alert.alert('Xác nhận xóa', `Bạn có chắc muốn xóa món "${name}"?`, [
+      { text: 'Hủy', style: 'cancel' },
+      {
+        text: 'Xóa',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await api.deleteProduct(id);
+            load();
+          } catch (e: any) {
+            Alert.alert('Lỗi', e.message || 'Không thể xóa món');
+          }
+        },
+      },
     ]);
   };
 
   const filtered = products.filter(p => {
-    const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) || p.code.toLowerCase().includes(search.toLowerCase());
-    const matchCat = !catFilter || p.category === catFilter;
-    return matchSearch && matchCat;
+    const q = search.trim().toLowerCase();
+    return !q || (p.name || '').toLowerCase().includes(q) || (p.code || '').toLowerCase().includes(q);
   });
 
-  const renderStatsPanel = () => {
-    const catCounts = CATEGORIES.map(c => ({ ...c, count: products.filter(p => (p.category || 'Other') === c.key).length }));
-    return (
-      <View style={styles.panelBox}>
-        <View style={styles.panelHeader}>
-          <Icon name="silverware" size={18} color={colors.brand.primary} />
-          <AppText variant="sm" weight="bold" color={colors.text.primary}>Thống kê nhóm món Menu BCG</AppText>
-        </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <AppText variant="sm" color={colors.text.muted}>Tổng số món ăn</AppText>
-          <AppText variant="sm" weight="bold" color={colors.text.primary}>{products.length} món</AppText>
-        </View>
-        <View style={styles.panelDivider} />
-        {catCounts.map(c => (
-          <TouchableOpacity key={c.key} style={[styles.catRow, catFilter === c.key && { backgroundColor: colors.brand.primaryBg }]} onPress={() => setCatFilter(catFilter === c.key ? null : c.key)}>
-            <View style={[styles.catDot, { backgroundColor: c.color }]} />
-            <AppText variant="sm" color={colors.text.primary} style={{ flex: 1 }}>{c.key}</AppText>
-            <AppText variant="sm" weight="bold" color={c.color}>{c.count}</AppText>
-            {catFilter === c.key && <Icon name="check" size={14} color={colors.brand.primary} />}
-          </TouchableOpacity>
-        ))}
-        <View style={styles.panelDivider} />
-        <TouchableOpacity style={styles.panelCta} onPress={openAdd}>
-          <Icon name="plus" size={16} color={colors.text.inverse} />
-          <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm món mới</AppText>
-        </TouchableOpacity>
+  const catCounts = CATEGORIES.map(c => ({
+    ...c,
+    count: products.filter(p => p.category === c.key).length,
+  }));
+
+  const renderStatsPanel = () => (
+    <View style={styles.panelBox}>
+      <View style={styles.panelHeader}>
+        <Icon name="silverware-fork-knife" size={18} color={colors.brand.primary} />
+        <AppText variant="sm" weight="bold" color={colors.text.primary}>Menu Engineering (BCG Matrix)</AppText>
       </View>
-    );
-  };
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+        <AppText variant="sm" color={colors.text.secondary}>Tổng số món ăn</AppText>
+        <AppText variant="md" weight="bold" color={colors.text.primary}>{products.length}</AppText>
+      </View>
+      <View style={styles.panelDivider} />
+      <AppText variant="sm" weight="bold" color={colors.text.primary}>Phân loại theo nhóm món</AppText>
+      {catCounts.map(c => (
+        <View key={c.key} style={styles.catRow}>
+          <View style={[styles.catDot, { backgroundColor: c.color }]} />
+          <AppText variant="sm" color={colors.text.primary} style={{ flex: 1 }}>{c.key}</AppText>
+          <AppText variant="sm" weight="bold" color={c.color}>{c.count}</AppText>
+        </View>
+      ))}
+      <TouchableOpacity style={styles.panelCta} onPress={openAdd}>
+        <Icon name="plus" size={16} color={colors.text.inverse} />
+        <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm món mới</AppText>
+      </TouchableOpacity>
+    </View>
+  );
 
   const renderInlineForm = () => (
     <View style={styles.panelBox}>
@@ -125,23 +172,16 @@ export default function MenuEngScreen() {
         <Icon name={editingId ? 'pencil' : 'plus'} size={18} color={colors.brand.primary} />
         <AppText variant="sm" weight="bold" color={colors.text.primary}>{editingId ? 'Chỉnh sửa món' : 'Thêm món mới'}</AppText>
       </View>
-      <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 400 }}>
+      <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, marginVertical: 10 }}>
         <MenuFormContent form={form} onChange={(updates) => setForm(f => ({ ...f, ...updates }))} />
       </ScrollView>
-      <View style={{ flexDirection: 'row', gap: 10, marginTop: 8 }}>
-        <TouchableOpacity
-          style={[styles.panelBtn, { backgroundColor: colors.surface.app, flex: 1, justifyContent: 'center' }]}
-          onPress={() => setShowForm(false)}
-        >
-          <AppText variant="sm" color={colors.text.primary}>Huỷ</AppText>
+      <View style={{ flexDirection: 'row', gap: 12, marginTop: 8 }}>
+        <TouchableOpacity style={{ flex: 1, height: 44, borderRadius: 999, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' }} onPress={() => setShowForm(false)}>
+          <AppText variant="sm" color={colors.text.secondary}>Hủy</AppText>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.panelBtn, { backgroundColor: colors.brand.primary, flex: 1.5, justifyContent: 'center' }]}
-          onPress={handleSave}
-          disabled={saving}
-        >
+        <TouchableOpacity style={{ flex: 1.5, height: 44, borderRadius: 999, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }} onPress={handleSave} disabled={saving}>
           {saving && <ActivityIndicator size="small" color={colors.text.inverse} />}
-          <AppText variant="sm" weight="bold" color={colors.text.inverse}>{editingId ? 'Cập nhật' : 'Lưu món'}</AppText>
+          <AppText variant="sm" weight="bold" color={colors.text.inverse}>{editingId ? 'Cập nhật' : 'Lưu'}</AppText>
         </TouchableOpacity>
       </View>
     </View>
@@ -149,6 +189,46 @@ export default function MenuEngScreen() {
 
   const renderItem = ({ item }: { item: Product }) => {
     const cat = getCatStyle(item.category);
+
+    if (!isWide) {
+      // 📱 Facebook Mobile Feed Card (Full Width)
+      return (
+        <View style={styles.itemMobile}>
+          <TouchableOpacity style={styles.cardHeaderRow} onPress={() => openEdit(item)} activeOpacity={0.8}>
+            <View style={[styles.avatarCircle, { backgroundColor: cat.bg }]}>
+              <Icon name={cat.icon as any} size={20} color={cat.color} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>{item.name}</AppText>
+                <View style={[styles.activeDotSmall, { backgroundColor: item.is_active ? colors.status.success : colors.icon.muted }]} />
+              </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 }}>
+                <AppText variant="sm" color="#65676B">Mã: {item.code || 'N/A'}</AppText>
+                <AppText variant="sm" color="#65676B">· {item.category || 'Khác'}</AppText>
+                <AppText variant="sm" color="#65676B">· {item.unit}</AppText>
+              </View>
+            </View>
+            <AppText variant="md" weight="bold" color={colors.brand.primary}>{formatVND(item.price)}</AppText>
+          </TouchableOpacity>
+
+          <View style={styles.cardActionDivider} />
+
+          <View style={{ flexDirection: 'row', gap: 8, paddingHorizontal: 12, paddingTop: 8 }}>
+            <TouchableOpacity style={styles.panelBtnSecondary} onPress={() => openEdit(item)}>
+              <Icon name="pencil" size={14} color={colors.brand.primary} />
+              <AppText variant="sm" weight="bold" color={colors.brand.primary}>Chỉnh sửa</AppText>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.panelBtnDanger} onPress={() => handleDelete(item.id, item.name)}>
+              <Icon name="trash-can-outline" size={14} color={colors.status.danger} />
+              <AppText variant="sm" weight="bold" color={colors.status.danger}>Xóa</AppText>
+            </TouchableOpacity>
+          </View>
+        </View>
+      );
+    }
+
+    // 💻 Wide Screen Card
     return (
       <TouchableOpacity style={styles.card} onPress={() => openEdit(item)} activeOpacity={0.7}>
         <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, gap: 10 }}>
@@ -156,7 +236,7 @@ export default function MenuEngScreen() {
             <AppText variant="sm" weight="bold" color={cat.color}>{item.code}</AppText>
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="sm" weight="bold" color={colors.text.primary} numberOfLines={1}>{item.name}</AppText>
+            <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>{item.name}</AppText>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 }}>
               <View style={[styles.catBadge, { backgroundColor: cat.bg }]}>
                 <Icon name={cat.icon as any} size={10} color={cat.color} />
@@ -167,8 +247,8 @@ export default function MenuEngScreen() {
           </View>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-          <AppText variant="sm" weight="bold" color={colors.brand.primary}>{formatVND(item.price)}</AppText>
-          <View style={[styles.activeDot, { backgroundColor: item.is_active ? colors.status.success : colors.icon.muted }]} />
+          <AppText variant="md" weight="bold" color={colors.brand.primary}>{formatVND(item.price)}</AppText>
+          <View style={[styles.activeDotSmall, { backgroundColor: item.is_active ? colors.status.success : colors.icon.muted }]} />
           <TouchableOpacity onPress={() => handleDelete(item.id, item.name)} style={styles.deleteBtn} hitSlop={8}>
             <Icon name="trash-can-outline" size={16} color={colors.status.danger} />
           </TouchableOpacity>
@@ -189,7 +269,7 @@ export default function MenuEngScreen() {
     if (loading) return <TableSkeleton rowCount={5} />;
     return (
       <FlatList data={filtered} keyExtractor={item => item.id} renderItem={renderItem}
-        contentContainerStyle={{ paddingBottom: 80, paddingTop: 4, gap: 8 }}
+        contentContainerStyle={{ paddingBottom: 100, paddingTop: 4 }}
         ListHeaderComponent={renderSearch}
         ListEmptyComponent={<EmptyState image={ASSETS.images.emptyStateMenu} title="Chưa có món nào" subtitle="Nhấn + để thêm món đầu tiên" />}
         showsVerticalScrollIndicator={false}
@@ -200,6 +280,17 @@ export default function MenuEngScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+      {/* Top Action Bar on Mobile */}
+      {!isWide && (
+        <View style={styles.mobileActionRow}>
+          <AppText variant="md" weight="bold" color="#050505">{products.length} món Menu Engineering</AppText>
+          <TouchableOpacity onPress={openAdd} style={styles.addBtn}>
+            <Icon name="plus" size={16} color={colors.text.inverse} />
+            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm món</AppText>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {isWide ? (
         <View style={{ flex: 1, flexDirection: 'row', padding: 12, gap: 12 }}>
           <View style={{ flex: 0.55 }}>{renderList()}</View>
@@ -208,9 +299,7 @@ export default function MenuEngScreen() {
           </View>
         </View>
       ) : (
-        <View style={{ flex: 1, paddingHorizontal: 8 }}>
-          {renderList()}
-        </View>
+        renderList()
       )}
       {!isWide && <FAB onPress={openAdd} />}
       {!isWide && (
@@ -225,18 +314,88 @@ export default function MenuEngScreen() {
 }
 
 const styles = StyleSheet.create({
-  searchBox: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.surface.card, borderRadius: shape.radius.md, paddingHorizontal: 10, height: 44, marginBottom: 8 },
+  mobileActionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: colors.surface.card,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
+  },
+  addBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
+    height: 44,
+    borderRadius: 999,
+    backgroundColor: colors.brand.primary,
+  },
+
+  searchBox: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.surface.card, marginHorizontal: 12, marginVertical: 6, borderRadius: 12, paddingHorizontal: 12, height: 42 },
   searchInput: { flex: 1, ...font.md, color: colors.text.primary, paddingVertical: 0 },
-  card: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 12, marginBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  codeTag: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: shape.radius.sm },
-  catBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 6, paddingVertical: 1, borderRadius: shape.radius.sm },
-  activeDot: { width: 6, height: 6, borderRadius: 3 },
+
+  /* 📱 Mobile Full-Width Facebook Feed Card Block */
+  itemMobile: {
+    backgroundColor: colors.surface.card,
+    width: '100%',
+    marginBottom: 8,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: colors.border.light,
+    paddingVertical: 12,
+  },
+  cardHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 12,
+  },
+  avatarCircle: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: 'center',
+    justify: 'center',
+  },
+  activeDotSmall: { width: 6, height: 6, borderRadius: 3 },
+  cardActionDivider: {
+    height: 1,
+    backgroundColor: colors.border.light,
+    marginTop: 10,
+  },
+  panelBtnSecondary: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justify: 'center',
+    gap: 6,
+    height: 44,
+    borderRadius: 999,
+    backgroundColor: colors.brand.primaryBg,
+  },
+  panelBtnDanger: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justify: 'center',
+    gap: 6,
+    height: 44,
+    borderRadius: 999,
+    backgroundColor: '#FEE2E2',
+  },
+
+  card: { backgroundColor: colors.surface.card, borderRadius: 16, padding: 12, marginBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  codeTag: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6 },
+  catBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 6, paddingVertical: 1, borderRadius: 6 },
   deleteBtn: { padding: 4 },
-  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, gap: 12 },
+
+  panelBox: { backgroundColor: colors.surface.card, borderRadius: 16, padding: 14, gap: 12 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   panelDivider: { height: 1, backgroundColor: colors.border.light },
-  catRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 6, paddingHorizontal: 8, borderRadius: shape.radius.md },
+  catRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 6, paddingHorizontal: 8, borderRadius: 8 },
   catDot: { width: 8, height: 8, borderRadius: 4 },
-  panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, height: 44 },
-  panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 8, paddingHorizontal: 12, borderRadius: shape.radius.md },
+  panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: colors.brand.primary, borderRadius: 999, height: 44 },
 });

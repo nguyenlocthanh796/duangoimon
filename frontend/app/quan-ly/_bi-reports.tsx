@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView, FlatList } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import { colors, font, formatVND } from '../../lib/theme';
@@ -7,6 +7,8 @@ import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import DataTable, { type Column } from '../../lib/components/ui/DataTable';
 import AppText from '../../lib/components/ui/AppText';
+import { TableSkeleton } from '../../lib/components/ui/Skeleton';
+import EmptyState from '../../lib/components/ui/EmptyState';
 
 type TabKey = 'revenue' | 'foodcost';
 
@@ -151,52 +153,124 @@ export default function BIReportsScreen() {
     else { setSortKey(key); setSortDir(key === 'date' ? 'desc' : 'asc'); }
   };
 
+  const renderMobileBiCard = ({ item: row }: { item: any }) => (
+    <View style={styles.itemMobile}>
+      <View style={styles.cardHeaderRow}>
+        <View style={[styles.avatarCircle, { backgroundColor: tab === 'revenue' ? '#ECFDF5' : '#FEE2E2' }]}>
+          <Icon name={tab === 'revenue' ? 'chart-line' : 'food-apple'} size={20} color={tab === 'revenue' ? colors.status.success : colors.status.danger} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>
+            {row.name || row.date || 'Chi tiết BI'}
+          </AppText>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 }}>
+            {tab === 'revenue' ? (
+              <AppText variant="sm" color="#65676B">Số đơn: {row.orders || 0} đơn</AppText>
+            ) : (
+              <AppText variant="sm" color="#65676B">Chi phí: {formatVND(row.food_cost || 0)}</AppText>
+            )}
+          </View>
+        </View>
+        <View style={{ alignItems: 'flex-end' }}>
+          {tab === 'revenue' ? (
+            <AppText variant="md" weight="bold" color={colors.brand.primary}>{formatVND(row.revenue || 0)}</AppText>
+          ) : (
+            <AppText variant="md" weight="bold" color={(row.pct || 0) > 40 ? colors.status.danger : colors.status.success}>{row.pct || 0}%</AppText>
+          )}
+          <AppText variant="sm" color="#65676B">{tab === 'revenue' ? 'Doanh thu' : 'Tỷ lệ FC'}</AppText>
+        </View>
+      </View>
+
+      <View style={styles.cardActionDivider} />
+
+      <View style={{ flexDirection: 'row', gap: 8, paddingHorizontal: 12, paddingTop: 8 }}>
+        <TouchableOpacity style={styles.panelBtnSecondary} onPress={() => {}}>
+          <Icon name="chart-bar" size={14} color={colors.brand.primary} />
+          <AppText variant="sm" weight="bold" color={colors.brand.primary}>Xem phân tích</AppText>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
   return (
     <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
-      {/* Stats bar */}
-      <View style={styles.statsBar}>
-        <View style={styles.statItem}>
-          <Icon name="chart-line" size={16} color={colors.brand.primary} />
-          <View>
-            <AppText variant="sm" weight="bold" color={colors.brand.primary}>{formatVND(revStat?.total_revenue || 0)}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Doanh thu</AppText>
+      {/* Top Action Bar on Mobile */}
+      {!isWide && (
+        <View style={styles.mobileActionRow}>
+          <AppText variant="md" weight="bold" color="#050505">Phân tích BI ({days} ngày)</AppText>
+          <TouchableOpacity onPress={load} style={styles.addBtn}>
+            <Icon name="refresh" size={16} color={colors.text.inverse} />
+            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Làm mới</AppText>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* Facebook Story Highlight Metric Cards */}
+      <View style={styles.fbMetricContainer}>
+        <View style={styles.fbMetricCard}>
+          <View style={[styles.fbMetricIcon, { backgroundColor: '#ECFDF5' }]}>
+            <Icon name="chart-line" size={18} color={colors.status.success} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <AppText variant="md" weight="bold" color={colors.status.success}>{formatVND(revStat?.total_revenue || 0)}</AppText>
+            <AppText variant="sm" color="#65676B">Doanh thu</AppText>
           </View>
         </View>
-        <View style={styles.barDivider} />
-        <View style={styles.statItem}>
-          <Icon name="food-apple" size={16} color={colors.brand.primary} />
-          <View>
-            <AppText variant="sm" weight="bold" color={colors.text.primary}>{formatVND(fcStat?.total_food_cost || 0)}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Food cost</AppText>
+
+        <View style={styles.fbMetricCard}>
+          <View style={[styles.fbMetricIcon, { backgroundColor: '#FEE2E2' }]}>
+            <Icon name="food-apple" size={18} color={colors.status.danger} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <AppText variant="md" weight="bold" color={colors.status.danger}>{formatVND(fcStat?.total_food_cost || 0)}</AppText>
+            <AppText variant="sm" color="#65676B">Food cost</AppText>
           </View>
         </View>
-        <View style={styles.barDivider} />
-        <View style={styles.statItem}>
-          <Icon name="cart" size={16} color={colors.brand.primary} />
-          <View>
-            <AppText variant="sm" weight="bold" color={colors.text.primary}>{revStat?.total_orders || 0}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Đơn hàng</AppText>
+
+        <View style={styles.fbMetricCard}>
+          <View style={[styles.fbMetricIcon, { backgroundColor: '#EEF2FF' }]}>
+            <Icon name="cart" size={18} color="#2563EB" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <AppText variant="md" weight="bold" color="#2563EB">{revStat?.total_orders || 0}</AppText>
+            <AppText variant="sm" color="#65676B">Đơn hàng</AppText>
           </View>
         </View>
       </View>
 
       {/* Tabs and Days filter */}
-      <View style={styles.tabRow}>
-        {(['revenue', 'foodcost'] as const).map(t => (
-          <TouchableOpacity key={t} onPress={() => setTab(t)} style={[styles.tab, tab === t && styles.tabActive]}>
-            <Icon name={t === 'revenue' ? 'chart-line' : 'food-apple'} size={14} color={tab === t ? colors.brand.primary : colors.text.secondary} />
-            <AppText variant="sm" color={tab === t ? colors.brand.primary : colors.text.secondary} weight={tab === t ? 'bold' : 'normal'}>
-              {t === 'revenue' ? 'Doanh thu' : 'Food Cost'}
-            </AppText>
-          </TouchableOpacity>
-        ))}
-        <View style={{ flexDirection: 'row', gap: 4, marginLeft: 'auto' }}>
-          {[7, 30, 90].map(d => (
-            <TouchableOpacity key={d} onPress={() => setDays(d)} style={[styles.daysChip, days === d && styles.daysChipActive]}>
-              <AppText variant="sm" color={days === d ? colors.brand.primary : colors.text.secondary} weight={days === d ? 'bold' : 'normal'}>{d}D</AppText>
-            </TouchableOpacity>
-          ))}
-        </View>
+      <View style={{ marginVertical: 4, marginBottom: 8 }}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 12, gap: 8 }}>
+          {(['revenue', 'foodcost'] as const).map(t => {
+            const active = tab === t;
+            return (
+              <TouchableOpacity
+                key={t}
+                onPress={() => setTab(t)}
+                style={[styles.chip, active && styles.chipActive]}
+              >
+                <Icon name={t === 'revenue' ? 'chart-line' : 'food-apple'} size={14} color={active ? colors.brand.primary : '#65676B'} />
+                <AppText variant="sm" weight={active ? "bold" : "normal"} color={active ? colors.brand.primary : "#050505"}>
+                  {t === 'revenue' ? 'Doanh thu' : 'Food Cost'}
+                </AppText>
+              </TouchableOpacity>
+            );
+          })}
+          {[7, 30, 90].map(d => {
+            const active = days === d;
+            return (
+              <TouchableOpacity
+                key={d}
+                onPress={() => setDays(d)}
+                style={[styles.chip, active && styles.chipActive]}
+              >
+                <AppText variant="sm" weight={active ? "bold" : "normal"} color={active ? colors.brand.primary : "#050505"}>
+                  {d}D
+                </AppText>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
       </View>
 
       {isWide ? (
@@ -220,44 +294,134 @@ export default function BIReportsScreen() {
           <View style={{ flex: 0.45 }}>{renderPanel()}</View>
         </View>
       ) : (
-        <View style={{ flex: 1, paddingHorizontal: 8 }}>
-          <DataTable<any>
-            columns={columns}
-            data={dataRows}
-            getRowId={(row: any) => row?.id || String(Math.random())}
-            loading={loading}
-            sortKey={sortKey}
-            sortDir={sortDir}
-            onSortChange={handleSortChange}
-            onRefresh={load}
-            compact
-            emptyIcon="chart-line"
-            emptyTitle="Chưa có dữ liệu báo cáo BI"
-            emptySubtitle=""
-          />
-        </View>
+        <FlatList
+          data={dataRows}
+          keyExtractor={(row: any, idx) => row?.id || String(idx)}
+          renderItem={renderMobileBiCard}
+          contentContainerStyle={{ paddingBottom: 100 }}
+          ListEmptyComponent={
+            loading ? (
+              <TableSkeleton rowCount={5} />
+            ) : (
+              <EmptyState
+                icon="chart-line"
+                title="Chưa có dữ liệu báo cáo BI"
+                subtitle=""
+              />
+            )
+          }
+        />
       )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  statsBar: {
+  mobileActionRow: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 12,
     paddingVertical: 10,
     backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.lg,
-    marginHorizontal: 8,
-    marginVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
   },
-  statItem: { flex: 1, alignItems: 'center', flexDirection: 'row', gap: 6, justifyContent: 'center' },
-  barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-  tabRow: { flexDirection: 'row', gap: 6, paddingHorizontal: 8, marginBottom: 8, alignItems: 'center' },
-  tab: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.surface.card },
-  tabActive: { backgroundColor: colors.brand.primaryBg },
-  daysChip: { paddingHorizontal: 10, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center' },
-  daysChipActive: { backgroundColor: colors.brand.primaryBg },
-  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, gap: 12 },
+  addBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
+    height: 44,
+    borderRadius: 999,
+    backgroundColor: colors.brand.primary,
+  },
+
+  /* Facebook Story Highlight Metric Cards Container */
+  fbMetricContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 8,
+    backgroundColor: colors.surface.card,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
+    marginBottom: 8,
+    maxWidth: 520,
+  },
+  fbMetricCard: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: colors.surface.card,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+  },
+  fbMetricIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justify: 'center',
+  },
+
+  /* Filter chips */
+  chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
+    height: 36,
+    borderRadius: 999,
+    backgroundColor: colors.surface.card,
+  },
+  chipActive: {
+    backgroundColor: colors.brand.primaryBg,
+    borderWidth: 1,
+    borderColor: '#FFEDD5',
+  },
+
+  /* 📱 Mobile Full-Width Facebook Feed Card Block */
+  itemMobile: {
+    backgroundColor: colors.surface.card,
+    width: '100%',
+    marginBottom: 8,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: colors.border.light,
+    paddingVertical: 12,
+  },
+  cardHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 12,
+  },
+  avatarCircle: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: 'center',
+    justify: 'center',
+  },
+  cardActionDivider: {
+    height: 1,
+    backgroundColor: colors.border.light,
+    marginTop: 10,
+  },
+  panelBtnSecondary: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justify: 'center',
+    gap: 6,
+    height: 44,
+    borderRadius: 999,
+    backgroundColor: colors.brand.primaryBg,
+  },
+
+  panelBox: { backgroundColor: colors.surface.card, borderRadius: 16, padding: 14, gap: 12 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },
 });
