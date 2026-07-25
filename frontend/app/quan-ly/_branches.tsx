@@ -45,6 +45,7 @@ export default function BranchesScreen() {
   const stats = {
     total: data.length,
     active: data.filter(b => b.is_active).length,
+    inactive: data.filter(b => !b.is_active).length,
   };
 
   const columns: Column<Branch>[] = [
@@ -54,7 +55,17 @@ export default function BranchesScreen() {
       flex: 1,
       sortable: true,
       sortValue: (b) => b.name || '',
-      render: (b) => <AppText variant="sm" weight="bold" color={colors.text.primary} numberOfLines={1}>{b.name}</AppText>,
+      render: (b) => (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <View style={styles.branchAvatar}>
+            <Icon name="storefront-outline" size={16} color={colors.brand.primary} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <AppText variant="sm" weight="bold" color={colors.text.primary} numberOfLines={1}>{b.name}</AppText>
+            {b.address ? <AppText variant="sm" color={colors.text.muted} numberOfLines={1}>📍 {b.address}</AppText> : null}
+          </View>
+        </View>
+      ),
     },
     {
       key: 'code',
@@ -67,79 +78,98 @@ export default function BranchesScreen() {
     {
       key: 'is_active',
       title: 'Trạng thái',
-      width: 90,
+      width: 95,
       align: 'center',
       sortable: true,
       sortValue: (b) => b.is_active ? 1 : 0,
       render: (b) => (
         <View style={[styles.statusChip, { backgroundColor: b.is_active ? colors.brand.primaryBg : colors.surface.app }]}>
-          <AppText variant="sm" weight="bold" color={b.is_active ? colors.status.success : colors.text.muted}>{b.is_active ? 'Hoạt động' : 'Tắt'}</AppText>
+          <View style={[styles.statusDot, { backgroundColor: b.is_active ? colors.status.success : colors.status.danger }]} />
+          <AppText variant="sm" weight="bold" color={b.is_active ? colors.status.success : colors.status.danger}>{b.is_active ? 'Hoạt động' : 'Tắt'}</AppText>
         </View>
       ),
     },
   ];
 
   const renderPanel = () => {
-    if (!selected) return (
-      <View style={styles.panelBox}>
-        <View style={styles.panelHeader}>
-          <Icon name="storefront" size={18} color={colors.brand.primary} />
-          <AppText variant="sm" weight="bold" color={colors.text.primary}>Thống kê chi nhánh</AppText>
-        </View>
-        <View style={{ flexDirection: 'row', gap: 8 }}>
-          <View style={{ alignItems: 'center', flex: 1 }}>
-            <AppText variant="md" weight="bold" color={colors.text.primary}>{stats.total}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Tổng số</AppText>
-          </View>
-          <View style={styles.barDivider} />
-          <View style={{ alignItems: 'center', flex: 1 }}>
-            <AppText variant="md" weight="bold" color={colors.status.success}>{stats.active}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Đang mở</AppText>
-          </View>
-        </View>
-        <View style={styles.panelDivider} />
-        <TouchableOpacity style={styles.panelCta} onPress={() => { setEditing(null); setForm({ name: '', code: '', address: '', phone: '', is_active: true }); setShowForm(true); }}>
-          <Icon name="plus" size={16} color={colors.text.inverse} />
-          <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm chi nhánh</AppText>
-        </TouchableOpacity>
-      </View>
-    );
     return (
       <View style={styles.panelBox}>
         <View style={styles.panelHeader}>
           <Icon name="storefront" size={18} color={colors.brand.primary} />
-          <View style={{ flex: 1 }}>
-            <AppText variant="sm" weight="bold" color={colors.text.primary} numberOfLines={1}>{selected.name}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Mã: {selected.code}</AppText>
-          </View>
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>
+            {selected ? selected.name : 'Thống kê chi nhánh'}
+          </AppText>
         </View>
-        <View style={{ flexDirection: 'row', gap: 8 }}>
-          <View style={{ alignItems: 'center', flex: 1 }}>
-            <AppText variant="sm" weight="bold" color={selected.is_active ? colors.status.success : colors.status.danger}>{selected.is_active ? 'Hoạt động' : 'Tạm ngừng'}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Trạng thái</AppText>
-          </View>
-          <View style={styles.barDivider} />
-          <View style={{ alignItems: 'center', flex: 1 }}>
-            <AppText variant="sm" weight="bold" color={colors.text.primary}>{selected.phone || '—'}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>SĐT</AppText>
-          </View>
-        </View>
-        {selected.address && (
+
+        {selected ? (
           <>
+            <View style={{ gap: 8 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <AppText variant="sm" color={colors.text.muted}>Mã chi nhánh</AppText>
+                <AppText variant="sm" weight="bold" color={colors.text.primary}>{selected.code}</AppText>
+              </View>
+              <View style={styles.panelDivider} />
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <AppText variant="sm" color={colors.text.muted}>Trạng thái</AppText>
+                <AppText variant="sm" weight="bold" color={selected.is_active ? colors.status.success : colors.status.danger}>
+                  {selected.is_active ? 'Đang hoạt động' : 'Tạm ngừng'}
+                </AppText>
+              </View>
+              <View style={styles.panelDivider} />
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <AppText variant="sm" color={colors.text.muted}>Số điện thoại</AppText>
+                <AppText variant="sm" weight="bold" color={colors.text.primary}>{selected.phone || 'Chưa cập nhật'}</AppText>
+              </View>
+              {selected.address && (
+                <>
+                  <View style={styles.panelDivider} />
+                  <AppText variant="sm" color={colors.text.muted}>Địa chỉ</AppText>
+                  <AppText variant="sm" color={colors.text.primary}>📍 {selected.address}</AppText>
+                </>
+              )}
+            </View>
+
+            <View style={{ flexDirection: 'row', gap: 10, marginTop: 8 }}>
+              <TouchableOpacity onPress={() => { setEditing(selected); setForm({ name: selected.name, code: selected.code, address: selected.address || '', phone: selected.phone || '', is_active: selected.is_active }); setShowForm(true); }} style={[styles.panelBtn, { backgroundColor: colors.brand.primary }]}>
+                <Icon name="pencil" size={14} color={colors.text.inverse} />
+                <AppText variant="sm" weight="bold" color={colors.text.inverse}>Sửa chi nhánh</AppText>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => del(selected.id)} style={[styles.panelBtn, { backgroundColor: colors.status.danger }]}>
+                <Icon name="delete" size={14} color={colors.text.inverse} />
+                <AppText variant="sm" weight="bold" color={colors.text.inverse}>Xoá</AppText>
+              </TouchableOpacity>
+            </View>
             <View style={styles.panelDivider} />
-            <AppText variant="sm" color={colors.text.secondary}>📍 {selected.address}</AppText>
+            <TouchableOpacity style={styles.panelCtaSecondary} onPress={() => { setSelected(null); setEditing(null); setForm({ name: '', code: '', address: '', phone: '', is_active: true }); setShowForm(true); }}>
+              <Icon name="plus" size={16} color={colors.brand.primary} />
+              <AppText variant="sm" weight="bold" color={colors.brand.primary}>Thêm chi nhánh mới</AppText>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <View style={{ alignItems: 'center', flex: 1 }}>
+                <AppText variant="md" weight="bold" color={colors.text.primary}>{stats.total}</AppText>
+                <AppText variant="sm" color={colors.text.muted}>Tổng số</AppText>
+              </View>
+              <View style={styles.barDivider} />
+              <View style={{ alignItems: 'center', flex: 1 }}>
+                <AppText variant="md" weight="bold" color={colors.status.success}>{stats.active}</AppText>
+                <AppText variant="sm" color={colors.text.muted}>Đang mở</AppText>
+              </View>
+              <View style={styles.barDivider} />
+              <View style={{ alignItems: 'center', flex: 1 }}>
+                <AppText variant="md" weight="bold" color={colors.status.danger}>{stats.inactive}</AppText>
+                <AppText variant="sm" color={colors.text.muted}>Ngừng</AppText>
+              </View>
+            </View>
+            <View style={styles.panelDivider} />
+            <TouchableOpacity style={styles.panelCta} onPress={() => { setEditing(null); setForm({ name: '', code: '', address: '', phone: '', is_active: true }); setShowForm(true); }}>
+              <Icon name="plus" size={16} color={colors.text.inverse} />
+              <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm chi nhánh mới</AppText>
+            </TouchableOpacity>
           </>
         )}
-        <View style={{ flexDirection: 'row', gap: 12, marginTop: 4 }}>
-          <TouchableOpacity onPress={() => { setEditing(selected); setForm({ name: selected.name, code: selected.code, address: selected.address || '', phone: selected.phone || '', is_active: selected.is_active }); setShowForm(true); }} style={[styles.panelBtn, { backgroundColor: colors.brand.primary }]}>
-            <Icon name="pencil" size={14} color={colors.text.inverse} />
-            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Sửa</AppText>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => del(selected.id)} style={[styles.panelBtn, { backgroundColor: colors.status.danger }]}>
-            <Icon name="delete" size={14} color={colors.text.inverse} />
-            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Xoá</AppText>
-          </TouchableOpacity>
-        </View>
       </View>
     );
   };
@@ -185,7 +215,7 @@ export default function BranchesScreen() {
           <Icon name="storefront" size={16} color={colors.brand.primary} />
           <View>
             <AppText variant="sm" weight="bold" color={colors.text.primary}>{stats.total}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Tổng số</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Tổng chi nhánh</AppText>
           </View>
         </View>
         <View style={styles.barDivider} />
@@ -193,7 +223,15 @@ export default function BranchesScreen() {
           <Icon name="check-circle" size={16} color={colors.status.success} />
           <View>
             <AppText variant="sm" weight="bold" color={colors.status.success}>{stats.active}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Đang hoạt động</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Đang mở</AppText>
+          </View>
+        </View>
+        <View style={styles.barDivider} />
+        <View style={styles.statItem}>
+          <Icon name="close-circle" size={16} color={colors.status.danger} />
+          <View>
+            <AppText variant="sm" weight="bold" color={colors.status.danger}>{stats.inactive}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Tạm ngừng</AppText>
           </View>
         </View>
       </View>
@@ -271,6 +309,7 @@ export default function BranchesScreen() {
 const styles = StyleSheet.create({
   mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 8 },
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },
+  branchAvatar: { width: 32, height: 32, borderRadius: shape.radius.sm, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' },
 
   statsBar: {
     flexDirection: 'row',
@@ -283,13 +322,15 @@ const styles = StyleSheet.create({
   },
   statItem: { flex: 1, alignItems: 'center', flexDirection: 'row', gap: 6, justifyContent: 'center' },
   barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-  statusChip: { paddingVertical: 2, paddingHorizontal: 8, borderRadius: shape.radius.sm },
+  statusChip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 2, paddingHorizontal: 8, borderRadius: shape.radius.sm },
+  statusDot: { width: 6, height: 6, borderRadius: 3 },
 
   panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, gap: 12 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   panelDivider: { height: 1, backgroundColor: colors.border.light },
   panelBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, height: 36, borderRadius: shape.radius.md },
   panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, height: 42 },
+  panelCtaSecondary: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: colors.brand.primaryBg, borderRadius: shape.radius.md, height: 38 },
   fieldInput: { borderRadius: shape.radius.md, paddingHorizontal: 10, paddingVertical: 8, ...font.md, color: colors.text.primary, backgroundColor: colors.surface.app },
   toggleChip: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8, paddingHorizontal: 10, borderRadius: shape.radius.md, backgroundColor: colors.surface.app },
 });

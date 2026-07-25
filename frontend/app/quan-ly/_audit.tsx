@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useResponsive } from '../../lib/hooks/useResponsive';
-import { colors } from '../../lib/theme';
+import { colors, font } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import DataTable, { type Column } from '../../lib/components/ui/DataTable';
@@ -13,6 +13,7 @@ const API = '/api/v1/quan-ly';
 
 const ACTION_ICONS: Record<string, string> = { create: 'plus-circle', update: 'pencil', delete: 'delete-circle', login: 'login', logout: 'logout' };
 const ACTION_COLORS: Record<string, string> = { create: colors.status.success, update: colors.status.warning, delete: colors.status.danger, login: colors.status.info, logout: colors.text.muted };
+const ACTION_BG: Record<string, string> = { create: colors.status.successBg || '#DCFCE7', update: '#FEF3C7', delete: colors.status.dangerBg || '#FEE2E2', login: '#E0F2FE', logout: colors.surface.app };
 
 export default function AuditScreen() {
   const { isWide } = useResponsive();
@@ -20,6 +21,7 @@ export default function AuditScreen() {
   const [loading, setLoading] = useState(true);
   const [filterAction, setFilterAction] = useState('');
   const [searchUser, setSearchUser] = useState('');
+  const [selectedLog, setSelectedLog] = useState<any | null>(null);
   const [sortKey, setSortKey] = useState<string>('created_at');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
 
@@ -42,22 +44,25 @@ export default function AuditScreen() {
   const columns: Column<any>[] = [
     {
       key: 'action',
-      title: 'Hành động',
+      title: 'Hành động kiểm toán',
       flex: 1,
       sortable: true,
       sortValue: (l) => l.action || '',
       render: (l) => {
         const icon = ACTION_ICONS[l.action] || 'information';
         const color = ACTION_COLORS[l.action] || colors.text.muted;
+        const bg = ACTION_BG[l.action] || colors.surface.app;
         return (
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <Icon name={icon as any} size={14} color={color} />
+            <View style={[styles.actionBadge, { backgroundColor: bg }]}>
+              <Icon name={icon as any} size={14} color={color} />
+            </View>
             <View style={{ flex: 1 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                 <AppText variant="sm" weight="bold" color={color} style={{ textTransform: 'capitalize' }}>{l.action}</AppText>
-                <AppText variant="sm" color={colors.text.secondary}>{l.resource}</AppText>
+                {l.resource ? <AppText variant="sm" color={colors.text.secondary}>· {l.resource}</AppText> : null}
               </View>
-              <AppText variant="sm" color={colors.text.muted}>{l.user_name}</AppText>
+              <AppText variant="sm" color={colors.text.muted}>@{l.user_name || 'Hệ thống'}</AppText>
             </View>
           </View>
         );
@@ -66,7 +71,7 @@ export default function AuditScreen() {
     {
       key: 'created_at',
       title: 'Thời gian',
-      width: 130,
+      width: 135,
       align: 'right',
       sortable: true,
       sortValue: (l) => l.created_at || '',
@@ -82,27 +87,60 @@ export default function AuditScreen() {
       <View style={styles.panelBox}>
         <View style={styles.panelHeader}>
           <Icon name="clipboard-text-outline" size={18} color={colors.brand.primary} />
-          <AppText variant="sm" weight="bold" color={colors.text.primary}>Thống kê kiểm toán hệ thống</AppText>
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>
+            {selectedLog ? 'Chi tiết log kiểm toán' : 'Thống kê kiểm toán hệ thống'}
+          </AppText>
         </View>
-        <View style={{ alignItems: 'center', paddingVertical: 4 }}>
-          <AppText variant="lg" weight="bold" color={colors.text.primary}>{total}</AppText>
-          <AppText variant="sm" color={colors.text.muted}>Lượt ghi nhận log</AppText>
-        </View>
-        <View style={styles.panelDivider} />
-        {Object.entries(c).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([k, v]) => {
-          const color = ACTION_COLORS[k] || colors.text.muted;
-          const pct = total > 0 ? (v / total) * 100 : 0;
-          return (
-            <View key={k} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 2 }}>
-              <View style={[styles.panelRowDot, { backgroundColor: color }]} />
-              <AppText variant="sm" color={colors.text.primary} style={{ flex: 1, textTransform: 'capitalize' }}>{k}</AppText>
-              <View style={{ width: 50, height: 6, backgroundColor: colors.surface.app, borderRadius: 3, overflow: 'hidden' }}>
-                <View style={{ width: `${pct}%`, height: 6, backgroundColor: color, borderRadius: 3 }} />
-              </View>
-              <AppText variant="sm" weight="bold" color={color} style={{ width: 25, textAlign: 'right' }}>{v}</AppText>
+
+        {selectedLog ? (
+          <View style={{ gap: 8 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <AppText variant="sm" color={colors.text.muted}>Hành động</AppText>
+              <AppText variant="sm" weight="bold" color={ACTION_COLORS[selectedLog.action] || colors.text.primary} style={{ textTransform: 'capitalize' }}>{selectedLog.action}</AppText>
             </View>
-          );
-        })}
+            <View style={styles.panelDivider} />
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <AppText variant="sm" color={colors.text.muted}>Người thực hiện</AppText>
+              <AppText variant="sm" weight="bold" color={colors.text.primary}>@{selectedLog.user_name || 'Hệ thống'}</AppText>
+            </View>
+            <View style={styles.panelDivider} />
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <AppText variant="sm" color={colors.text.muted}>Tài nguyên</AppText>
+              <AppText variant="sm" weight="bold" color={colors.text.primary}>{selectedLog.resource || '—'}</AppText>
+            </View>
+            <View style={styles.panelDivider} />
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <AppText variant="sm" color={colors.text.muted}>Thời gian ghi nhận</AppText>
+              <AppText variant="sm" color={colors.text.primary}>{selectedLog.created_at ? new Date(selectedLog.created_at).toLocaleString('vi-VN') : '—'}</AppText>
+            </View>
+            <View style={styles.panelDivider} />
+            <TouchableOpacity style={styles.panelCtaSecondary} onPress={() => setSelectedLog(null)}>
+              <AppText variant="sm" weight="bold" color={colors.brand.primary}>Đóng chi tiết</AppText>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <>
+            <View style={{ alignItems: 'center', paddingVertical: 4 }}>
+              <AppText variant="lg" weight="bold" color={colors.text.primary}>{total}</AppText>
+              <AppText variant="sm" color={colors.text.muted}>Lượt ghi nhận log</AppText>
+            </View>
+            <View style={styles.panelDivider} />
+            {Object.entries(c).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([k, v]) => {
+              const color = ACTION_COLORS[k] || colors.text.muted;
+              const pct = total > 0 ? (v / total) * 100 : 0;
+              return (
+                <View key={k} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 2 }}>
+                  <View style={[styles.panelRowDot, { backgroundColor: color }]} />
+                  <AppText variant="sm" color={colors.text.primary} style={{ flex: 1, textTransform: 'capitalize' }}>{k}</AppText>
+                  <View style={{ width: 50, height: 6, backgroundColor: colors.surface.app, borderRadius: 3, overflow: 'hidden' }}>
+                    <View style={{ width: `${pct}%`, height: 6, backgroundColor: color, borderRadius: 3 }} />
+                  </View>
+                  <AppText variant="sm" weight="bold" color={color} style={{ width: 25, textAlign: 'right' }}>{v}</AppText>
+                </View>
+              );
+            })}
+          </>
+        )}
       </View>
     );
   };
@@ -116,6 +154,11 @@ export default function AuditScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+      {/* Search & Filter Bar */}
+      <View style={styles.searchBarRow}>
+        <SearchBar value={searchUser} onChangeText={setSearchUser} placeholder="Tìm nhân viên thực hiện..." />
+      </View>
+
       {/* Stats bar */}
       <View style={styles.statsBar}>
         <View style={styles.statItem}>
@@ -151,21 +194,19 @@ export default function AuditScreen() {
         </View>
       </View>
 
-      {/* Filter Chips & Search Bar */}
+      {/* Filter Chips */}
       <View style={styles.filterRow}>
-        <TouchableOpacity onPress={() => setFilterAction('')} style={[styles.chip, !filterAction && styles.chipActive]}>
-          <AppText variant="sm" color={!filterAction ? colors.brand.primary : colors.text.secondary} weight={!filterAction ? 'bold' : 'normal'}>Tất cả</AppText>
-        </TouchableOpacity>
-        {actions.map(a => (
-          <TouchableOpacity key={a} onPress={() => setFilterAction(filterAction === a ? '' : a)}
-            style={[styles.chip, filterAction === a && styles.chipActive]}>
-            <AppText variant="sm" color={filterAction === a ? colors.brand.primary : colors.text.secondary} weight={filterAction === a ? 'bold' : 'normal'}>{a}</AppText>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+          <TouchableOpacity onPress={() => setFilterAction('')} style={[styles.chip, !filterAction && styles.chipActive]}>
+            <AppText variant="sm" color={!filterAction ? colors.brand.primary : colors.text.secondary} weight={!filterAction ? 'bold' : 'normal'}>Tất cả</AppText>
           </TouchableOpacity>
-        ))}
-        <View style={{ flex: 1 }} />
-        <View style={{ width: 140 }}>
-          <SearchBar value={searchUser} onChangeText={setSearchUser} placeholder="Tìm user..." />
-        </View>
+          {actions.map(a => (
+            <TouchableOpacity key={a} onPress={() => setFilterAction(filterAction === a ? '' : a)}
+              style={[styles.chip, filterAction === a && styles.chipActive]}>
+              <AppText variant="sm" color={filterAction === a ? colors.brand.primary : colors.text.secondary} weight={filterAction === a ? 'bold' : 'normal'} style={{ textTransform: 'capitalize' }}>{a}</AppText>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
       </View>
 
       {isWide ? (
@@ -179,10 +220,12 @@ export default function AuditScreen() {
               sortKey={sortKey}
               sortDir={sortDir}
               onSortChange={handleSortChange}
+              onRowPress={setSelectedLog}
+              selectedRowId={selectedLog?.id ?? null}
               onRefresh={load}
               compact
               emptyIcon="clipboard-text-off"
-              emptyTitle="Chưa có log kiềm toán"
+              emptyTitle="Chưa có log kiểm toán"
               emptySubtitle=""
             />
           </View>
@@ -198,6 +241,8 @@ export default function AuditScreen() {
             sortKey={sortKey}
             sortDir={sortDir}
             onSortChange={handleSortChange}
+            onRowPress={setSelectedLog}
+            selectedRowId={selectedLog?.id ?? null}
             onRefresh={load}
             compact
             emptyIcon="clipboard-text-off"
@@ -211,6 +256,7 @@ export default function AuditScreen() {
 }
 
 const styles = StyleSheet.create({
+  searchBarRow: { paddingHorizontal: 8, marginVertical: 4 },
   statsBar: {
     flexDirection: 'row',
     paddingHorizontal: 12,
@@ -218,16 +264,18 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface.card,
     borderRadius: shape.radius.lg,
     marginHorizontal: 8,
-    marginVertical: 8,
+    marginVertical: 4,
   },
   statItem: { flex: 1, alignItems: 'center', flexDirection: 'row', gap: 6, justifyContent: 'center' },
   barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-  filterRow: { flexDirection: 'row', gap: 6, paddingHorizontal: 8, marginBottom: 8, alignItems: 'center', flexWrap: 'wrap' },
+  filterRow: { paddingHorizontal: 8, marginBottom: 8 },
   chip: { paddingHorizontal: 12, height: 32, borderRadius: shape.radius.md, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center' },
   chipActive: { backgroundColor: colors.brand.primaryBg },
+  actionBadge: { width: 28, height: 28, borderRadius: shape.radius.sm, alignItems: 'center', justifyContent: 'center' },
 
   panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, gap: 12 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   panelDivider: { height: 1, backgroundColor: colors.border.light },
   panelRowDot: { width: 6, height: 6, borderRadius: 3 },
+  panelCtaSecondary: { height: 36, borderRadius: shape.radius.md, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center', marginTop: 4 },
 });
