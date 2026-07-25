@@ -84,30 +84,33 @@ export default function AuditScreen() {
     const color = ACTION_COLORS[l.action] || colors.text.muted;
     const bg = ACTION_BG[l.action] || colors.surface.app;
     return (
-      <TouchableOpacity
-        style={styles.mobileItemCardFbFullWidth}
-        onPress={() => setSelectedLog(l)}
-        activeOpacity={0.7}
-      >
-        <View style={[styles.actionBadgeCircle, { backgroundColor: bg }]}>
-          <Icon name={icon as any} size={18} color={color} />
-        </View>
-        <View style={{ flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <AppText variant="md" weight="bold" color="#050505" style={{ textTransform: 'capitalize', fontSize: 15 }}>{l.action}</AppText>
-            {l.resource ? <AppText variant="sm" color={colors.text.secondary}>· {l.resource}</AppText> : null}
+      <View style={styles.mobileItemCardFbFullWidth} key={l.id}>
+        <View style={styles.cardHeaderRow}>
+          <View style={[styles.actionBadgeCircle, { backgroundColor: bg }]}>
+            <Icon name={icon as any} size={20} color={color} />
           </View>
-          <AppText variant="sm" color={colors.text.muted}>@{l.user_name || 'Hệ thống'}</AppText>
+          <View style={{ flex: 1 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <AppText variant="md" weight="bold" color="#050505" style={{ textTransform: 'capitalize', fontSize: 16 }}>{l.action}</AppText>
+              {l.resource ? <AppText variant="sm" color="#65676B">· {l.resource}</AppText> : null}
+            </View>
+            <AppText variant="sm" color="#65676B">@{l.user_name || 'Hệ thống'}</AppText>
+          </View>
+          <View style={{ alignItems: 'flex-end', gap: 4 }}>
+            <AppText variant="sm" color="#65676B" style={{ fontSize: 12 }}>
+              {l.created_at ? new Date(l.created_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : ''}
+            </AppText>
+          </View>
         </View>
-        <View style={{ alignItems: 'flex-end', gap: 4 }}>
-          <AppText variant="sm" color={colors.text.muted} style={{ fontSize: 11 }}>
-            {l.created_at ? new Date(l.created_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : ''}
-          </AppText>
-          <TouchableOpacity style={styles.actionCircleBtn} onPress={() => setSelectedLog(l)}>
-            <Icon name="dots-horizontal" size={16} color={colors.text.secondary} />
+
+        {/* Facebook Equal Bottom Action Bar */}
+        <View style={styles.cardActionBar}>
+          <TouchableOpacity style={styles.cardActionItem} onPress={() => setSelectedLog(l)}>
+            <Icon name="file-document-outline" size={16} color={colors.brand.primary} />
+            <AppText variant="sm" weight="bold" color={colors.brand.primary}>Xem chi tiết log</AppText>
           </TouchableOpacity>
         </View>
-      </TouchableOpacity>
+      </View>
     );
   };
 
@@ -191,51 +194,59 @@ export default function AuditScreen() {
         <SearchBar value={searchUser} onChangeText={setSearchUser} placeholder="Tìm nhân viên thực hiện..." />
       </View>
 
-      {/* Stats bar */}
-      <View style={styles.statsBar}>
-        <View style={styles.statItem}>
-          <Icon name="clipboard-text" size={16} color={colors.brand.primary} />
+      {/* Facebook Story Highlight Metric Cards */}
+      <View style={styles.fbMetricContainer}>
+        <View style={styles.fbMetricCard}>
+          <View style={[styles.fbMetricIcon, { backgroundColor: colors.brand.primaryBg }]}>
+            <Icon name="clipboard-text" size={18} color={colors.brand.primary} />
+          </View>
           <View>
             <AppText variant="md" weight="bold" color="#050505">{logs.length}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Tổng log</AppText>
+            <AppText variant="sm" color="#65676B">Tổng log</AppText>
           </View>
         </View>
-        <View style={styles.barDivider} />
-        <View style={styles.statItem}>
-          <Icon name="plus-circle" size={16} color={colors.status.success} />
+
+        <View style={styles.fbMetricCard}>
+          <View style={[styles.fbMetricIcon, { backgroundColor: '#ECFDF5' }]}>
+            <Icon name="plus-circle" size={18} color={colors.status.success} />
+          </View>
           <View>
             <AppText variant="md" weight="bold" color={colors.status.success}>{counts['create'] || 0}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Tạo mới</AppText>
+            <AppText variant="sm" color="#65676B">Tạo mới</AppText>
           </View>
         </View>
-        <View style={styles.barDivider} />
-        <View style={styles.statItem}>
-          <Icon name="pencil" size={16} color={colors.status.warning} />
+
+        <View style={styles.fbMetricCard}>
+          <View style={[styles.fbMetricIcon, { backgroundColor: '#FEF3C7' }]}>
+            <Icon name="pencil" size={18} color={colors.status.warning} />
+          </View>
           <View>
             <AppText variant="md" weight="bold" color={colors.status.warning}>{counts['update'] || 0}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Cập nhật</AppText>
+            <AppText variant="sm" color="#65676B">Cập nhật</AppText>
           </View>
         </View>
-        <View style={styles.barDivider} />
-        <View style={styles.statItem}>
-          <Icon name="delete-circle" size={16} color={colors.status.danger} />
+
+        <View style={styles.fbMetricCard}>
+          <View style={[styles.fbMetricIcon, { backgroundColor: '#FEE2E2' }]}>
+            <Icon name="delete-circle" size={18} color={colors.status.danger} />
+          </View>
           <View>
             <AppText variant="md" weight="bold" color={colors.status.danger}>{counts['delete'] || 0}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Xóa</AppText>
+            <AppText variant="sm" color="#65676B">Xóa</AppText>
           </View>
         </View>
       </View>
 
-      {/* Filter Chips */}
+      {/* Filter Chips - Facebook Sub-Filter Pills */}
       <View style={styles.filterRow}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6, paddingHorizontal: 12 }}>
           <TouchableOpacity onPress={() => setFilterAction('')} style={[styles.chip, !filterAction && styles.chipActive]}>
-            <AppText variant="sm" color={!filterAction ? colors.brand.primary : colors.text.secondary} weight={!filterAction ? 'bold' : 'normal'}>Tất cả</AppText>
+            <AppText variant="sm" color={!filterAction ? colors.brand.primary : '#050505'} weight={!filterAction ? 'bold' : 'normal'}>Tất cả</AppText>
           </TouchableOpacity>
           {actions.map(a => (
             <TouchableOpacity key={a} onPress={() => setFilterAction(filterAction === a ? '' : a)}
               style={[styles.chip, filterAction === a && styles.chipActive]}>
-              <AppText variant="sm" color={filterAction === a ? colors.brand.primary : colors.text.secondary} weight={filterAction === a ? 'bold' : 'normal'} style={{ textTransform: 'capitalize' }}>{a}</AppText>
+              <AppText variant="sm" color={filterAction === a ? colors.brand.primary : '#050505'} weight={filterAction === a ? 'bold' : 'normal'} style={{ textTransform: 'capitalize' }}>{a}</AppText>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -290,26 +301,44 @@ export default function AuditScreen() {
 
 const styles = StyleSheet.create({
   searchBarRow: { paddingHorizontal: 12, marginVertical: 4 },
-  statsBar: {
+
+  /* Facebook Story Highlight Metric Cards Container */
+  fbMetricContainer: {
     flexDirection: 'row',
     paddingHorizontal: 12,
     paddingVertical: 10,
+    gap: 8,
     backgroundColor: colors.surface.card,
-    borderRadius: 16,
-    marginHorizontal: 12,
-    marginVertical: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
+    marginBottom: 8,
   },
-  statItem: { flex: 1, alignItems: 'center', flexDirection: 'row', gap: 6, justifyContent: 'center' },
-  barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-  filterRow: { paddingHorizontal: 12, marginBottom: 8 },
-  chip: { paddingHorizontal: 14, height: 34, borderRadius: 999, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
-  chipActive: { backgroundColor: colors.brand.primaryBg },
-  actionBadgeCircle: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
-  actionCircleBtn: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
+  fbMetricCard: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: colors.surface.card,
+    paddingVertical: 6,
+    paddingHorizontal: 6,
+    borderRadius: 12,
+  },
+  fbMetricIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justify: 'center',
+  },
+
+  filterRow: { marginVertical: 4, marginBottom: 8 },
+  chip: { paddingHorizontal: 14, height: 34, borderRadius: 999, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center' },
+  chipActive: { backgroundColor: colors.brand.primaryBg, borderWidth: 1, borderColor: '#FFEDD5' },
+  actionBadgeCircle: { width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center' },
+  actionCircleBtn: { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
 
   /* Mobile Full-Width Edge-to-Edge Facebook Log Card */
   mobileItemCardFbFullWidth: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
     backgroundColor: colors.surface.card,
     width: '100%',
     marginBottom: 8,
@@ -320,6 +349,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     borderRadius: 0,
   },
+  cardHeaderRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+
+  /* Facebook Equal Bottom Action Bar */
+  cardActionBar: { flexDirection: 'row', alignItems: 'center', borderTopWidth: 1, borderTopColor: colors.border.light, paddingTop: 8, marginTop: 10 },
+  cardActionItem: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 4 },
 
   panelBox: { backgroundColor: colors.surface.card, borderRadius: 16, padding: 16, gap: 12 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },

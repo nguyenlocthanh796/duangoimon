@@ -99,20 +99,20 @@ export default function BranchesScreen() {
   };
 
   const renderMobileCard = (b: Branch) => (
-    <View style={styles.branchCardFbFullWidth}>
+    <View style={styles.branchCardFbFullWidth} key={b.id}>
       <View style={styles.cardHeaderRow}>
         <View style={styles.branchAvatarCircle}>
-          <Icon name="storefront-outline" size={18} color={colors.brand.primary} />
+          <Icon name="storefront-outline" size={20} color={colors.brand.primary} />
         </View>
         <View style={{ flex: 1 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <AppText variant="md" weight="bold" color="#050505" style={{ fontSize: 15 }} numberOfLines={1}>{b.name}</AppText>
+            <AppText variant="md" weight="bold" color="#050505" style={{ fontSize: 16 }} numberOfLines={1}>{b.name}</AppText>
             <View style={styles.codeBadge}>
               <AppText variant="sm" color={colors.text.muted}>{b.code}</AppText>
             </View>
           </View>
           {b.address ? (
-            <AppText variant="sm" color={colors.text.muted} numberOfLines={1} style={{ marginTop: 2 }}>📍 {b.address}</AppText>
+            <AppText variant="sm" color="#65676B" numberOfLines={1} style={{ marginTop: 2 }}>📍 {b.address}</AppText>
           ) : null}
         </View>
         <View style={[styles.statusChip, { backgroundColor: b.is_active ? colors.brand.primaryBg : colors.surface.app }]}>
@@ -258,29 +258,35 @@ export default function BranchesScreen() {
         </View>
       )}
 
-      {/* Stats bar */}
-      <View style={styles.statsBar}>
-        <View style={styles.statItem}>
-          <Icon name="storefront" size={16} color={colors.brand.primary} />
+      {/* Facebook Story Highlight Metric Cards */}
+      <View style={styles.fbMetricContainer}>
+        <View style={styles.fbMetricCard}>
+          <View style={[styles.fbMetricIcon, { backgroundColor: colors.brand.primaryBg }]}>
+            <Icon name="storefront" size={18} color={colors.brand.primary} />
+          </View>
           <View>
             <AppText variant="md" weight="bold" color="#050505">{stats.total}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Tổng chi nhánh</AppText>
+            <AppText variant="sm" color="#65676B">Tổng chi nhánh</AppText>
           </View>
         </View>
-        <View style={styles.barDivider} />
-        <View style={styles.statItem}>
-          <Icon name="check-circle" size={16} color={colors.status.success} />
+
+        <View style={styles.fbMetricCard}>
+          <View style={[styles.fbMetricIcon, { backgroundColor: '#ECFDF5' }]}>
+            <Icon name="check-circle" size={18} color={colors.status.success} />
+          </View>
           <View>
             <AppText variant="md" weight="bold" color={colors.status.success}>{stats.active}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Đang mở</AppText>
+            <AppText variant="sm" color="#65676B">Đang mở</AppText>
           </View>
         </View>
-        <View style={styles.barDivider} />
-        <View style={styles.statItem}>
-          <Icon name="close-circle" size={16} color={colors.status.danger} />
+
+        <View style={styles.fbMetricCard}>
+          <View style={[styles.fbMetricIcon, { backgroundColor: '#FEE2E2' }]}>
+            <Icon name="close-circle" size={18} color={colors.status.danger} />
+          </View>
           <View>
             <AppText variant="md" weight="bold" color={colors.status.danger}>{stats.inactive}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Tạm ngừng</AppText>
+            <AppText variant="sm" color="#65676B">Tạm ngừng</AppText>
           </View>
         </View>
       </View>
@@ -357,9 +363,38 @@ export default function BranchesScreen() {
 }
 
 const styles = StyleSheet.create({
-  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light, marginBottom: 8 },
+  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 36, borderRadius: 999, backgroundColor: colors.brand.primary },
-  branchAvatarCircle: { width: 38, height: 38, borderRadius: 19, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' },
+  branchAvatarCircle: { width: 42, height: 42, borderRadius: 21, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' },
+
+  /* Facebook Story Highlight Metric Cards Container */
+  fbMetricContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 8,
+    backgroundColor: colors.surface.card,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
+    marginBottom: 8,
+  },
+  fbMetricCard: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: colors.surface.card,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+  },
+  fbMetricIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justify: 'center',
+  },
 
   statsBar: {
     flexDirection: 'row',
