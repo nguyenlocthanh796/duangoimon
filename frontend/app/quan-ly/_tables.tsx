@@ -17,42 +17,6 @@ interface FormState { name: string; area: string; capacity: string; }
 const EMPTY_FORM: FormState = { name: '', area: '', capacity: '4' };
 const AREAS = ['Trong nhà', 'VIP', 'Ngoài Trời', 'Tầng 1', 'Tầng 2'];
 
-const TableCard = ({ table, onPress }: { table: Table; onPress: () => void }) => {
-  const isOccupied = table.status === 'co_khach';
-
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      activeOpacity={0.8}
-      style={{
-        width: '31.3%',
-        aspectRatio: 1,
-        margin: '1%',
-        borderRadius: 16,
-        backgroundColor: isOccupied ? colors.brand.primaryBg : colors.surface.card,
-        padding: 12,
-        justifyContent: 'space-between',
-      }}
-    >
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <AppText variant="md" weight="bold" color={isOccupied ? colors.brand.primary : colors.text.primary}>{table.name}</AppText>
-        {isOccupied && (
-          <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.brand.primary }} />
-        )}
-      </View>
-
-      <View>
-        <AppText variant="sm" color={isOccupied ? colors.brand.primary : colors.text.muted}>
-          {isOccupied ? 'Có khách' : 'Trống'}
-        </AppText>
-        <AppText variant="sm" color={colors.text.secondary}>
-          {table.area || 'Trong nhà'}
-        </AppText>
-      </View>
-    </TouchableOpacity>
-  );
-};
-
 export default function TablesScreen() {
   const { isWide } = useResponsive();
   const [tables, setTables] = useState<Table[]>([]);
@@ -119,11 +83,55 @@ export default function TablesScreen() {
     ? tables
     : tables.filter(t => (t.area || 'Trong nhà') === selectedArea);
 
+  const renderMobileCard = (table: Table) => {
+    const isOccupied = table.status === 'co_khach';
+    return (
+      <View style={styles.tableCardFbFullWidth} key={table.id}>
+        {/* Card Header */}
+        <View style={styles.cardHeaderRow}>
+          <View style={[styles.tableAvatarCircle, { backgroundColor: isOccupied ? colors.brand.primaryBg : '#ECFDF5' }]}>
+            <Icon name="table-furniture" size={20} color={isOccupied ? colors.brand.primary : colors.status.success} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <AppText variant="md" weight="bold" color="#050505" style={{ fontSize: 16 }}>{table.name}</AppText>
+              <View style={[styles.statusChip, { backgroundColor: isOccupied ? colors.brand.primaryBg : '#ECFDF5' }]}>
+                <View style={[styles.statusDot, { backgroundColor: isOccupied ? colors.brand.primary : colors.status.success }]} />
+                <AppText variant="sm" weight="bold" color={isOccupied ? colors.brand.primary : colors.status.success}>
+                  {isOccupied ? 'Có khách' : 'Bàn trống'}
+                </AppText>
+              </View>
+            </View>
+            <AppText variant="sm" color="#65676B" style={{ marginTop: 2 }}>
+              Khu vực: {table.area || 'Trong nhà'} · Sức chứa: {table.capacity || 4} người
+            </AppText>
+          </View>
+          <TouchableOpacity style={styles.actionCircleBtn} onPress={() => openEdit(table)}>
+            <Icon name="dots-horizontal" size={20} color="#050505" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Facebook Equal Bottom Action Bar */}
+        <View style={styles.cardActionBar}>
+          <TouchableOpacity style={styles.cardActionItem} onPress={() => openEdit(table)}>
+            <Icon name="pencil-outline" size={16} color={colors.brand.primary} />
+            <AppText variant="sm" weight="bold" color={colors.brand.primary}>Chỉnh sửa bàn</AppText>
+          </TouchableOpacity>
+          <View style={styles.cardActionDivider} />
+          <TouchableOpacity style={styles.cardActionItem} onPress={() => openEdit(table)}>
+            <Icon name="swap-horizontal" size={16} color={colors.text.secondary} />
+            <AppText variant="sm" weight="bold" color={colors.text.secondary}>Đổi khu vực</AppText>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
   const renderInlineForm = () => (
     <View style={styles.panelBox}>
       <View style={styles.panelHeader}>
         <Icon name={editingId ? 'pencil' : 'plus'} size={18} color={colors.brand.primary} />
-        <AppText variant="sm" weight="bold" color={colors.text.primary}>{editingId ? 'Chỉnh sửa bàn' : 'Thêm bàn mới'}</AppText>
+        <AppText variant="md" weight="bold" color="#050505">{editingId ? 'Chỉnh sửa bàn' : 'Thêm bàn mới'}</AppText>
       </View>
       <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, marginVertical: 8 }}>
         <View style={{ marginBottom: 12 }}>
@@ -188,10 +196,10 @@ export default function TablesScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
-      {/* Top Action Bar on Mobile */}
+      {/* Top Bar on Mobile */}
       {!isWide && (
         <View style={styles.mobileActionRow}>
-          <AppText variant="sm" color={colors.text.muted}>{tables.length} bàn ăn</AppText>
+          <AppText variant="md" weight="bold" color="#050505">{tables.length} bàn ăn</AppText>
           <TouchableOpacity onPress={openAdd} style={styles.addBtn}>
             <Icon name="plus" size={16} color={colors.text.inverse} />
             <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm bàn</AppText>
@@ -206,7 +214,7 @@ export default function TablesScreen() {
             const active = selectedArea === area;
             return (
               <TouchableOpacity key={area} onPress={() => setSelectedArea(area)} style={[styles.areaTab, active && styles.areaTabActive]}>
-                <AppText variant="sm" color={active ? colors.brand.primary : colors.text.secondary} weight={active ? 'bold' : 'normal'}>{area}</AppText>
+                <AppText variant="sm" color={active ? colors.brand.primary : '#050505'} weight={active ? 'bold' : 'normal'}>{area}</AppText>
               </TouchableOpacity>
             );
           })}
@@ -216,17 +224,17 @@ export default function TablesScreen() {
       {/* Summary stats bar */}
       <View style={styles.statsBar}>
         <View style={styles.statItem}>
-          <AppText variant="sm" weight="bold" color={colors.text.primary}>{tables.length}</AppText>
-          <AppText variant="sm" color={colors.text.muted}>Tổng</AppText>
+          <AppText variant="md" weight="bold" color="#050505">{tables.length}</AppText>
+          <AppText variant="sm" color={colors.text.muted}>Tổng bàn</AppText>
         </View>
         <View style={styles.barDivider} />
         <View style={styles.statItem}>
-          <AppText variant="sm" weight="bold" color={colors.status.success}>{counts.trong}</AppText>
-          <AppText variant="sm" color={colors.text.muted}>Trống</AppText>
+          <AppText variant="md" weight="bold" color={colors.status.success}>{counts.trong}</AppText>
+          <AppText variant="sm" color={colors.text.muted}>Bàn trống</AppText>
         </View>
         <View style={styles.barDivider} />
         <View style={styles.statItem}>
-          <AppText variant="sm" weight="bold" color={colors.brand.primary}>{counts.co_khach}</AppText>
+          <AppText variant="md" weight="bold" color={colors.brand.primary}>{counts.co_khach}</AppText>
           <AppText variant="sm" color={colors.text.muted}>Có khách</AppText>
         </View>
       </View>
@@ -238,9 +246,41 @@ export default function TablesScreen() {
               <TableSkeleton rowCount={5} />
             ) : (
               <ScrollView contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', padding: '1%' }}>
-                {filteredTables.map(table => (
-                  <TableCard key={table.id} table={table} onPress={() => openEdit(table)} />
-                ))}
+                {filteredTables.map(table => {
+                  const isOccupied = table.status === 'co_khach';
+                  return (
+                    <TouchableOpacity
+                      key={table.id}
+                      onPress={() => openEdit(table)}
+                      activeOpacity={0.8}
+                      style={{
+                        width: '31.3%',
+                        aspectRatio: 1,
+                        margin: '1%',
+                        borderRadius: 16,
+                        backgroundColor: isOccupied ? colors.brand.primaryBg : colors.surface.card,
+                        padding: 12,
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <AppText variant="md" weight="bold" color={isOccupied ? colors.brand.primary : '#050505'}>{table.name}</AppText>
+                        {isOccupied && (
+                          <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.brand.primary }} />
+                        )}
+                      </View>
+
+                      <View>
+                        <AppText variant="sm" color={isOccupied ? colors.brand.primary : colors.text.muted}>
+                          {isOccupied ? 'Có khách' : 'Trống'}
+                        </AppText>
+                        <AppText variant="sm" color={colors.text.secondary}>
+                          {table.area || 'Trong nhà'}
+                        </AppText>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                })}
               </ScrollView>
             )}
           </View>
@@ -249,11 +289,11 @@ export default function TablesScreen() {
               <View style={styles.panelBox}>
                 <View style={styles.panelHeader}>
                   <Icon name="table-furniture" size={18} color={colors.brand.primary} />
-                  <AppText variant="sm" weight="bold" color={colors.text.primary}>Thống kê sơ đồ bàn</AppText>
+                  <AppText variant="md" weight="bold" color="#050505">Thống kê sơ đồ bàn</AppText>
                 </View>
                 <View style={{ flexDirection: 'row', gap: 8 }}>
                   <View style={{ flex: 1, alignItems: 'center' }}>
-                    <AppText variant="md" weight="bold" color={colors.text.primary}>{tables.length}</AppText>
+                    <AppText variant="md" weight="bold" color="#050505">{tables.length}</AppText>
                     <AppText variant="sm" color={colors.text.muted}>Tổng số bàn</AppText>
                   </View>
                   <View style={styles.barDivider} />
@@ -277,14 +317,12 @@ export default function TablesScreen() {
           </View>
         </View>
       ) : (
-        <View style={{ flex: 1, paddingHorizontal: 12 }}>
+        <View style={{ flex: 1, width: '100%' }}>
           {loading ? (
             <TableSkeleton rowCount={5} />
           ) : (
-            <ScrollView contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', padding: '1%', paddingBottom: 24 }}>
-              {filteredTables.map(table => (
-                <TableCard key={table.id} table={table} onPress={() => openEdit(table)} />
-              ))}
+            <ScrollView contentContainerStyle={{ paddingBottom: 24 }} showsVerticalScrollIndicator={false}>
+              {filteredTables.map(renderMobileCard)}
             </ScrollView>
           )}
         </View>
@@ -324,11 +362,11 @@ export default function TablesScreen() {
 }
 
 const styles = StyleSheet.create({
-  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8 },
+  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light, marginBottom: 8 },
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 36, borderRadius: 999, backgroundColor: colors.brand.primary },
 
   filterRow: { paddingHorizontal: 12, marginVertical: 4 },
-  areaTab: { paddingHorizontal: 14, height: 34, borderRadius: 999, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center' },
+  areaTab: { paddingHorizontal: 14, height: 34, borderRadius: 999, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
   areaTabActive: { backgroundColor: colors.brand.primaryBg },
 
   statsBar: {
@@ -342,6 +380,29 @@ const styles = StyleSheet.create({
   },
   statItem: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   barDivider: { width: 1, backgroundColor: colors.border.light },
+
+  /* Mobile Full-Width Edge-to-Edge Facebook Table Card */
+  tableCardFbFullWidth: {
+    backgroundColor: colors.surface.card,
+    width: '100%',
+    marginBottom: 8,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: colors.border.light,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 0,
+  },
+  cardHeaderRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  tableAvatarCircle: { width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center' },
+  statusChip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 2, paddingHorizontal: 8, borderRadius: 999 },
+  statusDot: { width: 6, height: 6, borderRadius: 3 },
+  actionCircleBtn: { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
+
+  /* Facebook Equal Bottom Action Bar */
+  cardActionBar: { flexDirection: 'row', alignItems: 'center', borderTopWidth: 1, borderTopColor: colors.border.light, paddingTop: 8, marginTop: 10 },
+  cardActionItem: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 4 },
+  cardActionDivider: { width: 1, height: 16, backgroundColor: colors.border.light },
 
   panelBox: { backgroundColor: colors.surface.card, borderRadius: 16, padding: 16, gap: 12 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },
