@@ -1,20 +1,16 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import { colors, font, formatVND } from '../../lib/theme';
+import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import DataTable, { type Column } from '../../lib/components/ui/DataTable';
-import ScreenHeader from '../../lib/components/ui/ScreenHeader';
-import ScreenContainer from '../../lib/components/ui/ScreenContainer';
-
-
+import AppText from '../../lib/components/ui/AppText';
 
 type TabKey = 'revenue' | 'foodcost';
 
 export default function BIReportsScreen() {
-  const { openSidebar } = useSidebar();
   const { isWide } = useResponsive();
   const [tab, setTab] = useState<TabKey>('revenue');
   const [revenue, setRevenue] = useState<any>(null);
@@ -41,25 +37,25 @@ export default function BIReportsScreen() {
       flex: 1,
       sortable: true,
       sortValue: (row: any) => row.date || '',
-      render: (row: any) => <Text style={styles.cellPrimary}>{row.date || '-'}</Text>,
+      render: (row: any) => <AppText variant="sm" weight="bold" color={colors.text.primary}>{row.date || '-'}</AppText>,
     },
     {
       key: 'orders',
-      title: 'Đơn',
-      width: 65,
+      title: 'Số đơn',
+      width: 75,
       align: 'right',
       sortable: true,
       sortValue: (row: any) => row.orders || 0,
-      render: (row: any) => <Text style={styles.cellNumber}>{row.orders}</Text>,
+      render: (row: any) => <AppText variant="sm" color={colors.text.primary}>{row.orders}</AppText>,
     },
     {
       key: 'revenue',
       title: 'Doanh thu',
-      width: 110,
+      width: 120,
       align: 'right',
       sortable: true,
       sortValue: (row: any) => row.revenue || 0,
-      render: (row: any) => <Text style={[styles.cellNumber, { color: '#F97316', fontWeight: '600' }]}>{formatVND(row.revenue)}</Text>,
+      render: (row: any) => <AppText variant="sm" weight="bold" color={colors.brand.primary}>{formatVND(row.revenue)}</AppText>,
     },
   ];
 
@@ -70,27 +66,27 @@ export default function BIReportsScreen() {
       flex: 1,
       sortable: true,
       sortValue: (row: any) => row.name || row.date || '',
-      render: (row: any) => <Text style={styles.cellPrimary} numberOfLines={1}>{row.name || row.date || '-'}</Text>,
+      render: (row: any) => <AppText variant="sm" weight="bold" color={colors.text.primary} numberOfLines={1}>{row.name || row.date || '-'}</AppText>,
     },
     {
       key: 'food_cost',
       title: 'Food Cost',
-      width: 100,
+      width: 110,
       align: 'right',
       sortable: true,
       sortValue: (row: any) => row.food_cost || 0,
-      render: (row: any) => <Text style={styles.cellNumber}>{formatVND(row.food_cost)}</Text>,
+      render: (row: any) => <AppText variant="sm" color={colors.text.primary}>{formatVND(row.food_cost)}</AppText>,
     },
     {
       key: 'pct',
-      title: '%',
-      width: 65,
+      title: 'Tỷ lệ %',
+      width: 75,
       align: 'right',
       sortable: true,
       sortValue: (row: any) => row.pct || 0,
       render: (row: any) => {
         const pct = row.pct || 0;
-        return <Text style={[styles.cellNumber, { fontWeight: '600', color: pct > 40 ? '#DC2626' : '#16A34A' }]}>{pct}%</Text>;
+        return <AppText variant="sm" weight="bold" color={pct > 40 ? colors.status.danger : colors.status.success}>{pct}%</AppText>;
       },
     },
   ];
@@ -106,14 +102,17 @@ export default function BIReportsScreen() {
       const maxPct = Math.max(...top.map((t: any) => t.pct || 0), 1);
       return (
         <View style={styles.panelBox}>
-          <View style={styles.panelHeader}><Icon name="food-apple" size={18} color={'#F97316'} /><Text style={styles.panelHeaderText}>Top Food Cost</Text></View>
+          <View style={styles.panelHeader}>
+            <Icon name="food-apple" size={18} color={colors.brand.primary} />
+            <AppText variant="sm" weight="bold" color={colors.text.primary}>Top Food Cost cao nhất</AppText>
+          </View>
           {top.map((item: any, i: number) => (
-            <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-              <Text style={{ width: 50, ...font.sm, color: '#171717' }} numberOfLines={1}>{item.name || item.date}</Text>
-              <View style={{ flex: 1, height: 10, backgroundColor: '#F5F5F5', borderRadius: 3 }}>
-                <View style={{ width: `${Math.max(5, ((item.pct || 0) / maxPct) * 100)}%`, height: 10, backgroundColor: (item.pct || 0) > 40 ? '#DC2626' : '#D97706', borderRadius: 3 }} />
+            <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 2 }}>
+              <AppText variant="sm" color={colors.text.primary} style={{ width: 80 }} numberOfLines={1}>{item.name || item.date}</AppText>
+              <View style={{ flex: 1, height: 8, backgroundColor: colors.surface.app, borderRadius: 4, overflow: 'hidden' }}>
+                <View style={{ width: `${Math.max(5, ((item.pct || 0) / maxPct) * 100)}%`, height: 8, backgroundColor: (item.pct || 0) > 40 ? colors.status.danger : colors.brand.primary, borderRadius: 4 }} />
               </View>
-              <Text style={{ width: 40, textAlign: 'right', ...font.sm, fontWeight: '600', color: (item.pct || 0) > 40 ? '#DC2626' : '#171717' }}>{item.pct}%</Text>
+              <AppText variant="sm" weight="bold" color={(item.pct || 0) > 40 ? colors.status.danger : colors.text.primary} style={{ width: 45, textAlign: 'right' }}>{item.pct}%</AppText>
             </View>
           ))}
         </View>
@@ -125,14 +124,17 @@ export default function BIReportsScreen() {
       const maxRev = Math.max(...top.map((t: any) => t.revenue || 0), 1);
       return (
         <View style={styles.panelBox}>
-          <View style={styles.panelHeader}><Icon name="chart-line" size={18} color={'#F97316'} /><Text style={styles.panelHeaderText}>Top Doanh thu</Text></View>
+          <View style={styles.panelHeader}>
+            <Icon name="chart-line" size={18} color={colors.brand.primary} />
+            <AppText variant="sm" weight="bold" color={colors.text.primary}>Top Doanh thu ngày cao nhất</AppText>
+          </View>
           {top.map((item: any, i: number) => (
-            <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-              <Text style={{ width: 50, ...font.sm, color: '#171717' }} numberOfLines={1}>{item.date || item.name}</Text>
-              <View style={{ flex: 1, height: 10, backgroundColor: '#F5F5F5', borderRadius: 3 }}>
-                <View style={{ width: `${Math.max(5, ((item.revenue || 0) / maxRev) * 100)}%`, height: 10, backgroundColor: '#F97316', borderRadius: 3 }} />
+            <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 2 }}>
+              <AppText variant="sm" color={colors.text.primary} style={{ width: 80 }} numberOfLines={1}>{item.date || item.name}</AppText>
+              <View style={{ flex: 1, height: 8, backgroundColor: colors.surface.app, borderRadius: 4, overflow: 'hidden' }}>
+                <View style={{ width: `${Math.max(5, ((item.revenue || 0) / maxRev) * 100)}%`, height: 8, backgroundColor: colors.brand.primary, borderRadius: 4 }} />
               </View>
-              <Text style={{ width: 65, textAlign: 'right', ...font.sm, fontWeight: '600', color: '#171717' }}>{formatVND(item.revenue)}</Text>
+              <AppText variant="sm" weight="bold" color={colors.brand.primary} style={{ width: 75, textAlign: 'right' }}>{formatVND(item.revenue)}</AppText>
             </View>
           ))}
         </View>
@@ -150,48 +152,56 @@ export default function BIReportsScreen() {
   };
 
   return (
-    <ScreenContainer compact>
-      <ScreenHeader title="Báo cáo BI" subtitle={`${days} ngày`}
-        onMenuPress={openSidebar} compact
-      />
+    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+      {/* Stats bar */}
       <View style={styles.statsBar}>
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="chart-line" size={14} color={'#737373'} /><Text style={styles.statValue}>{formatVND(revStat?.total_revenue || 0)}</Text>
+        <View style={styles.statItem}>
+          <Icon name="chart-line" size={16} color={colors.brand.primary} />
+          <View>
+            <AppText variant="sm" weight="bold" color={colors.brand.primary}>{formatVND(revStat?.total_revenue || 0)}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Doanh thu</AppText>
           </View>
-          <Text style={styles.statLabel}>Doanh thu</Text>
         </View>
         <View style={styles.barDivider} />
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="food-apple" size={14} color={'#737373'} /><Text style={styles.statValue}>{formatVND(fcStat?.total_food_cost || 0)}</Text>
+        <View style={styles.statItem}>
+          <Icon name="food-apple" size={16} color={colors.brand.primary} />
+          <View>
+            <AppText variant="sm" weight="bold" color={colors.text.primary}>{formatVND(fcStat?.total_food_cost || 0)}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Food cost</AppText>
           </View>
-          <Text style={styles.statLabel}>Food cost</Text>
         </View>
         <View style={styles.barDivider} />
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="cart" size={14} color={'#737373'} /><Text style={styles.statValue}>{revStat?.total_orders || 0}</Text>
+        <View style={styles.statItem}>
+          <Icon name="cart" size={16} color={colors.brand.primary} />
+          <View>
+            <AppText variant="sm" weight="bold" color={colors.text.primary}>{revStat?.total_orders || 0}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Đơn hàng</AppText>
           </View>
-          <Text style={styles.statLabel}>Đơn hàng</Text>
         </View>
       </View>
+
+      {/* Tabs and Days filter */}
       <View style={styles.tabRow}>
         {(['revenue', 'foodcost'] as const).map(t => (
           <TouchableOpacity key={t} onPress={() => setTab(t)} style={[styles.tab, tab === t && styles.tabActive]}>
-            <Icon name={t === 'revenue' ? 'chart-line' : 'food-apple'} size={14} color={tab === t ? '#fff' : '#737373'} />
-            <Text style={[styles.tabText, tab === t && styles.tabTextActive]}>{t === 'revenue' ? 'Doanh thu' : 'Food cost'}</Text>
+            <Icon name={t === 'revenue' ? 'chart-line' : 'food-apple'} size={14} color={tab === t ? colors.brand.primary : colors.text.secondary} />
+            <AppText variant="sm" color={tab === t ? colors.brand.primary : colors.text.secondary} weight={tab === t ? 'bold' : 'normal'}>
+              {t === 'revenue' ? 'Doanh thu' : 'Food Cost'}
+            </AppText>
           </TouchableOpacity>
         ))}
-        {[7, 30, 90].map(d => (
-          <TouchableOpacity key={d} onPress={() => setDays(d)} style={[styles.daysChip, days === d && styles.daysChipActive]}>
-            <Text style={[styles.daysChipText, days === d && styles.daysChipTextActive]}>{d}D</Text>
-          </TouchableOpacity>
-        ))}
+        <View style={{ flexDirection: 'row', gap: 4, marginLeft: 'auto' }}>
+          {[7, 30, 90].map(d => (
+            <TouchableOpacity key={d} onPress={() => setDays(d)} style={[styles.daysChip, days === d && styles.daysChipActive]}>
+              <AppText variant="sm" color={days === d ? colors.brand.primary : colors.text.secondary} weight={days === d ? 'bold' : 'normal'}>{d}D</AppText>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
+
       {isWide ? (
-        <View style={{ flex: 1, flexDirection: 'row' }}>
-          <View style={{ flex: 0.6 }}>
+        <View style={{ flex: 1, flexDirection: 'row', padding: 12, gap: 12 }}>
+          <View style={{ flex: 0.55 }}>
             <DataTable<any>
               columns={columns}
               data={dataRows}
@@ -203,51 +213,51 @@ export default function BIReportsScreen() {
               onRefresh={load}
               compact
               emptyIcon="chart-line"
-              emptyTitle="Chưa có dữ liệu"
-              emptySubtitle="Không có báo cáo cho kỳ này"
+              emptyTitle="Chưa có dữ liệu báo cáo BI"
+              emptySubtitle=""
             />
           </View>
-          <View style={styles.separator} />
-          <View style={{ flex: 0.4, backgroundColor: '#FAFAFA', paddingTop: 8 }}>{renderPanel()}</View>
+          <View style={{ flex: 0.45 }}>{renderPanel()}</View>
         </View>
       ) : (
-        <DataTable<any>
-          columns={columns}
-          data={dataRows}
-          getRowId={(row: any) => row?.id || String(Math.random())}
-          loading={loading}
-          sortKey={sortKey}
-          sortDir={sortDir}
-          onSortChange={handleSortChange}
-          onRefresh={load}
-          compact
-          emptyIcon="chart-line"
-          emptyTitle="Chưa có dữ liệu"
-          emptySubtitle="Không có báo cáo cho kỳ này"
-        />
+        <View style={{ flex: 1, paddingHorizontal: 8 }}>
+          <DataTable<any>
+            columns={columns}
+            data={dataRows}
+            getRowId={(row: any) => row?.id || String(Math.random())}
+            loading={loading}
+            sortKey={sortKey}
+            sortDir={sortDir}
+            onSortChange={handleSortChange}
+            onRefresh={load}
+            compact
+            emptyIcon="chart-line"
+            emptyTitle="Chưa có dữ liệu báo cáo BI"
+            emptySubtitle=""
+          />
+        </View>
       )}
-    </ScreenContainer>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
-  statValue: { ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
-  statLabel: { ...font.sm, color: '#737373', lineHeight: 12 },
-  tabRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 4, paddingVertical: 8, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0', alignItems: 'center' },
-  tab: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#E5E5E5' },
-  tabActive: { backgroundColor: '#F97316', borderColor: '#F97316' },
-  tabText: { ...font.sm, fontWeight: '600', color: '#737373' },
-  tabTextActive: { color: '#fff' },
-  daysChip: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#E5E5E5', marginLeft: 4 },
-  daysChipActive: { backgroundColor: '#1E293B', borderColor: '#1E293B' },
-  daysChipText: { ...font.sm, fontWeight: '600', color: '#737373' },
-  daysChipTextActive: { color: '#fff' },
-  cellPrimary: { ...font.sm, fontWeight: '600', color: '#171717' },
-  cellNumber: { ...font.sm, color: '#171717', textAlign: 'right' },
-  panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12 },
-  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelHeaderText: { ...font.md, fontWeight: '600', color: '#171717' },
-  separator: { width: 1, backgroundColor: '#F0F0F0' },
+  statsBar: {
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: colors.surface.card,
+    borderRadius: shape.radius.lg,
+    marginHorizontal: 8,
+    marginVertical: 8,
+  },
+  statItem: { flex: 1, alignItems: 'center', flexDirection: 'row', gap: 6, justifyContent: 'center' },
+  barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
+  tabRow: { flexDirection: 'row', gap: 6, paddingHorizontal: 8, marginBottom: 8, alignItems: 'center' },
+  tab: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, height: 32, borderRadius: shape.radius.md, backgroundColor: colors.surface.card },
+  tabActive: { backgroundColor: colors.brand.primaryBg },
+  daysChip: { paddingHorizontal: 10, height: 32, borderRadius: shape.radius.md, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center' },
+  daysChipActive: { backgroundColor: colors.brand.primaryBg },
+  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, gap: 12 },
+  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },
 });

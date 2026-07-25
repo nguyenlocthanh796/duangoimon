@@ -1,16 +1,14 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import { colors, font } from '../../lib/theme';
+import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import DataTable, { type Column } from '../../lib/components/ui/DataTable';
-import ScreenHeader from '../../lib/components/ui/ScreenHeader';
-import ScreenContainer from '../../lib/components/ui/ScreenContainer';
+import AppText from '../../lib/components/ui/AppText';
 
 export default function ForecastScreen() {
-  const { openSidebar } = useSidebar();
   const { isWide } = useResponsive();
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,35 +28,35 @@ export default function ForecastScreen() {
 
   const renderConfidence = (c: number) => (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, justifyContent: 'flex-end' }}>
-      <View style={{ width: 35, height: 6, backgroundColor: '#F5F5F5', borderRadius: 3 }}>
-        <View style={{ width: `${c}%`, height: 6, borderRadius: 3, backgroundColor: c > 70 ? '#16A34A' : c > 50 ? '#D97706' : '#DC2626' }} />
+      <View style={{ width: 40, height: 6, backgroundColor: colors.surface.app, borderRadius: 3, overflow: 'hidden' }}>
+        <View style={{ width: `${c}%`, height: 6, borderRadius: 3, backgroundColor: c > 70 ? colors.status.success : c > 50 ? colors.status.warning : colors.status.danger }} />
       </View>
-      <Text style={{ ...font.sm, fontWeight: '600', color: c > 70 ? '#16A34A' : c > 50 ? '#D97706' : '#DC2626', width: 28, textAlign: 'right' }}>{Math.round(c)}%</Text>
+      <AppText variant="sm" weight="bold" color={c > 70 ? colors.status.success : c > 50 ? colors.status.warning : colors.status.danger} style={{ width: 35, textAlign: 'right' }}>{Math.round(c)}%</AppText>
     </View>
   );
 
   const columns: Column<any>[] = [
     {
       key: 'date',
-      title: 'Ngày',
+      title: 'Ngày dự báo',
       flex: 1,
       sortable: true,
       sortValue: (r) => r.date || '',
-      render: (r) => <Text style={styles.cellPrimary}>{r.date}</Text>,
+      render: (r) => <AppText variant="sm" weight="bold" color={colors.text.primary}>{r.date}</AppText>,
     },
     {
       key: 'forecast',
-      title: 'Dự báo',
-      width: 80,
+      title: 'Số đơn dự kiến',
+      width: 110,
       align: 'right',
       sortable: true,
       sortValue: (r) => r.forecast || 0,
-      render: (r) => <Text style={styles.cellHighlight}>{Math.round(r.forecast) || 0}</Text>,
+      render: (r) => <AppText variant="sm" weight="bold" color={colors.brand.primary}>{Math.round(r.forecast) || 0} đơn</AppText>,
     },
     {
       key: 'confidence',
-      title: 'Độ tin cậy',
-      width: 100,
+      title: 'Độ tin cậy AI',
+      width: 110,
       align: 'right',
       sortable: true,
       sortValue: (r) => r.confidence || 0,
@@ -69,42 +67,35 @@ export default function ForecastScreen() {
   const renderPanel = () => (
     <View style={styles.panelBox}>
       <View style={styles.panelHeader}>
-        <Icon name="chart-timeline-variant" size={18} color={'#F97316'} />
-        <Text style={styles.panelHeaderText}>Dự báo</Text>
+        <Icon name="chart-timeline-variant" size={18} color={colors.brand.primary} />
+        <AppText variant="sm" weight="bold" color={colors.text.primary}>Thống kê độ tin cậy AI</AppText>
       </View>
-      <View style={{ flexDirection: 'row', gap: 12}}>
+      <View style={{ flexDirection: 'row', gap: 8 }}>
         <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="chart-line" size={14} color={'#737373'} />
-            <Text style={styles.statValue}>{total}</Text>
-          </View>
-          <Text style={styles.statLabel}>Tổng</Text>
+          <AppText variant="md" weight="bold" color={colors.text.primary}>{total}</AppText>
+          <AppText variant="sm" color={colors.text.muted}>Tổng dự báo</AppText>
         </View>
         <View style={styles.barDivider} />
         <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="calendar" size={14} color={'#737373'} />
-            <Text style={styles.statValue}>{avg}</Text>
-          </View>
-          <Text style={styles.statLabel}>TB/ngày</Text>
+          <AppText variant="md" weight="bold" color={colors.brand.primary}>{avg}</AppText>
+          <AppText variant="sm" color={colors.text.muted}>TB mỗi ngày</AppText>
         </View>
       </View>
       <View style={styles.panelDivider} />
       <View style={{ alignItems: 'center' }}>
-        <Text style={[styles.panelStatValue, { fontSize: 24, color: avgConf > 70 ? '#16A34A' : avgConf > 50 ? '#D97706' : '#DC2626' }]}>{avgConf}%</Text>
-        <Text style={styles.panelStatLabel}>Độ tin cậy TB</Text>
+        <AppText variant="lg" weight="bold" color={avgConf > 70 ? colors.status.success : avgConf > 50 ? colors.status.warning : colors.status.danger}>{avgConf}%</AppText>
+        <AppText variant="sm" color={colors.text.muted}>Chỉ số tin cậy trung bình</AppText>
       </View>
-      {/* Mini bar: confidence distribution */}
       <View style={styles.panelDivider} />
       {data.slice(0, 7).map((item, i) => {
         const c = item.confidence || 0;
         return (
-          <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Text style={{ width: 45, ...font.sm, color: '#737373' }}>{item.date?.slice(5)}</Text>
-            <View style={{ flex: 1, height: 6, backgroundColor: '#F5F5F5', borderRadius: 3}}>
-              <View style={{ width: `${c}%`, height: 6, borderRadius: 3, backgroundColor: c > 70 ? '#16A34A' : c > 50 ? '#D97706' : '#DC2626' }} />
+          <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 2 }}>
+            <AppText variant="sm" color={colors.text.primary} style={{ width: 50 }}>{item.date?.slice(5)}</AppText>
+            <View style={{ flex: 1, height: 6, backgroundColor: colors.surface.app, borderRadius: 3, overflow: 'hidden' }}>
+              <View style={{ width: `${c}%`, height: 6, borderRadius: 3, backgroundColor: c > 70 ? colors.status.success : c > 50 ? colors.status.warning : colors.status.danger }} />
             </View>
-            <Text style={{ width: 25, textAlign: 'right', ...font.sm, color: '#737373' }}>{Math.round(c)}%</Text>
+            <AppText variant="sm" weight="bold" color={colors.text.primary} style={{ width: 35, textAlign: 'right' }}>{Math.round(c)}%</AppText>
           </View>
         );
       })}
@@ -117,45 +108,49 @@ export default function ForecastScreen() {
   };
 
   return (
-    <ScreenContainer compact>
-      <ScreenHeader title="Dự báo" subtitle={`${days} ngày`}
-        onMenuPress={openSidebar} compact />
+    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+      {/* Stats bar */}
       <View style={styles.statsBar}>
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="chart-line" size={14} color={'#737373'} />
-            <Text style={styles.statValue}>{total}</Text>
+        <View style={styles.statItem}>
+          <Icon name="chart-line" size={16} color={colors.brand.primary} />
+          <View>
+            <AppText variant="sm" weight="bold" color={colors.text.primary}>{total}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Tổng đơn</AppText>
           </View>
-          <Text style={styles.statLabel}>Tổng dự báo</Text>
         </View>
         <View style={styles.barDivider} />
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="calendar" size={14} color={'#737373'} />
-            <Text style={styles.statValue}>{avg}</Text>
+        <View style={styles.statItem}>
+          <Icon name="calendar" size={16} color={colors.brand.primary} />
+          <View>
+            <AppText variant="sm" weight="bold" color={colors.brand.primary}>{avg}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>TB/ngày</AppText>
           </View>
-          <Text style={styles.statLabel}>TB/ngày</Text>
         </View>
         <View style={styles.barDivider} />
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="shield-check" size={14} color={'#737373'} />
-            <Text style={styles.statValue}>{avgConf}%</Text>
+        <View style={styles.statItem}>
+          <Icon name="shield-check" size={16} color={colors.status.success} />
+          <View>
+            <AppText variant="sm" weight="bold" color={colors.status.success}>{avgConf}%</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Tin cậy</AppText>
           </View>
-          <Text style={styles.statLabel}>Tin cậy TB</Text>
         </View>
       </View>
+
+      {/* Filter chips */}
       <View style={styles.filterRow}>
         {[3, 7, 14].map(d => (
           <TouchableOpacity key={d} onPress={() => setDays(d)}
             style={[styles.chip, days === d && styles.chipActive]}>
-            <Text style={[styles.chipText, days === d && styles.chipTextActive]}>{d} ngày</Text>
+            <AppText variant="sm" color={days === d ? colors.brand.primary : colors.text.secondary} weight={days === d ? 'bold' : 'normal'}>
+              Dự báo {d} ngày tới
+            </AppText>
           </TouchableOpacity>
         ))}
       </View>
+
       {isWide ? (
-        <View style={{ flex: 1, flexDirection: 'row' }}>
-          <View style={{ flex: 0.6 }}>
+        <View style={{ flex: 1, flexDirection: 'row', padding: 12, gap: 12 }}>
+          <View style={{ flex: 0.55 }}>
             <DataTable<any>
               columns={columns}
               data={data}
@@ -167,50 +162,50 @@ export default function ForecastScreen() {
               onRefresh={load}
               compact
               emptyIcon="chart-timeline-variant"
-              emptyTitle="Chưa có dữ liệu"
-              emptySubtitle="Không có dự báo cho kỳ này"
+              emptyTitle="Chưa có dữ liệu dự báo"
+              emptySubtitle=""
             />
           </View>
-          <View style={styles.separator} />
-          <View style={{ flex: 0.4, backgroundColor: '#FAFAFA', paddingTop: 8 }}>{renderPanel()}</View>
+          <View style={{ flex: 0.45 }}>{renderPanel()}</View>
         </View>
       ) : (
-        <DataTable<any>
-          columns={columns}
-          data={data}
-          getRowId={(r: any) => r?.id || r?.date || String(Math.random())}
-          loading={loading}
-          sortKey={sortKey}
-          sortDir={sortDir}
-          onSortChange={handleSortChange}
-          onRefresh={load}
-          compact
-          emptyIcon="chart-timeline-variant"
-          emptyTitle="Chưa có dữ liệu"
-          emptySubtitle="Không có dự báo cho kỳ này"
-        />
+        <View style={{ flex: 1, paddingHorizontal: 8 }}>
+          <DataTable<any>
+            columns={columns}
+            data={data}
+            getRowId={(r: any) => r?.id || r?.date || String(Math.random())}
+            loading={loading}
+            sortKey={sortKey}
+            sortDir={sortDir}
+            onSortChange={handleSortChange}
+            onRefresh={load}
+            compact
+            emptyIcon="chart-timeline-variant"
+            emptyTitle="Chưa có dữ liệu dự báo"
+            emptySubtitle=""
+          />
+        </View>
       )}
-    </ScreenContainer>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
-  statValue: { ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
-  statLabel: { ...font.sm, color: '#737373', lineHeight: 12 },
-  filterRow: { flexDirection: 'row', gap: 12, paddingHorizontal: 12, paddingVertical: 12, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  chip: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#E5E5E5' },
-  chipActive: { backgroundColor: '#F97316', borderColor: '#F97316' },
-  chipText: { ...font.smBold, color: '#737373' },
-  chipTextActive: { color: '#fff', fontWeight: '600' },
-  cellPrimary: { ...font.sm, fontWeight: '600', color: '#171717' },
-  cellHighlight: { ...font.sm, fontWeight: '600', color: '#F97316' },
-  panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12 },
-  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelHeaderText: { ...font.md, fontWeight: '600', color: '#171717' },
-  panelStatLabel: { ...font.sm, color: '#737373', marginTop: 2 },
-  panelStatValue: { ...font.lg, fontWeight: '600', color: '#171717' },
-  panelDivider: { height: 1, backgroundColor: '#F0F0F0' },
-  separator: { width: 1, backgroundColor: '#F0F0F0' },
+  statsBar: {
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: colors.surface.card,
+    borderRadius: shape.radius.lg,
+    marginHorizontal: 8,
+    marginVertical: 8,
+  },
+  statItem: { flex: 1, alignItems: 'center', flexDirection: 'row', gap: 6, justifyContent: 'center' },
+  barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
+  filterRow: { flexDirection: 'row', gap: 6, paddingHorizontal: 8, marginBottom: 8 },
+  chip: { paddingHorizontal: 12, height: 32, borderRadius: shape.radius.md, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center' },
+  chipActive: { backgroundColor: colors.brand.primaryBg },
+  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, gap: 12 },
+  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },
+  panelDivider: { height: 1, backgroundColor: colors.border.light },
 });

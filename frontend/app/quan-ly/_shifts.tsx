@@ -1,22 +1,19 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import { colors, font, formatVND } from '../../lib/theme';
+import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import DataTable, { type Column } from '../../lib/components/ui/DataTable';
-import ScreenHeader from '../../lib/components/ui/ScreenHeader';
-import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import FormModal from '../../lib/components/ui/FormModal';
-import FAB from '../../lib/components/ui/FAB';
+import AppText from '../../lib/components/ui/AppText';
 
 const API = '/api/v1/quan-ly';
 
 function fmtDate(d: string) { try { return new Date(d).toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }); } catch { return d; } }
 
 export default function ShiftsScreen() {
-  const { openSidebar } = useSidebar();
   const { isWide } = useResponsive();
   const [shifts, setShifts] = useState<any[]>([]);
   const [active, setActive] = useState<any>(null);
@@ -38,11 +35,11 @@ export default function ShiftsScreen() {
 
   const startShift = async () => {
     try { await request(API + '/shifts/start', { method: 'POST', body: JSON.stringify({ opening_balance: parseFloat(openingBalance) || 0 }) }); setShowStart(false); load(); }
-    catch { Alert.alert('Lỗi', 'Không thể mở ca'); }
+    catch { Alert.alert('Lỗi', 'Không thể mở ca làm việc'); }
   };
   const endShift = async () => {
     try { await request(API + '/shifts/end', { method: 'POST', body: JSON.stringify({ cash_end: parseFloat(cashEnd) || 0, expense_total: parseFloat(expenseTotal) || 0, note: endNote }) }); setShowEnd(false); load(); }
-    catch { Alert.alert('Lỗi', 'Không thể đóng ca'); }
+    catch { Alert.alert('Lỗi', 'Không thể đóng ca làm việc'); }
   };
 
   const closedShifts = shifts.filter(s => s.ended_at);
@@ -53,7 +50,7 @@ export default function ShiftsScreen() {
   const columns: Column<any>[] = [
     {
       key: 'started_at',
-      title: 'Thời gian',
+      title: 'Thời gian bắt đầu',
       flex: 1,
       sortable: true,
       sortValue: (s) => s.started_at || '',
@@ -61,31 +58,31 @@ export default function ShiftsScreen() {
         const ended = !!s.ended_at;
         return (
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <Icon name={ended ? 'clock-outline' : 'check-circle'} size={14} color={ended ? '#737373' : '#16A34A'} />
-            <Text style={styles.cellPrimary}>{fmtDate(s.started_at)}</Text>
+            <Icon name={ended ? 'clock-outline' : 'check-circle'} size={14} color={ended ? colors.text.muted : colors.status.success} />
+            <AppText variant="sm" weight="bold" color={colors.text.primary}>{fmtDate(s.started_at)}</AppText>
           </View>
         );
       },
     },
     {
       key: 'total_revenue',
-      title: 'Doanh thu',
-      width: 100,
+      title: 'Doanh thu ca',
+      width: 120,
       align: 'right',
       sortable: true,
       sortValue: (s) => s.total_revenue || 0,
-      render: (s) => <Text style={styles.cellAmount}>{formatVND(s.total_revenue || 0)}</Text>,
+      render: (s) => <AppText variant="sm" weight="bold" color={colors.brand.primary}>{formatVND(s.total_revenue || 0)}</AppText>,
     },
     {
       key: 'diff',
       title: 'Chênh lệch',
-      width: 90,
+      width: 110,
       align: 'right',
       sortable: true,
       sortValue: (s) => (s.total_revenue || 0) - (s.opening_balance || 0),
       render: (s) => {
         const diff = (s.total_revenue || 0) - (s.opening_balance || 0);
-        return <Text style={[styles.cellDiff, { color: diff >= 0 ? '#16A34A' : '#DC2626' }]}>{diff >= 0 ? `+${formatVND(diff)}` : formatVND(diff)}</Text>;
+        return <AppText variant="sm" weight="bold" color={diff >= 0 ? colors.status.success : colors.status.danger}>{diff >= 0 ? `+${formatVND(diff)}` : formatVND(diff)}</AppText>;
       },
     },
   ];
@@ -93,58 +90,54 @@ export default function ShiftsScreen() {
   const renderPanel = () => (
     <View style={styles.panelBox}>
       <View style={styles.panelHeader}>
-        <Icon name="timer-check-outline" size={18} color={'#F97316'} />
-        <Text style={styles.panelHeaderText}>Ca làm việc</Text>
+        <Icon name="timer-check-outline" size={18} color={colors.brand.primary} />
+        <AppText variant="sm" weight="bold" color={colors.text.primary}>Thông tin ca hiện tại</AppText>
       </View>
-      <View style={{ flexDirection: 'row', gap: 12}}>
+      <View style={{ flexDirection: 'row', gap: 8 }}>
         <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="timer" size={14} color={'#737373'} /><Text style={styles.statValue}>{totalClosed}</Text>
-          </View>
-          <Text style={styles.statLabel}>Đã đóng</Text>
+          <AppText variant="md" weight="bold" color={colors.text.primary}>{totalClosed}</AppText>
+          <AppText variant="sm" color={colors.text.muted}>Ca đã đóng</AppText>
         </View>
         <View style={styles.barDivider} />
         <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="currency-usd" size={14} color={'#737373'} /><Text style={styles.statValue}>{formatVND(closedRevenue)}</Text>
-          </View>
-          <Text style={styles.statLabel}>Doanh thu</Text>
+          <AppText variant="md" weight="bold" color={colors.brand.primary}>{formatVND(closedRevenue)}</AppText>
+          <AppText variant="sm" color={colors.text.muted}>Tổng doanh thu</AppText>
         </View>
       </View>
       <View style={styles.panelDivider} />
       {active && active.id ? (
         <>
-          <View style={[styles.activeBanner, { backgroundColor: '#DCFCE7', borderColor: '#16A34A' }]}>
-            <Icon name="check-circle" size={14} color={'#16A34A'} />
-            <Text style={[styles.activeBannerText, { color: '#16A34A' }]}>Ca đang mở</Text>
+          <View style={[styles.activeBanner, { backgroundColor: colors.brand.primaryBg }]}>
+            <Icon name="check-circle" size={16} color={colors.status.success} />
+            <AppText variant="sm" weight="bold" color={colors.status.success}>Ca làm việc đang mở</AppText>
           </View>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={styles.panelLabel}>Tiền đầu</Text><Text style={styles.panelValue}>{formatVND(active.opening_balance || 0)}</Text>
-          </View>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={styles.panelLabel}>Doanh thu</Text><Text style={[styles.panelValue, { color: '#16A34A' }]}>{formatVND(active.total_revenue || 0)}</Text>
-          </View>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={styles.panelLabel}>Mở lúc</Text><Text style={styles.panelValue}>{fmtDate(active.started_at)}</Text>
-          </View>
+          <DetailRow label="Tiền đầu ca" value={formatVND(active.opening_balance || 0)} />
+          <DetailRow label="Doanh thu ca" value={formatVND(active.total_revenue || 0)} />
+          <DetailRow label="Thời gian mở" value={fmtDate(active.started_at)} />
+          
           {disc !== 0 && (
-            <View style={[styles.activeBanner, { backgroundColor: disc > 0 ? '#FEF3C7' : '#FEE2E2', borderColor: disc > 0 ? '#D97706' : '#DC2626' }]}>
-              <Icon name="alert" size={14} color={disc > 0 ? '#D97706' : '#DC2626'} />
-              <Text style={[styles.activeBannerText, { color: disc > 0 ? '#D97706' : '#DC2626' }]}>Chênh lệch: {formatVND(Math.abs(disc))} {disc > 0 ? 'dư' : 'thiếu'}</Text>
+            <View style={[styles.activeBanner, { backgroundColor: disc > 0 ? '#FEF3C7' : colors.status.dangerBg }]}>
+              <Icon name="alert" size={16} color={disc > 0 ? '#D97706' : colors.status.danger} />
+              <AppText variant="sm" weight="bold" color={disc > 0 ? '#D97706' : colors.status.danger}>
+                Chênh lệch: {formatVND(Math.abs(disc))} {disc > 0 ? 'dư' : 'thiếu'}
+              </AppText>
             </View>
           )}
-          <TouchableOpacity style={[styles.panelCta, { backgroundColor: '#DC2626' }]} onPress={() => { setCashEnd('0'); setExpenseTotal('0'); setEndNote(''); setShowEnd(true); }}>
-            <Icon name="stop" size={14} color="#fff" /><Text style={styles.panelCtaText}>Đóng ca</Text>
+
+          <TouchableOpacity style={[styles.panelCta, { backgroundColor: colors.status.danger }]} onPress={() => { setCashEnd('0'); setExpenseTotal('0'); setEndNote(''); setShowEnd(true); }}>
+            <Icon name="stop" size={16} color={colors.text.inverse} />
+            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Đóng ca làm việc</AppText>
           </TouchableOpacity>
         </>
       ) : (
         <>
-          <View style={[styles.activeBanner, { backgroundColor: '#F1F5F9', borderColor: '#CBD5E1' }]}>
-            <Icon name="timer-off" size={14} color={'#737373'} />
-            <Text style={[styles.activeBannerText, { color: '#737373' }]}>Chưa mở ca</Text>
+          <View style={[styles.activeBanner, { backgroundColor: colors.surface.app }]}>
+            <Icon name="timer-off" size={16} color={colors.icon.muted} />
+            <AppText variant="sm" color={colors.text.muted}>Chưa có ca nào đang mở</AppText>
           </View>
           <TouchableOpacity style={styles.panelCta} onPress={() => { setOpeningBalance('0'); setShowStart(true); }}>
-            <Icon name="play" size={14} color="#fff" /><Text style={styles.panelCtaText}>Mở ca mới</Text>
+            <Icon name="play" size={16} color={colors.text.inverse} />
+            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Mở ca làm việc mới</AppText>
           </TouchableOpacity>
         </>
       )}
@@ -157,35 +150,37 @@ export default function ShiftsScreen() {
   };
 
   return (
-    <ScreenContainer compact>
-      <ScreenHeader title="Ca làm việc" subtitle={active && active.id ? 'Đang mở' : 'Chưa mở ca'}
-        onMenuPress={openSidebar} compact />
+    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+      {/* Stats bar */}
       <View style={styles.statsBar}>
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="timer-check" size={14} color={'#737373'} /><Text style={styles.statValue}>{totalClosed}</Text>
+        <View style={styles.statItem}>
+          <Icon name="timer-check" size={16} color={colors.brand.primary} />
+          <View>
+            <AppText variant="sm" weight="bold" color={colors.text.primary}>{totalClosed}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Đã đóng</AppText>
           </View>
-          <Text style={styles.statLabel}>Đã đóng</Text>
         </View>
         <View style={styles.barDivider} />
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="currency-usd" size={14} color={'#737373'} /><Text style={styles.statValue}>{formatVND(closedRevenue)}</Text>
+        <View style={styles.statItem}>
+          <Icon name="currency-usd" size={16} color={colors.brand.primary} />
+          <View>
+            <AppText variant="sm" weight="bold" color={colors.brand.primary}>{formatVND(closedRevenue)}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Doanh thu</AppText>
           </View>
-          <Text style={styles.statLabel}>Doanh thu</Text>
         </View>
         <View style={styles.barDivider} />
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name={active?.id ? 'check-circle' : 'timer-off'} size={14} color={'#737373'} />
-            <Text style={styles.statValue}>{active?.id ? 'Đang mở' : 'Chưa mở'}</Text>
+        <View style={styles.statItem}>
+          <Icon name={active?.id ? 'check-circle' : 'timer-off'} size={16} color={active?.id ? colors.status.success : colors.icon.muted} />
+          <View>
+            <AppText variant="sm" weight="bold" color={active?.id ? colors.status.success : colors.text.muted}>{active?.id ? 'Đang mở' : 'Chưa mở'}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>{active?.id ? fmtDate(active.started_at) : '-'}</AppText>
           </View>
-          <Text style={styles.statLabel}>{active?.id ? fmtDate(active.started_at) : '-'}</Text>
         </View>
       </View>
+
       {isWide ? (
-        <View style={{ flex: 1, flexDirection: 'row' }}>
-          <View style={{ flex: 0.6 }}>
+        <View style={{ flex: 1, flexDirection: 'row', padding: 12, gap: 12 }}>
+          <View style={{ flex: 0.55 }}>
             <DataTable<any>
               columns={columns}
               data={shifts}
@@ -197,27 +192,29 @@ export default function ShiftsScreen() {
               onRefresh={load}
               compact
               emptyIcon="timer-off"
-              emptyTitle="Chưa có ca"
-              emptySubtitle="Bắt đầu ca làm việc"
+              emptyTitle="Chưa có ca làm việc nào"
+              emptySubtitle=""
             />
           </View>
-          <View style={styles.separator} />
-          <View style={{ flex: 0.4, backgroundColor: '#FAFAFA', paddingTop: 8 }}>{renderPanel()}</View>
+          <View style={{ flex: 0.45 }}>{renderPanel()}</View>
         </View>
       ) : (
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, paddingHorizontal: 8 }}>
           {active && active.id && (
             <View style={styles.mobileActiveBanner}>
-              <Icon name="check-circle" size={14} color={'#16A34A'} />
-              <Text style={styles.mobileActiveText}>Ca đang mở · Doanh thu: {formatVND(active.total_revenue || 0)}</Text>
+              <Icon name="check-circle" size={16} color={colors.status.success} />
+              <AppText variant="sm" weight="bold" color={colors.status.success} style={{ flex: 1 }}>
+                Ca mở · Doanh thu: {formatVND(active.total_revenue || 0)}
+              </AppText>
               <TouchableOpacity onPress={() => { setCashEnd('0'); setExpenseTotal('0'); setEndNote(''); setShowEnd(true); }} style={styles.mobileCloseBtn}>
-                <Text style={styles.mobileCloseBtnText}>Đóng</Text>
+                <AppText variant="sm" weight="bold" color={colors.text.inverse}>Đóng ca</AppText>
               </TouchableOpacity>
             </View>
           )}
           {!active?.id && (
             <TouchableOpacity style={styles.mobileStartBtn} onPress={() => { setOpeningBalance('0'); setShowStart(true); }}>
-              <Icon name="play" size={16} color="#fff" /><Text style={styles.mobileStartBtnText}>Mở ca mới</Text>
+              <Icon name="play" size={16} color={colors.text.inverse} />
+              <AppText variant="sm" weight="bold" color={colors.text.inverse}>Mở ca mới ngay</AppText>
             </TouchableOpacity>
           )}
           <DataTable<any>
@@ -231,57 +228,63 @@ export default function ShiftsScreen() {
             onRefresh={load}
             compact
             emptyIcon="timer-off"
-            emptyTitle="Chưa có ca"
-            emptySubtitle="Bắt đầu ca làm việc"
+            emptyTitle="Chưa có ca làm việc nào"
+            emptySubtitle=""
           />
         </View>
       )}
 
-      <FormModal visible={showStart} title="Mở ca" onClose={() => setShowStart(false)} onSave={startShift} saveLabel="Mở ca">
-        <View style={{ gap: 12, paddingTop: 4 }}>
-          <Text style={styles.fieldLabel}>Tiền đầu ca</Text>
-          <TextInput value={openingBalance} onChangeText={setOpeningBalance} keyboardType="decimal-pad" style={styles.fieldInput} placeholder="0" />
+      <FormModal visible={showStart} title="Mở ca làm việc mới" onClose={() => setShowStart(false)} onSave={startShift} saveLabel="Mở ca ngay">
+        <View style={{ gap: 10, paddingTop: 4 }}>
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>Tiền mặt bàn giao đầu ca (VNĐ)</AppText>
+          <TextInput value={openingBalance} onChangeText={setOpeningBalance} keyboardType="decimal-pad" style={styles.fieldInput} placeholder="0" placeholderTextColor={colors.text.muted} />
         </View>
       </FormModal>
-      <FormModal visible={showEnd} title="Đóng ca" onClose={() => setShowEnd(false)} onSave={endShift} saveLabel="Đóng ca">
-        <View style={{ gap: 12, paddingTop: 4 }}>
-          <Text style={styles.fieldLabel}>Tiền cuối ca</Text>
-          <TextInput value={cashEnd} onChangeText={setCashEnd} keyboardType="decimal-pad" style={styles.fieldInput} placeholder="0" />
-          <Text style={styles.fieldLabel}>Tổng chi</Text>
-          <TextInput value={expenseTotal} onChangeText={setExpenseTotal} keyboardType="decimal-pad" style={styles.fieldInput} placeholder="0" />
-          <Text style={styles.fieldLabel}>Ghi chú</Text>
-          <TextInput value={endNote} onChangeText={setEndNote} style={[styles.fieldInput, { minHeight: 60 }]} multiline placeholder="Ghi chú đóng ca" />
+
+      <FormModal visible={showEnd} title="Đóng ca làm việc" onClose={() => setShowEnd(false)} onSave={endShift} saveLabel="Xác nhận đóng ca">
+        <View style={{ gap: 10, paddingTop: 4 }}>
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>Tiền mặt thực tế trong két (VNĐ)</AppText>
+          <TextInput value={cashEnd} onChangeText={setCashEnd} keyboardType="decimal-pad" style={styles.fieldInput} placeholder="0" placeholderTextColor={colors.text.muted} />
+          
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>Tổng tiền chi ra trong ca</AppText>
+          <TextInput value={expenseTotal} onChangeText={setExpenseTotal} keyboardType="decimal-pad" style={styles.fieldInput} placeholder="0" placeholderTextColor={colors.text.muted} />
+          
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>Ghi chú đóng ca</AppText>
+          <TextInput value={endNote} onChangeText={setEndNote} style={[styles.fieldInput, { minHeight: 60 }]} multiline placeholder="Ghi chú chênh lệch hoặc bàn giao..." placeholderTextColor={colors.text.muted} />
         </View>
       </FormModal>
-    </ScreenContainer>
+    </View>
+  );
+}
+
+function DetailRow({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+      <AppText variant="sm" color={colors.text.muted}>{label}</AppText>
+      <AppText variant="sm" weight="bold" color={colors.text.primary}>{value}</AppText>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
-  statValue: { ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
-  statLabel: { ...font.sm, color: '#737373', lineHeight: 12 },
-  cellPrimary: { ...font.sm, fontWeight: '600', color: '#171717' },
-  cellAmount: { ...font.sm, fontWeight: '600', color: '#171717' },
-  cellDiff: { ...font.sm, fontWeight: '600' },
-  panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12 },
-  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelHeaderText: { ...font.md, fontWeight: '600', color: '#171717' },
-  panelLabel: { ...font.sm, color: '#737373' },
-  panelValue: { ...font.sm, fontWeight: '600', color: '#171717' },
-  panelDivider: { height: 1, backgroundColor: '#F0F0F0' },
-  panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16, borderRadius: 8, paddingVertical: 12, minHeight: 44, backgroundColor: '#F97316' },
-  panelCtaText: { ...font.mdBold, color: '#fff' },
-  activeBanner: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 8, borderWidth: 1 },
-  activeBannerText: { ...font.sm, fontWeight: '600' },
-  mobileActiveBanner: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingVertical: 10, backgroundColor: '#DCFCE7', borderBottomWidth: 1, borderBottomColor: '#E5E5E5' },
-  mobileActiveText: { flex: 1, ...font.sm, color: '#16A34A', fontWeight: '600' },
-  mobileCloseBtn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6, backgroundColor: '#DC2626' },
-  mobileCloseBtnText: { ...font.smBold, color: '#fff', fontWeight: '600' },
-  mobileStartBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, padding: 12, backgroundColor: '#F97316', marginHorizontal: 4, borderRadius: 8, marginTop: 4 },
-  mobileStartBtnText: { ...font.smBold, color: '#fff', fontWeight: '600' },
-  fieldLabel: { ...font.smBold, color: '#404040', marginBottom: 6 },
-  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.md, color: '#171717', backgroundColor: '#FAFAFA' },
-  separator: { width: 1, backgroundColor: '#F0F0F0' },
+  statsBar: {
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: colors.surface.card,
+    borderRadius: shape.radius.lg,
+    marginHorizontal: 8,
+    marginVertical: 8,
+  },
+  statItem: { flex: 1, alignItems: 'center', flexDirection: 'row', gap: 6, justifyContent: 'center' },
+  barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
+  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, gap: 12 },
+  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },
+  panelDivider: { height: 1, backgroundColor: colors.border.light },
+  panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, borderRadius: shape.radius.md, height: 42, backgroundColor: colors.brand.primary },
+  activeBanner: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingVertical: 10, borderRadius: shape.radius.md },
+  mobileActiveBanner: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.brand.primaryBg, borderRadius: shape.radius.md, marginBottom: 8 },
+  mobileCloseBtn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: shape.radius.sm, backgroundColor: colors.status.danger },
+  mobileStartBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, height: 42, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, marginBottom: 8 },
+  fieldInput: { borderRadius: shape.radius.md, paddingHorizontal: 10, paddingVertical: 8, ...font.md, color: colors.text.primary, backgroundColor: colors.surface.app },
 });
