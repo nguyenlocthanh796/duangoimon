@@ -73,7 +73,7 @@ export default function StationsScreen() {
       sortValue: (s) => s.name || '',
       render: (s) => (
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          <View style={styles.stationAvatar}>
+          <View style={styles.stationAvatarCircle}>
             <Icon name="stove" size={16} color={colors.brand.primary} />
           </View>
           <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>{s.name}</AppText>
@@ -105,34 +105,37 @@ export default function StationsScreen() {
   ];
 
   const renderMobileCard = (s: Station) => (
-    <View style={styles.stationCardFbFullWidth}>
+    <View style={styles.stationCardFbFullWidth} key={s.id}>
       <View style={styles.cardHeaderRow}>
-        <View style={styles.stationAvatar}>
-          <Icon name="stove" size={18} color={colors.brand.primary} />
+        <View style={styles.stationAvatarCircle}>
+          <Icon name="stove" size={20} color={colors.brand.primary} />
         </View>
         <View style={{ flex: 1 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <AppText variant="md" weight="bold" color="#050505" style={{ fontSize: 15 }} numberOfLines={1}>{s.name}</AppText>
+            <AppText variant="md" weight="bold" color="#050505" style={{ fontSize: 16 }} numberOfLines={1}>{s.name}</AppText>
             <View style={styles.codeBadge}>
               <AppText variant="sm" color={colors.text.muted}>{s.code}</AppText>
             </View>
           </View>
           {(s.categories || []).length > 0 ? (
-            <AppText variant="sm" color={colors.text.muted} numberOfLines={1} style={{ marginTop: 2 }}>
-              {(s.categories || []).join(', ')}
+            <AppText variant="sm" color="#65676B" numberOfLines={1} style={{ marginTop: 2 }}>
+              Danh mục: {(s.categories || []).join(', ')}
             </AppText>
-          ) : null}
+          ) : (
+            <AppText variant="sm" color="#65676B" style={{ marginTop: 2 }}>Tất cả món ăn</AppText>
+          )}
         </View>
         {s.printer_name ? (
           <View style={styles.chipSmall}>
             <Icon name="printer" size={12} color={colors.status.success} />
-            <AppText variant="sm" weight="bold" color={colors.status.success}>In</AppText>
+            <AppText variant="sm" weight="bold" color={colors.status.success}>Có máy in</AppText>
           </View>
         ) : (
           <AppText variant="sm" color={colors.text.muted}>—</AppText>
         )}
       </View>
 
+      {/* Facebook Equal Bottom Action Bar */}
       <View style={styles.cardActionBar}>
         <TouchableOpacity style={styles.cardActionItem} onPress={() => openEdit(s)}>
           <Icon name="pencil-outline" size={16} color={colors.brand.primary} />
@@ -221,21 +224,45 @@ export default function StationsScreen() {
         </View>
       )}
 
-      {/* Stats bar */}
-      <View style={styles.statsBar}>
-        <View style={styles.statItem}>
-          <Icon name="stove" size={16} color={colors.brand.primary} />
+      {/* Module Kitchen Switch Banner on Mobile */}
+      {!isWide && (
+        <View style={styles.fbSwitchBannerFullWidth}>
+          <View style={{ flex: 1, paddingRight: 8 }}>
+            <AppText variant="md" weight="bold" color="#050505">
+              {kitchenEnabled ? 'Bật Module Bếp / Bar' : 'Tắt Module Bếp'}
+            </AppText>
+            <AppText variant="sm" color="#65676B">
+              {kitchenEnabled ? 'Tự động truyền đơn hàng sang trạm bếp' : 'Thanh toán trực tiếp bỏ qua trạm bếp'}
+            </AppText>
+          </View>
+          <Switch
+            value={kitchenEnabled}
+            onValueChange={handleToggleKitchen}
+            trackColor={{ false: colors.border.light, true: colors.brand.primary }}
+            thumbColor={colors.surface.card}
+          />
+        </View>
+      )}
+
+      {/* Facebook Story Highlight Metric Cards */}
+      <View style={styles.fbMetricContainer}>
+        <View style={styles.fbMetricCard}>
+          <View style={[styles.fbMetricIcon, { backgroundColor: colors.brand.primaryBg }]}>
+            <Icon name="stove" size={18} color={colors.brand.primary} />
+          </View>
           <View>
             <AppText variant="md" weight="bold" color="#050505">{stats.total}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Tổng trạm</AppText>
+            <AppText variant="sm" color="#65676B">Tổng trạm bếp</AppText>
           </View>
         </View>
-        <View style={styles.barDivider} />
-        <View style={styles.statItem}>
-          <Icon name="printer" size={16} color={colors.status.success} />
+
+        <View style={styles.fbMetricCard}>
+          <View style={[styles.fbMetricIcon, { backgroundColor: '#ECFDF5' }]}>
+            <Icon name="printer" size={18} color={colors.status.success} />
+          </View>
           <View>
             <AppText variant="md" weight="bold" color={colors.status.success}>{stats.hasPrinter}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Có máy in</AppText>
+            <AppText variant="sm" color="#65676B">Có máy in</AppText>
           </View>
         </View>
       </View>
@@ -308,10 +335,51 @@ export default function StationsScreen() {
 }
 
 const styles = StyleSheet.create({
-  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light, marginBottom: 8 },
+  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 36, borderRadius: 999, backgroundColor: colors.brand.primary },
-  stationAvatar: { width: 38, height: 38, borderRadius: 19, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' },
+  stationAvatarCircle: { width: 42, height: 42, borderRadius: 21, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' },
   codeBadge: { paddingHorizontal: 6, paddingVertical: 1, borderRadius: 4, backgroundColor: colors.surface.app },
+
+  /* Facebook Setting Switch Banner Full-Width */
+  fbSwitchBannerFullWidth: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    backgroundColor: colors.surface.card,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
+    marginBottom: 8,
+  },
+
+  /* Facebook Story Highlight Metric Cards Container */
+  fbMetricContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 8,
+    backgroundColor: colors.surface.card,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
+    marginBottom: 8,
+  },
+  fbMetricCard: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: colors.surface.card,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+  },
+  fbMetricIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justify: 'center',
+  },
 
   /* Mobile Full-Width Edge-to-Edge Facebook Post Block */
   stationCardFbFullWidth: {
