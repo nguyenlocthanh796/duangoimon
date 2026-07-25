@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Alert, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TextInput, Alert, TouchableOpacity, ScrollView, FlatList } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import { colors, font, formatVND } from '../../lib/theme';
@@ -11,6 +11,8 @@ import FormModal from '../../lib/components/ui/FormModal';
 import FAB from '../../lib/components/ui/FAB';
 import SearchBar from '../../lib/components/ui/SearchBar';
 import AppText from '../../lib/components/ui/AppText';
+import { TableSkeleton } from '../../lib/components/ui/Skeleton';
+import EmptyState from '../../lib/components/ui/EmptyState';
 
 const API = '/api/v1/quan-ly';
 
@@ -39,7 +41,7 @@ export default function CustomersScreen() {
     if (!form.name || !form.phone) { Alert.alert('Lỗi', 'Tên và SĐT là bắt buộc'); return; }
     try {
       await request(`${API}/customers`, { method: 'POST', body: JSON.stringify(form) });
-      setShowForm(false); load();
+      setShowForm(false); setForm({ name: '', phone: '', email: '', address: '' }); load();
     } catch { Alert.alert('Lỗi', 'Không thể lưu khách hàng'); }
   };
 
@@ -48,123 +50,164 @@ export default function CustomersScreen() {
     return arr;
   }, [customers, search]);
 
-  const stats = {
-    total: customers.length,
-    totalSpent: customers.reduce((s, c) => s + (c.total_spent || 0), 0),
-    totalVisits: customers.reduce((s, c) => s + (c.visit_count || 0), 0),
+  const handleSortChange = (key: string) => {
+    if (key === sortKey) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    else { setSortKey(key); setSortDir('desc'); }
   };
+
+  const stats = useMemo(() => {
+    const total = customers.length;
+    const totalSpent = customers.reduce((s, c) => s + (c.total_spent || 0), 0);
+    const totalVisits = customers.reduce((s, c) => s + (c.total_orders || 0), 0);
+    return { total, totalSpent, totalVisits };
+  }, [customers]);
 
   const columns: Column<Customer>[] = [
     {
       key: 'name',
       title: 'Khách hàng',
       flex: 1,
-      sortable: true,
-      sortValue: (c) => c.name || '',
       render: (c) => (
         <View>
           <AppText variant="sm" weight="bold" color={colors.text.primary} numberOfLines={1}>{c.name}</AppText>
-          <AppText variant="sm" color={colors.text.muted}>{c.phone}</AppText>
+          {c.phone ? <AppText variant="sm" color={colors.text.muted}>📱 {c.phone}</AppText> : null}
         </View>
       ),
     },
     {
+      key: 'total_orders',
+      title: 'Số đơn',
+      width: 75,
+      align: 'right',
+      sortable: true,
+      sortValue: (c) => c.total_orders || 0,
+      render: (c) => <AppText variant="sm" color={colors.text.secondary}>{c.total_orders || 0}</AppText>,
+    },
+    {
       key: 'total_spent',
-      title: 'Đã chi',
-      width: 110,
+      title: 'Chi tiêu',
+      width: 120,
       align: 'right',
       sortable: true,
       sortValue: (c) => c.total_spent || 0,
-      render: (c) => <AppText variant="sm" weight="bold" color={colors.brand.primary}>{formatVND(c.total_spent || 0)}</AppText>,
-    },
-    {
-      key: 'total_visits',
-      title: 'Lượt',
-      width: 60,
-      align: 'right',
-      sortable: true,
-      sortValue: (c) => c.visit_count || 0,
-      render: (c) => <AppText variant="sm" color={colors.text.primary}>{c.visit_count || 0}</AppText>,
+      render: (c) => <AppText variant="sm" weight="bold" color={colors.brand.primary}>{formatVND(c.total_spent)}</AppText>,
     },
   ];
 
-  const renderPanel = () => {
-    const top = [...filtered].sort((a, b) => (b.total_spent || 0) - (a.total_spent || 0)).slice(0, 5);
-    const maxSpent = Math.max(...top.map(c => c.total_spent || 0), 1);
+  const maxSpent = useMemo(() => {
+    return Math.max(1, ...customers.map(c => c.total_spent || 0));
+  }, [customers]);
 
+  const renderPanel = () => {
+    if (!selected) {
+      return (
+        <View style={styles.panelBox}>
+          <View style={styles.panelHeader}>
+            <Icon name="account-group" size={20} color={colors.brand.primary} />
+            <AppText variant="sm" weight="bold" color={colors.text.primary}>Thông tin khách hàng</AppText>
+          </View>
+          <AppText variant="sm" color={colors.text.muted} style={{ textAlign: 'center', marginVertical: 20 }}>
+            Chọn một khách hàng để xem chi tiết
+          </AppText>
+        </View>
+      );
+    }
+    const c = selected;
     return (
       <View style={styles.panelBox}>
         <View style={styles.panelHeader}>
-          <Icon name="account-group" size={18} color={colors.brand.primary} />
-          <AppText variant="sm" weight="bold" color={colors.text.primary}>Thống kê tệp khách hàng</AppText>
+          <Icon name="account-check" size={20} color={colors.brand.primary} />
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>{c.name}</AppText>
         </View>
-
-        <View style={{ flexDirection: 'row', gap: 8 }}>
-          {[
-            { icon: 'account-group', value: stats.total, label: 'Tổng khách' },
-            { icon: 'currency-usd', value: formatVND(stats.totalSpent), label: 'Tổng chi' },
-            { icon: 'store', value: stats.totalVisits, label: 'Lượt ghé' },
-          ].map((s, i) => (
-            <View key={i} style={{ alignItems: 'center', flex: 1 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                <Icon name={s.icon as any} size={14} color={colors.brand.primary} />
-                <AppText variant="sm" weight="bold" color={colors.text.primary}>{s.value}</AppText>
-              </View>
-              <AppText variant="sm" color={colors.text.muted}>{s.label}</AppText>
-            </View>
-          ))}
+        <View style={{ gap: 6 }}>
+          {c.phone ? <AppText variant="sm" color={colors.text.secondary}>📱 SĐT: {c.phone}</AppText> : null}
+          {c.email ? <AppText variant="sm" color={colors.text.secondary}>✉️ Email: {c.email}</AppText> : null}
+          {c.address ? <AppText variant="sm" color={colors.text.secondary}>📍 Địa chỉ: {c.address}</AppText> : null}
         </View>
-
         <View style={styles.panelDivider} />
-
-        <AppText variant="sm" weight="bold" color={colors.text.primary} style={{ marginBottom: 4 }}>Top 5 khách hàng chi tiêu nhiều nhất</AppText>
-        {top.map((c, i) => (
-          <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 2 }}>
-            <AppText variant="sm" color={colors.text.primary} style={{ width: 80 }} numberOfLines={1}>{c.name}</AppText>
-            <View style={{ flex: 1, height: 8, backgroundColor: colors.surface.app, borderRadius: 4, overflow: 'hidden' }}>
-              <View style={{ width: `${Math.max(5, ((c.total_spent || 0) / maxSpent) * 100)}%`, height: 8, backgroundColor: colors.brand.primary, borderRadius: 4 }} />
-            </View>
-            <AppText variant="sm" weight="bold" color={colors.brand.primary} style={{ width: 80, textAlign: 'right' }}>{formatVND(c.total_spent || 0)}</AppText>
+        <View style={{ gap: 6 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <AppText variant="sm" color={colors.text.muted}>Tổng chi tiêu</AppText>
+            <AppText variant="sm" weight="bold" color={colors.brand.primary}>{formatVND(c.total_spent)}</AppText>
           </View>
-        ))}
+          <View style={{ flex: 1, height: 8, backgroundColor: colors.surface.app, borderRadius: 4, overflow: 'hidden' }}>
+            <View style={{ width: `${Math.max(5, ((c.total_spent || 0) / maxSpent) * 100)}%`, height: 8, backgroundColor: colors.brand.primary, borderRadius: 4 }} />
+          </View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
+            <AppText variant="sm" color={colors.text.muted}>Số đơn hàng</AppText>
+            <AppText variant="sm" weight="bold" color={colors.text.primary}>{c.total_orders || 0} đơn</AppText>
+          </View>
+        </View>
       </View>
     );
   };
 
-  const handleSortChange = (key: string) => {
-    if (key === sortKey) {
-      setSortDir(d => d === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortKey(key);
-      setSortDir('desc');
-    }
-  };
+  const renderMobileCustomerCard = ({ item: c }: { item: Customer }) => (
+    <View style={styles.itemMobile}>
+      <TouchableOpacity style={styles.cardHeaderRow} onPress={() => setSelected(c)} activeOpacity={0.8}>
+        <View style={[styles.avatarCircle, { backgroundColor: '#EEF2FF' }]}>
+          <Icon name="account" size={22} color={colors.brand.primary} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>{c.name}</AppText>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 }}>
+            <AppText variant="sm" color="#65676B">📱 {c.phone || 'Chưa có SĐT'}</AppText>
+            <AppText variant="sm" color="#65676B">· {c.total_orders || 0} đơn</AppText>
+          </View>
+        </View>
+        <View style={{ alignItems: 'flex-end' }}>
+          <AppText variant="md" weight="bold" color={colors.brand.primary}>{formatVND(c.total_spent)}</AppText>
+          <AppText variant="sm" color="#65676B">Chi tiêu</AppText>
+        </View>
+      </TouchableOpacity>
+
+      <View style={styles.cardActionDivider} />
+
+      <View style={{ flexDirection: 'row', gap: 8, paddingHorizontal: 12, paddingTop: 8 }}>
+        <TouchableOpacity style={styles.panelBtnSecondary} onPress={() => setSelected(c)}>
+          <Icon name="account-details" size={14} color={colors.brand.primary} />
+          <AppText variant="sm" weight="bold" color={colors.brand.primary}>Chi tiết</AppText>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.panelBtnDanger} onPress={() => { Alert.alert('Khách hàng', `SĐT: ${c.phone || 'Không có'}`); }}>
+          <Icon name="phone" size={14} color={colors.brand.primary} />
+          <AppText variant="sm" weight="bold" color={colors.brand.primary}>Gọi điện</AppText>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
-      {/* Stats bar */}
-      <View style={styles.statsBar}>
-        <View style={styles.statItem}>
-          <Icon name="account-group" size={16} color={colors.brand.primary} />
-          <View>
-            <AppText variant="sm" weight="bold" color={colors.text.primary}>{stats.total}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Tổng khách</AppText>
+      {/* Top Action Bar on Mobile */}
+      {!isWide && (
+        <View style={styles.mobileActionRow}>
+          <AppText variant="md" weight="bold" color="#050505">{stats.total} khách hàng</AppText>
+          <TouchableOpacity onPress={() => setShowForm(true)} style={styles.addBtn}>
+            <Icon name="plus" size={16} color={colors.text.inverse} />
+            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm khách</AppText>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* Facebook Story Highlight Metric Cards */}
+      <View style={styles.fbMetricContainer}>
+        <View style={styles.fbMetricCard}>
+          <View style={[styles.fbMetricIcon, { backgroundColor: '#EEF2FF' }]}>
+            <Icon name="account-group" size={18} color={colors.brand.primary} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <AppText variant="md" weight="bold" color="#050505">{stats.total}</AppText>
+            <AppText variant="sm" color="#65676B">Tổng khách</AppText>
           </View>
         </View>
-        <View style={styles.barDivider} />
-        <View style={styles.statItem}>
-          <Icon name="currency-usd" size={16} color={colors.brand.primary} />
-          <View>
-            <AppText variant="sm" weight="bold" color={colors.brand.primary}>{formatVND(stats.totalSpent)}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Tổng chi tiêu</AppText>
+
+        <View style={styles.fbMetricCard}>
+          <View style={[styles.fbMetricIcon, { backgroundColor: '#ECFDF5' }]}>
+            <Icon name="currency-usd" size={18} color={colors.status.success} />
           </View>
-        </View>
-        <View style={styles.barDivider} />
-        <View style={styles.statItem}>
-          <Icon name="store" size={16} color={colors.brand.primary} />
-          <View>
-            <AppText variant="sm" weight="bold" color={colors.text.primary}>{stats.totalVisits}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Lượt ghé</AppText>
+          <View style={{ flex: 1 }}>
+            <AppText variant="md" weight="bold" color={colors.status.success}>{formatVND(stats.totalSpent)}</AppText>
+            <AppText variant="sm" color="#65676B">Tổng chi tiêu</AppText>
           </View>
         </View>
       </View>
@@ -196,25 +239,25 @@ export default function CustomersScreen() {
           <View style={{ flex: 0.45 }}>{renderPanel()}</View>
         </View>
       ) : (
-        <View style={{ flex: 1, paddingHorizontal: 8 }}>
-          <DataTable<Customer>
-            columns={columns}
-            data={filtered}
-            getRowId={(c) => c.id}
-            loading={loading}
-            sortKey={sortKey}
-            sortDir={sortDir}
-            onSortChange={handleSortChange}
-            onRowPress={setSelected}
-            selectedRowId={selected?.id ?? null}
-            onRefresh={load}
-            compact
-            emptyIcon="account-off"
-            emptyTitle="Chưa có khách hàng"
-            emptySubtitle="Nhấn + để thêm khách hàng đầu tiên"
-          />
-        </View>
+        <FlatList
+          data={filtered}
+          keyExtractor={(item) => item.id}
+          renderItem={renderMobileCustomerCard}
+          contentContainerStyle={{ paddingBottom: 100 }}
+          ListEmptyComponent={
+            loading ? (
+              <TableSkeleton rowCount={5} />
+            ) : (
+              <EmptyState
+                icon="account-off"
+                title="Chưa có khách hàng"
+                subtitle="Nhấn + để thêm khách hàng đầu tiên"
+              />
+            )
+          }
+        />
       )}
+
       {!isWide && <FAB onPress={() => setShowForm(true)} />}
 
       <FormModal visible={showForm} title="Thêm khách hàng mới" onClose={() => setShowForm(false)} onSave={handleSave} saveLabel="Thêm">
@@ -237,24 +280,113 @@ export default function CustomersScreen() {
 }
 
 const styles = StyleSheet.create({
-  statsBar: {
+  mobileActionRow: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 12,
     paddingVertical: 10,
     backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.lg,
-    marginHorizontal: 8,
-    marginVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
   },
-  statItem: { flex: 1, alignItems: 'center', flexDirection: 'row', gap: 8, justifyContent: 'center' },
-  barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-  searchRow: {
+  addBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
+    height: 44,
+    borderRadius: 999,
+    backgroundColor: colors.brand.primary,
+  },
+
+  /* Facebook Story Highlight Metric Cards Container */
+  fbMetricContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 8,
+    backgroundColor: colors.surface.card,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
+    marginBottom: 8,
+    maxWidth: 520,
+  },
+  fbMetricCard: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: colors.surface.card,
+    paddingVertical: 6,
     paddingHorizontal: 8,
+    borderRadius: 12,
+  },
+  fbMetricIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  searchRow: {
+    paddingHorizontal: 12,
     marginBottom: 8,
   },
+
+  /* 📱 Mobile Full-Width Facebook Feed Card Block */
+  itemMobile: {
+    backgroundColor: colors.surface.card,
+    width: '100%',
+    marginBottom: 8,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: colors.border.light,
+    paddingVertical: 12,
+  },
+  cardHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 12,
+  },
+  avatarCircle: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: 'center',
+    justify: 'center',
+  },
+  cardActionDivider: {
+    height: 1,
+    backgroundColor: colors.border.light,
+    marginTop: 10,
+  },
+  panelBtnSecondary: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    height: 44,
+    borderRadius: 999,
+    backgroundColor: colors.brand.primaryBg,
+  },
+  panelBtnDanger: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    height: 44,
+    borderRadius: 999,
+    backgroundColor: colors.surface.app,
+  },
+
   panelBox: {
     backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.lg,
+    borderRadius: 16,
     padding: 14,
     gap: 12,
   },
@@ -267,5 +399,5 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.border.light,
   },
   panelDivider: { height: 1, backgroundColor: colors.border.light, marginVertical: 4 },
-  fieldInput: { borderRadius: shape.radius.md, paddingHorizontal: 10, paddingVertical: 8, ...font.md, color: colors.text.primary, backgroundColor: colors.surface.app },
+  fieldInput: { borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10, ...font.md, color: colors.text.primary, backgroundColor: colors.surface.app },
 });
