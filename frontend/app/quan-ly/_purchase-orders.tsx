@@ -4,17 +4,15 @@ import {
   View, Text, FlatList, TouchableOpacity, StyleSheet, RefreshControl,
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { useSidebar } from '../../lib/context/SidebarContext';
 import { colors, font, formatVND } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import { useResponsive, calcGridCols } from '../../lib/hooks/useResponsive';
 import { request } from '../../lib/api/client';
-import ScreenHeader from '../../lib/components/ui/ScreenHeader';
-import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import POForm from '../../lib/components/purchaseOrders/POForm';
 import ReceiveModal from '../../lib/components/purchaseOrders/ReceiveModal';
 import EmptyState from '../../lib/components/ui/EmptyState';
 import AppText from '../../lib/components/ui/AppText';
+import FAB from '../../lib/components/ui/FAB';
 
 const API = '/api/v1/quan-ly';
 
@@ -29,7 +27,6 @@ const STATUS_BG: Record<string, string> = {
 };
 
 export default function POScreen() {
-  const { openSidebar } = useSidebar();
   const { isWide, containerWidth, hPad, gutter } = useResponsive();
   const [pos, setPos] = useState<any[]>([]);
   const [suppliers, setSuppliers] = useState<any[]>([]);
@@ -81,13 +78,6 @@ export default function POScreen() {
     if (!selectedPo) return null;
     return pos.find(p => p.id === selectedPo.id);
   }, [pos, selectedPo]);
-
-  const stats = useMemo(() => ({
-    total: pos.length,
-    draft: pos.filter(p => p.status === 'draft').length,
-    pending: pos.filter(p => p.status === 'sent' || p.status === 'confirmed').length,
-    received: pos.filter(p => p.status === 'received').length,
-  }), [pos]);
 
   const numCols = useMemo(() => {
     if (!isWide) return 1;
@@ -221,6 +211,22 @@ export default function POScreen() {
     );
   };
 
+  const renderFilters = () => (
+    <View style={s.filterRow}>
+      {statuses.map(statusKey => (
+        <TouchableOpacity
+          key={statusKey}
+          onPress={() => setStatusFilter(statusKey)}
+          style={[s.chip, statusFilter === statusKey ? s.chipActive : null]}
+        >
+          <AppText variant="sm" color={statusFilter === statusKey ? colors.brand.primary : colors.text.secondary}>
+            {statusKey === 'all' ? 'Tất cả' : STATUS_LABEL[statusKey] || statusKey}
+          </AppText>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+
   const renderList = () => {
     if (loading) return <TableSkeleton rowCount={5} />;
     return (
@@ -230,68 +236,25 @@ export default function POScreen() {
         key={`cols-${numCols}`}
         numColumns={numCols}
         renderItem={({ item }) => renderCard(item as any)}
-        contentContainerStyle={{ padding: 4, gap: 10 }}
-        columnWrapperStyle={numCols > 1 ? { gap: 10, marginBottom: 8 } : undefined}
+        contentContainerStyle={{ paddingBottom: 80, paddingTop: 4, gap: 8 }}
+        columnWrapperStyle={numCols > 1 ? { gap: 8, marginBottom: 6 } : undefined}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand.primary} />}
+        ListHeaderComponent={renderFilters}
         ListEmptyComponent={<EmptyState icon="clipboard-text-off" title="Chưa có đơn nhập hàng" subtitle='Nhấn "Tạo PO" để lập đơn đầu tiên' />}
       />
     );
   };
 
   return (
-    <ScreenContainer compact>
-      <ScreenHeader
-        title="Đơn nhập hàng PO"
-        subtitle={`${stats.total} đơn · ${stats.draft} nháp, ${stats.pending} chờ nhập`}
-        onMenuPress={openSidebar} compact
-        right={
-          <View style={{ flexDirection: 'row', gap: 8 }}>
-            <TouchableOpacity onPress={load} style={s.headerBtn}>
-              <Icon name="refresh" size={18} color={colors.brand.primary} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setShowForm(true)} style={s.addBtn}>
-              <Icon name="plus" size={18} color={colors.text.inverse} />
-              {isWide && <AppText variant="sm" weight="bold" color={colors.text.inverse}>Tạo PO</AppText>}
-            </TouchableOpacity>
-          </View>
-        }
-      />
-
-      {/* Stats bar */}
-      <View style={s.statsBar}>
-        <StatItem icon="clipboard-text" label="Tổng" value={stats.total} />
-        <View style={s.barDivider} />
-        <StatItem icon="clock-outline" label="Nháp" value={stats.draft} valueColor={STATUS_COLOR.draft} />
-        <View style={s.barDivider} />
-        <StatItem icon="send" label="Chờ xử lý" value={stats.pending} valueColor={STATUS_COLOR.sent} />
-        <View style={s.barDivider} />
-        <StatItem icon="package-down" label="Đã nhập" value={stats.received} valueColor={STATUS_COLOR.received} />
-      </View>
-
-      {/* Status filter */}
-      <View style={s.filterRow}>
-        {statuses.map(statusKey => (
-          <TouchableOpacity
-            key={statusKey}
-            onPress={() => setStatusFilter(statusKey)}
-            style={[s.chip, statusFilter === statusKey ? s.chipActive : null]}
-          >
-            <AppText variant="sm" color={statusFilter === statusKey ? colors.brand.primary : colors.text.secondary}>
-              {statusKey === 'all' ? 'Tất cả' : STATUS_LABEL[statusKey] || statusKey}
-            </AppText>
-          </TouchableOpacity>
-        ))}
-      </View>
-
+    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
       {isWide ? (
-        <View style={{ flex: 1, flexDirection: 'row' }}>
-          <View style={{ flex: 0.6 }}>
+        <View style={{ flex: 1, flexDirection: 'row', padding: 12, gap: 12 }}>
+          <View style={{ flex: 0.55 }}>
             {renderList()}
           </View>
-          <View style={s.separator} />
-          <View style={{ flex: 0.4, paddingTop: 8, paddingLeft: 8, paddingRight: 12 }}>
+          <View style={{ flex: 0.45 }}>
             {selected ? renderDetail() : (
-              <View style={{ alignItems: 'center', padding: 40, gap: 12 }}>
+              <View style={[s.panelBox, { alignItems: 'center', justifyContent: 'center', minHeight: 200, gap: 8 }]}>
                 <Icon name="hand-pointing-up" size={32} color={colors.icon.muted} />
                 <AppText variant="sm" color={colors.text.muted}>Chọn một đơn để xem chi tiết</AppText>
               </View>
@@ -299,13 +262,12 @@ export default function POScreen() {
           </View>
         </View>
       ) : (
-        <>
+        <View style={{ flex: 1, paddingHorizontal: 8 }}>
           {renderList()}
-          <TouchableOpacity onPress={() => setShowForm(true)} style={s.fab}>
-            <Icon name="plus" size={22} color={colors.text.inverse} />
-          </TouchableOpacity>
-        </>
+        </View>
       )}
+
+      {!isWide && <FAB onPress={() => setShowForm(true)} />}
 
       <POForm
         visible={showForm}
@@ -322,34 +284,16 @@ export default function POScreen() {
           onSaved={() => { setShowReceive(false); setSelectedPo(null); load(); }}
         />
       )}
-    </ScreenContainer>
-  );
-}
-
-function StatItem({ icon, label, value, valueColor }: { icon: string; label: string; value: string | number; valueColor?: string }) {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', flexDirection: 'row', gap: 8, justifyContent: 'center' }}>
-      <Icon name={icon as any} size={16} color={colors.brand.primary} />
-      <View>
-        <AppText variant="sm" weight="bold" color={valueColor || colors.text.primary}>{value}</AppText>
-        <AppText variant="sm" color={colors.text.muted}>{label}</AppText>
-      </View>
     </View>
   );
 }
 
 const s = StyleSheet.create({
-  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },
-  headerBtn: { width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' },
-
-  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, marginVertical: 8 },
-  barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-
-  filterRow: { flexDirection: 'row', gap: 6, paddingVertical: 6, flexWrap: 'wrap' },
+  filterRow: { flexDirection: 'row', gap: 6, paddingVertical: 6, flexWrap: 'wrap', marginBottom: 4 },
   chip: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: shape.radius.sm, backgroundColor: colors.surface.card },
   chipActive: { backgroundColor: colors.brand.primaryBg },
 
-  card: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 12 },
+  card: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 12, marginBottom: 8 },
   cardTop: { marginBottom: 4 },
   badge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: shape.radius.sm },
 
@@ -367,7 +311,4 @@ const s = StyleSheet.create({
   detailRow: { flexDirection: 'row', gap: 12, paddingVertical: 4 },
   detailItem: { flex: 1, alignItems: 'center' },
   detailDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-
-  separator: { width: 1, backgroundColor: colors.border.light },
-  fab: { position: 'absolute', bottom: 20, right: 20, width: 48, height: 48, borderRadius: 24, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center' },
 });

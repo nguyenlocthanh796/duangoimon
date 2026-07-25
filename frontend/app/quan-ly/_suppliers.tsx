@@ -5,21 +5,18 @@ import {
   TextInput, Alert, RefreshControl,
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive, calcGridCols } from '../../lib/hooks/useResponsive';
 import { colors, font } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
-import ScreenHeader from '../../lib/components/ui/ScreenHeader';
-import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import FormModal from '../../lib/components/ui/FormModal';
 import EmptyState from '../../lib/components/ui/EmptyState';
 import AppText from '../../lib/components/ui/AppText';
+import FAB from '../../lib/components/ui/FAB';
 
 const API = '/api/v1/quan-ly';
 
 export default function SuppliersScreen() {
-  const { openSidebar } = useSidebar();
   const { isWide, containerWidth, hPad, gutter } = useResponsive();
   const [suppliers, setSuppliers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -195,13 +192,13 @@ export default function SuppliersScreen() {
   // ── Filters ──
   const renderSearch = () => (
     <View style={s.searchBox}>
-      <Icon name="magnify" size={16} color={colors.icon.muted} />
+      <Icon name="magnify" size={18} color={colors.icon.muted} />
       <TextInput
         value={search}
         onChangeText={setSearch}
         placeholder="Tìm nhà cung cấp theo tên, mã, SĐT..."
         placeholderTextColor={colors.text.muted}
-        style={{ flex: 1, ...font.sm, color: colors.text.primary, paddingVertical: 0 }}
+        style={{ flex: 1, ...font.md, color: colors.text.primary, paddingVertical: 0 }}
       />
       {search !== '' && (
         <TouchableOpacity onPress={() => setSearch('')}>
@@ -220,8 +217,8 @@ export default function SuppliersScreen() {
         key={`cols-${numCols}`}
         numColumns={numCols}
         renderItem={({ item }) => renderCard(item as any)}
-        contentContainerStyle={{ padding: 4, gap: 10 }}
-        columnWrapperStyle={numCols > 1 ? { gap: 10, marginBottom: 8 } : undefined}
+        contentContainerStyle={{ paddingBottom: 80, paddingTop: 4, gap: 8 }}
+        columnWrapperStyle={numCols > 1 ? { gap: 8, marginBottom: 6 } : undefined}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand.primary} />}
         ListHeaderComponent={renderSearch}
         ListEmptyComponent={<EmptyState icon="truck" title="Chưa có nhà cung cấp nào" subtitle="Nhấn nút + để thêm NCC đầu tiên" />}
@@ -230,55 +227,28 @@ export default function SuppliersScreen() {
   };
 
   return (
-    <ScreenContainer compact>
-      <ScreenHeader
-        title="Nhà cung cấp"
-        subtitle={`${suppliers.length} nhà cung cấp`}
-        onMenuPress={openSidebar} compact
-        right={
-          <View style={{ flexDirection: 'row', gap: 8 }}>
-            <TouchableOpacity onPress={load} style={s.headerBtn}>
-              <Icon name="refresh" size={18} color={colors.brand.primary} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={openNew} style={s.addBtn}>
-              <Icon name="plus" size={18} color={colors.text.inverse} />
-              {isWide && <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm NCC</AppText>}
-            </TouchableOpacity>
-          </View>
-        }
-      />
-
-      {/* Stats bar */}
-      <View style={s.statsBar}>
-        <StatItem icon="truck" label="Nhà cung cấp" value={suppliers.length} />
-        <View style={s.barDivider} />
-        <StatItem icon="phone" label="Có SĐT" value={suppliers.filter(s => s.phone).length} />
-        <View style={s.barDivider} />
-        <StatItem icon="email-outline" label="Có Email" value={suppliers.filter(s => s.email).length} />
-      </View>
-
+    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
       {isWide ? (
-        <View style={{ flex: 1, flexDirection: 'row' }}>
-          <View style={{ flex: 0.6 }}>
+        <View style={{ flex: 1, flexDirection: 'row', padding: 12, gap: 12 }}>
+          <View style={{ flex: 0.55 }}>
             {renderList()}
           </View>
-          <View style={s.separator} />
-          <View style={{ flex: 0.4, paddingTop: 8, paddingLeft: 8, paddingRight: 12 }}>
+          <View style={{ flex: 0.45 }}>
             {selected ? renderDetail() : (
-              <View style={{ alignItems: 'center', padding: 40, gap: 12 }}>
+              <View style={[s.panelBox, { alignItems: 'center', justifyContent: 'center', minHeight: 200, gap: 8 }]}>
                 <Icon name="hand-pointing-up" size={32} color={colors.icon.muted} />
                 <AppText variant="sm" color={colors.text.muted}>Chọn một NCC để xem chi tiết</AppText>
               </View>
             )}
           </View>
         </View>
-      ) : renderList()}
-
-      {!isWide && (
-        <TouchableOpacity onPress={openNew} style={s.fab}>
-          <Icon name="plus" size={22} color={colors.text.inverse} />
-        </TouchableOpacity>
+      ) : (
+        <View style={{ flex: 1, paddingHorizontal: 8 }}>
+          {renderList()}
+        </View>
       )}
+
+      {!isWide && <FAB onPress={openNew} />}
 
       <FormModal
         visible={showForm}
@@ -328,25 +298,13 @@ export default function SuppliersScreen() {
           <TextInput value={form.address} onChangeText={v => setForm(p => ({ ...p, address: v }))} style={[s.fieldInput, { minHeight: 50 }]} multiline placeholder="Địa chỉ giao dịch" placeholderTextColor={colors.text.muted} />
         </View>
       </FormModal>
-    </ScreenContainer>
+    </View>
   );
 }
 
 // ── Sub-components ──
 function Label({ children }: { children: string }) {
   return <AppText variant="sm" weight="bold" color={colors.text.primary} style={{ marginBottom: 4 }}>{children}</AppText>;
-}
-
-function StatItem({ icon, label, value }: { icon: string; label: string; value: string | number }) {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', flexDirection: 'row', gap: 8, justifyContent: 'center' }}>
-      <Icon name={icon as any} size={16} color={colors.brand.primary} />
-      <View>
-        <AppText variant="sm" weight="bold" color={colors.text.primary}>{value}</AppText>
-        <AppText variant="sm" color={colors.text.muted}>{label}</AppText>
-      </View>
-    </View>
-  );
 }
 
 function ContactRow({ icon, label, value, multiline }: { icon: string; label: string; value?: string | null; multiline?: boolean }) {
@@ -363,18 +321,11 @@ function ContactRow({ icon, label, value, multiline }: { icon: string; label: st
 }
 
 const s = StyleSheet.create({
-  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },
-  headerBtn: { width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' },
-
-  // Stats bar
-  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, marginVertical: 8 },
-  barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-
   // Search
-  searchBox: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.surface.card, borderRadius: shape.radius.md, paddingHorizontal: 10, height: 38, marginBottom: 6 },
+  searchBox: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.surface.card, borderRadius: shape.radius.md, paddingHorizontal: 10, height: 42, marginBottom: 8 },
 
   // Card
-  card: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 12 },
+  card: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 12, marginBottom: 8 },
   cardTop: { flexDirection: 'row', alignItems: 'center' },
   cardIcon: { width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' },
 
@@ -391,9 +342,4 @@ const s = StyleSheet.create({
 
   // Form
   fieldInput: { borderRadius: shape.radius.md, paddingHorizontal: 10, paddingVertical: 8, ...font.md, color: colors.text.primary, backgroundColor: colors.surface.app },
-
-  separator: { width: 1, backgroundColor: colors.border.light },
-
-  // FAB
-  fab: { position: 'absolute', bottom: 20, right: 20, width: 48, height: 48, borderRadius: 24, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center' },
 });

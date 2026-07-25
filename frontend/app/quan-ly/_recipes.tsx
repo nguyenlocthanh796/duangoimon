@@ -5,13 +5,10 @@ import {
   Alert, RefreshControl, TextInput,
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { useSidebar } from '../../lib/context/SidebarContext';
 import { colors, font, formatVND } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import { useResponsive, calcGridCols } from '../../lib/hooks/useResponsive';
 import { request } from '../../lib/api/client';
-import ScreenHeader from '../../lib/components/ui/ScreenHeader';
-import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import RecipeForm from '../../lib/components/recipes/RecipeForm';
 import AppText from '../../lib/components/ui/AppText';
 
@@ -27,7 +24,6 @@ type SortKey = 'name_asc' | 'name_desc' | 'cost_asc' | 'cost_desc';
 type FilterKey = 'all' | 'low' | 'mid' | 'high';
 
 export default function RecipesScreen() {
-  const { openSidebar } = useSidebar();
   const { isWide, containerWidth, gutter, hPad } = useResponsive();
   const [recipes, setRecipes] = useState<any[]>([]);
   const [materials, setMaterials] = useState<any[]>([]);
@@ -213,7 +209,7 @@ export default function RecipesScreen() {
           </AppText>
         </View>
 
-        <View style={{ gap: 10 }}>
+        <View style={{ gap: 8 }}>
           <DetailRow label="Sản phẩm" value={selectedRecipe.product_name || '—'} />
           <DetailRow label="Giá bán" value={selectedRecipe.product_price ? formatVND(selectedRecipe.product_price) : '—'} />
           <DetailRow label="Giá vốn BOM" value={formatVND(selectedRecipe.cost_price)} />
@@ -224,10 +220,10 @@ export default function RecipesScreen() {
 
         {/* Ingredients */}
         {selectedRecipe.items?.length > 0 && (
-          <View style={{ borderTopWidth: 1, borderTopColor: colors.border.light, paddingTop: 10, marginTop: 4 }}>
-            <AppText variant="sm" weight="bold" color={colors.text.primary} style={{ marginBottom: 6 }}>Nguyên liệu thành phần</AppText>
+          <View style={{ borderTopWidth: 1, borderTopColor: colors.border.light, paddingTop: 8, marginTop: 4 }}>
+            <AppText variant="sm" weight="bold" color={colors.text.primary} style={{ marginBottom: 4 }}>Nguyên liệu thành phần</AppText>
             {selectedRecipe.items.map((it: any, i: number) => (
-              <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 }}>
+              <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 3 }}>
                 <AppText variant="sm" color={colors.text.primary} style={{ flex: 1 }} numberOfLines={1}>{it.raw_material_name || it.raw_material_id?.slice(0, 8)}</AppText>
                 <AppText variant="sm" color={colors.text.secondary}>{it.quantity} {it.unit} · {formatVND(it.cost)}</AppText>
               </View>
@@ -236,7 +232,7 @@ export default function RecipesScreen() {
         )}
 
         {/* Action Buttons */}
-        <View style={{ flexDirection: 'row', gap: 10, marginTop: 6 }}>
+        <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
           <TouchableOpacity onPress={() => handleEdit(selectedRecipe)} style={[s.panelBtn, { backgroundColor: colors.brand.primary }]}>
             <Icon name="pencil-outline" size={14} color={colors.text.inverse} />
             <AppText variant="sm" weight="bold" color={colors.text.inverse}>Sửa</AppText>
@@ -253,7 +249,7 @@ export default function RecipesScreen() {
 
         {/* Versions */}
         <TouchableOpacity
-          style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 8 }}
+          style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 6 }}
           onPress={() => { setVersionsOpen(!versionsOpen); if (!versionsOpen) fetchVersions(selectedRecipe.id || selectedRecipe.product_id); }}
         >
           <Icon name="history" size={16} color={colors.icon.muted} />
@@ -263,7 +259,7 @@ export default function RecipesScreen() {
 
         {versionsOpen && (
           versions.length > 0 ? versions.map((v: any) => (
-            <View key={v.id} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 }}>
+            <View key={v.id} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 3 }}>
               <AppText variant="sm" weight="bold" color={colors.text.primary}>v{v.version_number}</AppText>
               <AppText variant="sm" color={colors.text.secondary}>{formatVND(v.cost_price)}</AppText>
               <AppText variant="sm" color={colors.text.muted}>
@@ -283,13 +279,13 @@ export default function RecipesScreen() {
     <View style={s.filterBar}>
       {/* Search */}
       <View style={s.searchBox}>
-        <Icon name="magnify" size={16} color={colors.icon.muted} />
+        <Icon name="magnify" size={18} color={colors.icon.muted} />
         <TextInput
           value={search}
           onChangeText={setSearch}
           placeholder="Tìm công thức BOM theo tên..."
           placeholderTextColor={colors.text.muted}
-          style={{ flex: 1, ...font.sm, color: colors.text.primary, paddingVertical: 0 }}
+          style={{ flex: 1, ...font.md, color: colors.text.primary, paddingVertical: 0 }}
         />
         {search !== '' && (
           <TouchableOpacity onPress={() => setSearch('')}>
@@ -300,7 +296,7 @@ export default function RecipesScreen() {
 
       {/* Chips row */}
       {!isWide && (
-        <TouchableOpacity onPress={() => setShowFilters(!showFilters)} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 4 }}>
+        <TouchableOpacity onPress={() => setShowFilters(!showFilters)} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 2 }}>
           <Icon name="filter-variant" size={16} color={colors.icon.muted} />
           <AppText variant="sm" color={colors.text.secondary}>
             {showFilters ? 'Ẩn bộ lọc' : 'Lọc & Sắp xếp'}
@@ -309,7 +305,7 @@ export default function RecipesScreen() {
       )}
 
       {(isWide || showFilters) && (
-        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: isWide ? 4 : 0 }}>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: isWide ? 2 : 0 }}>
           <View style={{ flexDirection: 'row', gap: 6, flexWrap: 'wrap' }}>
             {FILTERS.map(f => (
               <TouchableOpacity
@@ -349,9 +345,10 @@ export default function RecipesScreen() {
       key={`cols-${numCols}`}
       numColumns={numCols}
       renderItem={({ item }) => renderCard(item as any)}
-      contentContainerStyle={{ padding: 4, gap: 10 }}
-      columnWrapperStyle={numCols > 1 ? { gap: 10, marginBottom: 8 } : undefined}
+      contentContainerStyle={{ paddingBottom: 80, paddingTop: 4, gap: 8 }}
+      columnWrapperStyle={numCols > 1 ? { gap: 8, marginBottom: 6 } : undefined}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand.primary} />}
+      ListHeaderComponent={renderFilters}
       ListEmptyComponent={
         <View style={{ alignItems: 'center', padding: 40, gap: 8 }}>
           <Icon name="food-off" size={40} color={colors.icon.muted} />
@@ -362,47 +359,17 @@ export default function RecipesScreen() {
   );
 
   return (
-    <ScreenContainer compact>
-      <ScreenHeader
-        title="Công thức BOM"
-        subtitle={`${recipes.length} công thức · Định lượng & Food cost`}
-        onMenuPress={openSidebar}
-        compact
-        right={
-          <View style={{ flexDirection: 'row', gap: 8 }}>
-            <TouchableOpacity onPress={load} style={s.headerBtn}>
-              <Icon name="refresh" size={18} color={colors.brand.primary} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={handleAdd} style={s.addBtn}>
-              <Icon name="plus" size={18} color={colors.text.inverse} />
-              {isWide && <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm công thức</AppText>}
-            </TouchableOpacity>
-          </View>
-        }
-      />
-
-      {/* Stats bar */}
-      <View style={s.statsBar}>
-        <StatItem icon="food-variant" label="Công thức" value={recipes.length} />
-        <View style={s.barDivider} />
-        <StatItem icon="basket-outline" label="Nguyên liệu" value={materials.length} />
-        <View style={s.barDivider} />
-        <StatItem icon="percent" label="CP TB" value={processed.length ? `${Math.round(processed.reduce((s, r) => s + (r.food_cost_pct || 0), 0) / processed.length)}%` : '—'} />
-      </View>
-
-      {renderFilters()}
-
+    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
       {isWide ? (
-        <View style={{ flex: 1, flexDirection: 'row' }}>
-          <View style={{ flex: 0.6 }}>
+        <View style={{ flex: 1, flexDirection: 'row', padding: 12, gap: 12 }}>
+          <View style={{ flex: 0.55 }}>
             {loading ? (
               <TableSkeleton rowCount={5} />
             ) : renderGrid()}
           </View>
-          <View style={s.separator} />
-          <View style={{ flex: 0.4, paddingTop: 8, paddingLeft: 8, paddingRight: 12 }}>
+          <View style={{ flex: 0.45 }}>
             {selectedRecipe ? renderDetailPanel() : (
-              <View style={{ alignItems: 'center', padding: 40, gap: 12 }}>
+              <View style={[s.panelBox, { alignItems: 'center', justifyContent: 'center', minHeight: 200, gap: 8 }]}>
                 <Icon name="hand-pointing-up" size={32} color={colors.icon.muted} />
                 <AppText variant="sm" color={colors.text.muted}>Chọn một công thức để xem chi tiết</AppText>
               </View>
@@ -410,9 +377,11 @@ export default function RecipesScreen() {
           </View>
         </View>
       ) : (
-        loading ? (
-          <TableSkeleton rowCount={5} />
-        ) : renderGrid()
+        <View style={{ flex: 1, paddingHorizontal: 8 }}>
+          {loading ? (
+            <TableSkeleton rowCount={5} />
+          ) : renderGrid()}
+        </View>
       )}
 
       <RecipeForm
@@ -423,19 +392,6 @@ export default function RecipesScreen() {
         onClose={() => { setShowForm(false); setEditRecipe(null); setCloneRecipe(null); }}
         onSaved={() => { setShowForm(false); setEditRecipe(null); setCloneRecipe(null); load(); }}
       />
-    </ScreenContainer>
-  );
-}
-
-// ── Sub-components ──
-function StatItem({ icon, label, value }: { icon: string; label: string; value: string | number }) {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', flexDirection: 'row', gap: 8, justifyContent: 'center' }}>
-      <Icon name={icon as any} size={16} color={colors.brand.primary} />
-      <View>
-        <AppText variant="sm" weight="bold" color={colors.text.primary}>{value}</AppText>
-        <AppText variant="sm" color={colors.text.muted}>{label}</AppText>
-      </View>
     </View>
   );
 }
@@ -453,7 +409,7 @@ function DetailRow({ label, value }: { label: string; value: string | number | R
 
 // ── Styles ──
 const s = StyleSheet.create({
-  card: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 12 },
+  card: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 12, marginBottom: 8 },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 },
   badge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: shape.radius.sm },
   cardStats: { flexDirection: 'row', gap: 16, paddingTop: 4, marginTop: 4 },
@@ -463,16 +419,9 @@ const s = StyleSheet.create({
   actionIcon: { padding: 4 },
   actionDot: { width: 3, height: 3, borderRadius: 1.5, backgroundColor: colors.border.light },
 
-  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },
-  headerBtn: { width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' },
-
-  // Stats bar
-  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, marginVertical: 8 },
-  barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-
   // Filters
-  filterBar: { paddingHorizontal: 4, paddingVertical: 8, gap: 8 },
-  searchBox: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.surface.card, borderRadius: shape.radius.md, paddingHorizontal: 10, height: 38 },
+  filterBar: { paddingBottom: 8, gap: 6 },
+  searchBox: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: colors.surface.card, borderRadius: shape.radius.md, paddingHorizontal: 10, height: 42, marginBottom: 6 },
   chip: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: shape.radius.sm, backgroundColor: colors.surface.card },
   chipActive: { backgroundColor: colors.brand.primaryBg },
 
@@ -480,6 +429,4 @@ const s = StyleSheet.create({
   panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, gap: 12 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 8, paddingHorizontal: 12, borderRadius: shape.radius.md },
-
-  separator: { width: 1, backgroundColor: colors.border.light },
 });
