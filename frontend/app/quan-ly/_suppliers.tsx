@@ -163,7 +163,7 @@ export default function SuppliersScreen() {
             </TouchableOpacity>
             <TouchableOpacity style={s.panelBtnDanger} onPress={() => deleteSupplier(item.id)}>
               <Icon name="trash-can-outline" size={14} color={colors.status.danger} />
-              <AppText variant="sm" weight="bold" color={colors.status.danger}>Xóa</AppText>
+              <AppText variant="sm" color={colors.status.danger}>Xóa</AppText>
             </TouchableOpacity>
           </View>
         </View>
@@ -239,7 +239,7 @@ export default function SuppliersScreen() {
           </TouchableOpacity>
           <TouchableOpacity style={s.panelBtnDanger} onPress={() => deleteSupplier(item.id)}>
             <Icon name="trash-can-outline" size={16} color={colors.status.danger} />
-            <AppText variant="sm" weight="bold" color={colors.status.danger}>Xóa</AppText>
+            <AppText variant="sm" color={colors.status.danger}>Xóa</AppText>
           </TouchableOpacity>
         </View>
       </View>

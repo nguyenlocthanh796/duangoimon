@@ -144,7 +144,7 @@ export default function StationsScreen() {
         <View style={styles.cardActionDivider} />
         <TouchableOpacity style={styles.cardActionItem} onPress={() => del(s.id)}>
           <Icon name="delete-outline" size={16} color={colors.status.danger} />
-          <AppText variant="sm" weight="bold" color={colors.status.danger}>Xóa trạm</AppText>
+          <AppText variant="sm" color={colors.status.danger}>Xóa trạm</AppText>
         </TouchableOpacity>
       </View>
     </View>

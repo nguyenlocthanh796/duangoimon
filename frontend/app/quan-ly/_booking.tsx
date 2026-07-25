@@ -237,7 +237,7 @@ export default function BookingScreen() {
           {b.status !== 'cancelled' && b.status !== 'completed' && (
             <TouchableOpacity style={styles.panelBtnDanger} onPress={() => updateStatus(b.id, 'cancelled')}>
               <Icon name="close-circle" size={16} color={colors.status.danger} />
-              <AppText variant="sm" weight="bold" color={colors.status.danger}>Hủy đặt</AppText>
+              <AppText variant="sm" color={colors.status.danger}>Hủy đặt</AppText>
             </TouchableOpacity>
           )}
         </View>
@@ -281,7 +281,7 @@ export default function BookingScreen() {
           {b.status !== 'cancelled' && b.status !== 'completed' && (
             <TouchableOpacity style={styles.panelBtnDanger} onPress={() => updateStatus(b.id, 'cancelled')}>
               <Icon name="close" size={14} color={colors.status.danger} />
-              <AppText variant="sm" weight="bold" color={colors.status.danger}>Hủy</AppText>
+              <AppText variant="sm" color={colors.status.danger}>Hủy</AppText>
             </TouchableOpacity>
           )}
         </View>

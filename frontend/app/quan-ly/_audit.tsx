@@ -107,7 +107,7 @@ export default function AuditScreen() {
         <View style={styles.cardActionBar}>
           <TouchableOpacity style={styles.cardActionItem} onPress={() => setSelectedLog(l)}>
             <Icon name="file-document-outline" size={16} color={colors.brand.primary} />
-            <AppText variant="sm" weight="bold" color={colors.brand.primary}>Xem chi tiết log</AppText>
+            <AppText variant="sm" color={colors.brand.primary}>Xem chi tiết log</AppText>
           </TouchableOpacity>
         </View>
       </View>
@@ -150,7 +150,7 @@ export default function AuditScreen() {
             </View>
             <View style={styles.panelDivider} />
             <TouchableOpacity style={styles.panelCtaSecondary} onPress={() => setSelectedLog(null)}>
-              <AppText variant="sm" weight="bold" color={colors.brand.primary}>Đóng chi tiết</AppText>
+              <AppText variant="sm" color={colors.brand.primary}>Đóng chi tiết</AppText>
             </TouchableOpacity>
           </View>
         ) : (

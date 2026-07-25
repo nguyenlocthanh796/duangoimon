@@ -199,7 +199,7 @@ export default function TablesScreen() {
       </ScrollView>
       <View style={{ flexDirection: 'row', gap: 12, marginTop: 8 }}>
         <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowForm(false)}>
-          <AppText variant="sm" weight="bold" color={colors.text.secondary}>Hủy</AppText>
+          <AppText variant="sm" color={colors.text.secondary}>Hủy</AppText>
         </TouchableOpacity>
         <TouchableOpacity style={styles.saveBtn} onPress={handleSave} disabled={saving}>
           {saving && <ActivityIndicator size="small" color={colors.text.inverse} />}

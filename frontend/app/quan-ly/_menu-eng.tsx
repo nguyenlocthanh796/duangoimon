@@ -255,7 +255,7 @@ export default function MenuEngScreen() {
             </TouchableOpacity>
             <TouchableOpacity style={styles.panelBtnDanger} onPress={() => handleDelete(item.id, item.name)}>
               <Icon name="trash-can-outline" size={14} color={colors.status.danger} />
-              <AppText variant="sm" weight="bold" color={colors.status.danger}>Xóa món</AppText>
+              <AppText variant="sm" color={colors.status.danger}>Xóa món</AppText>
             </TouchableOpacity>
           </View>
         </View>

@@ -175,7 +175,7 @@ export default function ShiftsScreen() {
           ) : (
             <TouchableOpacity style={styles.panelBtnSecondary} onPress={() => { Alert.alert('Thông tin ca', `Mở: ${fmtDate(s.started_at)}\nĐóng: ${fmtDate(s.ended_at)}\nDoanh thu: ${formatVND(s.total_revenue || s.revenue)}`); }}>
               <Icon name="eye-outline" size={14} color={colors.brand.primary} />
-              <AppText variant="sm" weight="bold" color={colors.brand.primary}>Xem chi tiết</AppText>
+              <AppText variant="sm" color={colors.brand.primary}>Xem chi tiết</AppText>
             </TouchableOpacity>
           )}
         </View>

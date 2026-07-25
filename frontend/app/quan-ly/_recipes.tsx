@@ -169,7 +169,7 @@ export default function RecipesScreen() {
             </TouchableOpacity>
             <TouchableOpacity style={s.panelBtnDanger} onPress={() => deleteRecipe(item.id || item.product_id)}>
               <Icon name="trash-can-outline" size={14} color={colors.status.danger} />
-              <AppText variant="sm" weight="bold" color={colors.status.danger}>Xóa</AppText>
+              <AppText variant="sm" color={colors.status.danger}>Xóa</AppText>
             </TouchableOpacity>
           </View>
         </View>

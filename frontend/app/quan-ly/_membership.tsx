@@ -202,7 +202,7 @@ export default function MembershipScreen() {
         </TouchableOpacity>
         <TouchableOpacity style={styles.panelBtnDanger} onPress={() => handleDelete(t.id, t.name)}>
           <Icon name="trash-can-outline" size={14} color={colors.status.danger} />
-          <AppText variant="sm" weight="bold" color={colors.status.danger}>Xóa</AppText>
+          <AppText variant="sm" color={colors.status.danger}>Xóa</AppText>
         </TouchableOpacity>
       </View>
     </View>
