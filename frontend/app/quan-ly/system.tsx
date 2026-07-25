@@ -74,6 +74,6 @@ const styles = StyleSheet.create({
     borderRadius: 17,
     backgroundColor: colors.surface.card,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
 });
