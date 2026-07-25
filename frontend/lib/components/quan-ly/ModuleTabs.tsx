@@ -6,10 +6,10 @@ import {
   Animated,
   NativeSyntheticEvent,
   NativeScrollEvent,
+  StyleSheet,
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors } from '../../theme/colors';
-import { shape } from '../../theme/shape';
 import AppText from '../ui/AppText';
 
 export interface ModuleTab {
@@ -47,57 +47,42 @@ export default function ModuleTabs({ tabs, activeTab, onSelectTab }: ModuleTabsP
   );
 
   return (
-    <View
-      style={{
-        backgroundColor: colors.surface.card,
-        flexGrow: 0,
-        flexShrink: 0,
-        paddingVertical: 4,
-      }}
-    >
+    <View style={styles.fbTabNavContainer}>
       <ScrollView
         ref={scrollRef}
         horizontal
         showsHorizontalScrollIndicator={false}
         onScroll={handleScroll}
         scrollEventThrottle={100}
-        contentContainerStyle={{
-          paddingHorizontal: 12,
-          paddingVertical: 4,
-          alignItems: 'center',
-        }}
+        contentContainerStyle={styles.scrollContent}
       >
-        {tabs.map((tab, index) => {
+        {tabs.map((tab) => {
           const active = activeTab === tab.id;
-          const isLast = index === tabs.length - 1;
           return (
             <TouchableOpacity
               key={tab.id}
               onPress={() => onSelectTab(tab.id)}
-              style={{
-                flexDirection: 'row',
-                paddingHorizontal: 16,
-                height: 36,
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderRadius: 999,
-                marginRight: isLast ? 0 : 8,
-                backgroundColor: active ? colors.brand.primaryBg : colors.surface.app,
-                gap: 6,
-              }}
+              activeOpacity={0.7}
+              style={styles.fbTabItem}
             >
-              <Icon
-                name={tab.icon as any}
-                size={16}
-                color={active ? colors.brand.primary : colors.icon.muted}
-              />
-              <AppText
-                variant="sm"
-                weight={active ? 'bold' : 'normal'}
-                color={active ? colors.brand.primary : colors.text.secondary}
-              >
-                {tab.name}
-              </AppText>
+              <View style={styles.fbTabInner}>
+                <Icon
+                  name={tab.icon as any}
+                  size={18}
+                  color={active ? colors.brand.primary : '#65676B'}
+                />
+                <AppText
+                  variant="sm"
+                  weight={active ? 'bold' : 'normal'}
+                  color={active ? colors.brand.primary : '#65676B'}
+                  style={{ fontSize: 14 }}
+                >
+                  {tab.name}
+                </AppText>
+              </View>
+
+              {/* Facebook Active Bottom Indicator Line */}
+              {active && <View style={styles.fbActiveIndicator} />}
             </TouchableOpacity>
           );
         })}
@@ -105,3 +90,39 @@ export default function ModuleTabs({ tabs, activeTab, onSelectTab }: ModuleTabsP
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  fbTabNavContainer: {
+    backgroundColor: colors.surface.card,
+    flexGrow: 0,
+    flexShrink: 0,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
+  },
+  scrollContent: {
+    paddingHorizontal: 8,
+    alignItems: 'center',
+  },
+  fbTabItem: {
+    position: 'relative',
+    height: 44,
+    paddingHorizontal: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fbTabInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  fbActiveIndicator: {
+    position: 'absolute',
+    bottom: 0,
+    left: 8,
+    right: 8,
+    height: 3,
+    backgroundColor: colors.brand.primary,
+    borderTopLeftRadius: 3,
+    borderTopRightRadius: 3,
+  },
+});

@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
   statItem: { flex: 1, alignItems: 'center', flexDirection: 'row', gap: 6, justifyContent: 'center' },
   barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
   filterRow: { paddingHorizontal: 12, marginBottom: 8 },
-  chip: { paddingHorizontal: 14, height: 34, borderRadius: 999, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center' },
+  chip: { paddingHorizontal: 14, height: 34, borderRadius: 999, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
   chipActive: { backgroundColor: colors.brand.primaryBg },
   actionBadgeCircle: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
   actionCircleBtn: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
