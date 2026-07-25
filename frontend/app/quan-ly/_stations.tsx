@@ -8,7 +8,6 @@ import { request } from '../../lib/api/client';
 import type { Station } from '../../lib/api/client';
 import DataTable, { type Column } from '../../lib/components/ui/DataTable';
 import FormModal from '../../lib/components/ui/FormModal';
-import FAB from '../../lib/components/ui/FAB';
 import AppText from '../../lib/components/ui/AppText';
 import { getKitchenModuleEnabled, setKitchenModuleEnabled } from '../../lib/utils/kitchenSettings';
 
@@ -161,6 +160,17 @@ export default function StationsScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+      {/* Top Action Bar on Mobile */}
+      {!isWide && (
+        <View style={styles.mobileActionRow}>
+          <AppText variant="sm" color={colors.text.muted}>{stats.total} trạm bếp</AppText>
+          <TouchableOpacity onPress={openNew} style={styles.addBtn}>
+            <Icon name="plus" size={16} color={colors.text.inverse} />
+            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm trạm</AppText>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {/* Stats bar */}
       <View style={styles.statsBar}>
         <View style={styles.statItem}>
@@ -220,7 +230,6 @@ export default function StationsScreen() {
             emptyTitle="Chưa có trạm bếp"
             emptySubtitle=""
           />
-          <FAB onPress={openNew} />
         </View>
       )}
 
@@ -248,6 +257,9 @@ export default function StationsScreen() {
 }
 
 const styles = StyleSheet.create({
+  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 8 },
+  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },
+
   statsBar: {
     flexDirection: 'row',
     paddingHorizontal: 12,
@@ -255,7 +267,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface.card,
     borderRadius: shape.radius.lg,
     marginHorizontal: 8,
-    marginVertical: 8,
+    marginVertical: 4,
   },
   statItem: { flex: 1, alignItems: 'center', flexDirection: 'row', gap: 6, justifyContent: 'center' },
   barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },

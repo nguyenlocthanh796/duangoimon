@@ -8,7 +8,6 @@ import { request } from '../../lib/api/client';
 import type { Branch } from '../../lib/api/client';
 import DataTable, { type Column } from '../../lib/components/ui/DataTable';
 import FormModal from '../../lib/components/ui/FormModal';
-import FAB from '../../lib/components/ui/FAB';
 import AppText from '../../lib/components/ui/AppText';
 
 const API = '/api/v1/quan-ly';
@@ -169,6 +168,17 @@ export default function BranchesScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+      {/* Top Action Bar on Mobile */}
+      {!isWide && (
+        <View style={styles.mobileActionRow}>
+          <AppText variant="sm" color={colors.text.muted}>{stats.total} chi nhánh</AppText>
+          <TouchableOpacity onPress={() => { setEditing(null); setForm({ name: '', code: '', address: '', phone: '', is_active: true }); setShowForm(true); }} style={styles.addBtn}>
+            <Icon name="plus" size={16} color={colors.text.inverse} />
+            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm chi nhánh</AppText>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {/* Stats bar */}
       <View style={styles.statsBar}>
         <View style={styles.statItem}>
@@ -228,7 +238,6 @@ export default function BranchesScreen() {
             emptyTitle="Chưa có chi nhánh"
             emptySubtitle=""
           />
-          <FAB onPress={() => { setEditing(null); setForm({ name: '', code: '', address: '', phone: '', is_active: true }); setShowForm(true); }} />
         </View>
       )}
 
@@ -260,6 +269,9 @@ export default function BranchesScreen() {
 }
 
 const styles = StyleSheet.create({
+  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 8 },
+  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },
+
   statsBar: {
     flexDirection: 'row',
     paddingHorizontal: 12,
@@ -267,7 +279,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface.card,
     borderRadius: shape.radius.lg,
     marginHorizontal: 8,
-    marginVertical: 8,
+    marginVertical: 4,
   },
   statItem: { flex: 1, alignItems: 'center', flexDirection: 'row', gap: 6, justifyContent: 'center' },
   barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },

@@ -10,7 +10,6 @@ import { useResponsive } from '../../lib/hooks/useResponsive';
 import { api } from '../../lib/api';
 import type { Table } from '../../lib/types';
 import FormModal from '../../lib/components/ui/FormModal';
-import FAB from '../../lib/components/ui/FAB';
 import AppText from '../../lib/components/ui/AppText';
 import { TableSkeleton } from '../../lib/components/ui/Skeleton';
 
@@ -189,6 +188,17 @@ export default function TablesScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+      {/* Top Action Bar on Mobile */}
+      {!isWide && (
+        <View style={styles.mobileActionRow}>
+          <AppText variant="sm" color={colors.text.muted}>{tables.length} bàn ăn</AppText>
+          <TouchableOpacity onPress={openAdd} style={styles.addBtn}>
+            <Icon name="plus" size={16} color={colors.text.inverse} />
+            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm bàn</AppText>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {/* Area filter tabs */}
       <View style={styles.filterRow}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
@@ -271,13 +281,12 @@ export default function TablesScreen() {
           {loading ? (
             <TableSkeleton rowCount={5} />
           ) : (
-            <ScrollView contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', padding: '1%', paddingBottom: 80 }}>
+            <ScrollView contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', padding: '1%', paddingBottom: 24 }}>
               {filteredTables.map(table => (
                 <TableCard key={table.id} table={table} onPress={() => openEdit(table)} />
               ))}
             </ScrollView>
           )}
-          <FAB onPress={openAdd} />
         </View>
       )}
 
@@ -315,7 +324,10 @@ export default function TablesScreen() {
 }
 
 const styles = StyleSheet.create({
-  filterRow: { paddingHorizontal: 8, marginVertical: 6 },
+  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 8 },
+  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },
+
+  filterRow: { paddingHorizontal: 8, marginVertical: 4 },
   areaTab: { paddingHorizontal: 12, height: 32, borderRadius: shape.radius.md, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center' },
   areaTabActive: { backgroundColor: colors.brand.primaryBg },
 
