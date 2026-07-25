@@ -106,7 +106,7 @@ export function VerticalBarChart({
       <SvgText
         x={padL - 4}
         y={padT + 8}
-        fontSize={8}
+        fontSize={13}
         fill={colors.text.muted}
         textAnchor="end"
       >
@@ -140,7 +140,7 @@ export function VerticalBarChart({
             <SvgText
               x={x + barW / 2}
               y={padT + chartH + 14}
-              fontSize={8}
+              fontSize={13}
               fill={colors.text.muted}
               textAnchor="middle"
             >
@@ -252,7 +252,7 @@ export function DonutChart({ data, size = 150, innerRadius = 0.6 }: DonutChartPr
       <SvgText x={cx} y={cy - 3} textAnchor="middle" fontSize={16} fontWeight="700" fill="#0F172A" fontFamily="BeVietnamPro_700Bold">
         {Intl.NumberFormat('vi-VN').format(total)}
       </SvgText>
-      <SvgText x={cx} y={cy + 12} textAnchor="middle" fontSize={8} fill="#94A3B8" fontFamily="BeVietnamPro_400Regular">
+      <SvgText x={cx} y={cy + 12} textAnchor="middle" fontSize={13} fill="#94A3B8" fontFamily="BeVietnamPro_400Regular">
         VND
       </SvgText>
     </Svg>
