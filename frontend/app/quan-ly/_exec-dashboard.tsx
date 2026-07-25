@@ -20,9 +20,17 @@ export default function ExecDashboardScreen() {
   const [tab, setTab] = useState<TabKey>('branch');
 
   const load = useCallback(async () => {
-    try { setLoading(true); setD(await request<ExecDashboard>('/api/v1/quan-ly/exec-dashboard')); }
-    catch { /* ignore */ } finally { setLoading(false); }
+    try {
+      setLoading(true);
+      const res = await request<ExecDashboard>('/api/v1/quan-ly/exec-dashboard');
+      setD(res);
+    } catch {
+      /* ignore */
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
   useEffect(() => { load(); }, [load]);
 
   const rows = useMemo(() => {
@@ -35,7 +43,16 @@ export default function ExecDashboardScreen() {
       key: 'name',
       title: tab === 'branch' ? 'Chi nhánh' : 'Ngày',
       flex: 1,
-      render: (r) => <AppText variant="sm" weight="bold" color={colors.text.primary} numberOfLines={1}>{r.branch || r.date?.slice(5) || r.date}</AppText>,
+      render: (r) => (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: '#F1F5F9', alignItems: 'center', justifyContent: 'center' }}>
+            <Icon name={tab === 'branch' ? 'storefront' : 'calendar-text'} size={14} color={colors.brand.primary} />
+          </View>
+          <AppText variant="sm" weight="bold" color="#050505" numberOfLines={1}>
+            {r.branch || r.date?.slice(5) || r.date || 'Chi nhánh'}
+          </AppText>
+        </View>
+      ),
     },
     {
       key: 'revenue',
@@ -44,32 +61,42 @@ export default function ExecDashboardScreen() {
       align: 'right',
       sortable: true,
       sortValue: (r) => r.revenue || 0,
-      render: (r) => <AppText variant="sm" weight="bold" color={colors.brand.primary}>{formatVND(r.revenue)}</AppText>,
+      render: (r) => <AppText variant="sm" weight="bold" color={colors.brand.primary}>{formatVND(r.revenue || 0)}</AppText>,
     },
   ];
+
+  // Safely extract numeric values to prevent "undefined"
+  const totalRevenue = d?.total_revenue ?? 0;
+  const totalOrders = d?.total_orders ?? 0;
+  const activeTables = d?.active_tables ?? 0;
+  const tableOccupancy = d?.table_occupancy ?? 0;
+  const avgOrder = d?.avg_order ?? 0;
 
   const renderPanel = () => (
     <View style={styles.panelBox}>
       <View style={styles.panelHeader}>
-        <Icon name="view-dashboard" size={18} color={colors.brand.primary} />
-        <AppText variant="sm" weight="bold" color={colors.text.primary}>Chỉ số điều hành thực tế</AppText>
+        <Icon name="view-dashboard" size={20} color={colors.brand.primary} />
+        <AppText variant="md" weight="bold" color="#050505">Chỉ số điều hành P&L</AppText>
       </View>
-      {d && (
-        <View style={{ gap: 10 }}>
-          {[
-            { label: 'Doanh thu hôm nay', value: formatVND(d?.total_revenue ?? 0) },
-            { label: 'Tổng số đơn hàng', value: `${d?.total_orders ?? (d as any)?.orders_count ?? 0} đơn` },
-            { label: 'Bàn đang phục vụ', value: `${d?.active_tables ?? (d as any)?.active_tables_count ?? 0} bàn` },
-            { label: 'Tỷ lệ lấp đầy (Occupancy)', value: `${d?.table_occupancy ?? (d as any)?.occupancy_rate ?? 0}%` },
-            { label: 'Trung bình/Đơn', value: formatVND(d?.avg_order ?? 0) },
-          ].map((r, i) => (
-            <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <AppText variant="sm" color={colors.text.muted}>{r.label}</AppText>
-              <AppText variant="sm" weight="bold" color={colors.text.primary}>{r.value}</AppText>
+      <View style={{ gap: 12, paddingTop: 4 }}>
+        {[
+          { label: 'Doanh thu hôm nay', value: formatVND(totalRevenue), icon: 'cash-register', color: colors.status.success },
+          { label: 'Tổng số đơn hàng', value: `${totalOrders} đơn`, icon: 'receipt', color: colors.brand.primary },
+          { label: 'Bàn đang phục vụ', value: `${activeTables} bàn`, icon: 'table-furniture', color: '#F97316' },
+          { label: 'Tỷ lệ lấp đầy (Occupancy)', value: `${tableOccupancy}%`, icon: 'chart-pie', color: '#8B5CF6' },
+          { label: 'Trung bình / Đơn hàng', value: formatVND(avgOrder), icon: 'calculator', color: '#0EA5E9' },
+        ].map((r, i) => (
+          <View key={i} style={styles.pnlRow}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <View style={[styles.miniIconBadge, { backgroundColor: `${r.color}15` }]}>
+                <Icon name={r.icon as any} size={14} color={r.color} />
+              </View>
+              <AppText variant="sm" color={colors.text.secondary}>{r.label}</AppText>
             </View>
-          ))}
-        </View>
-      )}
+            <AppText variant="sm" weight="bold" color="#050505">{r.value}</AppText>
+          </View>
+        ))}
+      </View>
     </View>
   );
 
@@ -81,32 +108,23 @@ export default function ExecDashboardScreen() {
         </View>
         <View style={{ flex: 1 }}>
           <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>
-            {r.branch || r.date || 'Hệ thống'}
+            {r.branch || r.date || 'Chi nhánh'}
           </AppText>
           <AppText variant="sm" color="#65676B" style={{ marginTop: 2 }}>
-            {tab === 'branch' ? 'Chi nhánh chính' : `Ngày ${r.date}`}
+            {tab === 'branch' ? 'Chi nhánh hoạt động' : `Ngày ${r.date}`}
           </AppText>
         </View>
         <View style={{ alignItems: 'flex-end' }}>
-          <AppText variant="md" weight="bold" color={colors.brand.primary}>{formatVND(r.revenue)}</AppText>
+          <AppText variant="md" weight="bold" color={colors.brand.primary}>{formatVND(r.revenue || 0)}</AppText>
           <AppText variant="sm" color="#65676B">Doanh thu</AppText>
         </View>
-      </View>
-
-      <View style={styles.cardActionDivider} />
-
-      <View style={{ flexDirection: 'row', gap: 8, paddingHorizontal: 12, paddingTop: 8 }}>
-        <TouchableOpacity style={styles.panelBtnSecondary} onPress={() => {}}>
-          <Icon name="chart-bar" size={14} color={colors.brand.primary} />
-          <AppText variant="sm" weight="bold" color={colors.brand.primary}>Xem chi tiết</AppText>
-        </TouchableOpacity>
       </View>
     </View>
   );
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
-      {/* Top Action Bar on Mobile */}
+      {/* Top Mobile Header */}
       {!isWide && (
         <View style={styles.mobileActionRow}>
           <AppText variant="md" weight="bold" color="#050505">Điều hành P&L</AppText>
@@ -117,35 +135,45 @@ export default function ExecDashboardScreen() {
         </View>
       )}
 
-      {/* Facebook Story Highlight Metric Cards */}
+      {/* 📊 Native App Style KPI Widget Cards Strip */}
       <View style={styles.fbMetricContainer}>
         <View style={styles.fbMetricCard}>
           <View style={[styles.fbMetricIcon, { backgroundColor: '#ECFDF5' }]}>
-            <Icon name="currency-usd" size={18} color={colors.status.success} />
+            <Icon name="currency-usd" size={20} color={colors.status.success} />
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color={colors.status.success}>{d ? formatVND(d.total_revenue) : '-'}</AppText>
+            <AppText variant="md" weight="bold" color={colors.status.success}>{formatVND(totalRevenue)}</AppText>
             <AppText variant="sm" color="#65676B">Doanh thu</AppText>
           </View>
         </View>
 
         <View style={styles.fbMetricCard}>
           <View style={[styles.fbMetricIcon, { backgroundColor: '#EEF2FF' }]}>
-            <Icon name="receipt" size={18} color={colors.brand.primary} />
+            <Icon name="receipt" size={20} color={colors.brand.primary} />
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#050505">{d ? (d.total_orders ?? (d as any)?.orders_count ?? 0) : '-'}</AppText>
+            <AppText variant="md" weight="bold" color="#050505">{totalOrders} đơn</AppText>
             <AppText variant="sm" color="#65676B">Đơn hàng</AppText>
           </View>
         </View>
 
         <View style={styles.fbMetricCard}>
           <View style={[styles.fbMetricIcon, { backgroundColor: '#FFF7ED' }]}>
-            <Icon name="table-furniture" size={18} color="#F97316" />
+            <Icon name="table-furniture" size={20} color="#F97316" />
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#F97316">{d ? `${d.active_tables ?? (d as any)?.active_tables_count ?? 0} bàn` : '-'}</AppText>
+            <AppText variant="md" weight="bold" color="#F97316">{activeTables} bàn</AppText>
             <AppText variant="sm" color="#65676B">Đang dùng</AppText>
+          </View>
+        </View>
+
+        <View style={styles.fbMetricCard}>
+          <View style={[styles.fbMetricIcon, { backgroundColor: '#F3E8FF' }]}>
+            <Icon name="chart-pie" size={20} color="#8B5CF6" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <AppText variant="md" weight="bold" color="#8B5CF6">{tableOccupancy}%</AppText>
+            <AppText variant="sm" color="#65676B">Lấp đầy</AppText>
           </View>
         </View>
       </View>
@@ -161,6 +189,7 @@ export default function ExecDashboardScreen() {
                 onPress={() => setTab(t)}
                 style={[styles.chip, active && styles.chipActive]}
               >
+                <Icon name={t === 'branch' ? 'storefront' : 'calendar-clock'} size={14} color={active ? colors.brand.primary : '#65676B'} />
                 <AppText variant="sm" weight={active ? "bold" : "normal"} color={active ? colors.brand.primary : "#050505"}>
                   {t === 'branch' ? 'Theo chi nhánh' : '7 ngày gần đây'}
                 </AppText>
@@ -176,7 +205,7 @@ export default function ExecDashboardScreen() {
             <DataTable<any>
               columns={columns}
               data={rows}
-              getRowId={(r: any) => r?.id || r?.date || String(Math.random())}
+              getRowId={(r: any) => r?.id || r?.branch || r?.date || String(Math.random())}
               loading={loading}
               onRefresh={load}
               compact
@@ -190,7 +219,7 @@ export default function ExecDashboardScreen() {
       ) : (
         <FlatList
           data={rows}
-          keyExtractor={(r: any, idx) => r?.id || r?.date || String(idx)}
+          keyExtractor={(r: any, idx) => r?.id || r?.branch || r?.date || String(idx)}
           renderItem={renderMobileCard}
           contentContainerStyle={{ paddingBottom: 100 }}
           ListEmptyComponent={
@@ -241,38 +270,43 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border.light,
     marginBottom: 8,
-    maxWidth: 520,
+    flexWrap: 'wrap',
   },
   fbMetricCard: {
     flex: 1,
+    minWidth: 140,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 10,
     backgroundColor: colors.surface.card,
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-    borderRadius: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
   fbMetricIcon: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     alignItems: 'center',
     justify: 'center',
   },
 
   /* Filter chips */
   chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
     paddingHorizontal: 14,
     height: 36,
     borderRadius: 999,
     backgroundColor: colors.surface.card,
-    alignItems: 'center',
-    justify: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
   chipActive: {
     backgroundColor: colors.brand.primaryBg,
-    borderWidth: 1,
     borderColor: '#FFEDD5',
   },
 
@@ -299,22 +333,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justify: 'center',
   },
-  cardActionDivider: {
-    height: 1,
-    backgroundColor: colors.border.light,
-    marginTop: 10,
+
+  panelBox: {
+    backgroundColor: colors.surface.card,
+    borderRadius: 16,
+    padding: 16,
+    gap: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
-  panelBtnSecondary: {
-    flex: 1,
+  panelHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'center',
-    gap: 6,
-    height: 44,
-    borderRadius: 999,
-    backgroundColor: colors.brand.primaryBg,
+    gap: 8,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
   },
-
-  panelBox: { backgroundColor: colors.surface.card, borderRadius: 16, padding: 14, gap: 12 },
-  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },
+  pnlRow: {
+    flexDirection: 'row',
+    justify: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 4,
+  },
+  miniIconBadge: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justify: 'center',
+  },
 });

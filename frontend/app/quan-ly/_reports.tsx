@@ -69,23 +69,22 @@ export default function ReportsScreen() {
   const renderKpiPanel = () => (
     <View style={styles.panelBox}>
       <View style={styles.panelHeader}>
-        <Icon name="chart-box-outline" size={18} color={colors.brand.primary} />
-        <AppText variant="sm" weight="bold" color={colors.text.primary}>Thống kê tổng quan kỳ này</AppText>
+        <Icon name="chart-box-outline" size={20} color={colors.brand.primary} />
+        <AppText variant="md" weight="bold" color="#050505">Tổng quan doanh thu kỳ này</AppText>
       </View>
-      <View style={{ alignItems: 'center', paddingVertical: 4 }}>
+      <View style={{ alignItems: 'center', paddingVertical: 12, backgroundColor: colors.brand.primaryBg, borderRadius: 14 }}>
         <AppText variant="lg" weight="bold" color={colors.brand.primary}>{formatVND(totalRevenue)}</AppText>
-        <AppText variant="sm" color={colors.text.muted}>Tổng doanh thu bán hàng</AppText>
+        <AppText variant="sm" color="#65676B" style={{ marginTop: 2 }}>Tổng doanh thu bán hàng</AppText>
       </View>
       <View style={styles.panelDivider} />
       <View style={{ flexDirection: 'row', gap: 8 }}>
-        <View style={{ flex: 1, alignItems: 'center' }}>
-          <AppText variant="md" weight="bold" color={colors.text.primary}>{totalOrders}</AppText>
-          <AppText variant="sm" color={colors.text.muted}>Tổng số đơn</AppText>
+        <View style={{ flex: 1, alignItems: 'center', backgroundColor: '#F8FAFC', paddingVertical: 10, borderRadius: 12 }}>
+          <AppText variant="md" weight="bold" color="#050505">{totalOrders}</AppText>
+          <AppText variant="sm" color="#65676B">Tổng số đơn</AppText>
         </View>
-        <View style={styles.panelDividerV} />
-        <View style={{ flex: 1, alignItems: 'center' }}>
+        <View style={{ flex: 1, alignItems: 'center', backgroundColor: '#F8FAFC', paddingVertical: 10, borderRadius: 12 }}>
           <AppText variant="md" weight="bold" color={colors.status.success}>{formatVND(avgRevenuePerDay)}</AppText>
-          <AppText variant="sm" color={colors.text.muted}>TB mỗi ngày</AppText>
+          <AppText variant="sm" color="#65676B">TB mỗi ngày</AppText>
         </View>
       </View>
     </View>
@@ -93,7 +92,7 @@ export default function ReportsScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
-      {/* Top Action Bar on Mobile */}
+      {/* Top Mobile Header */}
       {!isWide && (
         <View style={styles.mobileActionRow}>
           <AppText variant="md" weight="bold" color="#050505">Báo cáo bán hàng</AppText>
@@ -104,11 +103,11 @@ export default function ReportsScreen() {
         </View>
       )}
 
-      {/* Facebook Story Highlight Metric Cards */}
+      {/* 📊 Native App Style KPI Widget Cards Strip */}
       <View style={styles.fbMetricContainer}>
         <View style={styles.fbMetricCard}>
           <View style={[styles.fbMetricIcon, { backgroundColor: '#ECFDF5' }]}>
-            <Icon name="currency-usd" size={18} color={colors.status.success} />
+            <Icon name="currency-usd" size={20} color={colors.status.success} />
           </View>
           <View style={{ flex: 1 }}>
             <AppText variant="md" weight="bold" color={colors.status.success}>{formatVND(totalRevenue)}</AppText>
@@ -118,17 +117,17 @@ export default function ReportsScreen() {
 
         <View style={styles.fbMetricCard}>
           <View style={[styles.fbMetricIcon, { backgroundColor: '#EEF2FF' }]}>
-            <Icon name="receipt" size={18} color={colors.brand.primary} />
+            <Icon name="receipt" size={20} color={colors.brand.primary} />
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#050505">{totalOrders}</AppText>
+            <AppText variant="md" weight="bold" color="#050505">{totalOrders} đơn</AppText>
             <AppText variant="sm" color="#65676B">Số đơn</AppText>
           </View>
         </View>
 
         <View style={styles.fbMetricCard}>
           <View style={[styles.fbMetricIcon, { backgroundColor: '#FFF7ED' }]}>
-            <Icon name="chart-line" size={18} color="#F97316" />
+            <Icon name="chart-line" size={20} color="#F97316" />
           </View>
           <View style={{ flex: 1 }}>
             <AppText variant="md" weight="bold" color="#F97316">{formatVND(avgRevenuePerDay)}</AppText>
@@ -168,8 +167,8 @@ export default function ReportsScreen() {
             <ScrollView showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand.primary} />}>
               <View style={styles.section}>
                 <View style={styles.sectionHeader}>
-                  <Icon name="chart-bar" size={18} color={colors.brand.primary} />
-                  <AppText variant="sm" weight="bold" color={colors.text.primary}>Doanh thu theo ngày</AppText>
+                  <Icon name="chart-bar" size={20} color={colors.brand.primary} />
+                  <AppText variant="md" weight="bold" color="#050505">Doanh thu theo ngày</AppText>
                 </View>
                 {(data?.daily?.length ?? 0) === 0 ? (
                   <View style={styles.emptyBox}>
@@ -191,8 +190,8 @@ export default function ReportsScreen() {
         <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand.primary} />}>
           <View style={styles.sectionMobile}>
             <View style={styles.sectionHeader}>
-              <Icon name="chart-bar" size={18} color={colors.brand.primary} />
-              <AppText variant="sm" weight="bold" color={colors.text.primary}>Doanh thu theo ngày</AppText>
+              <Icon name="chart-bar" size={20} color={colors.brand.primary} />
+              <AppText variant="md" weight="bold" color="#050505">Doanh thu theo ngày</AppText>
             </View>
             {(data?.daily?.length ?? 0) === 0 ? (
               <View style={styles.emptyBox}>
@@ -244,36 +243,79 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border.light,
     marginBottom: 8,
-    maxWidth: 520,
+    flexWrap: 'wrap',
   },
   fbMetricCard: {
     flex: 1,
+    minWidth: 140,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 10,
     backgroundColor: colors.surface.card,
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-    borderRadius: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
   fbMetricIcon: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     alignItems: 'center',
     justify: 'center',
   },
 
-  chip: { paddingHorizontal: 14, height: 36, borderRadius: 999, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center' },
-  chipActive: { backgroundColor: colors.brand.primaryBg, borderWidth: 1, borderColor: '#FFEDD5' },
+  chip: {
+    paddingHorizontal: 14,
+    height: 36,
+    borderRadius: 999,
+    backgroundColor: colors.surface.card,
+    alignItems: 'center',
+    justify: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  chipActive: {
+    backgroundColor: colors.brand.primaryBg,
+    borderColor: '#FFEDD5',
+  },
 
-  panelBox: { backgroundColor: colors.surface.card, borderRadius: 16, padding: 14, gap: 12 },
-  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },
+  panelBox: {
+    backgroundColor: colors.surface.card,
+    borderRadius: 16,
+    padding: 16,
+    gap: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  panelHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
+  },
   panelDivider: { height: 1, backgroundColor: colors.border.light },
-  panelDividerV: { width: 1, backgroundColor: colors.border.light },
 
-  section: { backgroundColor: colors.surface.card, borderRadius: 16, padding: 12, marginBottom: 8 },
-  sectionMobile: { backgroundColor: colors.surface.card, width: '100%', padding: 12, marginBottom: 8, borderTopWidth: 1, borderBottomWidth: 1, borderColor: colors.border.light },
-  sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
+  section: {
+    backgroundColor: colors.surface.card,
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  sectionMobile: {
+    backgroundColor: colors.surface.card,
+    width: '100%',
+    padding: 12,
+    marginBottom: 8,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: colors.border.light,
+  },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
   emptyBox: { alignItems: 'center', paddingVertical: 18, gap: 6 },
 });
