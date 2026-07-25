@@ -47,12 +47,9 @@ export default function SystemModule() {
         onMenuPress={openSidebar}
         compact={!isWide}
         right={
-          <TouchableOpacity 
-            disabled={true}
-            style={{ padding: 8, opacity: 0.3 }}
-          >
-            <Icon name="magnify" size={22} color={colors.text.primary} />
-          </TouchableOpacity>
+          <View style={styles.iconCircle}>
+            <Icon name="magnify" size={18} color={colors.text.secondary} />
+          </View>
         }
       />
       <ModuleTabs tabs={tabs} activeTab={activeTab} onSelectTab={setActiveTab} />
@@ -70,5 +67,13 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  iconCircle: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: colors.surface.card,
+    alignItems: 'center',
+    justify: 'center',
   },
 });

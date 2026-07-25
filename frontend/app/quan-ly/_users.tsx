@@ -130,7 +130,7 @@ export default function UsersScreen() {
         </View>
         <TouchableOpacity style={styles.panelCta} onPress={openAdd}>
           <Icon name="plus" size={14} color={colors.text.inverse} />
-          <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm</AppText>
+          <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm nhân viên</AppText>
         </TouchableOpacity>
       </View>
     </View>
@@ -167,6 +167,7 @@ export default function UsersScreen() {
       <TouchableOpacity style={styles.userItem} onPress={() => openEdit(item)} activeOpacity={0.7}>
         <View style={[styles.avatar, { backgroundColor: avatarColor(item.username) }]}>
           <AppText variant="md" weight="bold" color={colors.text.inverse}>{getInitials(item.full_name, item.username)}</AppText>
+          <View style={[styles.onlineDot, { backgroundColor: item.is_active ? colors.status.success : colors.status.danger }]} />
         </View>
         <View style={{ flex: 1 }}>
           <AppText variant="sm" weight="bold" color={colors.text.primary}>{item.full_name || item.username}</AppText>
@@ -177,12 +178,9 @@ export default function UsersScreen() {
             <Icon name={rc.icon as any} size={11} color={rc.color} />
             <AppText variant="sm" weight="bold" color={rc.color}>{rc.label}</AppText>
           </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-            <View style={[styles.activeDot, { backgroundColor: item.is_active ? colors.status.success : colors.status.danger }]} />
-            <AppText variant="sm" color={item.is_active ? colors.status.success : colors.status.danger}>
-              {item.is_active ? 'Hoạt động' : 'Khóa'}
-            </AppText>
-          </View>
+          <AppText variant="sm" color={item.is_active ? colors.status.success : colors.status.danger} style={{ fontSize: 11 }}>
+            {item.is_active ? 'Hoạt động' : 'Khóa'}
+          </AppText>
         </View>
       </TouchableOpacity>
     );
@@ -289,8 +287,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface.card, marginBottom: 8,
     borderRadius: 16, padding: 12,
   },
-  avatar: { width: 42, height: 42, borderRadius: 12, alignItems: 'center', justifyContent: 'center' },
+  avatar: { width: 42, height: 42, borderRadius: 12, alignItems: 'center', justifyContent: 'center', position: 'relative' },
+  onlineDot: { width: 10, height: 10, borderRadius: 5, borderWidth: 2, borderColor: colors.surface.card, position: 'absolute', bottom: -1, right: -1 },
   userRight: { alignItems: 'flex-end', gap: 4 },
   roleBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999 },
-  activeDot: { width: 6, height: 6, borderRadius: 3 },
 });
