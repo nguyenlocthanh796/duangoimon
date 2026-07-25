@@ -196,7 +196,7 @@ export default function TablesScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
-      {/* Top Bar on Mobile */}
+      {/* Top Action Bar on Mobile */}
       {!isWide && (
         <View style={styles.mobileActionRow}>
           <AppText variant="md" weight="bold" color="#050505">{tables.length} bàn ăn</AppText>
@@ -207,9 +207,42 @@ export default function TablesScreen() {
         </View>
       )}
 
-      {/* Area filter tabs */}
+      {/* Facebook Story Highlight Metric Cards */}
+      <View style={styles.fbMetricContainer}>
+        <View style={styles.fbMetricCard}>
+          <View style={[styles.fbMetricIcon, { backgroundColor: colors.surface.app }]}>
+            <Icon name="table-furniture" size={18} color="#050505" />
+          </View>
+          <View>
+            <AppText variant="md" weight="bold" color="#050505">{tables.length}</AppText>
+            <AppText variant="sm" color="#65676B">Tổng bàn</AppText>
+          </View>
+        </View>
+
+        <View style={styles.fbMetricCard}>
+          <View style={[styles.fbMetricIcon, { backgroundColor: '#ECFDF5' }]}>
+            <Icon name="check-circle" size={18} color={colors.status.success} />
+          </View>
+          <View>
+            <AppText variant="md" weight="bold" color={colors.status.success}>{counts.trong}</AppText>
+            <AppText variant="sm" color="#65676B">Bàn trống</AppText>
+          </View>
+        </View>
+
+        <View style={styles.fbMetricCard}>
+          <View style={[styles.fbMetricIcon, { backgroundColor: colors.brand.primaryBg }]}>
+            <Icon name="account-group" size={18} color={colors.brand.primary} />
+          </View>
+          <View>
+            <AppText variant="md" weight="bold" color={colors.brand.primary}>{counts.co_khach}</AppText>
+            <AppText variant="sm" color="#65676B">Có khách</AppText>
+          </View>
+        </View>
+      </View>
+
+      {/* Area filter tabs - Facebook Sub-Filter Chips */}
       <View style={styles.filterRow}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6, paddingHorizontal: 12 }}>
           {['Tất cả', 'Trong nhà', 'VIP', 'Ngoài Trời', 'Tầng 1', 'Tầng 2'].map((area) => {
             const active = selectedArea === area;
             return (
@@ -219,24 +252,6 @@ export default function TablesScreen() {
             );
           })}
         </ScrollView>
-      </View>
-
-      {/* Summary stats bar */}
-      <View style={styles.statsBar}>
-        <View style={styles.statItem}>
-          <AppText variant="md" weight="bold" color="#050505">{tables.length}</AppText>
-          <AppText variant="sm" color={colors.text.muted}>Tổng bàn</AppText>
-        </View>
-        <View style={styles.barDivider} />
-        <View style={styles.statItem}>
-          <AppText variant="md" weight="bold" color={colors.status.success}>{counts.trong}</AppText>
-          <AppText variant="sm" color={colors.text.muted}>Bàn trống</AppText>
-        </View>
-        <View style={styles.barDivider} />
-        <View style={styles.statItem}>
-          <AppText variant="md" weight="bold" color={colors.brand.primary}>{counts.co_khach}</AppText>
-          <AppText variant="sm" color={colors.text.muted}>Có khách</AppText>
-        </View>
       </View>
 
       {isWide ? (
@@ -362,12 +377,41 @@ export default function TablesScreen() {
 }
 
 const styles = StyleSheet.create({
-  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light, marginBottom: 8 },
+  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 36, borderRadius: 999, backgroundColor: colors.brand.primary },
 
-  filterRow: { paddingHorizontal: 12, marginVertical: 4 },
-  areaTab: { paddingHorizontal: 14, height: 34, borderRadius: 999, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
-  areaTabActive: { backgroundColor: colors.brand.primaryBg },
+  /* Facebook Story Highlight Metric Cards Container */
+  fbMetricContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 8,
+    backgroundColor: colors.surface.card,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
+    marginBottom: 8,
+  },
+  fbMetricCard: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: colors.surface.card,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+  },
+  fbMetricIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  filterRow: { marginVertical: 4, marginBottom: 8 },
+  areaTab: { paddingHorizontal: 14, height: 34, borderRadius: 999, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center' },
+  areaTabActive: { backgroundColor: colors.brand.primaryBg, borderWidth: 1, borderColor: '#FFEDD5' },
 
   statsBar: {
     flexDirection: 'row',
