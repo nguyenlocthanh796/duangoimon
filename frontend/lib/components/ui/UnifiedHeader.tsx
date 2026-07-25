@@ -152,7 +152,6 @@ const styles = StyleSheet.create({
   title: {
     ...font.lg,
     color: colors.text.primary,
-    fontWeight: '600',
   },
   subtitle: {
     ...font.sm,

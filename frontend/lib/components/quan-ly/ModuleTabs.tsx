@@ -75,7 +75,6 @@ export default function ModuleTabs({ tabs, activeTab, onSelectTab }: ModuleTabsP
                   variant="sm"
                   weight={active ? 'bold' : 'normal'}
                   color={active ? colors.brand.primary : '#65676B'}
-                  style={{ fontSize: 14 }}
                 >
                   {tab.name}
                 </AppText>

@@ -398,7 +398,7 @@ export default function MenuScreen() {
             <Icon name="food" size={20} color="#D97706" />
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#050505">{products.length} món</AppText>
+            <AppText variant="lg" weight="bold" color="#050505">{products.length} món</AppText>
             <AppText variant="sm" color="#65676B">Tổng thực đơn</AppText>
           </View>
         </View>
@@ -408,7 +408,7 @@ export default function MenuScreen() {
             <Icon name="tag-text" size={20} color={colors.status.success} />
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color={colors.status.success}>{formatVND(avgPrice)}</AppText>
+            <AppText variant="lg" weight="bold" color={colors.status.success}>{formatVND(avgPrice)}</AppText>
             <AppText variant="sm" color="#65676B">Giá trung bình</AppText>
           </View>
         </View>
@@ -418,7 +418,7 @@ export default function MenuScreen() {
             <Icon name="shape" size={20} color="#2563EB" />
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#2563EB">{CATEGORIES.length} nhóm</AppText>
+            <AppText variant="lg" weight="bold" color="#2563EB">{CATEGORIES.length} nhóm</AppText>
             <AppText variant="sm" color="#65676B">Danh mục món</AppText>
           </View>
         </View>
