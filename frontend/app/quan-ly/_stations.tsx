@@ -105,36 +105,46 @@ export default function StationsScreen() {
   ];
 
   const renderMobileCard = (s: Station) => (
-    <TouchableOpacity
-      style={styles.mobileItemCard}
-      onPress={() => openEdit(s)}
-      activeOpacity={0.7}
-    >
-      <View style={styles.stationAvatar}>
-        <Icon name="stove" size={18} color={colors.brand.primary} />
-      </View>
-      <View style={{ flex: 1 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-          <AppText variant="sm" weight="bold" color={colors.text.primary} numberOfLines={1}>{s.name}</AppText>
-          <View style={styles.codeBadge}>
-            <AppText variant="sm" color={colors.text.muted}>{s.code}</AppText>
+    <View style={styles.mobileItemCard}>
+      <View style={styles.cardHeaderRow}>
+        <View style={styles.stationAvatar}>
+          <Icon name="stove" size={18} color={colors.brand.primary} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <AppText variant="sm" weight="bold" color={colors.text.primary} numberOfLines={1}>{s.name}</AppText>
+            <View style={styles.codeBadge}>
+              <AppText variant="sm" color={colors.text.muted}>{s.code}</AppText>
+            </View>
           </View>
+          {(s.categories || []).length > 0 ? (
+            <AppText variant="sm" color={colors.text.muted} numberOfLines={1} style={{ marginTop: 2 }}>
+              {(s.categories || []).join(', ')}
+            </AppText>
+          ) : null}
         </View>
-        {(s.categories || []).length > 0 ? (
-          <AppText variant="sm" color={colors.text.muted} numberOfLines={1} style={{ marginTop: 2 }}>
-            {(s.categories || []).join(', ')}
-          </AppText>
-        ) : null}
+        {s.printer_name ? (
+          <View style={styles.chipSmall}>
+            <Icon name="printer" size={12} color={colors.status.success} />
+            <AppText variant="sm" weight="bold" color={colors.status.success}>In</AppText>
+          </View>
+        ) : (
+          <AppText variant="sm" color={colors.text.muted}>—</AppText>
+        )}
       </View>
-      {s.printer_name ? (
-        <View style={styles.chipSmall}>
-          <Icon name="printer" size={12} color={colors.status.success} />
-          <AppText variant="sm" weight="bold" color={colors.status.success}>In</AppText>
-        </View>
-      ) : (
-        <AppText variant="sm" color={colors.text.muted}>—</AppText>
-      )}
-    </TouchableOpacity>
+
+      <View style={styles.cardActionBar}>
+        <TouchableOpacity style={styles.cardActionItem} onPress={() => openEdit(s)}>
+          <Icon name="pencil-outline" size={16} color={colors.brand.primary} />
+          <AppText variant="sm" weight="bold" color={colors.brand.primary}>Sửa trạm bếp</AppText>
+        </TouchableOpacity>
+        <View style={styles.cardActionDivider} />
+        <TouchableOpacity style={styles.cardActionItem} onPress={() => del(s.id)}>
+          <Icon name="delete-outline" size={16} color={colors.status.danger} />
+          <AppText variant="sm" weight="bold" color={colors.status.danger}>Xóa trạm</AppText>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 
   const renderPanel = () => (
@@ -253,7 +263,7 @@ export default function StationsScreen() {
           <View style={{ flex: 0.45 }}>{renderPanel()}</View>
         </View>
       ) : (
-        <View style={{ flex: 1, paddingHorizontal: 8 }}>
+        <View style={{ flex: 1, paddingHorizontal: 12 }}>
           <DataTable<Station>
             columns={columns}
             data={items}
@@ -298,16 +308,21 @@ export default function StationsScreen() {
 }
 
 const styles = StyleSheet.create({
-  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 8 },
+  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8 },
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 36, borderRadius: 999, backgroundColor: colors.brand.primary },
-  stationAvatar: { width: 36, height: 36, borderRadius: 10, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' },
+  stationAvatar: { width: 38, height: 38, borderRadius: 19, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' },
   codeBadge: { paddingHorizontal: 6, paddingVertical: 1, borderRadius: 4, backgroundColor: colors.surface.app },
 
   mobileItemCard: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: colors.surface.card, marginBottom: 8,
-    borderRadius: 16, padding: 12,
+    backgroundColor: colors.surface.card, marginBottom: 10,
+    borderRadius: 16, padding: 14, gap: 10,
   },
+  cardHeaderRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+
+  /* Facebook Equal Bottom Action Bar */
+  cardActionBar: { flexDirection: 'row', alignItems: 'center', borderTopWidth: 1, borderTopColor: colors.border.light, paddingTop: 8, marginTop: 4 },
+  cardActionItem: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 4 },
+  cardActionDivider: { width: 1, height: 16, backgroundColor: colors.border.light },
 
   statsBar: {
     flexDirection: 'row',
@@ -315,7 +330,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     backgroundColor: colors.surface.card,
     borderRadius: 16,
-    marginHorizontal: 8,
+    marginHorizontal: 12,
     marginVertical: 4,
   },
   statItem: { flex: 1, alignItems: 'center', flexDirection: 'row', gap: 6, justifyContent: 'center' },

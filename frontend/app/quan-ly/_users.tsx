@@ -262,7 +262,7 @@ export default function UsersScreen() {
           </View>
         </View>
       ) : (
-        <View style={{ flex: 1, paddingHorizontal: 8 }}>
+        <View style={{ flex: 1, paddingHorizontal: 12 }}>
           {renderList()}
         </View>
       )}
@@ -287,7 +287,7 @@ export default function UsersScreen() {
 }
 
 const styles = StyleSheet.create({
-  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 8 },
+  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8 },
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 36, borderRadius: 999, backgroundColor: colors.brand.primary },
 
   panelBox: { backgroundColor: colors.surface.card, borderRadius: 16, padding: 16, gap: 12 },
@@ -307,8 +307,8 @@ const styles = StyleSheet.create({
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 12, marginBottom: 6, paddingLeft: 4 },
 
   userCardFeed: {
-    backgroundColor: colors.surface.card, marginBottom: 8,
-    borderRadius: 16, padding: 12, gap: 10,
+    backgroundColor: colors.surface.card, marginBottom: 10,
+    borderRadius: 16, padding: 14, gap: 10,
   },
   cardHeaderRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   avatarContainer: { position: 'relative', width: 42, height: 42 },

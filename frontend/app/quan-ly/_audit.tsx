@@ -264,7 +264,7 @@ export default function AuditScreen() {
           <View style={{ flex: 0.45 }}>{renderPanel()}</View>
         </View>
       ) : (
-        <View style={{ flex: 1, paddingHorizontal: 8 }}>
+        <View style={{ flex: 1, paddingHorizontal: 12 }}>
           <DataTable<any>
             columns={columns}
             data={filtered}
@@ -289,19 +289,19 @@ export default function AuditScreen() {
 }
 
 const styles = StyleSheet.create({
-  searchBarRow: { paddingHorizontal: 8, marginVertical: 4 },
+  searchBarRow: { paddingHorizontal: 12, marginVertical: 4 },
   statsBar: {
     flexDirection: 'row',
     paddingHorizontal: 12,
     paddingVertical: 10,
     backgroundColor: colors.surface.card,
     borderRadius: 16,
-    marginHorizontal: 8,
+    marginHorizontal: 12,
     marginVertical: 4,
   },
   statItem: { flex: 1, alignItems: 'center', flexDirection: 'row', gap: 6, justifyContent: 'center' },
   barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-  filterRow: { paddingHorizontal: 8, marginBottom: 8 },
+  filterRow: { paddingHorizontal: 12, marginBottom: 8 },
   chip: { paddingHorizontal: 14, height: 34, borderRadius: 999, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center' },
   chipActive: { backgroundColor: colors.brand.primaryBg },
   actionBadgeCircle: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
@@ -309,8 +309,8 @@ const styles = StyleSheet.create({
 
   mobileItemCard: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: colors.surface.card, marginBottom: 8,
-    borderRadius: 16, padding: 12,
+    backgroundColor: colors.surface.card, marginBottom: 10,
+    borderRadius: 16, padding: 14,
   },
 
   panelBox: { backgroundColor: colors.surface.card, borderRadius: 16, padding: 16, gap: 12 },

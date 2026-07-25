@@ -277,7 +277,7 @@ export default function TablesScreen() {
           </View>
         </View>
       ) : (
-        <View style={{ flex: 1, paddingHorizontal: 8 }}>
+        <View style={{ flex: 1, paddingHorizontal: 12 }}>
           {loading ? (
             <TableSkeleton rowCount={5} />
           ) : (
@@ -324,10 +324,10 @@ export default function TablesScreen() {
 }
 
 const styles = StyleSheet.create({
-  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 8 },
+  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8 },
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 36, borderRadius: 999, backgroundColor: colors.brand.primary },
 
-  filterRow: { paddingHorizontal: 8, marginVertical: 4 },
+  filterRow: { paddingHorizontal: 12, marginVertical: 4 },
   areaTab: { paddingHorizontal: 14, height: 34, borderRadius: 999, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center' },
   areaTabActive: { backgroundColor: colors.brand.primaryBg },
 
@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     backgroundColor: colors.surface.card,
     borderRadius: 16,
-    marginHorizontal: 8,
+    marginHorizontal: 12,
     marginBottom: 8,
   },
   statItem: { flex: 1, alignItems: 'center', justifyContent: 'center' },

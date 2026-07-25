@@ -308,7 +308,7 @@ export default function BranchesScreen() {
           <View style={{ flex: 0.45 }}>{renderPanel()}</View>
         </View>
       ) : (
-        <View style={{ flex: 1, paddingHorizontal: 8 }}>
+        <View style={{ flex: 1, paddingHorizontal: 12 }}>
           <DataTable<Branch>
             columns={columns}
             data={sorted}
@@ -357,7 +357,7 @@ export default function BranchesScreen() {
 }
 
 const styles = StyleSheet.create({
-  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 8 },
+  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8 },
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 36, borderRadius: 999, backgroundColor: colors.brand.primary },
   branchAvatarCircle: { width: 38, height: 38, borderRadius: 19, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' },
 
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     backgroundColor: colors.surface.card,
     borderRadius: 16,
-    marginHorizontal: 8,
+    marginHorizontal: 12,
     marginVertical: 4,
   },
   statItem: { flex: 1, alignItems: 'center', flexDirection: 'row', gap: 6, justifyContent: 'center' },
@@ -377,8 +377,8 @@ const styles = StyleSheet.create({
   codeBadge: { paddingHorizontal: 6, paddingVertical: 1, borderRadius: 4, backgroundColor: colors.surface.app },
 
   branchCardFeed: {
-    backgroundColor: colors.surface.card, marginBottom: 8,
-    borderRadius: 16, padding: 12, gap: 10,
+    backgroundColor: colors.surface.card, marginBottom: 10,
+    borderRadius: 16, padding: 14, gap: 10,
   },
   cardHeaderRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
 
