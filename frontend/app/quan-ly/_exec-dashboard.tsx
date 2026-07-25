@@ -57,11 +57,11 @@ export default function ExecDashboardScreen() {
       {d && (
         <View style={{ gap: 10 }}>
           {[
-            { label: 'Doanh thu hôm nay', value: formatVND(d.total_revenue) },
-            { label: 'Tổng số đơn hàng', value: `${d.total_orders} đơn` },
-            { label: 'Bàn đang phục vụ', value: `${d.active_tables} bàn` },
-            { label: 'Tỷ lệ lấp đầy (Occupancy)', value: `${d.table_occupancy}%` },
-            { label: 'Trung bình/Đơn', value: formatVND(d.avg_order) },
+            { label: 'Doanh thu hôm nay', value: formatVND(d?.total_revenue ?? 0) },
+            { label: 'Tổng số đơn hàng', value: `${d?.total_orders ?? (d as any)?.orders_count ?? 0} đơn` },
+            { label: 'Bàn đang phục vụ', value: `${d?.active_tables ?? (d as any)?.active_tables_count ?? 0} bàn` },
+            { label: 'Tỷ lệ lấp đầy (Occupancy)', value: `${d?.table_occupancy ?? (d as any)?.occupancy_rate ?? 0}%` },
+            { label: 'Trung bình/Đơn', value: formatVND(d?.avg_order ?? 0) },
           ].map((r, i) => (
             <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <AppText variant="sm" color={colors.text.muted}>{r.label}</AppText>
@@ -134,7 +134,7 @@ export default function ExecDashboardScreen() {
             <Icon name="receipt" size={18} color={colors.brand.primary} />
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#050505">{d?.total_orders || '-'}</AppText>
+            <AppText variant="md" weight="bold" color="#050505">{d ? (d.total_orders ?? (d as any)?.orders_count ?? 0) : '-'}</AppText>
             <AppText variant="sm" color="#65676B">Đơn hàng</AppText>
           </View>
         </View>
@@ -144,7 +144,7 @@ export default function ExecDashboardScreen() {
             <Icon name="table-furniture" size={18} color="#F97316" />
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#F97316">{d ? `${d.active_tables} bàn` : '-'}</AppText>
+            <AppText variant="md" weight="bold" color="#F97316">{d ? `${d.active_tables ?? (d as any)?.active_tables_count ?? 0} bàn` : '-'}</AppText>
             <AppText variant="sm" color="#65676B">Đang dùng</AppText>
           </View>
         </View>

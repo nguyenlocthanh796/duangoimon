@@ -130,15 +130,19 @@ export default function BIReportsScreen() {
             <Icon name="chart-line" size={18} color={colors.brand.primary} />
             <AppText variant="sm" weight="bold" color={colors.text.primary}>Top Doanh thu ngày cao nhất</AppText>
           </View>
-          {top.map((item: any, i: number) => (
-            <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 2 }}>
-              <AppText variant="sm" color={colors.text.primary} style={{ width: 80 }} numberOfLines={1}>{item.date || item.name}</AppText>
-              <View style={{ flex: 1, height: 8, backgroundColor: colors.surface.app, borderRadius: 4, overflow: 'hidden' }}>
-                <View style={{ width: `${Math.max(5, ((item.revenue || 0) / maxRev) * 100)}%`, height: 8, backgroundColor: colors.brand.primary, borderRadius: 4 }} />
+          {top.map((item: any, i: number) => {
+            const rawDate = item.date || item.name || '';
+            const displayDate = rawDate.length === 10 ? `${rawDate.slice(8, 10)}/${rawDate.slice(5, 7)}` : rawDate;
+            return (
+              <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 4 }}>
+                <AppText variant="sm" color={colors.text.primary} style={{ width: 65 }} numberOfLines={1}>{displayDate}</AppText>
+                <View style={{ flex: 1, height: 8, backgroundColor: colors.surface.app, borderRadius: 4, overflow: 'hidden' }}>
+                  <View style={{ width: `${Math.max(5, ((item.revenue || 0) / maxRev) * 100)}%`, height: 8, backgroundColor: colors.brand.primary, borderRadius: 4 }} />
+                </View>
+                <AppText variant="sm" weight="bold" color={colors.brand.primary} style={{ width: 80, textAlign: 'right' }}>{formatVND(item.revenue)}</AppText>
               </View>
-              <AppText variant="sm" weight="bold" color={colors.brand.primary} style={{ width: 75, textAlign: 'right' }}>{formatVND(item.revenue)}</AppText>
-            </View>
-          ))}
+            );
+          })}
         </View>
       );
     }

@@ -23,7 +23,7 @@ export default function ForecastScreen() {
   const load = useCallback(async () => {
     try {
       setLoading(true);
-      const res: any = await request(`${API}/reports/forecast?days=${days}`);
+      const res: any = await request(`${API}/forecast?days=${days}`);
       setData(Array.isArray(res) ? res : (res?.items || []));
     } catch { /* ignore */ } finally { setLoading(false); }
   }, [days]);
