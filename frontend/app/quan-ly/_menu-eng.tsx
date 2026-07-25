@@ -14,7 +14,6 @@ import FAB from '../../lib/components/ui/FAB';
 import EmptyState from '../../lib/components/ui/EmptyState';
 import { TableSkeleton } from '../../lib/components/ui/Skeleton';
 import MenuFormContent from '../../lib/components/quan-ly/menu/MenuFormContent';
-import ASSETS from '../../lib/assets';
 
 type FormState = {
   code: string; name: string; category: string; price: string;
@@ -271,7 +270,7 @@ export default function MenuEngScreen() {
       <FlatList data={filtered} keyExtractor={item => item.id} renderItem={renderItem}
         contentContainerStyle={{ paddingBottom: 100, paddingTop: 4 }}
         ListHeaderComponent={renderSearch}
-        ListEmptyComponent={<EmptyState image={ASSETS.images.emptyStateMenu} title="Chưa có món nào" subtitle="Nhấn + để thêm món đầu tiên" />}
+        ListEmptyComponent={<EmptyState icon="silverware-fork-knife" title="Chưa có món nào" subtitle="Nhấn + để thêm món đầu tiên" />}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       />
