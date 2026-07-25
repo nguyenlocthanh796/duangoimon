@@ -165,34 +165,34 @@ export default function UsersScreen() {
     const rc = getRoleConfig(item.role);
     return (
       <TouchableOpacity style={styles.userItem} onPress={() => openEdit(item)} activeOpacity={0.7}>
-        <View style={[styles.avatar, { backgroundColor: avatarColor(item.username) }]}>
-          <AppText variant="md" weight="bold" color={colors.text.inverse}>{getInitials(item.full_name, item.username)}</AppText>
-          <View style={[styles.onlineDot, { backgroundColor: item.is_active ? colors.status.success : colors.status.danger }]} />
+        <View style={styles.avatarContainer}>
+          <View style={[styles.avatarCircle, { backgroundColor: avatarColor(item.username) }]}>
+            <AppText variant="md" weight="bold" color={colors.text.inverse}>{getInitials(item.full_name, item.username)}</AppText>
+          </View>
+          <View style={[styles.fbOnlineDot, { backgroundColor: item.is_active ? colors.status.success : colors.status.danger }]} />
         </View>
         <View style={{ flex: 1 }}>
-          <AppText variant="sm" weight="bold" color={colors.text.primary}>{item.full_name || item.username}</AppText>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <AppText variant="sm" weight="bold" color={colors.text.primary}>{item.full_name || item.username}</AppText>
+            <View style={[styles.roleBadge, { backgroundColor: rc.bg }]}>
+              <Icon name={rc.icon as any} size={11} color={rc.color} />
+              <AppText variant="sm" weight="bold" color={rc.color}>{rc.label}</AppText>
+            </View>
+          </View>
           <AppText variant="sm" color={colors.text.muted}>@{item.username}</AppText>
         </View>
-        <View style={styles.userRight}>
-          <View style={[styles.roleBadge, { backgroundColor: rc.bg }]}>
-            <Icon name={rc.icon as any} size={11} color={rc.color} />
-            <AppText variant="sm" weight="bold" color={rc.color}>{rc.label}</AppText>
-          </View>
-          <AppText variant="sm" color={item.is_active ? colors.status.success : colors.status.danger} style={{ fontSize: 11 }}>
-            {item.is_active ? 'Hoạt động' : 'Khóa'}
-          </AppText>
-        </View>
+        <TouchableOpacity style={styles.actionCircleBtn} onPress={() => openEdit(item)}>
+          <Icon name="dots-horizontal" size={18} color={colors.text.secondary} />
+        </TouchableOpacity>
       </TouchableOpacity>
     );
   };
 
   const renderSectionHeader = ({ section }: { section: { role: typeof ROLES[0]; data: User[] } }) => (
-    <View style={[styles.sectionHeader, { borderLeftColor: section.role.color }]}>
-      <Icon name={section.role.icon as any} size={16} color={section.role.color} />
-      <AppText variant="sm" weight="bold" color={section.role.color}>{section.role.label}</AppText>
-      <View style={[styles.sectionCount, { backgroundColor: section.role.bg }]}>
-        <AppText variant="sm" weight="bold" color={section.role.color}>{section.data.length}</AppText>
-      </View>
+    <View style={styles.sectionHeader}>
+      <Icon name={section.role.icon as any} size={15} color={section.role.color} />
+      <AppText variant="sm" weight="bold" color={colors.text.primary}>{section.role.label}</AppText>
+      <AppText variant="sm" color={colors.text.muted}>({section.data.length})</AppText>
     </View>
   );
 
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
 
   loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 20 },
 
-  sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 10, marginBottom: 4, paddingLeft: 8, borderLeftWidth: 3 },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 12, marginBottom: 6, paddingLeft: 4 },
   sectionCount: { paddingHorizontal: 10, paddingVertical: 2, borderRadius: 999 },
 
   userItem: {
@@ -287,8 +287,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface.card, marginBottom: 8,
     borderRadius: 16, padding: 12,
   },
-  avatar: { width: 42, height: 42, borderRadius: 12, alignItems: 'center', justifyContent: 'center', position: 'relative' },
-  onlineDot: { width: 10, height: 10, borderRadius: 5, borderWidth: 2, borderColor: colors.surface.card, position: 'absolute', bottom: -1, right: -1 },
-  userRight: { alignItems: 'flex-end', gap: 4 },
-  roleBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999 },
+  avatarContainer: { position: 'relative', width: 42, height: 42 },
+  avatarCircle: { width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center' },
+  fbOnlineDot: { width: 12, height: 12, borderRadius: 6, borderWidth: 2, borderColor: colors.surface.card, position: 'absolute', bottom: 0, right: 0 },
+  roleBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999 },
+  actionCircleBtn: { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
 });

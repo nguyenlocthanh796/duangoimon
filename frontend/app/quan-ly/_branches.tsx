@@ -57,7 +57,7 @@ export default function BranchesScreen() {
       sortValue: (b) => b.name || '',
       render: (b) => (
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          <View style={styles.branchAvatar}>
+          <View style={styles.branchAvatarCircle}>
             <Icon name="storefront-outline" size={16} color={colors.brand.primary} />
           </View>
           <View style={{ flex: 1 }}>
@@ -97,7 +97,7 @@ export default function BranchesScreen() {
       onPress={() => { setEditing(b); setForm({ name: b.name, code: b.code, address: b.address || '', phone: b.phone || '', is_active: b.is_active }); setShowForm(true); }}
       activeOpacity={0.7}
     >
-      <View style={styles.branchAvatar}>
+      <View style={styles.branchAvatarCircle}>
         <Icon name="storefront-outline" size={18} color={colors.brand.primary} />
       </View>
       <View style={{ flex: 1 }}>
@@ -111,11 +111,16 @@ export default function BranchesScreen() {
           <AppText variant="sm" color={colors.text.muted} numberOfLines={1} style={{ marginTop: 2 }}>📍 {b.address}</AppText>
         ) : null}
       </View>
-      <View style={[styles.statusChip, { backgroundColor: b.is_active ? colors.brand.primaryBg : colors.surface.app }]}>
-        <View style={[styles.statusDot, { backgroundColor: b.is_active ? colors.status.success : colors.status.danger }]} />
-        <AppText variant="sm" weight="bold" color={b.is_active ? colors.status.success : colors.status.danger}>
-          {b.is_active ? 'Hoạt động' : 'Tắt'}
-        </AppText>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+        <View style={[styles.statusChip, { backgroundColor: b.is_active ? colors.brand.primaryBg : colors.surface.app }]}>
+          <View style={[styles.statusDot, { backgroundColor: b.is_active ? colors.status.success : colors.status.danger }]} />
+          <AppText variant="sm" weight="bold" color={b.is_active ? colors.status.success : colors.status.danger}>
+            {b.is_active ? 'Mở' : 'Tắt'}
+          </AppText>
+        </View>
+        <TouchableOpacity style={styles.actionCircleBtn} onPress={() => { setEditing(b); setForm({ name: b.name, code: b.code, address: b.address || '', phone: b.phone || '', is_active: b.is_active }); setShowForm(true); }}>
+          <Icon name="dots-horizontal" size={18} color={colors.text.secondary} />
+        </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
@@ -339,7 +344,7 @@ export default function BranchesScreen() {
 const styles = StyleSheet.create({
   mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 8 },
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 36, borderRadius: 999, backgroundColor: colors.brand.primary },
-  branchAvatar: { width: 36, height: 36, borderRadius: 10, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' },
+  branchAvatarCircle: { width: 38, height: 38, borderRadius: 19, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' },
 
   statsBar: {
     flexDirection: 'row',
@@ -355,6 +360,7 @@ const styles = StyleSheet.create({
   statusChip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 3, paddingHorizontal: 10, borderRadius: 999 },
   statusDot: { width: 6, height: 6, borderRadius: 3 },
   codeBadge: { paddingHorizontal: 6, paddingVertical: 1, borderRadius: 4, backgroundColor: colors.surface.app },
+  actionCircleBtn: { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
 
   mobileItemCard: {
     flexDirection: 'row', alignItems: 'center', gap: 12,

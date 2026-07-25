@@ -54,8 +54,8 @@ export default function AuditScreen() {
         const bg = ACTION_BG[l.action] || colors.surface.app;
         return (
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-            <View style={[styles.actionBadge, { backgroundColor: bg }]}>
-              <Icon name={icon as any} size={14} color={color} />
+            <View style={[styles.actionBadgeCircle, { backgroundColor: bg }]}>
+              <Icon name={icon as any} size={16} color={color} />
             </View>
             <View style={{ flex: 1 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
@@ -89,8 +89,8 @@ export default function AuditScreen() {
         onPress={() => setSelectedLog(l)}
         activeOpacity={0.7}
       >
-        <View style={[styles.actionBadge, { backgroundColor: bg }]}>
-          <Icon name={icon as any} size={16} color={color} />
+        <View style={[styles.actionBadgeCircle, { backgroundColor: bg }]}>
+          <Icon name={icon as any} size={18} color={color} />
         </View>
         <View style={{ flex: 1 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
@@ -99,9 +99,14 @@ export default function AuditScreen() {
           </View>
           <AppText variant="sm" color={colors.text.muted}>@{l.user_name || 'Hệ thống'}</AppText>
         </View>
-        <AppText variant="sm" color={colors.text.muted} style={{ fontSize: 11 }}>
-          {l.created_at ? new Date(l.created_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : ''}
-        </AppText>
+        <View style={{ alignItems: 'flex-end', gap: 4 }}>
+          <AppText variant="sm" color={colors.text.muted} style={{ fontSize: 11 }}>
+            {l.created_at ? new Date(l.created_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : ''}
+          </AppText>
+          <TouchableOpacity style={styles.actionCircleBtn} onPress={() => setSelectedLog(l)}>
+            <Icon name="dots-horizontal" size={16} color={colors.text.secondary} />
+          </TouchableOpacity>
+        </View>
       </TouchableOpacity>
     );
   };
@@ -299,7 +304,8 @@ const styles = StyleSheet.create({
   filterRow: { paddingHorizontal: 8, marginBottom: 8 },
   chip: { paddingHorizontal: 14, height: 34, borderRadius: 999, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center' },
   chipActive: { backgroundColor: colors.brand.primaryBg },
-  actionBadge: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  actionBadgeCircle: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
+  actionCircleBtn: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
 
   mobileItemCard: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
