@@ -91,38 +91,53 @@ export default function BranchesScreen() {
     },
   ];
 
+  const toggleBranchActive = async (b: Branch) => {
+    try {
+      await request(`${API}/branches`, { method: 'PUT', body: JSON.stringify({ id: b.id, is_active: !b.is_active }) });
+      load();
+    } catch { Alert.alert('Lỗi', 'Không thể đổi trạng thái'); }
+  };
+
   const renderMobileCard = (b: Branch) => (
-    <TouchableOpacity
-      style={styles.mobileItemCard}
-      onPress={() => { setEditing(b); setForm({ name: b.name, code: b.code, address: b.address || '', phone: b.phone || '', is_active: b.is_active }); setShowForm(true); }}
-      activeOpacity={0.7}
-    >
-      <View style={styles.branchAvatarCircle}>
-        <Icon name="storefront-outline" size={18} color={colors.brand.primary} />
-      </View>
-      <View style={{ flex: 1 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-          <AppText variant="sm" weight="bold" color={colors.text.primary} numberOfLines={1}>{b.name}</AppText>
-          <View style={styles.codeBadge}>
-            <AppText variant="sm" color={colors.text.muted}>{b.code}</AppText>
-          </View>
+    <View style={styles.branchCardFeed}>
+      <View style={styles.cardHeaderRow}>
+        <View style={styles.branchAvatarCircle}>
+          <Icon name="storefront-outline" size={18} color={colors.brand.primary} />
         </View>
-        {b.address ? (
-          <AppText variant="sm" color={colors.text.muted} numberOfLines={1} style={{ marginTop: 2 }}>📍 {b.address}</AppText>
-        ) : null}
-      </View>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+        <View style={{ flex: 1 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <AppText variant="sm" weight="bold" color={colors.text.primary} numberOfLines={1}>{b.name}</AppText>
+            <View style={styles.codeBadge}>
+              <AppText variant="sm" color={colors.text.muted}>{b.code}</AppText>
+            </View>
+          </View>
+          {b.address ? (
+            <AppText variant="sm" color={colors.text.muted} numberOfLines={1} style={{ marginTop: 2 }}>📍 {b.address}</AppText>
+          ) : null}
+        </View>
         <View style={[styles.statusChip, { backgroundColor: b.is_active ? colors.brand.primaryBg : colors.surface.app }]}>
           <View style={[styles.statusDot, { backgroundColor: b.is_active ? colors.status.success : colors.status.danger }]} />
           <AppText variant="sm" weight="bold" color={b.is_active ? colors.status.success : colors.status.danger}>
             {b.is_active ? 'Mở' : 'Tắt'}
           </AppText>
         </View>
-        <TouchableOpacity style={styles.actionCircleBtn} onPress={() => { setEditing(b); setForm({ name: b.name, code: b.code, address: b.address || '', phone: b.phone || '', is_active: b.is_active }); setShowForm(true); }}>
-          <Icon name="dots-horizontal" size={18} color={colors.text.secondary} />
+      </View>
+
+      {/* Facebook Equal Bottom Action Bar */}
+      <View style={styles.cardActionBar}>
+        <TouchableOpacity style={styles.cardActionItem} onPress={() => { setEditing(b); setForm({ name: b.name, code: b.code, address: b.address || '', phone: b.phone || '', is_active: b.is_active }); setShowForm(true); }}>
+          <Icon name="pencil-outline" size={16} color={colors.brand.primary} />
+          <AppText variant="sm" weight="bold" color={colors.brand.primary}>Sửa chi nhánh</AppText>
+        </TouchableOpacity>
+        <View style={styles.cardActionDivider} />
+        <TouchableOpacity style={styles.cardActionItem} onPress={() => toggleBranchActive(b)}>
+          <Icon name={b.is_active ? 'power-sleep' : 'power'} size={16} color={b.is_active ? colors.status.danger : colors.status.success} />
+          <AppText variant="sm" weight="bold" color={b.is_active ? colors.status.danger : colors.status.success}>
+            {b.is_active ? 'Tạm ngừng' : 'Kích hoạt'}
+          </AppText>
         </TouchableOpacity>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 
   const renderPanel = () => {
@@ -360,13 +375,17 @@ const styles = StyleSheet.create({
   statusChip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 3, paddingHorizontal: 10, borderRadius: 999 },
   statusDot: { width: 6, height: 6, borderRadius: 3 },
   codeBadge: { paddingHorizontal: 6, paddingVertical: 1, borderRadius: 4, backgroundColor: colors.surface.app },
-  actionCircleBtn: { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
 
-  mobileItemCard: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
+  branchCardFeed: {
     backgroundColor: colors.surface.card, marginBottom: 8,
-    borderRadius: 16, padding: 12,
+    borderRadius: 16, padding: 12, gap: 10,
   },
+  cardHeaderRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+
+  /* Facebook Equal Bottom Action Bar */
+  cardActionBar: { flexDirection: 'row', alignItems: 'center', borderTopWidth: 1, borderTopColor: colors.border.light, paddingTop: 8, marginTop: 4 },
+  cardActionItem: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 4 },
+  cardActionDivider: { width: 1, height: 16, backgroundColor: colors.border.light },
 
   panelBox: { backgroundColor: colors.surface.card, borderRadius: 16, padding: 16, gap: 12 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },

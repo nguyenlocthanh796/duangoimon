@@ -76,6 +76,13 @@ export default function UsersScreen() {
   const openAdd = () => { setEditingId(null); setForm(EMPTY_FORM); setShowPassword(false); setShowForm(true); };
   const openEdit = (u: User) => { setEditingId(u.id); setForm({ username: u.username, password: '', full_name: u.full_name ?? '', role: u.role, is_active: u.is_active }); setShowPassword(false); setShowForm(true); };
 
+  const toggleUserActive = async (u: User) => {
+    try {
+      await api.updateUser(u.id, { is_active: !u.is_active });
+      load();
+    } catch { Alert.alert('Lỗi', 'Không thể đổi trạng thái'); }
+  };
+
   const handleSave = async () => {
     if (!form.username.trim()) { Alert.alert('Lỗi', 'Tài khoản không được để trống'); return; }
     if (!editingId && !form.password.trim()) { Alert.alert('Lỗi', 'Mật khẩu bắt buộc khi thêm mới'); return; }
@@ -164,27 +171,45 @@ export default function UsersScreen() {
   const renderUser = ({ item }: { item: User }) => {
     const rc = getRoleConfig(item.role);
     return (
-      <TouchableOpacity style={styles.userItem} onPress={() => openEdit(item)} activeOpacity={0.7}>
-        <View style={styles.avatarContainer}>
-          <View style={[styles.avatarCircle, { backgroundColor: avatarColor(item.username) }]}>
-            <AppText variant="md" weight="bold" color={colors.text.inverse}>{getInitials(item.full_name, item.username)}</AppText>
-          </View>
-          <View style={[styles.fbOnlineDot, { backgroundColor: item.is_active ? colors.status.success : colors.status.danger }]} />
-        </View>
-        <View style={{ flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <AppText variant="sm" weight="bold" color={colors.text.primary}>{item.full_name || item.username}</AppText>
-            <View style={[styles.roleBadge, { backgroundColor: rc.bg }]}>
-              <Icon name={rc.icon as any} size={11} color={rc.color} />
-              <AppText variant="sm" weight="bold" color={rc.color}>{rc.label}</AppText>
+      <View style={styles.userCardFeed}>
+        {/* Post Header */}
+        <View style={styles.cardHeaderRow}>
+          <View style={styles.avatarContainer}>
+            <View style={[styles.avatarCircle, { backgroundColor: avatarColor(item.username) }]}>
+              <AppText variant="md" weight="bold" color={colors.text.inverse}>{getInitials(item.full_name, item.username)}</AppText>
             </View>
+            <View style={[styles.fbOnlineDot, { backgroundColor: item.is_active ? colors.status.success : colors.status.danger }]} />
           </View>
-          <AppText variant="sm" color={colors.text.muted}>@{item.username}</AppText>
+          <View style={{ flex: 1 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <AppText variant="sm" weight="bold" color={colors.text.primary}>{item.full_name || item.username}</AppText>
+              <View style={[styles.roleBadge, { backgroundColor: rc.bg }]}>
+                <Icon name={rc.icon as any} size={11} color={rc.color} />
+                <AppText variant="sm" weight="bold" color={rc.color}>{rc.label}</AppText>
+              </View>
+            </View>
+            <AppText variant="sm" color={colors.text.muted}>@{item.username} · {item.is_active ? 'Đang hoạt động' : 'Tạm khóa'}</AppText>
+          </View>
+          <TouchableOpacity style={styles.actionCircleBtn} onPress={() => openEdit(item)}>
+            <Icon name="dots-horizontal" size={18} color={colors.text.secondary} />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.actionCircleBtn} onPress={() => openEdit(item)}>
-          <Icon name="dots-horizontal" size={18} color={colors.text.secondary} />
-        </TouchableOpacity>
-      </TouchableOpacity>
+
+        {/* Facebook Bottom Action Bar */}
+        <View style={styles.cardActionBar}>
+          <TouchableOpacity style={styles.cardActionItem} onPress={() => openEdit(item)}>
+            <Icon name="square-edit-outline" size={16} color={colors.brand.primary} />
+            <AppText variant="sm" weight="bold" color={colors.brand.primary}>Sửa thông tin</AppText>
+          </TouchableOpacity>
+          <View style={styles.cardActionDivider} />
+          <TouchableOpacity style={styles.cardActionItem} onPress={() => toggleUserActive(item)}>
+            <Icon name={item.is_active ? 'lock-outline' : 'lock-open-variant-outline'} size={16} color={item.is_active ? colors.status.danger : colors.status.success} />
+            <AppText variant="sm" weight="bold" color={item.is_active ? colors.status.danger : colors.status.success}>
+              {item.is_active ? 'Khóa tài khoản' : 'Mở khóa'}
+            </AppText>
+          </TouchableOpacity>
+        </View>
+      </View>
     );
   };
 
@@ -280,16 +305,20 @@ const styles = StyleSheet.create({
   loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 20 },
 
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 12, marginBottom: 6, paddingLeft: 4 },
-  sectionCount: { paddingHorizontal: 10, paddingVertical: 2, borderRadius: 999 },
 
-  userItem: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
+  userCardFeed: {
     backgroundColor: colors.surface.card, marginBottom: 8,
-    borderRadius: 16, padding: 12,
+    borderRadius: 16, padding: 12, gap: 10,
   },
+  cardHeaderRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   avatarContainer: { position: 'relative', width: 42, height: 42 },
   avatarCircle: { width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center' },
   fbOnlineDot: { width: 12, height: 12, borderRadius: 6, borderWidth: 2, borderColor: colors.surface.card, position: 'absolute', bottom: 0, right: 0 },
   roleBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999 },
   actionCircleBtn: { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
+
+  /* Facebook Equal Bottom Action Bar */
+  cardActionBar: { flexDirection: 'row', alignItems: 'center', borderTopWidth: 1, borderTopColor: colors.border.light, paddingTop: 8, marginTop: 4 },
+  cardActionItem: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 4 },
+  cardActionDivider: { width: 1, height: 16, backgroundColor: colors.border.light },
 });
