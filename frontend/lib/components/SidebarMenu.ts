@@ -260,7 +260,7 @@ export function getSections(module: ActiveModule): SidebarGroup[] {
         },
         {
           label: 'Khác',
-          items: [allMenuItems.quanLy, allMenuItems.keToanHub, allMenuItems.invoices],
+          items: [allMenuItems.quanLy, allMenuItems.keToanHub],
         },
       ];
 
@@ -272,7 +272,7 @@ export function getSections(module: ActiveModule): SidebarGroup[] {
         },
         {
           label: 'Khác',
-          items: [allMenuItems.pos, allMenuItems.kitchen, allMenuItems.keToanHub, allMenuItems.invoices],
+          items: [allMenuItems.pos, allMenuItems.kitchen, allMenuItems.keToanHub],
         },
       ];
 
@@ -280,22 +280,7 @@ export function getSections(module: ActiveModule): SidebarGroup[] {
       return [
         {
           label: 'Kế Toán & Thuế',
-          items: [
-            allMenuItems.keToanHub,
-            allMenuItems.thuChi,
-            allMenuItems.invoices,
-            {
-              label: 'Thuế',
-              items: [
-                allMenuItems.thueTier,
-                allMenuItems.thueSoSach,
-                allMenuItems.thueDecl,
-                allMenuItems.thueBank,
-                allMenuItems.thueDeadline,
-                allMenuItems.thueLegacy,
-              ],
-            },
-          ],
+          items: [allMenuItems.keToanHub],
         },
         {
           label: 'Khác',
