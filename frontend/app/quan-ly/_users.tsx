@@ -8,7 +8,6 @@ import { useResponsive } from '../../lib/hooks/useResponsive';
 import { colors, font } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import FormModal from '../../lib/components/ui/FormModal';
-import FAB from '../../lib/components/ui/FAB';
 import EmptyState from '../../lib/components/ui/EmptyState';
 import UserFormContent from '../../lib/components/quan-ly/users/UserFormContent';
 import AppText from '../../lib/components/ui/AppText';
@@ -32,10 +31,10 @@ const EMPTY_FORM: FormState = {
 
 const ROLES: Array<{ key: string; label: string; color: string; bg: string; icon: string }> = [
   { key: 'admin',      label: 'Admin',    color: '#8B5CF6', bg: '#F5F3FF', icon: 'shield-account' },
-  { key: 'manager',    label: 'Quản lý',  color: '#EF4444', bg: '#DC2626', icon: 'account-tie' },
-  { key: 'cashier',    label: 'Thu ngân', color: '#F97316', bg: '#F97316', icon: 'cash-register' },
+  { key: 'manager',    label: 'Quản lý',  color: '#EF4444', bg: '#FEF2F2', icon: 'account-tie' },
+  { key: 'cashier',    label: 'Thu ngân', color: '#F97316', bg: '#FFF7ED', icon: 'cash-register' },
   { key: 'accountant', label: 'Kế toán',  color: '#10B981', bg: '#ECFDF5', icon: 'calculator-variant' },
-  { key: 'kitchen',    label: 'Bếp',      color: '#F59E0B', bg: '#FEF3C7', icon: 'silverware-fork-knife' },
+  { key: 'kitchen',    label: 'Bếp',      color: '#D97706', bg: '#FEF3C7', icon: 'silverware-fork-knife' },
 ];
 
 function getRoleConfig(role: string) {
@@ -244,7 +243,6 @@ export default function UsersScreen() {
           {renderList()}
         </View>
       )}
-      {!isWide && <FAB onPress={openAdd} />}
       {!isWide && (
         <FormModal
           visible={showForm}
