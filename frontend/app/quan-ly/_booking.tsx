@@ -1,30 +1,26 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import { colors, font } from '../../lib/theme';
+import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import type { Booking } from '../../lib/api/client';
 import DataTable, { type Column } from '../../lib/components/ui/DataTable';
-import ScreenHeader from '../../lib/components/ui/ScreenHeader';
-import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import FormModal from '../../lib/components/ui/FormModal';
 import FAB from '../../lib/components/ui/FAB';
+import AppText from '../../lib/components/ui/AppText';
 
 const API = '/api/v1/quan-ly';
 
 const STATUS_MAP: Record<string, { label: string; color: string; bg: string; icon: string }> = {
-  pending:   { label: 'Chờ XN', color: '#D97706', bg: '#FEF3C7', icon: 'clock-outline' },
-  confirmed: { label: 'Đã XN',  color: '#16A34A', bg: '#DCFCE7', icon: 'check-circle-outline' },
-  cancelled: { label: 'Đã Huỷ', color: '#DC2626', bg: '#FEE2E2', icon: 'cancel' },
+  pending:   { label: 'Chờ XN', color: colors.status.warning, bg: '#FEF3C7', icon: 'clock-outline' },
+  confirmed: { label: 'Đã XN',  color: colors.status.success, bg: colors.brand.primaryBg, icon: 'check-circle-outline' },
+  cancelled: { label: 'Đã Huỷ', color: colors.status.danger, bg: colors.status.dangerBg, icon: 'cancel' },
   arrived:   { label: 'Đã đến', color: '#2563EB', bg: '#EFF6FF', icon: 'door-open' },
 };
 
 export default function BookingScreen() {
-  const router = useRouter();
-  const { openSidebar } = useSidebar();
   const { isWide } = useResponsive();
   const [items, setItems] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,7 +42,7 @@ export default function BookingScreen() {
 
   const handleStatusChange = async (id: string, status: string) => {
     try { await request(`${API}/booking/${id}`, { method: 'PUT', body: JSON.stringify({ status }) }); load(); }
-    catch { Alert.alert('Lỗi', 'Không thể cập nhật'); }
+    catch { Alert.alert('Lỗi', 'Không thể cập nhật trạng thái'); }
   };
 
   const statuses = ['', 'pending', 'confirmed', 'arrived', 'cancelled'];
@@ -60,15 +56,15 @@ export default function BookingScreen() {
       sortable: true,
       sortValue: (b) => b.customer_name || '',
       render: (b) => {
-        const st = STATUS_MAP[b.status] ?? { label: b.status, color: '#737373', bg: '#F1F5F9', icon: 'help-circle' };
+        const st = STATUS_MAP[b.status] ?? { label: b.status, color: colors.text.muted, bg: colors.surface.app, icon: 'help-circle' };
         return (
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
             <View style={[styles.avatar, { backgroundColor: st.bg }]}>
               <Icon name="account" size={14} color={st.color} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={styles.cellPrimary} numberOfLines={1}>{b.customer_name}</Text>
-              <Text style={styles.cellSub}>{b.phone}</Text>
+              <AppText variant="sm" weight="bold" color={colors.text.primary} numberOfLines={1}>{b.customer_name}</AppText>
+              <AppText variant="sm" color={colors.text.muted}>{b.phone}</AppText>
             </View>
           </View>
         );
@@ -76,34 +72,34 @@ export default function BookingScreen() {
     },
     {
       key: 'guest_count',
-      title: 'Khách',
-      width: 65,
+      title: 'Số khách',
+      width: 70,
       align: 'center',
       sortable: true,
       sortValue: (b) => b.guest_count || 0,
-      render: (b) => <Text style={styles.cellNumber}>{b.guest_count}</Text>,
+      render: (b) => <AppText variant="sm" weight="bold" color={colors.brand.primary}>{b.guest_count} khách</AppText>,
     },
     {
       key: 'created_at',
-      title: 'Ngày',
-      width: 100,
+      title: 'Ngày đặt',
+      width: 95,
       sortable: true,
       sortValue: (b) => b.created_at || '',
-      render: (b) => <Text style={styles.cellMuted}>{b.created_at?.slice(0, 10) || '-'}</Text>,
+      render: (b) => <AppText variant="sm" color={colors.text.muted}>{b.created_at?.slice(0, 10) || '-'}</AppText>,
     },
     {
       key: 'status',
       title: 'Trạng thái',
-      width: 100,
+      width: 90,
       align: 'center',
       sortable: true,
       sortValue: (b) => b.status || '',
       render: (b) => {
-        const st = STATUS_MAP[b.status] ?? { label: b.status, color: '#737373', bg: '#F1F5F9', icon: 'help-circle' };
+        const st = STATUS_MAP[b.status] ?? { label: b.status, color: colors.text.muted, bg: colors.surface.app, icon: 'help-circle' };
         return (
           <View style={[styles.statusBadge, { backgroundColor: st.bg }]}>
             <Icon name={st.icon as any} size={10} color={st.color} />
-            <Text style={[styles.statusText, { color: st.color }]}>{st.label}</Text>
+            <AppText variant="sm" weight="bold" color={st.color}>{st.label}</AppText>
           </View>
         );
       },
@@ -116,48 +112,69 @@ export default function BookingScreen() {
     return (
       <View style={styles.panelBox}>
         <View style={styles.panelHeader}>
-          <Icon name="calendar-check" size={18} color={'#F97316'} />
-          <Text style={styles.panelHeaderText}>Đặt bàn</Text>
+          <Icon name="calendar-check" size={18} color={colors.brand.primary} />
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>Tổng quan lịch đặt bàn</AppText>
         </View>
-        <View style={{ alignItems: 'center', paddingVertical: 8}}>
-          <Text style={[styles.panelStatValue, { fontSize: 32 }]}>{items.length}</Text>
-          <Text style={styles.panelStatLabel}>Tổng lượt đặt</Text>
+        <View style={{ alignItems: 'center', paddingVertical: 4 }}>
+          <AppText variant="lg" weight="bold" color={colors.brand.primary}>{items.length}</AppText>
+          <AppText variant="sm" color={colors.text.muted}>Tổng lượt đặt bàn</AppText>
         </View>
         <View style={styles.panelDivider} />
         {Object.entries(STATUS_MAP).map(([k, v]) => {
           const c = counts[k] || 0;
           return (
-            <TouchableOpacity key={k} style={[styles.panelRow, statusFilter === k && { backgroundColor: v.bg, borderRadius: 8, paddingHorizontal: 8 }]} onPress={() => setStatusFilter(statusFilter === k ? '' : k)}>
-              <View style={{ width: 8, height: 8, borderRadius: 12, backgroundColor: v.color }} />
-              <Text style={{ flex: 1, ...font.sm, color: '#171717' }}>{v.label}</Text>
-              <Text style={{ ...font.sm, fontWeight: '600', color: v.color }}>{c}</Text>
+            <TouchableOpacity key={k} style={[styles.panelRow, statusFilter === k && { backgroundColor: v.bg, borderRadius: shape.radius.sm, paddingHorizontal: 8 }]} onPress={() => setStatusFilter(statusFilter === k ? '' : k)}>
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: v.color }} />
+              <AppText variant="sm" color={colors.text.primary} style={{ flex: 1 }}>{v.label}</AppText>
+              <AppText variant="sm" weight="bold" color={v.color}>{c}</AppText>
             </TouchableOpacity>
           );
         })}
-        {statusFilter ? <TouchableOpacity onPress={() => setStatusFilter('')} style={{ paddingVertical: 6}}><Text style={{ ...font.sm, color: '#F97316' }}>Xoá bộ lọc</Text></TouchableOpacity> : null}
+        {statusFilter ? (
+          <TouchableOpacity onPress={() => setStatusFilter('')} style={{ paddingVertical: 4 }}>
+            <AppText variant="sm" color={colors.brand.primary}>Xoá bộ lọc trạng thái</AppText>
+          </TouchableOpacity>
+        ) : null}
         <View style={styles.panelDivider} />
         {selected ? (
-          <View style={{ gap: 12}}>
-            <Text style={{ ...font.md, fontWeight: '600', color: '#171717' }}>{selected.customer_name}</Text>
-            <Text style={{ ...font.sm, color: '#737373' }}>{selected.phone}</Text>
-            <Text style={{ ...font.sm, color: '#737373' }}>{selected.guest_count} khách</Text>
-            {selected.note ? <Text style={{ ...font.sm, color: '#404040', fontStyle: 'italic' }}>{selected.note}</Text> : null}
+          <View style={{ gap: 8 }}>
+            <AppText variant="sm" weight="bold" color={colors.text.primary}>{selected.customer_name}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>📞 {selected.phone} · 👤 {selected.guest_count} khách</AppText>
+            {selected.note ? <AppText variant="sm" color={colors.text.secondary} style={{ fontStyle: 'italic' }}>Ghi chú: {selected.note}</AppText> : null}
             {selected.status === 'pending' && (
-              <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
-                <TouchableOpacity onPress={() => handleStatusChange(selected.id, 'confirmed')} style={[styles.panelBtn, { backgroundColor: '#16A34A' }]}><Icon name="check" size={14} color="#fff" /><Text style={styles.panelBtnText}>Xác nhận</Text></TouchableOpacity>
-                <TouchableOpacity onPress={() => handleStatusChange(selected.id, 'arrived')} style={[styles.panelBtn, { backgroundColor: '#2563EB' }]}><Icon name="door-open" size={14} color="#fff" /><Text style={styles.panelBtnText}>Check-in</Text></TouchableOpacity>
-                <TouchableOpacity onPress={() => handleStatusChange(selected.id, 'cancelled')} style={[styles.panelBtn, { backgroundColor: '#DC2626' }]}><Icon name="cancel" size={14} color="#fff" /><Text style={styles.panelBtnText}>Huỷ</Text></TouchableOpacity>
+              <View style={{ flexDirection: 'row', gap: 6, flexWrap: 'wrap', marginTop: 4 }}>
+                <TouchableOpacity onPress={() => handleStatusChange(selected.id, 'confirmed')} style={[styles.panelBtn, { backgroundColor: colors.status.success }]}>
+                  <Icon name="check" size={14} color={colors.text.inverse} />
+                  <AppText variant="sm" weight="bold" color={colors.text.inverse}>Xác nhận</AppText>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleStatusChange(selected.id, 'arrived')} style={[styles.panelBtn, { backgroundColor: '#2563EB' }]}>
+                  <Icon name="door-open" size={14} color={colors.text.inverse} />
+                  <AppText variant="sm" weight="bold" color={colors.text.inverse}>Check-in</AppText>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleStatusChange(selected.id, 'cancelled')} style={[styles.panelBtn, { backgroundColor: colors.status.dangerBg }]}>
+                  <Icon name="cancel" size={14} color={colors.status.danger} />
+                  <AppText variant="sm" weight="bold" color={colors.status.danger}>Huỷ</AppText>
+                </TouchableOpacity>
               </View>
             )}
             {selected.status === 'confirmed' && (
-              <View style={{ flexDirection: 'row', gap: 8}}>
-                <TouchableOpacity onPress={() => handleStatusChange(selected.id, 'arrived')} style={[styles.panelBtn, { backgroundColor: '#2563EB' }]}><Icon name="door-open" size={14} color="#fff" /><Text style={styles.panelBtnText}>Check-in</Text></TouchableOpacity>
-                <TouchableOpacity onPress={() => handleStatusChange(selected.id, 'cancelled')} style={[styles.panelBtn, { backgroundColor: '#DC2626' }]}><Icon name="cancel" size={14} color="#fff" /><Text style={styles.panelBtnText}>Huỷ</Text></TouchableOpacity>
+              <View style={{ flexDirection: 'row', gap: 6, marginTop: 4 }}>
+                <TouchableOpacity onPress={() => handleStatusChange(selected.id, 'arrived')} style={[styles.panelBtn, { backgroundColor: '#2563EB' }]}>
+                  <Icon name="door-open" size={14} color={colors.text.inverse} />
+                  <AppText variant="sm" weight="bold" color={colors.text.inverse}>Check-in đón khách</AppText>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleStatusChange(selected.id, 'cancelled')} style={[styles.panelBtn, { backgroundColor: colors.status.dangerBg }]}>
+                  <Icon name="cancel" size={14} color={colors.status.danger} />
+                  <AppText variant="sm" weight="bold" color={colors.status.danger}>Huỷ</AppText>
+                </TouchableOpacity>
               </View>
             )}
           </View>
         ) : (
-          <TouchableOpacity style={styles.panelCta} onPress={openNew}><Icon name="plus" size={14} color="#fff" /><Text style={styles.panelCtaText}>Đặt bàn mới</Text></TouchableOpacity>
+          <TouchableOpacity style={styles.panelCta} onPress={openNew}>
+            <Icon name="plus" size={16} color={colors.text.inverse} />
+            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Đặt bàn mới</AppText>
+          </TouchableOpacity>
         )}
       </View>
     );
@@ -169,58 +186,57 @@ export default function BookingScreen() {
   };
 
   return (
-    <ScreenContainer compact>
-      <ScreenHeader title="Đặt bàn" subtitle={`${items.length} lượt đặt`}
-        showBack onMenuPress={openSidebar} onBackPress={() => router.back()}
-        right={isWide ? undefined : <TouchableOpacity onPress={openNew} style={styles.addBtn}><Icon name="plus" size={18} color="#fff" /><Text style={styles.addBtnText}>Thêm</Text></TouchableOpacity>}
-      />
+    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+      {/* Stats bar */}
       <View style={styles.statsBar}>
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="calendar-check" size={14} color={'#737373'} /><Text style={styles.statValue}>{stats.total}</Text>
+        <View style={styles.statItem}>
+          <Icon name="calendar-check" size={16} color={colors.brand.primary} />
+          <View>
+            <AppText variant="sm" weight="bold" color={colors.text.primary}>{stats.total}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Tổng</AppText>
           </View>
-          <Text style={styles.statLabel}>Tổng</Text>
         </View>
         <View style={styles.barDivider} />
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="clock-outline" size={14} color={'#737373'} /><Text style={styles.statValue}>{stats.pending}</Text>
+        <View style={styles.statItem}>
+          <Icon name="clock-outline" size={16} color={colors.status.warning} />
+          <View>
+            <AppText variant="sm" weight="bold" color={colors.status.warning}>{stats.pending}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Chờ XN</AppText>
           </View>
-          <Text style={styles.statLabel}>Chờ</Text>
         </View>
         <View style={styles.barDivider} />
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="check-circle-outline" size={14} color={'#737373'} /><Text style={styles.statValue}>{stats.confirmed}</Text>
+        <View style={styles.statItem}>
+          <Icon name="check-circle-outline" size={16} color={colors.status.success} />
+          <View>
+            <AppText variant="sm" weight="bold" color={colors.status.success}>{stats.confirmed}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Đã XN</AppText>
           </View>
-          <Text style={styles.statLabel}>Đã XN</Text>
         </View>
         <View style={styles.barDivider} />
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="door-open" size={14} color={'#737373'} /><Text style={styles.statValue}>{stats.arrived}</Text>
+        <View style={styles.statItem}>
+          <Icon name="door-open" size={16} color="#2563EB" />
+          <View>
+            <AppText variant="sm" weight="bold" color="#2563EB">{stats.arrived}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Đã đến</AppText>
           </View>
-          <Text style={styles.statLabel}>Đã đến</Text>
-        </View>
-        <View style={styles.barDivider} />
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="cancel" size={14} color={'#737373'} /><Text style={styles.statValue}>{stats.cancelled}</Text>
-          </View>
-          <Text style={styles.statLabel}>Huỷ</Text>
         </View>
       </View>
+
+      {/* Filter chips */}
       <View style={styles.filterRow}>
         {statuses.map(st => (
           <TouchableOpacity key={st} onPress={() => setStatusFilter(st)}
             style={[styles.chip, statusFilter === st && styles.chipActive]}>
-            <Text style={[styles.chipText, statusFilter === st && styles.chipTextActive]}>{st ? (STATUS_MAP[st]?.label || st) : 'Tất cả'}</Text>
+            <AppText variant="sm" color={statusFilter === st ? colors.brand.primary : colors.text.secondary} weight={statusFilter === st ? 'bold' : 'normal'}>
+              {st ? (STATUS_MAP[st]?.label || st) : 'Tất cả'}
+            </AppText>
           </TouchableOpacity>
         ))}
       </View>
+
       {isWide ? (
-        <View style={{ flex: 1, flexDirection: 'row' }}>
-          <View style={{ flex: 0.6 }}>
+        <View style={{ flex: 1, flexDirection: 'row', padding: 12, gap: 12 }}>
+          <View style={{ flex: 0.55 }}>
             <DataTable<Booking>
               columns={columns}
               data={items}
@@ -234,83 +250,84 @@ export default function BookingScreen() {
               onRefresh={load}
               compact
               emptyIcon="calendar-plus"
-              emptyTitle="Chưa có đặt bàn"
-              emptySubtitle="Nhấn + để thêm lượt đặt mới"
+              emptyTitle="Chưa có lượt đặt bàn"
+              emptySubtitle="Nhấn + để tạo lượt đặt bàn mới"
             />
           </View>
-          <View style={styles.separator} />
-          <View style={{ flex: 0.4, backgroundColor: '#FAFAFA', paddingTop: 8 }}>{renderPanel()}</View>
+          <View style={{ flex: 0.45 }}>{renderPanel()}</View>
         </View>
       ) : (
-        <DataTable<Booking>
-          columns={columns}
-          data={items}
-          getRowId={(b) => b.id}
-          loading={loading}
-          sortKey={sortKey}
-          sortDir={sortDir}
-          onSortChange={handleSortChange}
-          onRowPress={setSelected}
-          selectedRowId={selected?.id ?? null}
-          onRefresh={load}
-          compact
-          emptyIcon="calendar-plus"
-          emptyTitle="Chưa có đặt bàn"
-          emptySubtitle="Nhấn + để thêm lượt đặt mới"
-        />
+        <View style={{ flex: 1, paddingHorizontal: 8 }}>
+          <DataTable<Booking>
+            columns={columns}
+            data={items}
+            getRowId={(b) => b.id}
+            loading={loading}
+            sortKey={sortKey}
+            sortDir={sortDir}
+            onSortChange={handleSortChange}
+            onRowPress={setSelected}
+            selectedRowId={selected?.id ?? null}
+            onRefresh={load}
+            compact
+            emptyIcon="calendar-plus"
+            emptyTitle="Chưa có lượt đặt bàn"
+            emptySubtitle="Nhấn + để tạo lượt đặt bàn mới"
+          />
+        </View>
       )}
+
       {!isWide && <FAB onPress={openNew} />}
 
-      <FormModal visible={showForm} title="Đặt bàn mới" onClose={() => setShowForm(false)} onSave={async () => { if (form.phone) { try { await request(`${API}/booking`, { method: 'POST', body: JSON.stringify(form) }); setShowForm(false); load(); } catch { Alert.alert('Lỗi', 'Không thể tạo'); } } else Alert.alert('Lỗi', 'Nhập SĐT'); }} saveLabel="Đặt">
-        <View style={{ gap: 12, paddingTop: 4 }}>
-          <Text style={styles.fieldLabel}>Tên khách *</Text>
-          <TextInput value={form.customer_name} onChangeText={v => setForm(p => ({ ...p, customer_name: v }))} style={styles.fieldInput} placeholder="Tên khách" />
-          <Text style={styles.fieldLabel}>SĐT *</Text>
-          <TextInput value={form.phone} onChangeText={v => setForm(p => ({ ...p, phone: v }))} style={styles.fieldInput} keyboardType="phone-pad" placeholder="090..." />
-          <Text style={styles.fieldLabel}>Email</Text>
-          <TextInput value={form.email} onChangeText={v => setForm(p => ({ ...p, email: v }))} style={styles.fieldInput} keyboardType="email-address" placeholder="email@example.com" />
-          <View style={{ flexDirection: 'row', gap: 12}}>
-            <View style={{ flex: 1 }}><Text style={styles.fieldLabel}>Số khách</Text><TextInput value={form.guest_count} onChangeText={v => setForm(p => ({ ...p, guest_count: v }))} keyboardType="number-pad" style={styles.fieldInput} /></View>
-          </View>
-          <Text style={styles.fieldLabel}>Ghi chú</Text>
-          <TextInput value={form.note} onChangeText={v => setForm(p => ({ ...p, note: v }))} style={[styles.fieldInput, { minHeight: 80 }]} multiline placeholder="Ghi chú..." />
+      <FormModal visible={showForm} title="Đặt bàn mới" onClose={() => setShowForm(false)} onSave={async () => {
+        if (form.phone) {
+          try { await request(`${API}/booking`, { method: 'POST', body: JSON.stringify(form) }); setShowForm(false); load(); }
+          catch { Alert.alert('Lỗi', 'Không thể tạo đơn đặt bàn'); }
+        } else Alert.alert('Lỗi', 'Vui lòng nhập SĐT khách');
+      }} saveLabel="Tạo đơn">
+        <View style={{ gap: 10, paddingTop: 4 }}>
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>Tên khách hàng *</AppText>
+          <TextInput value={form.customer_name} onChangeText={v => setForm(p => ({ ...p, customer_name: v }))} style={styles.fieldInput} placeholder="VD: Anh Minh" placeholderTextColor={colors.text.muted} />
+          
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>Số điện thoại *</AppText>
+          <TextInput value={form.phone} onChangeText={v => setForm(p => ({ ...p, phone: v }))} style={styles.fieldInput} keyboardType="phone-pad" placeholder="090..." placeholderTextColor={colors.text.muted} />
+          
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>Email</AppText>
+          <TextInput value={form.email} onChangeText={v => setForm(p => ({ ...p, email: v }))} style={styles.fieldInput} keyboardType="email-address" placeholder="email@example.com" placeholderTextColor={colors.text.muted} />
+          
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>Số lượng khách</AppText>
+          <TextInput value={form.guest_count} onChangeText={v => setForm(p => ({ ...p, guest_count: v }))} keyboardType="number-pad" style={styles.fieldInput} placeholder="2" placeholderTextColor={colors.text.muted} />
+          
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>Ghi chú thêm</AppText>
+          <TextInput value={form.note} onChangeText={v => setForm(p => ({ ...p, note: v }))} style={[styles.fieldInput, { minHeight: 60 }]} multiline placeholder="VD: Bàn gần cửa sổ, ăn sinh nhật..." placeholderTextColor={colors.text.muted} />
         </View>
       </FormModal>
-    </ScreenContainer>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, height: 44, borderRadius: 8, backgroundColor: '#F97316' },
-  addBtnText: { ...font.smBold, fontWeight: '600', color: '#fff' },
-  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
-  statValue: { ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
-  statLabel: { ...font.sm, color: '#737373', lineHeight: 12 },
-  filterRow: { flexDirection: 'row', gap: 8, paddingHorizontal: 4, paddingVertical: 8, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0', flexWrap: 'wrap' },
-  chip: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#E5E5E5' },
-  chipActive: { backgroundColor: '#F97316', borderColor: '#F97316' },
-  chipText: { ...font.smBold, color: '#737373' },
-  chipTextActive: { color: '#fff', fontWeight: '600' },
-  cellPrimary: { ...font.sm, fontWeight: '600', color: '#171717' },
-  cellSub: { ...font.sm, color: '#737373' },
-  cellNumber: { ...font.sm, color: '#171717', textAlign: 'center' },
-  cellMuted: { ...font.sm, color: '#737373', textAlign: 'center' },
-  avatar: { width: 30, height: 30, borderRadius: 4, alignItems: 'center', justifyContent: 'center' },
-  statusBadge: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 3, paddingVertical: 3, paddingHorizontal: 8, borderRadius: 999},
-  statusText: { ...font.sm, fontWeight: '600' },
-  panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12},
-  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelHeaderText: { ...font.md, fontWeight: '600', color: '#171717' },
-  panelStatValue: { ...font.lg, fontWeight: '600', color: '#171717' },
-  panelStatLabel: { ...font.sm, color: '#737373', marginTop: 2 },
-  panelDivider: { height: 1, backgroundColor: '#F0F0F0' },
-  panelRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8},
-  panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 10, paddingHorizontal: 10, borderRadius: 8},
-  panelBtnText: { ...font.smBold, fontWeight: '600', color: '#fff' },
-  panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: '#F97316', borderRadius: 8, paddingVertical: 12, minHeight: 44 },
-  panelCtaText: { ...font.mdBold, color: '#fff' },
-  fieldLabel: { ...font.smBold, color: '#404040', marginBottom: 6 },
-  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.md, color: '#171717', backgroundColor: '#FAFAFA' },
-  separator: { width: 1, backgroundColor: '#F0F0F0' },
+  statsBar: {
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: colors.surface.card,
+    borderRadius: shape.radius.lg,
+    marginHorizontal: 8,
+    marginVertical: 8,
+  },
+  statItem: { flex: 1, alignItems: 'center', flexDirection: 'row', gap: 6, justifyContent: 'center' },
+  barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
+  filterRow: { flexDirection: 'row', gap: 6, paddingHorizontal: 8, marginBottom: 8, flexWrap: 'wrap' },
+  chip: { paddingHorizontal: 12, height: 32, borderRadius: shape.radius.md, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center' },
+  chipActive: { backgroundColor: colors.brand.primaryBg },
+  avatar: { width: 28, height: 28, borderRadius: shape.radius.sm, alignItems: 'center', justifyContent: 'center' },
+  statusBadge: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingVertical: 2, paddingHorizontal: 8, borderRadius: shape.radius.sm },
+  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, gap: 12 },
+  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },
+  panelDivider: { height: 1, backgroundColor: colors.border.light },
+  panelRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 6 },
+  panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 6, paddingHorizontal: 10, borderRadius: shape.radius.md },
+  panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, height: 42 },
+  fieldInput: { borderRadius: shape.radius.md, paddingHorizontal: 10, paddingVertical: 8, ...font.md, color: colors.text.primary, backgroundColor: colors.surface.app },
 });

@@ -1,23 +1,20 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Alert } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { View, Text, StyleSheet, TextInput, Alert, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import { colors, font, formatVND } from '../../lib/theme';
+import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import type { Customer } from '../../lib/api/client';
 import DataTable, { type Column } from '../../lib/components/ui/DataTable';
-import ScreenHeader from '../../lib/components/ui/ScreenHeader';
-import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import FormModal from '../../lib/components/ui/FormModal';
 import FAB from '../../lib/components/ui/FAB';
 import SearchBar from '../../lib/components/ui/SearchBar';
+import AppText from '../../lib/components/ui/AppText';
 
 const API = '/api/v1/quan-ly';
 
-
 export default function CustomersScreen() {
-  const { openSidebar } = useSidebar();
   const { isWide } = useResponsive();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,15 +26,21 @@ export default function CustomersScreen() {
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
 
   const load = useCallback(async () => {
-    try { setLoading(true); const data: any = await request(`${API}/customers`); setCustomers(Array.isArray(data) ? data : (data?.items || [])); }
-    catch { /* ignore */ } finally { setLoading(false); }
+    try {
+      setLoading(true);
+      const data: any = await request(`${API}/customers`);
+      setCustomers(Array.isArray(data) ? data : (data?.items || []));
+    } catch { /* ignore */ } finally { setLoading(false); }
   }, []);
+
   useEffect(() => { load(); }, [load]);
 
   const handleSave = async () => {
-    if (!form.name || !form.phone) { Alert.alert('Lỗi', 'Tên và SĐT bắt buộc'); return; }
-    try { await request(`${API}/customers`, { method: 'POST', body: JSON.stringify(form) }); setShowForm(false); load(); }
-    catch { Alert.alert('Lỗi', 'Không thể lưu'); }
+    if (!form.name || !form.phone) { Alert.alert('Lỗi', 'Tên và SĐT là bắt buộc'); return; }
+    try {
+      await request(`${API}/customers`, { method: 'POST', body: JSON.stringify(form) });
+      setShowForm(false); load();
+    } catch { Alert.alert('Lỗi', 'Không thể lưu khách hàng'); }
   };
 
   const filtered = useMemo(() => {
@@ -60,19 +63,19 @@ export default function CustomersScreen() {
       sortValue: (c) => c.name || '',
       render: (c) => (
         <View>
-          <Text style={styles.cellPrimary} numberOfLines={1}>{c.name}</Text>
-          <Text style={styles.cellSub}>{c.phone}</Text>
+          <AppText variant="sm" weight="bold" color={colors.text.primary} numberOfLines={1}>{c.name}</AppText>
+          <AppText variant="sm" color={colors.text.muted}>{c.phone}</AppText>
         </View>
       ),
     },
     {
       key: 'total_spent',
       title: 'Đã chi',
-      width: 100,
+      width: 110,
       align: 'right',
       sortable: true,
       sortValue: (c) => c.total_spent || 0,
-      render: (c) => <Text style={styles.cellAmount}>{formatVND(c.total_spent || 0)}</Text>,
+      render: (c) => <AppText variant="sm" weight="bold" color={colors.brand.primary}>{formatVND(c.total_spent || 0)}</AppText>,
     },
     {
       key: 'total_visits',
@@ -81,39 +84,47 @@ export default function CustomersScreen() {
       align: 'right',
       sortable: true,
       sortValue: (c) => c.visit_count || 0,
-      render: (c) => <Text style={styles.cellNumber}>{c.visit_count || 0}</Text>,
+      render: (c) => <AppText variant="sm" color={colors.text.primary}>{c.visit_count || 0}</AppText>,
     },
   ];
 
   const renderPanel = () => {
     const top = [...filtered].sort((a, b) => (b.total_spent || 0) - (a.total_spent || 0)).slice(0, 5);
     const maxSpent = Math.max(...top.map(c => c.total_spent || 0), 1);
+
     return (
       <View style={styles.panelBox}>
-        <View style={styles.panelHeader}><Icon name="account-group" size={18} color={'#F97316'} /><Text style={styles.panelHeaderText}>Khách hàng</Text></View>
-        <View style={{ flexDirection: 'row', gap: 12, flexWrap: 'wrap' }}>
-          {[{ icon: 'account-group', value: stats.total, label: 'Tổng' },
+        <View style={styles.panelHeader}>
+          <Icon name="account-group" size={18} color={colors.brand.primary} />
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>Thống kê tệp khách hàng</AppText>
+        </View>
+
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          {[
+            { icon: 'account-group', value: stats.total, label: 'Tổng khách' },
             { icon: 'currency-usd', value: formatVND(stats.totalSpent), label: 'Tổng chi' },
-            { icon: 'store', value: stats.totalVisits, label: 'Lượt' },
+            { icon: 'store', value: stats.totalVisits, label: 'Lượt ghé' },
           ].map((s, i) => (
             <View key={i} style={{ alignItems: 'center', flex: 1 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-                <Icon name={s.icon as any} size={14} color={'#737373'} />
-                <Text style={styles.statValue}>{s.value}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <Icon name={s.icon as any} size={14} color={colors.brand.primary} />
+                <AppText variant="sm" weight="bold" color={colors.text.primary}>{s.value}</AppText>
               </View>
-              <Text style={styles.statLabel}>{s.label}</Text>
+              <AppText variant="sm" color={colors.text.muted}>{s.label}</AppText>
             </View>
           ))}
         </View>
+
         <View style={styles.panelDivider} />
-        <Text style={{ ...font.sm, fontWeight: '600', color: '#171717', marginBottom: 4 }}>Top chi tiêu</Text>
+
+        <AppText variant="sm" weight="bold" color={colors.text.primary} style={{ marginBottom: 4 }}>Top 5 khách hàng chi tiêu nhiều nhất</AppText>
         {top.map((c, i) => (
-          <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 12}}>
-            <Text style={{ width: 60, ...font.sm, color: '#171717' }} numberOfLines={1}>{c.name}</Text>
-            <View style={{ flex: 1, height: 10, backgroundColor: '#F5F5F5', borderRadius: 3 }}>
-              <View style={{ width: `${Math.max(5, ((c.total_spent || 0) / maxSpent) * 100)}%`, height: 10, backgroundColor: '#F97316', borderRadius: 3 }} />
+          <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 2 }}>
+            <AppText variant="sm" color={colors.text.primary} style={{ width: 80 }} numberOfLines={1}>{c.name}</AppText>
+            <View style={{ flex: 1, height: 8, backgroundColor: colors.surface.app, borderRadius: 4, overflow: 'hidden' }}>
+              <View style={{ width: `${Math.max(5, ((c.total_spent || 0) / maxSpent) * 100)}%`, height: 8, backgroundColor: colors.brand.primary, borderRadius: 4 }} />
             </View>
-            <Text style={{ width: 70, textAlign: 'right', ...font.sm, fontWeight: '600', color: '#171717' }}>{formatVND(c.total_spent || 0)}</Text>
+            <AppText variant="sm" weight="bold" color={colors.brand.primary} style={{ width: 80, textAlign: 'right' }}>{formatVND(c.total_spent || 0)}</AppText>
           </View>
         ))}
       </View>
@@ -130,40 +141,41 @@ export default function CustomersScreen() {
   };
 
   return (
-    <ScreenContainer compact>
-      <ScreenHeader title="Khách hàng" subtitle={`${stats.total} khách`}
-        onMenuPress={openSidebar} compact />
+    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+      {/* Stats bar */}
       <View style={styles.statsBar}>
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="account-group" size={14} color={'#737373'} />
-            <Text style={styles.statValue}>{stats.total}</Text>
+        <View style={styles.statItem}>
+          <Icon name="account-group" size={16} color={colors.brand.primary} />
+          <View>
+            <AppText variant="sm" weight="bold" color={colors.text.primary}>{stats.total}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Tổng khách</AppText>
           </View>
-          <Text style={styles.statLabel}>Tổng khách</Text>
         </View>
         <View style={styles.barDivider} />
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="currency-usd" size={14} color={'#737373'} />
-            <Text style={styles.statValue}>{formatVND(stats.totalSpent)}</Text>
+        <View style={styles.statItem}>
+          <Icon name="currency-usd" size={16} color={colors.brand.primary} />
+          <View>
+            <AppText variant="sm" weight="bold" color={colors.brand.primary}>{formatVND(stats.totalSpent)}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Tổng chi tiêu</AppText>
           </View>
-          <Text style={styles.statLabel}>Tổng chi</Text>
         </View>
         <View style={styles.barDivider} />
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="store" size={14} color={'#737373'} />
-            <Text style={styles.statValue}>{stats.totalVisits}</Text>
+        <View style={styles.statItem}>
+          <Icon name="store" size={16} color={colors.brand.primary} />
+          <View>
+            <AppText variant="sm" weight="bold" color={colors.text.primary}>{stats.totalVisits}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Lượt ghé</AppText>
           </View>
-          <Text style={styles.statLabel}>Lượt ghé</Text>
         </View>
       </View>
+
       <View style={styles.searchRow}>
-        <SearchBar value={search} onChangeText={setSearch} placeholder="Tìm tên hoặc SĐT..." />
+        <SearchBar value={search} onChangeText={setSearch} placeholder="Tìm tên hoặc số điện thoại..." />
       </View>
+
       {isWide ? (
-        <View style={{ flex: 1, flexDirection: 'row' }}>
-          <View style={{ flex: 0.6 }}>
+        <View style={{ flex: 1, flexDirection: 'row', padding: 12, gap: 12 }}>
+          <View style={{ flex: 0.55 }}>
             <DataTable<Customer>
               columns={columns}
               data={filtered}
@@ -178,59 +190,82 @@ export default function CustomersScreen() {
               compact
               emptyIcon="account-off"
               emptyTitle="Chưa có khách hàng"
-              emptySubtitle="Thêm khách hàng mới"
+              emptySubtitle="Nhấn + để thêm khách hàng đầu tiên"
             />
           </View>
-          <View style={styles.separator} />
-          <View style={{ flex: 0.4, backgroundColor: '#FAFAFA', paddingTop: 8 }}>{renderPanel()}</View>
+          <View style={{ flex: 0.45 }}>{renderPanel()}</View>
         </View>
       ) : (
-        <DataTable<Customer>
-          columns={columns}
-          data={filtered}
-          getRowId={(c) => c.id}
-          loading={loading}
-          sortKey={sortKey}
-          sortDir={sortDir}
-          onSortChange={handleSortChange}
-          onRowPress={setSelected}
-          selectedRowId={selected?.id ?? null}
-          onRefresh={load}
-          compact
-          emptyIcon="account-off"
-          emptyTitle="Chưa có khách hàng"
-          emptySubtitle="Thêm khách hàng mới"
-        />
+        <View style={{ flex: 1, paddingHorizontal: 8 }}>
+          <DataTable<Customer>
+            columns={columns}
+            data={filtered}
+            getRowId={(c) => c.id}
+            loading={loading}
+            sortKey={sortKey}
+            sortDir={sortDir}
+            onSortChange={handleSortChange}
+            onRowPress={setSelected}
+            selectedRowId={selected?.id ?? null}
+            onRefresh={load}
+            compact
+            emptyIcon="account-off"
+            emptyTitle="Chưa có khách hàng"
+            emptySubtitle="Nhấn + để thêm khách hàng đầu tiên"
+          />
+        </View>
       )}
-      <FAB onPress={() => setShowForm(true)} />
+      {!isWide && <FAB onPress={() => setShowForm(true)} />}
 
-      <FormModal visible={showForm} title="Thêm khách hàng" onClose={() => setShowForm(false)} onSave={handleSave} saveLabel="Thêm">
-        <View style={{ gap: 32, paddingTop: 4 }}>
-          <Text style={styles.fieldLabel}>Tên *</Text><TextInput value={form.name} onChangeText={v => setForm(p => ({ ...p, name: v }))} style={styles.fieldInput} placeholder="Nguyễn Văn A" />
-          <Text style={styles.fieldLabel}>SĐT *</Text><TextInput value={form.phone} onChangeText={v => setForm(p => ({ ...p, phone: v }))} style={styles.fieldInput} placeholder="090..." keyboardType="phone-pad" />
-          <Text style={styles.fieldLabel}>Email</Text><TextInput value={form.email} onChangeText={v => setForm(p => ({ ...p, email: v }))} style={styles.fieldInput} placeholder="email@example.com" keyboardType="email-address" />
-          <Text style={styles.fieldLabel}>Địa chỉ</Text><TextInput value={form.address} onChangeText={v => setForm(p => ({ ...p, address: v }))} style={styles.fieldInput} placeholder="Địa chỉ" />
+      <FormModal visible={showForm} title="Thêm khách hàng mới" onClose={() => setShowForm(false)} onSave={handleSave} saveLabel="Thêm">
+        <View style={{ gap: 10, paddingTop: 4 }}>
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>Tên khách hàng *</AppText>
+          <TextInput value={form.name} onChangeText={v => setForm(p => ({ ...p, name: v }))} style={styles.fieldInput} placeholder="VD: Nguyễn Văn A" placeholderTextColor={colors.text.muted} />
+          
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>Số điện thoại *</AppText>
+          <TextInput value={form.phone} onChangeText={v => setForm(p => ({ ...p, phone: v }))} style={styles.fieldInput} placeholder="090..." keyboardType="phone-pad" placeholderTextColor={colors.text.muted} />
+          
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>Email</AppText>
+          <TextInput value={form.email} onChangeText={v => setForm(p => ({ ...p, email: v }))} style={styles.fieldInput} placeholder="email@example.com" keyboardType="email-address" placeholderTextColor={colors.text.muted} />
+          
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>Địa chỉ</AppText>
+          <TextInput value={form.address} onChangeText={v => setForm(p => ({ ...p, address: v }))} style={styles.fieldInput} placeholder="Địa chỉ giao hàng" placeholderTextColor={colors.text.muted} />
         </View>
       </FormModal>
-    </ScreenContainer>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
-  statValue: { ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
-  statLabel: { ...font.sm, color: '#737373', lineHeight: 12 },
-  searchRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, paddingVertical: 12, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  cellPrimary: { ...font.sm, fontWeight: '600', color: '#171717' },
-  cellSub: { ...font.sm, color: '#737373', marginTop: 2 },
-  cellAmount: { ...font.sm, fontWeight: '600', color: '#F97316' },
-  cellNumber: { ...font.sm, color: '#171717' },
-  panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12},
-  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelHeaderText: { ...font.md, fontWeight: '600', color: '#171717' },
-  panelDivider: { height: 1, backgroundColor: '#F0F0F0' },
-  fieldLabel: { ...font.smBold, color: '#404040', marginBottom: 6 },
-  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.md, color: '#171717', backgroundColor: '#FAFAFA' },
-  separator: { width: 1, backgroundColor: '#F0F0F0' },
+  statsBar: {
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: colors.surface.card,
+    borderRadius: shape.radius.lg,
+    marginHorizontal: 8,
+    marginVertical: 8,
+  },
+  statItem: { flex: 1, alignItems: 'center', flexDirection: 'row', gap: 8, justifyContent: 'center' },
+  barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
+  searchRow: {
+    paddingHorizontal: 8,
+    marginBottom: 8,
+  },
+  panelBox: {
+    backgroundColor: colors.surface.card,
+    borderRadius: shape.radius.lg,
+    padding: 14,
+    gap: 12,
+  },
+  panelHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
+  },
+  panelDivider: { height: 1, backgroundColor: colors.border.light, marginVertical: 4 },
+  fieldInput: { borderRadius: shape.radius.md, paddingHorizontal: 10, paddingVertical: 8, ...font.md, color: colors.text.primary, backgroundColor: colors.surface.app },
 });

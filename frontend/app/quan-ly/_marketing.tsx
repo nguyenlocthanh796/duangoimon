@@ -1,19 +1,18 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import { colors, font } from '../../lib/theme';
+import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import type { Campaign } from '../../lib/api/client';
 import DataTable, { type Column } from '../../lib/components/ui/DataTable';
-import ScreenHeader from '../../lib/components/ui/ScreenHeader';
-import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import FormModal from '../../lib/components/ui/FormModal';
+import FAB from '../../lib/components/ui/FAB';
+import AppText from '../../lib/components/ui/AppText';
 
 const API = '/api/v1/quan-ly';
 
-// Override Campaign with runtime fields not in the type
 interface CampaignEx extends Campaign {
   content?: string;
   open_count?: number;
@@ -21,7 +20,6 @@ interface CampaignEx extends Campaign {
 }
 
 export default function MarketingScreen() {
-  const { openSidebar } = useSidebar();
   const { isWide } = useResponsive();
   const [campaigns, setCampaigns] = useState<CampaignEx[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,13 +40,13 @@ export default function MarketingScreen() {
   const openEdit = (c: CampaignEx) => { setEditing(c); setForm({ name: c.name, type: c.type, content: c.content || '', is_active: c.is_active ?? true }); setShowForm(true); };
 
   const handleSave = async () => {
-    if (!form.name) { Alert.alert('Lỗi', 'Tên chiến dịch bắt buộc'); return; }
+    if (!form.name) { Alert.alert('Lỗi', 'Tên chiến dịch là bắt buộc'); return; }
     try {
       const body = { name: form.name, type: form.type, content: form.content, is_active: form.is_active };
       if (editing) await request(`${API}/campaigns/${editing.id}`, { method: 'PUT', body: JSON.stringify(body) });
       else await request(`${API}/campaigns`, { method: 'POST', body: JSON.stringify(body) });
       setShowForm(false); load();
-    } catch { Alert.alert('Lỗi', 'Không thể lưu'); }
+    } catch { Alert.alert('Lỗi', 'Không thể lưu chiến dịch'); }
   };
 
   const stats = {
@@ -60,36 +58,36 @@ export default function MarketingScreen() {
   const columns: Column<CampaignEx>[] = [
     {
       key: 'name',
-      title: 'Chiến dịch',
+      title: 'Tên chiến dịch',
       flex: 1,
       sortable: true,
       sortValue: (c) => c.name || '',
       render: (c) => (
         <View style={{ flex: 1 }}>
-          <Text style={styles.cellPrimary} numberOfLines={1}>{c.name}</Text>
-          <Text style={{ ...font.sm, color: '#737373' }}>{c.type}</Text>
+          <AppText variant="sm" weight="bold" color={colors.text.primary} numberOfLines={1}>{c.name}</AppText>
+          <AppText variant="sm" color={colors.text.muted}>{c.type.toUpperCase()}</AppText>
         </View>
       ),
     },
     {
       key: 'sent_count',
       title: 'Đã gửi',
-      width: 75,
+      width: 80,
       align: 'right',
       sortable: true,
       sortValue: (c) => c.sent_count || 0,
-      render: (c) => <Text style={styles.cellNumber}>{c.sent_count || 0}</Text>,
+      render: (c) => <AppText variant="sm" weight="bold" color={colors.text.primary}>{c.sent_count || 0}</AppText>,
     },
     {
       key: 'is_active',
       title: 'Trạng thái',
-      width: 75,
+      width: 80,
       align: 'center',
       sortable: true,
       sortValue: (c) => c.is_active ? 1 : 0,
       render: (c) => (
-        <View style={[styles.chipSmall, { backgroundColor: c.is_active ? '#E8F5E9' : '#FFEBEE' }]}>
-          <Text style={{ ...font.sm, fontWeight: '600', color: c.is_active ? '#2E7D32' : '#C62828' }}>{c.is_active ? 'ON' : 'OFF'}</Text>
+        <View style={[styles.chipSmall, { backgroundColor: c.is_active ? colors.brand.primaryBg : colors.surface.app }]}>
+          <AppText variant="sm" weight="bold" color={c.is_active ? colors.status.success : colors.text.muted}>{c.is_active ? 'ON' : 'OFF'}</AppText>
         </View>
       ),
     },
@@ -99,19 +97,34 @@ export default function MarketingScreen() {
     if (!selected) return null;
     return (
       <View style={styles.panelBox}>
-        <View style={styles.panelHeader}><Icon name="bullhorn" size={18} color={'#F97316'} /><Text style={styles.panelHeaderText}>{selected.name}</Text></View>
-        <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
-          <View style={{ alignItems: 'center', flex: 1 }}><Text style={styles.panelStatValue}>{selected.sent_count || 0}</Text><Text style={styles.panelStatLabel}>Đã gửi</Text></View>
+        <View style={styles.panelHeader}>
+          <Icon name="bullhorn" size={18} color={colors.brand.primary} />
+          <AppText variant="sm" weight="bold" color={colors.text.primary} style={{ flex: 1 }}>{selected.name}</AppText>
+        </View>
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          <View style={{ alignItems: 'center', flex: 1 }}>
+            <AppText variant="md" weight="bold" color={colors.text.primary}>{selected.sent_count || 0}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Đã gửi</AppText>
+          </View>
           <View style={styles.panelDividerV} />
-          <View style={{ alignItems: 'center', flex: 1 }}><Text style={styles.panelStatValue}>{selected.open_count || 0}</Text><Text style={styles.panelStatLabel}>Đã mở</Text></View>
+          <View style={{ alignItems: 'center', flex: 1 }}>
+            <AppText variant="md" weight="bold" color={colors.status.success}>{selected.open_count || 0}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Đã mở</AppText>
+          </View>
           <View style={styles.panelDividerV} />
-          <View style={{ alignItems: 'center', flex: 1 }}><Text style={styles.panelStatValue}>{selected.click_count || 0}</Text><Text style={styles.panelStatLabel}>Click</Text></View>
+          <View style={{ alignItems: 'center', flex: 1 }}>
+            <AppText variant="md" weight="bold" color={colors.brand.primary}>{selected.click_count || 0}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Lượt click</AppText>
+          </View>
         </View>
         <View style={styles.panelDivider} />
-        <Text style={{ ...font.sm, fontWeight: '600', color: '#171717', marginBottom: 4 }}>Nội dung</Text>
-        <Text style={{ ...font.sm, color: '#404040' }} numberOfLines={4}>{selected.content || '—'}</Text>
+        <AppText variant="sm" weight="bold" color={colors.text.primary} style={{ marginBottom: 4 }}>Nội dung thông điệp</AppText>
+        <AppText variant="sm" color={colors.text.secondary} numberOfLines={4}>{selected.content || '—'}</AppText>
         <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
-          <TouchableOpacity onPress={() => openEdit(selected)} style={[styles.panelBtn, { backgroundColor: '#F97316' }]}><Icon name="pencil" size={14} color="#fff" /><Text style={styles.panelBtnText}>Sửa</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => openEdit(selected)} style={[styles.panelBtn, { backgroundColor: colors.brand.primary }]}>
+            <Icon name="pencil" size={14} color={colors.text.inverse} />
+            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Sửa chiến dịch</AppText>
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -123,36 +136,37 @@ export default function MarketingScreen() {
   };
 
   return (
-    <ScreenContainer compact>
-      <ScreenHeader title="Marketing" subtitle={`${stats.active} đang chạy`}
-        onMenuPress={openSidebar} compact
-        right={<TouchableOpacity onPress={() => setShowForm(true)} style={styles.addBtn}><Icon name="plus" size={18} color="#fff" /></TouchableOpacity>}
-      />
+    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+      {/* Stats bar */}
       <View style={styles.statsBar}>
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="bullhorn" size={14} color={'#737373'} /><Text style={styles.statValue}>{stats.total}</Text>
+        <View style={styles.statItem}>
+          <Icon name="bullhorn" size={16} color={colors.brand.primary} />
+          <View>
+            <AppText variant="sm" weight="bold" color={colors.text.primary}>{stats.total}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Chiến dịch</AppText>
           </View>
-          <Text style={styles.statLabel}>Chiến dịch</Text>
         </View>
         <View style={styles.barDivider} />
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="check-circle" size={14} color={'#737373'} /><Text style={styles.statValue}>{stats.active}</Text>
+        <View style={styles.statItem}>
+          <Icon name="check-circle" size={16} color={colors.status.success} />
+          <View>
+            <AppText variant="sm" weight="bold" color={colors.status.success}>{stats.active}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Đang chạy</AppText>
           </View>
-          <Text style={styles.statLabel}>Đang chạy</Text>
         </View>
         <View style={styles.barDivider} />
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="send" size={14} color={'#737373'} /><Text style={styles.statValue}>{stats.sent}</Text>
+        <View style={styles.statItem}>
+          <Icon name="send" size={16} color={colors.brand.primary} />
+          <View>
+            <AppText variant="sm" weight="bold" color={colors.text.primary}>{stats.sent}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Đã gửi</AppText>
           </View>
-          <Text style={styles.statLabel}>Đã gửi</Text>
         </View>
       </View>
+
       {isWide ? (
-        <View style={{ flex: 1, flexDirection: 'row' }}>
-          <View style={{ flex: 0.6 }}>
+        <View style={{ flex: 1, flexDirection: 'row', padding: 12, gap: 12 }}>
+          <View style={{ flex: 0.55 }}>
             <DataTable<CampaignEx>
               columns={columns}
               data={campaigns}
@@ -170,75 +184,86 @@ export default function MarketingScreen() {
               emptySubtitle="Tạo chiến dịch marketing đầu tiên"
             />
           </View>
-          <View style={styles.separator} />
-          <View style={{ flex: 0.4, backgroundColor: '#FAFAFA', paddingTop: 8 }}>{renderPanel()}</View>
+          <View style={{ flex: 0.45 }}>
+            {selected ? renderPanel() : (
+              <View style={[styles.panelBox, { alignItems: 'center', justifyContent: 'center', minHeight: 200, gap: 8 }]}>
+                <Icon name="hand-pointing-up" size={32} color={colors.icon.muted} />
+                <AppText variant="sm" color={colors.text.muted}>Chọn một chiến dịch để xem chi tiết</AppText>
+              </View>
+            )}
+          </View>
         </View>
       ) : (
-        <DataTable<CampaignEx>
-          columns={columns}
-          data={campaigns}
-          getRowId={(c) => c.id}
-          loading={loading}
-          sortKey={sortKey}
-          sortDir={sortDir}
-          onSortChange={handleSortChange}
-          onRowPress={setSelected}
-          selectedRowId={selected?.id ?? null}
-          onRefresh={load}
-          compact
-          emptyIcon="bullhorn"
-          emptyTitle="Chưa có chiến dịch"
-          emptySubtitle="Tạo chiến dịch marketing đầu tiên"
-        />
+        <View style={{ flex: 1, paddingHorizontal: 8 }}>
+          <DataTable<CampaignEx>
+            columns={columns}
+            data={campaigns}
+            getRowId={(c) => c.id}
+            loading={loading}
+            sortKey={sortKey}
+            sortDir={sortDir}
+            onSortChange={handleSortChange}
+            onRowPress={setSelected}
+            selectedRowId={selected?.id ?? null}
+            onRefresh={load}
+            compact
+            emptyIcon="bullhorn"
+            emptyTitle="Chưa có chiến dịch"
+            emptySubtitle="Tạo chiến dịch marketing đầu tiên"
+          />
+        </View>
       )}
-      <FormModal visible={showForm} title={editing ? 'Sửa chiến dịch' : 'Chiến dịch mới'}
-        onClose={() => setShowForm(false)} onSave={handleSave} saveLabel={editing ? 'Cập nhật' : 'Tạo'}>
-        <View style={{ gap: 12, paddingTop: 4 }}>
-          <Text style={styles.fieldLabel}>Tên *</Text><TextInput value={form.name} onChangeText={v => setForm(p => ({ ...p, name: v }))} style={styles.fieldInput} placeholder="VD: Khuyến mãi tháng 7" />
-          <Text style={styles.fieldLabel}>Loại</Text>
-          <View style={{ flexDirection: 'row', gap: 8}}>
+
+      {!isWide && <FAB onPress={openNew} />}
+
+      <FormModal visible={showForm} title={editing ? 'Sửa chiến dịch' : 'Tạo chiến dịch mới'}
+        onClose={() => setShowForm(false)} onSave={handleSave} saveLabel={editing ? 'Cập nhật' : 'Tạo mới'}>
+        <View style={{ gap: 10, paddingTop: 4 }}>
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>Tên chiến dịch *</AppText>
+          <TextInput value={form.name} onChangeText={v => setForm(p => ({ ...p, name: v }))} style={styles.fieldInput} placeholder="VD: Tri ân khách hàng tháng 7" placeholderTextColor={colors.text.muted} />
+          
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>Kênh gửi</AppText>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
             {['email', 'sms', 'push'].map(t => (
               <TouchableOpacity key={t} onPress={() => setForm(p => ({ ...p, type: t }))}
                 style={[styles.typeChip, form.type === t && styles.typeChipActive]}>
-                <Text style={[styles.typeChipText, form.type === t && styles.typeChipTextActive]}>{t.toUpperCase()}</Text>
+                <AppText variant="sm" color={form.type === t ? colors.brand.primary : colors.text.secondary} weight={form.type === t ? 'bold' : 'normal'}>{t.toUpperCase()}</AppText>
               </TouchableOpacity>
             ))}
           </View>
-          <Text style={styles.fieldLabel}>Nội dung</Text>
-          <TextInput value={form.content} onChangeText={v => setForm(p => ({ ...p, content: v }))} style={[styles.fieldInput, { minHeight: 80 }]} multiline placeholder="Nội dung chiến dịch" />
-          <TouchableOpacity onPress={() => setForm(p => ({ ...p, is_active: !p.is_active }))} style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name={form.is_active ? 'toggle-switch' : 'toggle-switch-off'} size={20} color={form.is_active ? '#16A34A' : '#737373'} />
-            <Text style={{ ...font.sm, color: '#171717' }}>{form.is_active ? 'Kích hoạt' : 'Tạm dừng'}</Text>
+
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>Nội dung thông điệp</AppText>
+          <TextInput value={form.content} onChangeText={v => setForm(p => ({ ...p, content: v }))} style={[styles.fieldInput, { minHeight: 70 }]} multiline placeholder="Nhập nội dung tin nhắn gửi khách hàng..." placeholderTextColor={colors.text.muted} />
+          
+          <TouchableOpacity onPress={() => setForm(p => ({ ...p, is_active: !p.is_active }))} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 4 }}>
+            <Icon name={form.is_active ? 'toggle-switch' : 'toggle-switch-off'} size={24} color={form.is_active ? colors.status.success : colors.icon.muted} />
+            <AppText variant="sm" color={colors.text.primary}>{form.is_active ? 'Kích hoạt' : 'Tạm dừng'}</AppText>
           </TouchableOpacity>
         </View>
       </FormModal>
-    </ScreenContainer>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  addBtn: { width: 36, height: 36, borderRadius: 8, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center' },
-  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
-  statValue: { ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
-  statLabel: { ...font.sm, color: '#737373', lineHeight: 12 },
-  cellPrimary: { ...font.sm, fontWeight: '600', color: '#171717' },
-  cellNumber: { ...font.sm, color: '#171717', textAlign: 'right' },
-  chipSmall: { paddingVertical: 3, paddingHorizontal: 10, borderRadius: 999, alignSelf: 'center' },
-  panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12},
-  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelHeaderText: { ...font.md, fontWeight: '600', color: '#171717' },
-  panelDivider: { height: 1, backgroundColor: '#F0F0F0' },
-  panelDividerV: { width: 1, backgroundColor: '#F0F0F0' },
-  panelStatLabel: { ...font.sm, color: '#737373', marginTop: 2 },
-  panelStatValue: { ...font.lg, fontWeight: '600', color: '#171717' },
-  panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 10, paddingHorizontal: 10, borderRadius: 8},
-  panelBtnText: { ...font.smBold, fontWeight: '600', color: '#fff' },
-  fieldLabel: { ...font.smBold, color: '#404040', marginBottom: 6 },
-  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.md, color: '#171717', backgroundColor: '#FAFAFA' },
-  separator: { width: 1, backgroundColor: '#F0F0F0' },
-  typeChip: { paddingHorizontal: 12, paddingVertical: 10, borderRadius: 8, backgroundColor: '#F5F5F5' },
-  typeChipActive: { backgroundColor: '#F97316' },
-  typeChipText: { ...font.smBold, fontWeight: '600', color: '#737373' },
-  typeChipTextActive: { color: colors.text.inverse },
+  statsBar: {
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: colors.surface.card,
+    borderRadius: shape.radius.lg,
+    marginHorizontal: 8,
+    marginVertical: 8,
+  },
+  statItem: { flex: 1, alignItems: 'center', flexDirection: 'row', gap: 8, justifyContent: 'center' },
+  barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
+  chipSmall: { paddingVertical: 2, paddingHorizontal: 8, borderRadius: shape.radius.sm },
+  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, gap: 12 },
+  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },
+  panelDivider: { height: 1, backgroundColor: colors.border.light },
+  panelDividerV: { width: 1, backgroundColor: colors.border.light },
+  panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 8, paddingHorizontal: 12, borderRadius: shape.radius.md },
+  fieldInput: { borderRadius: shape.radius.md, paddingHorizontal: 10, paddingVertical: 8, ...font.md, color: colors.text.primary, backgroundColor: colors.surface.app },
+  typeChip: { flex: 1, height: 38, borderRadius: shape.radius.md, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
+  typeChipActive: { backgroundColor: colors.brand.primaryBg },
 });
