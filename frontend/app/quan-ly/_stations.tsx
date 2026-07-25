@@ -1,24 +1,20 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, StyleSheet, TextInput, TouchableOpacity, Alert, Switch } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import { colors, font } from '../../lib/theme';
+import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import type { Station } from '../../lib/api/client';
 import DataTable, { type Column } from '../../lib/components/ui/DataTable';
-import ScreenHeader from '../../lib/components/ui/ScreenHeader';
-import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import FormModal from '../../lib/components/ui/FormModal';
 import FAB from '../../lib/components/ui/FAB';
-
-import { Switch } from 'react-native';
+import AppText from '../../lib/components/ui/AppText';
 import { getKitchenModuleEnabled, setKitchenModuleEnabled } from '../../lib/utils/kitchenSettings';
 
 const API = '/api/v1/quan-ly';
 
 export default function StationsScreen() {
-  const { openSidebar } = useSidebar();
   const { isWide } = useResponsive();
   const [kitchenEnabled, setKitchenEnabled] = useState(getKitchenModuleEnabled());
   const [items, setItems] = useState<Station[]>([]);
@@ -28,6 +24,7 @@ export default function StationsScreen() {
     setKitchenEnabled(val);
     setKitchenModuleEnabled(val);
   };
+
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Station | null>(null);
   const [selected, setSelected] = useState<Station | null>(null);
@@ -36,9 +33,14 @@ export default function StationsScreen() {
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
   const load = useCallback(async () => {
-    try { setLoading(true); const data: any = await request(`${API}/stations`); setItems(Array.isArray(data) ? data : (data?.items || [])); }
-    catch { /* ignore */ } finally { setLoading(false); }
+    try {
+      setLoading(true);
+      const data: any = await request(`${API}/stations`);
+      setItems(Array.isArray(data) ? data : (data?.items || []));
+    }
+    catch { setItems([]); } finally { setLoading(false); }
   }, []);
+
   useEffect(() => { load(); }, [load]);
 
   const openNew = () => { setEditing(null); setForm({ name: '', code: '', categories: '', printer_name: '' }); setShowForm(true); };
@@ -54,85 +56,100 @@ export default function StationsScreen() {
     } catch { Alert.alert('Lỗi', 'Không thể lưu'); }
   };
 
-  const del = (id: string) => { Alert.alert('Xác nhận', 'Xoá trạm này?', [{ text: 'Hủy', style: 'cancel' }, { text: 'Xóa', style: 'destructive', onPress: async () => { try { await request(`${API}/stations/${id}`, { method: 'DELETE' }); setSelected(null); load(); } catch {} } }]); };
+  const del = (id: string) => {
+    Alert.alert('Xác nhận', 'Xoá trạm này?', [
+      { text: 'Hủy', style: 'cancel' },
+      { text: 'Xóa', style: 'destructive', onPress: async () => { try { await request(`${API}/stations/${id}`, { method: 'DELETE' }); setSelected(null); load(); } catch {} } }
+    ]);
+  };
 
   const stats = { total: items.length, hasPrinter: items.filter(i => i.printer_name).length };
 
   const columns: Column<Station>[] = [
     {
       key: 'name',
-      title: 'Tên trạm',
+      title: 'Tên trạm bếp',
       flex: 1,
       sortable: true,
       sortValue: (s) => s.name || '',
-      render: (s) => <Text style={styles.cellPrimary} numberOfLines={1}>{s.name}</Text>,
+      render: (s) => <AppText variant="sm" weight="bold" color={colors.text.primary} numberOfLines={1}>{s.name}</AppText>,
     },
     {
       key: 'code',
       title: 'Mã',
-      width: 65,
+      width: 70,
       sortable: true,
       sortValue: (s) => s.code || '',
-      render: (s) => <Text style={styles.cellMuted}>{s.code}</Text>,
+      render: (s) => <AppText variant="sm" color={colors.text.muted}>{s.code}</AppText>,
     },
     {
       key: 'printer',
       title: 'Máy in',
-      width: 85,
+      width: 90,
       align: 'center',
       sortable: true,
       sortValue: (s) => s.printer_name ? 1 : 0,
       render: (s) => s.printer_name ? (
-        <View style={[styles.chipSmall, { backgroundColor: '#DCFCE7' }]}>
-          <Icon name="printer" size={10} color={'#16A34A'} /><Text style={{ ...font.sm, fontWeight: '600', color: '#16A34A' }}>Có</Text>
+        <View style={styles.chipSmall}>
+          <Icon name="printer" size={12} color={colors.status.success} />
+          <AppText variant="sm" weight="bold" color={colors.status.success}>Có</AppText>
         </View>
-      ) : <Text style={{ ...font.sm, color: '#737373' }}>—</Text>,
+      ) : <AppText variant="sm" color={colors.text.muted}>—</AppText>,
     },
   ];
 
   const renderPanel = () => (
     <View style={styles.panelBox}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 8, paddingHorizontal: 12, backgroundColor: kitchenEnabled ? '#FFF7ED' : '#F5F5F5', borderRadius: 8, marginBottom: 12 }}>
+      <View style={[styles.toggleBanner, { backgroundColor: kitchenEnabled ? colors.brand.primaryBg : colors.surface.app }]}>
         <View style={{ flex: 1, paddingRight: 8 }}>
-          <Text style={{ ...font.sm, fontWeight: '700', color: kitchenEnabled ? '#EA580C' : '#525252' }}>
+          <AppText variant="sm" weight="bold" color={kitchenEnabled ? colors.brand.primary : colors.text.secondary}>
             {kitchenEnabled ? 'Bật Module Bếp / Bar' : 'Tắt Module Bếp'}
-          </Text>
-          <Text style={{ ...font.xs, color: '#737373', marginTop: 2 }}>
+          </AppText>
+          <AppText variant="sm" color={colors.text.muted}>
             {kitchenEnabled ? 'Bắt buộc gửi đơn xuống Bếp' : 'Bỏ qua Bếp, tính tiền trực tiếp'}
-          </Text>
+          </AppText>
         </View>
-        <Switch value={kitchenEnabled} onValueChange={handleToggleKitchen} trackColor={{ false: '#D4D4D4', true: '#FB923C' }} thumbColor={kitchenEnabled ? '#EA580C' : '#F5F5F5'} />
+        <Switch value={kitchenEnabled} onValueChange={handleToggleKitchen} trackColor={{ false: colors.border.light, true: colors.brand.primary }} thumbColor={colors.surface.card} />
       </View>
-      <View style={styles.panelHeader}><Icon name="stove" size={18} color={'#F97316'} /><Text style={styles.panelHeaderText}>Trạm bếp</Text></View>
-      <View style={{ flexDirection: 'row', gap: 12}}>
+
+      <View style={styles.panelHeader}>
+        <Icon name="stove" size={18} color={colors.brand.primary} />
+        <AppText variant="sm" weight="bold" color={colors.text.primary}>Thống kê khu vực bếp</AppText>
+      </View>
+      <View style={{ flexDirection: 'row', gap: 8 }}>
         <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="stove" size={14} color={'#737373'} /><Text style={styles.statValue}>{stats.total}</Text>
-          </View>
-          <Text style={styles.statLabel}>Tổng</Text>
+          <AppText variant="md" weight="bold" color={colors.text.primary}>{stats.total}</AppText>
+          <AppText variant="sm" color={colors.text.muted}>Tổng trạm</AppText>
         </View>
         <View style={styles.barDivider} />
         <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="printer" size={14} color={'#737373'} /><Text style={styles.statValue}>{stats.hasPrinter}</Text>
-          </View>
-          <Text style={styles.statLabel}>Có máy in</Text>
+          <AppText variant="md" weight="bold" color={colors.status.success}>{stats.hasPrinter}</AppText>
+          <AppText variant="sm" color={colors.text.muted}>Có máy in</AppText>
         </View>
       </View>
       <View style={styles.panelDivider} />
       {selected ? (
-        <View style={{ gap: 12}}>
-          <Text style={{ ...font.md, fontWeight: '600', color: '#171717' }}>{selected.name}</Text>
-          <Text style={{ ...font.sm, color: '#737373' }}>Mã: {selected.code}</Text>
-          <Text style={{ ...font.sm, color: '#737373' }}>Danh mục: {(selected.categories || []).join(', ') || 'Tất cả'}</Text>
-          {selected.printer_name && <Text style={{ ...font.sm, color: '#737373' }}>🖨️ {selected.printer_name}</Text>}
-          <View style={{ flexDirection: 'row', gap: 16, marginTop: 4 }}>
-            <TouchableOpacity onPress={() => openEdit(selected)} style={[styles.panelBtn, { backgroundColor: '#F97316' }]}><Icon name="pencil" size={14} color="#fff" /><Text style={styles.panelBtnText}>Sửa</Text></TouchableOpacity>
-            <TouchableOpacity onPress={() => del(selected.id)} style={[styles.panelBtn, { backgroundColor: '#DC2626' }]}><Icon name="delete" size={14} color="#fff" /><Text style={styles.panelBtnText}>Xoá</Text></TouchableOpacity>
+        <View style={{ gap: 8 }}>
+          <AppText variant="md" weight="bold" color={colors.text.primary}>{selected.name}</AppText>
+          <AppText variant="sm" color={colors.text.muted}>Mã trạm: {selected.code}</AppText>
+          <AppText variant="sm" color={colors.text.muted}>Danh mục: {(selected.categories || []).join(', ') || 'Tất cả'}</AppText>
+          {selected.printer_name && <AppText variant="sm" color={colors.status.success}>🖨️ {selected.printer_name}</AppText>}
+          <View style={{ flexDirection: 'row', gap: 12, marginTop: 4 }}>
+            <TouchableOpacity onPress={() => openEdit(selected)} style={[styles.panelBtn, { backgroundColor: colors.brand.primary }]}>
+              <Icon name="pencil" size={14} color={colors.text.inverse} />
+              <AppText variant="sm" weight="bold" color={colors.text.inverse}>Sửa</AppText>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => del(selected.id)} style={[styles.panelBtn, { backgroundColor: colors.status.danger }]}>
+              <Icon name="delete" size={14} color={colors.text.inverse} />
+              <AppText variant="sm" weight="bold" color={colors.text.inverse}>Xoá</AppText>
+            </TouchableOpacity>
           </View>
         </View>
       ) : (
-        <TouchableOpacity style={styles.panelCta} onPress={openNew}><Icon name="plus" size={14} color="#fff" /><Text style={styles.panelCtaText}>Thêm trạm</Text></TouchableOpacity>
+        <TouchableOpacity style={styles.panelCta} onPress={openNew}>
+          <Icon name="plus" size={16} color={colors.text.inverse} />
+          <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm trạm bếp mới</AppText>
+        </TouchableOpacity>
       )}
     </View>
   );
@@ -143,29 +160,29 @@ export default function StationsScreen() {
   };
 
   return (
-    <ScreenContainer compact>
-      <ScreenHeader title="Trạm bếp" subtitle={`${stats.total} trạm · ${stats.hasPrinter} có máy in`}
-        onMenuPress={openSidebar} compact
-        right={isWide ? undefined : <TouchableOpacity onPress={openNew} style={styles.addBtn}><Icon name="plus" size={18} color="#fff" /></TouchableOpacity>}
-      />
+    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+      {/* Stats bar */}
       <View style={styles.statsBar}>
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="stove" size={14} color={'#737373'} /><Text style={styles.statValue}>{stats.total}</Text>
+        <View style={styles.statItem}>
+          <Icon name="stove" size={16} color={colors.brand.primary} />
+          <View>
+            <AppText variant="sm" weight="bold" color={colors.text.primary}>{stats.total}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Tổng trạm</AppText>
           </View>
-          <Text style={styles.statLabel}>Tổng</Text>
         </View>
         <View style={styles.barDivider} />
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="printer" size={14} color={'#737373'} /><Text style={styles.statValue}>{stats.hasPrinter}</Text>
+        <View style={styles.statItem}>
+          <Icon name="printer" size={16} color={colors.status.success} />
+          <View>
+            <AppText variant="sm" weight="bold" color={colors.status.success}>{stats.hasPrinter}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Có máy in</AppText>
           </View>
-          <Text style={styles.statLabel}>Có máy in</Text>
         </View>
       </View>
+
       {isWide ? (
-        <View style={{ flex: 1, flexDirection: 'row' }}>
-          <View style={{ flex: 0.6 }}>
+        <View style={{ flex: 1, flexDirection: 'row', padding: 12, gap: 12 }}>
+          <View style={{ flex: 0.55 }}>
             <DataTable<Station>
               columns={columns}
               data={items}
@@ -179,68 +196,76 @@ export default function StationsScreen() {
               onRefresh={load}
               compact
               emptyIcon="stove"
-              emptyTitle="Chưa có trạm"
-              emptySubtitle="Thêm trạm bếp đầu tiên"
+              emptyTitle="Chưa có trạm bếp"
+              emptySubtitle=""
             />
           </View>
-          <View style={styles.separator} />
-          <View style={{ flex: 0.4, backgroundColor: '#FAFAFA', paddingTop: 8 }}>{renderPanel()}</View>
+          <View style={{ flex: 0.45 }}>{renderPanel()}</View>
         </View>
       ) : (
-        <DataTable<Station>
-          columns={columns}
-          data={items}
-          getRowId={(s) => s.id}
-          loading={loading}
-          sortKey={sortKey}
-          sortDir={sortDir}
-          onSortChange={handleSortChange}
-          onRowPress={setSelected}
-          selectedRowId={selected?.id ?? null}
-          onRefresh={load}
-          compact
-          emptyIcon="stove"
-          emptyTitle="Chưa có trạm"
-          emptySubtitle="Thêm trạm bếp đầu tiên"
-        />
+        <View style={{ flex: 1, paddingHorizontal: 8 }}>
+          <DataTable<Station>
+            columns={columns}
+            data={items}
+            getRowId={(s) => s.id}
+            loading={loading}
+            sortKey={sortKey}
+            sortDir={sortDir}
+            onSortChange={handleSortChange}
+            onRowPress={setSelected}
+            selectedRowId={selected?.id ?? null}
+            onRefresh={load}
+            compact
+            emptyIcon="stove"
+            emptyTitle="Chưa có trạm bếp"
+            emptySubtitle=""
+          />
+          <FAB onPress={openNew} />
+        </View>
       )}
-      {!isWide && <FAB onPress={openNew} />}
 
-      <FormModal visible={showForm} title={editing ? 'Sửa trạm' : 'Thêm trạm'}
+      <FormModal visible={showForm} title={editing ? 'Sửa trạm bếp' : 'Thêm trạm bếp'}
         onClose={() => setShowForm(false)} onSave={handleSave} saveLabel={editing ? 'Cập nhật' : 'Thêm'}>
-        <View style={{ gap: 12, paddingTop: 4 }}>
-          <View style={{ flexDirection: 'row', gap: 16}}>
-            <View style={{ flex: 1 }}><Text style={styles.fieldLabel}>Tên *</Text><TextInput value={form.name} onChangeText={v => setForm(p => ({ ...p, name: v }))} style={styles.fieldInput} placeholder="VD: Bếp chính" /></View>
-            <View style={{ flex: 1 }}><Text style={styles.fieldLabel}>Mã *</Text><TextInput value={form.code} onChangeText={v => setForm(p => ({ ...p, code: v }))} style={styles.fieldInput} placeholder="B1" /></View>
+        <View style={{ gap: 10, paddingTop: 4 }}>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            <View style={{ flex: 1 }}>
+              <AppText variant="sm" weight="bold" color={colors.text.primary}>Tên trạm *</AppText>
+              <TextInput value={form.name} onChangeText={v => setForm(p => ({ ...p, name: v }))} style={styles.fieldInput} placeholder="VD: Bếp chính" placeholderTextColor={colors.text.muted} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <AppText variant="sm" weight="bold" color={colors.text.primary}>Mã *</AppText>
+              <TextInput value={form.code} onChangeText={v => setForm(p => ({ ...p, code: v }))} style={styles.fieldInput} placeholder="B1" placeholderTextColor={colors.text.muted} />
+            </View>
           </View>
-          <Text style={styles.fieldLabel}>Danh mục (phân cách bằng dấu phẩy)</Text>
-          <TextInput value={form.categories} onChangeText={v => setForm(p => ({ ...p, categories: v }))} style={styles.fieldInput} placeholder="Món khai vị, Món chính" />
-          <Text style={styles.fieldLabel}>Tên máy in</Text>
-          <TextInput value={form.printer_name} onChangeText={v => setForm(p => ({ ...p, printer_name: v }))} style={styles.fieldInput} placeholder="Tên máy in" />
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>Danh mục (phân cách bằng dấu phẩy)</AppText>
+          <TextInput value={form.categories} onChangeText={v => setForm(p => ({ ...p, categories: v }))} style={styles.fieldInput} placeholder="Món khai vị, Món chính" placeholderTextColor={colors.text.muted} />
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>Tên máy in</AppText>
+          <TextInput value={form.printer_name} onChangeText={v => setForm(p => ({ ...p, printer_name: v }))} style={styles.fieldInput} placeholder="Tên máy in" placeholderTextColor={colors.text.muted} />
         </View>
       </FormModal>
-    </ScreenContainer>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  addBtn: { width: 36, height: 36, borderRadius: 8, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center' },
-  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
-  statValue: { ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
-  statLabel: { ...font.sm, color: '#737373', lineHeight: 12 },
-  cellPrimary: { ...font.sm, fontWeight: '600', color: '#171717' },
-  cellMuted: { ...font.sm, color: '#737373' },
-  chipSmall: { flexDirection: 'row', alignItems: 'center', gap: 3, paddingVertical: 3, paddingHorizontal: 8, borderRadius: 999},
-  panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12 },
-  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelHeaderText: { ...font.md, fontWeight: '600', color: '#171717' },
-  panelDivider: { height: 1, backgroundColor: '#F0F0F0' },
-  panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 12, paddingHorizontal: 12, borderRadius: 8},
-  panelBtnText: { ...font.smBold, fontWeight: '600', color: '#fff' },
-  panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16, backgroundColor: '#F97316', borderRadius: 8, paddingVertical: 12, minHeight: 44 },
-  panelCtaText: { ...font.mdBold, color: '#fff' },
-  fieldLabel: { ...font.smBold, color: '#404040', marginBottom: 6 },
-  fieldInput: { borderWidth: 1.5, borderColor: '#E5E5E5', borderRadius: 8, padding: 12, ...font.md, color: '#171717', backgroundColor: '#FAFAFA' },
-  separator: { width: 1, backgroundColor: '#F0F0F0' },
+  statsBar: {
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: colors.surface.card,
+    borderRadius: shape.radius.lg,
+    marginHorizontal: 8,
+    marginVertical: 8,
+  },
+  statItem: { flex: 1, alignItems: 'center', flexDirection: 'row', gap: 6, justifyContent: 'center' },
+  barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
+  chipSmall: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 2, paddingHorizontal: 8, borderRadius: shape.radius.sm, backgroundColor: colors.brand.primaryBg },
+  toggleBanner: { flexDirection: 'row', alignItems: 'center', padding: 10, borderRadius: shape.radius.md, marginBottom: 8 },
+
+  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, gap: 12 },
+  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },
+  panelDivider: { height: 1, backgroundColor: colors.border.light },
+  panelBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, height: 36, borderRadius: shape.radius.md },
+  panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, height: 42 },
+  fieldInput: { borderRadius: shape.radius.md, paddingHorizontal: 10, paddingVertical: 8, ...font.md, color: colors.text.primary, backgroundColor: colors.surface.app },
 });

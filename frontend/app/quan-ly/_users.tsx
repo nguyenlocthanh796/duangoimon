@@ -1,22 +1,18 @@
-import { useCallback, useEffect, useState } from 'react';
-import { TableSkeleton } from '../../lib/components/ui/Skeleton';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
-  View, Text, SectionList, TouchableOpacity, StyleSheet,
-  Alert, ActivityIndicator, ScrollView,
+  View, SectionList, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, ScrollView,
 } from 'react-native';
-import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api, User } from '../../lib/api';
-import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import { colors, font } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
-import ScreenHeader from '../../lib/components/ui/ScreenHeader';
-import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import FormModal from '../../lib/components/ui/FormModal';
 import FAB from '../../lib/components/ui/FAB';
 import EmptyState from '../../lib/components/ui/EmptyState';
 import UserFormContent from '../../lib/components/quan-ly/users/UserFormContent';
+import AppText from '../../lib/components/ui/AppText';
+import { TableSkeleton } from '../../lib/components/ui/Skeleton';
 
 type FormState = {
   username: string;
@@ -43,7 +39,7 @@ const ROLES: Array<{ key: string; label: string; color: string; bg: string; icon
 ];
 
 function getRoleConfig(role: string) {
-  return ROLES.find(r => r.key === role) ?? { key: role, label: role, color: '#737373', bg: '#F1F5F9', icon: 'person' };
+  return ROLES.find(r => r.key === role) ?? { key: role, label: role, color: colors.text.muted, bg: colors.surface.app, icon: 'person' };
 }
 
 function getInitials(name: string | null, username: string): string {
@@ -61,8 +57,6 @@ function avatarColor(username: string) {
 }
 
 export default function UsersScreen() {
-  const router = useRouter();
-  const { openSidebar } = useSidebar();
   const { isWide } = useResponsive();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -71,18 +65,17 @@ export default function UsersScreen() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [showPassword, setShowPassword] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const load = useCallback(async () => {
-    try { setLoading(true); const d = await api.getUsers(); setUsers(d); }
+    try { setLoading(true); const d = await api.getUsers(); setUsers(Array.isArray(d) ? d : []); }
     catch (e: any) { Alert.alert('Lỗi', e.message || 'Không thể tải nhân viên'); }
     finally { setLoading(false); }
   }, []);
 
   useEffect(() => { load(); }, [load]);
 
-  const openAdd = () => { setEditingId(null); setForm(EMPTY_FORM); setShowPassword(false); setShowForm(true); setSelectedUser(null); };
-  const openEdit = (u: User) => { setEditingId(u.id); setForm({ username: u.username, password: '', full_name: u.full_name ?? '', role: u.role, is_active: u.is_active }); setShowPassword(false); setShowForm(true); setSelectedUser(u); };
+  const openAdd = () => { setEditingId(null); setForm(EMPTY_FORM); setShowPassword(false); setShowForm(true); };
+  const openEdit = (u: User) => { setEditingId(u.id); setForm({ username: u.username, password: '', full_name: u.full_name ?? '', role: u.role, is_active: u.is_active }); setShowPassword(false); setShowForm(true); };
 
   const handleSave = async () => {
     if (!form.username.trim()) { Alert.alert('Lỗi', 'Tài khoản không được để trống'); return; }
@@ -99,108 +92,97 @@ export default function UsersScreen() {
 
   const sections = ROLES.map(r => ({ role: r, data: users.filter(u => u.role === r.key) })).filter(s => s.data.length > 0);
 
-  // ── Stats Panel (iPad right) ──
   const renderStatsPanel = () => (
     <View style={styles.panelBox}>
       <View style={styles.panelHeader}>
-        <Icon name="account-group" size={18} color={'#F97316'} />
-        <Text style={styles.panelHeaderText}>Nhân sự</Text>
+        <Icon name="account-group" size={18} color={colors.brand.primary} />
+        <AppText variant="sm" weight="bold" color={colors.text.primary}>Thống kê nhân sự</AppText>
       </View>
       <View style={styles.panelStatRow}>
-        <Text style={styles.panelStatLabel}>Tổng nhân viên</Text>
-        <Text style={styles.panelStatValue}>{users.length}</Text>
+        <AppText variant="sm" color={colors.text.muted}>Tổng nhân viên</AppText>
+        <AppText variant="md" weight="bold" color={colors.text.primary}>{users.length}</AppText>
       </View>
       <View style={styles.panelDivider} />
-      {ROLES.filter(r => { const c = users.filter(u => u.role === r.key).length; return c > 0; }).map(r => {
+      {ROLES.filter(r => users.some(u => u.role === r.key)).map(r => {
         const count = users.filter(u => u.role === r.key).length;
         const active = users.filter(u => u.role === r.key && u.is_active).length;
         return (
           <View key={r.key} style={styles.panelRow}>
             <View style={[styles.panelDot, { backgroundColor: r.color }]} />
             <View style={{ flex: 1 }}>
-              <Text style={styles.panelLabel}>{r.label}</Text>
-              <Text style={[styles.panelCount, { color: r.color }]}>{count} người</Text>
+              <AppText variant="sm" color={colors.text.primary}>{r.label}</AppText>
+              <AppText variant="sm" weight="bold" color={r.color}>{count} người</AppText>
             </View>
-            <Text style={[styles.panelPct, { color: '#737373' }]}>{active}/{count} active</Text>
+            <AppText variant="sm" color={colors.text.muted}>{active}/{count} hoạt động</AppText>
           </View>
         );
       })}
       <View style={styles.panelDivider} />
       <View style={styles.panelFooter}>
-        <View style={{ flexDirection: 'row', gap: 12}}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <View style={[styles.statusDotSmall, { backgroundColor: '#16A34A' }]} />
-            <Text style={styles.panelFooterText}>{users.filter(u => u.is_active).length} hoạt động</Text>
+        <View style={{ flexDirection: 'row', gap: 12 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <View style={[styles.statusDotSmall, { backgroundColor: colors.status.success }]} />
+            <AppText variant="sm" color={colors.text.muted}>{users.filter(u => u.is_active).length} hoạt động</AppText>
           </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <View style={[styles.statusDotSmall, { backgroundColor: '#DC2626' }]} />
-            <Text style={styles.panelFooterText}>{users.filter(u => !u.is_active).length} khóa</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <View style={[styles.statusDotSmall, { backgroundColor: colors.status.danger }]} />
+            <AppText variant="sm" color={colors.text.muted}>{users.filter(u => !u.is_active).length} khóa</AppText>
           </View>
         </View>
         <TouchableOpacity style={styles.panelCta} onPress={openAdd}>
-          <Icon name="plus" size={14} color="#fff" />
-          <Text style={styles.panelCtaText}>Thêm</Text>
+          <Icon name="plus" size={14} color={colors.text.inverse} />
+          <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm</AppText>
         </TouchableOpacity>
       </View>
     </View>
   );
 
-  const renderInlineForm = () => {
-    return (
-      <View style={[styles.panelBox, { flex: 1, marginHorizontal: 12 }]}>
-        <View style={styles.panelHeader}>
-          <Icon name={editingId ? 'pencil' : 'plus'} size={18} color={'#F97316'} />
-          <Text style={styles.panelHeaderText}>{editingId ? 'Chỉnh sửa nhân viên' : 'Thêm nhân viên mới'}</Text>
-        </View>
-        <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, marginVertical: 10 }}>
-          <UserFormContent
-            form={form} onChange={(updates) => setForm(f => ({ ...f, ...updates }))}
-            editingId={editingId} showPassword={showPassword}
-            onTogglePassword={() => setShowPassword(!showPassword)}
-          />
-        </ScrollView>
-        <View style={{ flexDirection: 'row', gap: 32, marginTop: 8 }}>
-          <TouchableOpacity
-            style={{ flex: 1, minHeight: 44, borderRadius: 8, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#E5E5E5', alignItems: 'center', justifyContent: 'center' }}
-            onPress={() => setShowForm(false)}
-          >
-            <Text style={{ ...font.mdBold, color: '#404040' }}>Hủy</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{ flex: 1.5, minHeight: 44, borderRadius: 8, backgroundColor: '#F97316', alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 12}}
-            onPress={handleSave}
-            disabled={saving}
-          >
-            {saving && <ActivityIndicator size="small" color={colors.text.inverse} />}
-            <Text style={{ ...font.mdBold, color: colors.text.inverse }}>{editingId ? 'Cập nhật' : 'Lưu'}</Text>
-          </TouchableOpacity>
-        </View>
+  const renderInlineForm = () => (
+    <View style={styles.panelBox}>
+      <View style={styles.panelHeader}>
+        <Icon name={editingId ? 'pencil' : 'plus'} size={18} color={colors.brand.primary} />
+        <AppText variant="sm" weight="bold" color={colors.text.primary}>{editingId ? 'Chỉnh sửa nhân viên' : 'Thêm nhân viên mới'}</AppText>
       </View>
-    );
-  };
+      <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, marginVertical: 8 }}>
+        <UserFormContent
+          form={form} onChange={(updates) => setForm(f => ({ ...f, ...updates }))}
+          editingId={editingId} showPassword={showPassword}
+          onTogglePassword={() => setShowPassword(!showPassword)}
+        />
+      </ScrollView>
+      <View style={{ flexDirection: 'row', gap: 12, marginTop: 8 }}>
+        <TouchableOpacity style={styles.cancelBtn} onPress={() => setShowForm(false)}>
+          <AppText variant="sm" weight="bold" color={colors.text.secondary}>Hủy</AppText>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.saveBtn} onPress={handleSave} disabled={saving}>
+          {saving && <ActivityIndicator size="small" color={colors.text.inverse} />}
+          <AppText variant="sm" weight="bold" color={colors.text.inverse}>{editingId ? 'Cập nhật' : 'Lưu'}</AppText>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 
-  // ── User row ──
   const renderUser = ({ item }: { item: User }) => {
     const rc = getRoleConfig(item.role);
     return (
       <TouchableOpacity style={styles.userItem} onPress={() => openEdit(item)} activeOpacity={0.7}>
         <View style={[styles.avatar, { backgroundColor: avatarColor(item.username) }]}>
-          <Text style={styles.avatarText}>{getInitials(item.full_name, item.username)}</Text>
+          <AppText variant="md" weight="bold" color={colors.text.inverse}>{getInitials(item.full_name, item.username)}</AppText>
         </View>
         <View style={{ flex: 1 }}>
-          <Text style={styles.userName}>{item.full_name || item.username}</Text>
-          <Text style={styles.userMeta}>@{item.username}</Text>
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>{item.full_name || item.username}</AppText>
+          <AppText variant="sm" color={colors.text.muted}>@{item.username}</AppText>
         </View>
         <View style={styles.userRight}>
           <View style={[styles.roleBadge, { backgroundColor: rc.bg }]}>
             <Icon name={rc.icon as any} size={11} color={rc.color} />
-            <Text style={[styles.roleText, { color: rc.color }]}>{rc.label}</Text>
+            <AppText variant="sm" weight="bold" color={rc.color}>{rc.label}</AppText>
           </View>
-          <View style={[styles.activePill, { backgroundColor: item.is_active ? '#16A34A' : '#DC2626' }]}>
-            <View style={[styles.activeDot, { backgroundColor: item.is_active ? '#16A34A' : '#DC2626' }]} />
-            <Text style={[styles.activeText, { color: item.is_active ? '#16A34A' : '#DC2626' }]}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <View style={[styles.activeDot, { backgroundColor: item.is_active ? colors.status.success : colors.status.danger }]} />
+            <AppText variant="sm" color={item.is_active ? colors.status.success : colors.status.danger}>
               {item.is_active ? 'Hoạt động' : 'Khóa'}
-            </Text>
+            </AppText>
           </View>
         </View>
       </TouchableOpacity>
@@ -210,9 +192,9 @@ export default function UsersScreen() {
   const renderSectionHeader = ({ section }: { section: { role: typeof ROLES[0]; data: User[] } }) => (
     <View style={[styles.sectionHeader, { borderLeftColor: section.role.color }]}>
       <Icon name={section.role.icon as any} size={16} color={section.role.color} />
-      <Text style={[styles.sectionTitle, { color: section.role.color }]}>{section.role.label}</Text>
+      <AppText variant="sm" weight="bold" color={section.role.color}>{section.role.label}</AppText>
       <View style={[styles.sectionCount, { backgroundColor: section.role.bg }]}>
-        <Text style={[styles.sectionCountText, { color: section.role.color }]}>{section.data.length}</Text>
+        <AppText variant="sm" weight="bold" color={section.role.color}>{section.data.length}</AppText>
       </View>
     </View>
   );
@@ -221,7 +203,6 @@ export default function UsersScreen() {
     if (loading) return (
       <View style={styles.loadingBox}>
         <TableSkeleton rowCount={5} />
-        <Text style={styles.loadingText}>Đang tải...</Text>
       </View>
     );
     if (users.length === 0) return <EmptyState icon="account-group" title="Chưa có nhân viên" subtitle="Nhấn + để thêm người đầu tiên" />;
@@ -231,7 +212,7 @@ export default function UsersScreen() {
         keyExtractor={u => u.id}
         renderItem={renderUser}
         renderSectionHeader={renderSectionHeader}
-        contentContainerStyle={{ paddingBottom: isWide ? 16 : 100, paddingTop: 8 }}
+        contentContainerStyle={{ paddingBottom: 24, paddingTop: 4 }}
         showsVerticalScrollIndicator={false}
         stickySectionHeadersEnabled={false}
       />
@@ -239,35 +220,29 @@ export default function UsersScreen() {
   };
 
   return (
-    <ScreenContainer compact>
-      <ScreenHeader
-        title="Nhân viên"
-        subtitle={`${users.length} người`}
-        showBack
-        onMenuPress={openSidebar}
-        onBackPress={() => router.back()}
-        right={isWide ? (
+    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+      {/* Top Bar on Mobile */}
+      {!isWide && (
+        <View style={styles.mobileActionRow}>
+          <AppText variant="sm" color={colors.text.muted}>{users.length} nhân viên</AppText>
           <TouchableOpacity onPress={openAdd} style={styles.addBtn}>
-            <Icon name="plus" size={18} color={colors.text.inverse} />
-            <Text style={styles.addBtnText}>Thêm</Text>
+            <Icon name="plus" size={16} color={colors.text.inverse} />
+            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm nhân viên</AppText>
           </TouchableOpacity>
-        ) : (
-          <TouchableOpacity onPress={openAdd} style={styles.addBtn}>
-            <Icon name="plus" size={18} color={colors.text.inverse} />
-            <Text style={styles.addBtnText}>Thêm</Text>
-          </TouchableOpacity>
-        )}
-      />
+        </View>
+      )}
+
       {isWide ? (
-        <View style={{ flex: 1, flexDirection: 'row', paddingVertical: 16}}>
+        <View style={{ flex: 1, flexDirection: 'row', padding: 12, gap: 12 }}>
           <View style={{ flex: 0.55 }}>{renderList()}</View>
-          <View style={styles.separator} />
-          <View style={{ flex: 0.45, backgroundColor: '#FAFAFA' }}>
+          <View style={{ flex: 0.45 }}>
             {showForm ? renderInlineForm() : renderStatsPanel()}
           </View>
         </View>
       ) : (
-        renderList()
+        <View style={{ flex: 1, paddingHorizontal: 8 }}>
+          {renderList()}
+        </View>
       )}
       {!isWide && <FAB onPress={openAdd} />}
       {!isWide && (
@@ -286,68 +261,38 @@ export default function UsersScreen() {
           />
         </FormModal>
       )}
-    </ScreenContainer>
+    </View>
   );
 }
 
-// ── Styles ──
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FAFAFA' },
+  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 8 },
+  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary },
 
-  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 12, height: 38, borderRadius: 8, backgroundColor: '#F97316' },
-  addBtnText: { ...font.smBold, fontWeight: '600', color: colors.text.inverse },
-
-  /* Right panel */
-  panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12, boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3 },
-  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelHeaderText: { ...font.md, fontWeight: '600', color: '#171717' },
+  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, gap: 12 },
+  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   panelStatRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  panelStatLabel: { ...font.sm, color: '#737373' },
-  panelStatValue: { ...font.lg, fontWeight: '600', color: '#171717' },
-  panelDivider: { height: 1, backgroundColor: '#F0F0F0' },
-  panelRow: { flexDirection: 'row', alignItems: 'center', gap: 32 },
-  panelDot: { width: 8, height: 8, borderRadius: 12 },
-  panelLabel: { ...font.sm, color: '#737373' },
-  panelCount: { ...font.sm, fontWeight: '600', marginTop: 1 },
-  panelPct: { ...font.sm },
+  panelDivider: { height: 1, backgroundColor: colors.border.light },
+  panelRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  panelDot: { width: 8, height: 8, borderRadius: 4 },
   panelFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: 4 },
-  panelFooterText: { ...font.sm, color: '#737373' },
-  panelCta: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: '#F97316', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 7, minHeight: 32 },
-  panelCtaText: { ...font.smBold, color: colors.text.inverse },
-
+  panelCta: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: colors.brand.primary, borderRadius: shape.radius.md, paddingHorizontal: 12, height: 32 },
   statusDotSmall: { width: 6, height: 6, borderRadius: 3 },
+  cancelBtn: { flex: 1, height: 40, borderRadius: shape.radius.md, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
+  saveBtn: { flex: 1.5, height: 40, borderRadius: shape.radius.md, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 },
 
-  /* List */
-  loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
-  loadingText: { ...font.sm, color: '#737373' },
+  loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 20 },
 
-  sectionHeader: {
-    flexDirection: 'row', alignItems: 'center', gap: 16,
-    marginHorizontal: 12, marginTop: 16, marginBottom: 6,
-    paddingLeft: 10, borderLeftWidth: 3,
-  },
-  sectionTitle: { ...font.sm, color: '#404040' },
-  sectionCount: { paddingHorizontal: 16, paddingVertical: 4, borderRadius: 4},
-  sectionCountText: { ...font.smBold, fontWeight: '600' },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 10, marginBottom: 4, paddingLeft: 8, borderLeftWidth: 3 },
+  sectionCount: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: shape.radius.sm },
 
   userItem: {
-    flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: '#FFFFFF', marginHorizontal: 12, marginBottom: 6,
-    borderRadius: 12, padding: 14,
-    borderWidth: 1, borderColor: '#F0F0F0',
-    boxShadow: "0px 2px 8px rgba(0,0,0,0.06)", elevation: 3,
+    flexDirection: 'row', alignItems: 'center', gap: 10,
+    backgroundColor: colors.surface.card, marginBottom: 6,
+    borderRadius: shape.radius.lg, padding: 10,
   },
-  avatar: { width: 44, height: 44, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
-  avatarText: { color: colors.text.inverse, ...font.lg },
-  userName: { ...font.sm, fontWeight: '600', color: '#171717' },
-  userMeta: { ...font.sm, color: '#404040', marginTop: 1 },
-  userRight: { alignItems: 'flex-end', gap: 5 },
-  roleBadge: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16, paddingVertical: 8, borderRadius: 999},
-  roleText: { ...font.smBold, fontWeight: '600' },
-  activePill: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16, paddingVertical: 3, borderRadius: 999},
-  activeDot: { width: 5, height: 5, borderRadius: 3 },
-  activeText: { ...font.smBold, fontWeight: '600' },
-
-  separator: { width: 1, backgroundColor: '#F0F0F0' },
+  avatar: { width: 40, height: 40, borderRadius: shape.radius.md, alignItems: 'center', justifyContent: 'center' },
+  userRight: { alignItems: 'flex-end', gap: 4 },
+  roleBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 8, paddingVertical: 3, borderRadius: shape.radius.sm },
+  activeDot: { width: 6, height: 6, borderRadius: 3 },
 });
-

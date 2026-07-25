@@ -1,22 +1,20 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
-import { colors, font } from '../../lib/theme';
+import { colors } from '../../lib/theme';
+import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import DataTable, { type Column } from '../../lib/components/ui/DataTable';
-import ScreenHeader from '../../lib/components/ui/ScreenHeader';
-import ScreenContainer from '../../lib/components/ui/ScreenContainer';
 import SearchBar from '../../lib/components/ui/SearchBar';
+import AppText from '../../lib/components/ui/AppText';
 
 const API = '/api/v1/quan-ly';
 
 const ACTION_ICONS: Record<string, string> = { create: 'plus-circle', update: 'pencil', delete: 'delete-circle', login: 'login', logout: 'logout' };
-const ACTION_COLORS: Record<string, string> = { create: '#16A34A', update: '#D97706', delete: '#DC2626', login: '#3B82F6', logout: '#737373' };
+const ACTION_COLORS: Record<string, string> = { create: colors.status.success, update: colors.status.warning, delete: colors.status.danger, login: colors.status.info, logout: colors.text.muted };
 
 export default function AuditScreen() {
-  const { openSidebar } = useSidebar();
   const { isWide } = useResponsive();
   const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -27,7 +25,7 @@ export default function AuditScreen() {
 
   const load = useCallback(async () => {
     try { setLoading(true); const data: any = await request(API + '/audit-logs?limit=100'); setLogs(Array.isArray(data) ? data : (data?.items || [])); }
-    catch { /* ignore */ } finally { setLoading(false); }
+    catch { setLogs([]); } finally { setLoading(false); }
   }, []);
   useEffect(() => { load(); }, [load]);
 
@@ -50,18 +48,16 @@ export default function AuditScreen() {
       sortValue: (l) => l.action || '',
       render: (l) => {
         const icon = ACTION_ICONS[l.action] || 'information';
-        const color = ACTION_COLORS[l.action] || '#737373';
+        const color = ACTION_COLORS[l.action] || colors.text.muted;
         return (
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            <View style={[styles.actionIcon, { backgroundColor: color + '15' }]}>
-              <Icon name={icon as any} size={12} color={color} />
-            </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <Icon name={icon as any} size={14} color={color} />
             <View style={{ flex: 1 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                <Text style={[styles.cellAction, { color }]}>{l.action}</Text>
-                <Text style={{ ...font.sm, color: '#737373' }}>{l.resource}</Text>
+                <AppText variant="sm" weight="bold" color={color} style={{ textTransform: 'capitalize' }}>{l.action}</AppText>
+                <AppText variant="sm" color={colors.text.secondary}>{l.resource}</AppText>
               </View>
-              <Text style={{ ...font.sm, color: '#737373' }}>{l.user_name}</Text>
+              <AppText variant="sm" color={colors.text.muted}>{l.user_name}</AppText>
             </View>
           </View>
         );
@@ -70,11 +66,11 @@ export default function AuditScreen() {
     {
       key: 'created_at',
       title: 'Thời gian',
-      width: 145,
+      width: 130,
       align: 'right',
       sortable: true,
       sortValue: (l) => l.created_at || '',
-      render: (l) => <Text style={styles.cellTime}>{l.created_at ? new Date(l.created_at).toLocaleString('vi-VN') : ''}</Text>,
+      render: (l) => <AppText variant="sm" color={colors.text.muted}>{l.created_at ? new Date(l.created_at).toLocaleString('vi-VN') : ''}</AppText>,
     },
   ];
 
@@ -85,25 +81,25 @@ export default function AuditScreen() {
     return (
       <View style={styles.panelBox}>
         <View style={styles.panelHeader}>
-          <Icon name="clipboard-text" size={18} color={'#F97316'} />
-          <Text style={styles.panelHeaderText}>Audit</Text>
+          <Icon name="clipboard-text-outline" size={18} color={colors.brand.primary} />
+          <AppText variant="sm" weight="bold" color={colors.text.primary}>Thống kê kiểm toán hệ thống</AppText>
         </View>
-        <View style={{ alignItems: 'center', paddingVertical: 8}}>
-          <Text style={styles.panelStatValue}>{total}</Text>
-          <Text style={styles.panelStatLabel}>Lượt ghi nhận</Text>
+        <View style={{ alignItems: 'center', paddingVertical: 4 }}>
+          <AppText variant="lg" weight="bold" color={colors.text.primary}>{total}</AppText>
+          <AppText variant="sm" color={colors.text.muted}>Lượt ghi nhận log</AppText>
         </View>
         <View style={styles.panelDivider} />
         {Object.entries(c).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([k, v]) => {
-          const color = ACTION_COLORS[k] || '#737373';
+          const color = ACTION_COLORS[k] || colors.text.muted;
           const pct = total > 0 ? (v / total) * 100 : 0;
           return (
-            <View key={k} style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 3 }}>
+            <View key={k} style={{ flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 2 }}>
               <View style={[styles.panelRowDot, { backgroundColor: color }]} />
-              <Text style={{ flex: 1, ...font.sm, color: '#171717', textTransform: 'capitalize' }}>{k}</Text>
-              <View style={{ width: 60, height: 8, backgroundColor: '#F5F5F5', borderRadius: 12, overflow: 'hidden' }}>
-                <View style={{ width: `${pct}%`, height: 8, backgroundColor: color, borderRadius: 12}} />
+              <AppText variant="sm" color={colors.text.primary} style={{ flex: 1, textTransform: 'capitalize' }}>{k}</AppText>
+              <View style={{ width: 50, height: 6, backgroundColor: colors.surface.app, borderRadius: 3, overflow: 'hidden' }}>
+                <View style={{ width: `${pct}%`, height: 6, backgroundColor: color, borderRadius: 3 }} />
               </View>
-              <Text style={{ width: 25, textAlign: 'right', ...font.sm, fontWeight: '600', color }}>{v}</Text>
+              <AppText variant="sm" weight="bold" color={color} style={{ width: 25, textAlign: 'right' }}>{v}</AppText>
             </View>
           );
         })}
@@ -119,56 +115,62 @@ export default function AuditScreen() {
   const actions = Object.keys(counts);
 
   return (
-    <ScreenContainer compact>
-      <ScreenHeader title="Audit Log" subtitle={`${logs.length} logs`}
-        onMenuPress={openSidebar} compact
-        right={<TouchableOpacity onPress={load} style={styles.refreshBtn}><Icon name="refresh" size={18} color={colors.icon.default} /></TouchableOpacity>}
-      />
+    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+      {/* Stats bar */}
       <View style={styles.statsBar}>
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="clipboard-text" size={14} color={'#737373'} /><Text style={styles.statValue}>{logs.length}</Text>
+        <View style={styles.statItem}>
+          <Icon name="clipboard-text" size={16} color={colors.brand.primary} />
+          <View>
+            <AppText variant="sm" weight="bold" color={colors.text.primary}>{logs.length}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Tổng log</AppText>
           </View>
-          <Text style={styles.statLabel}>Tổng log</Text>
         </View>
         <View style={styles.barDivider} />
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="plus-circle" size={14} color={'#737373'} /><Text style={styles.statValue}>{counts['create'] || 0}</Text>
+        <View style={styles.statItem}>
+          <Icon name="plus-circle" size={16} color={colors.status.success} />
+          <View>
+            <AppText variant="sm" weight="bold" color={colors.status.success}>{counts['create'] || 0}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Tạo mới</AppText>
           </View>
-          <Text style={styles.statLabel}>Tạo</Text>
         </View>
         <View style={styles.barDivider} />
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="pencil" size={14} color={'#737373'} /><Text style={styles.statValue}>{counts['update'] || 0}</Text>
+        <View style={styles.statItem}>
+          <Icon name="pencil" size={16} color={colors.status.warning} />
+          <View>
+            <AppText variant="sm" weight="bold" color={colors.status.warning}>{counts['update'] || 0}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Cập nhật</AppText>
           </View>
-          <Text style={styles.statLabel}>Sửa</Text>
         </View>
         <View style={styles.barDivider} />
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <Icon name="delete-circle" size={14} color={'#737373'} /><Text style={styles.statValue}>{counts['delete'] || 0}</Text>
+        <View style={styles.statItem}>
+          <Icon name="delete-circle" size={16} color={colors.status.danger} />
+          <View>
+            <AppText variant="sm" weight="bold" color={colors.status.danger}>{counts['delete'] || 0}</AppText>
+            <AppText variant="sm" color={colors.text.muted}>Xóa</AppText>
           </View>
-          <Text style={styles.statLabel}>Xoá</Text>
         </View>
       </View>
+
+      {/* Filter Chips & Search Bar */}
       <View style={styles.filterRow}>
         <TouchableOpacity onPress={() => setFilterAction('')} style={[styles.chip, !filterAction && styles.chipActive]}>
-          <Text style={[styles.chipText, !filterAction && styles.chipTextActive]}>Tất cả</Text>
+          <AppText variant="sm" color={!filterAction ? colors.brand.primary : colors.text.secondary} weight={!filterAction ? 'bold' : 'normal'}>Tất cả</AppText>
         </TouchableOpacity>
         {actions.map(a => (
           <TouchableOpacity key={a} onPress={() => setFilterAction(filterAction === a ? '' : a)}
             style={[styles.chip, filterAction === a && styles.chipActive]}>
-            <Text style={[styles.chipText, filterAction === a && styles.chipTextActive]}>{a}</Text>
+            <AppText variant="sm" color={filterAction === a ? colors.brand.primary : colors.text.secondary} weight={filterAction === a ? 'bold' : 'normal'}>{a}</AppText>
           </TouchableOpacity>
         ))}
         <View style={{ flex: 1 }} />
-        <SearchBar value={searchUser} onChangeText={setSearchUser} placeholder="Tìm user..." />
+        <View style={{ width: 140 }}>
+          <SearchBar value={searchUser} onChangeText={setSearchUser} placeholder="Tìm user..." />
+        </View>
       </View>
+
       {isWide ? (
-        <View style={{ flex: 1, flexDirection: 'row' }}>
-          <View style={{ flex: 0.6 }}>
+        <View style={{ flex: 1, flexDirection: 'row', padding: 12, gap: 12 }}>
+          <View style={{ flex: 0.55 }}>
             <DataTable<any>
               columns={columns}
               data={filtered}
@@ -180,53 +182,52 @@ export default function AuditScreen() {
               onRefresh={load}
               compact
               emptyIcon="clipboard-text-off"
-              emptyTitle="Chưa có log"
-              emptySubtitle="Chưa có ghi nhận nào"
+              emptyTitle="Chưa có log kiềm toán"
+              emptySubtitle=""
             />
           </View>
-          <View style={styles.separator} />
-          <View style={{ flex: 0.4, backgroundColor: '#FAFAFA', paddingTop: 8 }}>{renderPanel()}</View>
+          <View style={{ flex: 0.45 }}>{renderPanel()}</View>
         </View>
       ) : (
-        <DataTable<any>
-          columns={columns}
-          data={filtered}
-          getRowId={(l) => l.id}
-          loading={loading}
-          sortKey={sortKey}
-          sortDir={sortDir}
-          onSortChange={handleSortChange}
-          onRefresh={load}
-          compact
-          emptyIcon="clipboard-text-off"
-          emptyTitle="Chưa có log"
-          emptySubtitle="Chưa có ghi nhận nào"
-        />
+        <View style={{ flex: 1, paddingHorizontal: 8 }}>
+          <DataTable<any>
+            columns={columns}
+            data={filtered}
+            getRowId={(l) => l.id}
+            loading={loading}
+            sortKey={sortKey}
+            sortDir={sortDir}
+            onSortChange={handleSortChange}
+            onRefresh={load}
+            compact
+            emptyIcon="clipboard-text-off"
+            emptyTitle="Chưa có log kiểm toán"
+            emptySubtitle=""
+          />
+        </View>
       )}
-    </ScreenContainer>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  refreshBtn: { width: 44, height: 44, borderRadius: 8, backgroundColor: '#F5F5F5', alignItems: 'center', justifyContent: 'center' },
-  statsBar: { flexDirection: 'row', paddingHorizontal: 12, paddingVertical: 16, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  barDivider: { width: 1, backgroundColor: '#F0F0F0', marginVertical: 2 },
-  statValue: { ...font.mdBold, fontWeight: '600', color: '#171717', lineHeight: 18 },
-  statLabel: { ...font.sm, color: '#737373', lineHeight: 12 },
-  filterRow: { flexDirection: 'row', gap: 12, paddingHorizontal: 4, paddingVertical: 8, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0', flexWrap: 'wrap', alignItems: 'center' },
-  chip: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999, backgroundColor: '#F5F5F5', borderWidth: 1, borderColor: '#E5E5E5' },
-  chipActive: { backgroundColor: '#F97316', borderColor: '#F97316' },
-  chipText: { ...font.smBold, color: '#737373' },
-  chipTextActive: { color: '#fff', fontWeight: '600' },
-  cellAction: { ...font.sm, fontWeight: '600', textTransform: 'capitalize' },
-  cellTime: { ...font.sm, color: '#737373' },
-  actionIcon: { width: 32, height: 32, borderRadius: 4, alignItems: 'center', justifyContent: 'center' },
-  panelBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, marginHorizontal: 12, borderWidth: 1, borderColor: '#F0F0F0', gap: 12},
-  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-  panelHeaderText: { ...font.md, fontWeight: '600', color: '#171717' },
-  panelStatValue: { ...font.lg, fontWeight: '600', color: '#171717' },
-  panelStatLabel: { ...font.sm, color: '#737373', marginTop: 2 },
-  panelDivider: { height: 1, backgroundColor: '#F0F0F0' },
-  panelRowDot: { width: 8, height: 8, borderRadius: 12},
-  separator: { width: 1, backgroundColor: '#F0F0F0' },
+  statsBar: {
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: colors.surface.card,
+    borderRadius: shape.radius.lg,
+    marginHorizontal: 8,
+    marginVertical: 8,
+  },
+  statItem: { flex: 1, alignItems: 'center', flexDirection: 'row', gap: 6, justifyContent: 'center' },
+  barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
+  filterRow: { flexDirection: 'row', gap: 6, paddingHorizontal: 8, marginBottom: 8, alignItems: 'center', flexWrap: 'wrap' },
+  chip: { paddingHorizontal: 12, height: 32, borderRadius: shape.radius.md, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center' },
+  chipActive: { backgroundColor: colors.brand.primaryBg },
+
+  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, gap: 12 },
+  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },
+  panelDivider: { height: 1, backgroundColor: colors.border.light },
+  panelRowDot: { width: 6, height: 6, borderRadius: 3 },
 });
