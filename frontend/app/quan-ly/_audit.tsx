@@ -85,7 +85,7 @@ export default function AuditScreen() {
     const bg = ACTION_BG[l.action] || colors.surface.app;
     return (
       <TouchableOpacity
-        style={styles.mobileItemCard}
+        style={styles.mobileItemCardFbFullWidth}
         onPress={() => setSelectedLog(l)}
         activeOpacity={0.7}
       >
@@ -264,7 +264,7 @@ export default function AuditScreen() {
           <View style={{ flex: 0.45 }}>{renderPanel()}</View>
         </View>
       ) : (
-        <View style={{ flex: 1, paddingHorizontal: 12 }}>
+        <View style={{ flex: 1, width: '100%' }}>
           <DataTable<any>
             columns={columns}
             data={filtered}
@@ -307,10 +307,18 @@ const styles = StyleSheet.create({
   actionBadgeCircle: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center' },
   actionCircleBtn: { width: 28, height: 28, borderRadius: 14, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
 
-  mobileItemCard: {
+  /* Mobile Full-Width Edge-to-Edge Facebook Log Card */
+  mobileItemCardFbFullWidth: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
-    backgroundColor: colors.surface.card, marginBottom: 10,
-    borderRadius: 16, padding: 14,
+    backgroundColor: colors.surface.card,
+    width: '100%',
+    marginBottom: 8,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: colors.border.light,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 0,
   },
 
   panelBox: { backgroundColor: colors.surface.card, borderRadius: 16, padding: 16, gap: 12 },

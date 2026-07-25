@@ -171,7 +171,7 @@ export default function UsersScreen() {
   const renderUser = ({ item }: { item: User }) => {
     const rc = getRoleConfig(item.role);
     return (
-      <View style={styles.userCardFeed}>
+      <View style={isWide ? styles.userCardWide : styles.userCardFbFullWidth}>
         {/* Post Header */}
         <View style={styles.cardHeaderRow}>
           <View style={styles.avatarContainer}>
@@ -195,7 +195,7 @@ export default function UsersScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Facebook Bottom Action Bar */}
+        {/* Facebook Bottom Equal Action Bar */}
         <View style={styles.cardActionBar}>
           <TouchableOpacity style={styles.cardActionItem} onPress={() => openEdit(item)}>
             <Icon name="square-edit-outline" size={16} color={colors.brand.primary} />
@@ -262,7 +262,7 @@ export default function UsersScreen() {
           </View>
         </View>
       ) : (
-        <View style={{ flex: 1, paddingHorizontal: 12 }}>
+        <View style={{ flex: 1, width: '100%' }}>
           {renderList()}
         </View>
       )}
@@ -287,7 +287,7 @@ export default function UsersScreen() {
 }
 
 const styles = StyleSheet.create({
-  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8 },
+  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light, marginBottom: 8 },
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 36, borderRadius: 999, backgroundColor: colors.brand.primary },
 
   panelBox: { backgroundColor: colors.surface.card, borderRadius: 16, padding: 16, gap: 12 },
@@ -304,12 +304,27 @@ const styles = StyleSheet.create({
 
   loadingBox: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 20 },
 
-  sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 12, marginBottom: 6, paddingLeft: 4 },
+  sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 8, marginBottom: 6, paddingHorizontal: 12 },
 
-  userCardFeed: {
-    backgroundColor: colors.surface.card, marginBottom: 10,
-    borderRadius: 16, padding: 14, gap: 10,
+  /* Mobile Full-Width Edge-to-Edge Facebook Post Block */
+  userCardFbFullWidth: {
+    backgroundColor: colors.surface.card,
+    width: '100%',
+    marginBottom: 8,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: colors.border.light,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 0,
   },
+  userCardWide: {
+    backgroundColor: colors.surface.card,
+    marginBottom: 8,
+    borderRadius: 16,
+    padding: 12,
+  },
+
   cardHeaderRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   avatarContainer: { position: 'relative', width: 42, height: 42 },
   avatarCircle: { width: 42, height: 42, borderRadius: 21, alignItems: 'center', justifyContent: 'center' },
@@ -318,7 +333,7 @@ const styles = StyleSheet.create({
   actionCircleBtn: { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
 
   /* Facebook Equal Bottom Action Bar */
-  cardActionBar: { flexDirection: 'row', alignItems: 'center', borderTopWidth: 1, borderTopColor: colors.border.light, paddingTop: 8, marginTop: 4 },
+  cardActionBar: { flexDirection: 'row', alignItems: 'center', borderTopWidth: 1, borderTopColor: colors.border.light, paddingTop: 8, marginTop: 10 },
   cardActionItem: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 4 },
   cardActionDivider: { width: 1, height: 16, backgroundColor: colors.border.light },
 });

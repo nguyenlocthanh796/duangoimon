@@ -99,7 +99,7 @@ export default function BranchesScreen() {
   };
 
   const renderMobileCard = (b: Branch) => (
-    <View style={styles.branchCardFeed}>
+    <View style={styles.branchCardFbFullWidth}>
       <View style={styles.cardHeaderRow}>
         <View style={styles.branchAvatarCircle}>
           <Icon name="storefront-outline" size={18} color={colors.brand.primary} />
@@ -308,7 +308,7 @@ export default function BranchesScreen() {
           <View style={{ flex: 0.45 }}>{renderPanel()}</View>
         </View>
       ) : (
-        <View style={{ flex: 1, paddingHorizontal: 12 }}>
+        <View style={{ flex: 1, width: '100%' }}>
           <DataTable<Branch>
             columns={columns}
             data={sorted}
@@ -357,7 +357,7 @@ export default function BranchesScreen() {
 }
 
 const styles = StyleSheet.create({
-  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8 },
+  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light, marginBottom: 8 },
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 36, borderRadius: 999, backgroundColor: colors.brand.primary },
   branchAvatarCircle: { width: 38, height: 38, borderRadius: 19, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' },
 
@@ -376,14 +376,22 @@ const styles = StyleSheet.create({
   statusDot: { width: 6, height: 6, borderRadius: 3 },
   codeBadge: { paddingHorizontal: 6, paddingVertical: 1, borderRadius: 4, backgroundColor: colors.surface.app },
 
-  branchCardFeed: {
-    backgroundColor: colors.surface.card, marginBottom: 10,
-    borderRadius: 16, padding: 14, gap: 10,
+  /* Mobile Full-Width Edge-to-Edge Facebook Post Block */
+  branchCardFbFullWidth: {
+    backgroundColor: colors.surface.card,
+    width: '100%',
+    marginBottom: 8,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: colors.border.light,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 0,
   },
   cardHeaderRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
 
   /* Facebook Equal Bottom Action Bar */
-  cardActionBar: { flexDirection: 'row', alignItems: 'center', borderTopWidth: 1, borderTopColor: colors.border.light, paddingTop: 8, marginTop: 4 },
+  cardActionBar: { flexDirection: 'row', alignItems: 'center', borderTopWidth: 1, borderTopColor: colors.border.light, paddingTop: 8, marginTop: 10 },
   cardActionItem: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingVertical: 4 },
   cardActionDivider: { width: 1, height: 16, backgroundColor: colors.border.light },
 
