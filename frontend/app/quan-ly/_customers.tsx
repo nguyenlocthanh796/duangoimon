@@ -307,7 +307,7 @@ export default function CustomersScreen() {
           data={filtered}
           keyExtractor={(c) => c.id}
           renderItem={renderMobileCustomerCard}
-          contentContainerStyle={{ paddingBottom: 100 }}
+          contentContainerStyle={{ paddingBottom: 120 }}
           ListEmptyComponent={
             loading ? (
               <TableSkeleton rowCount={5} />

@@ -393,7 +393,7 @@ export default function BookingScreen() {
           data={filtered}
           keyExtractor={(b) => b.id}
           renderItem={renderMobileBookingCard}
-          contentContainerStyle={{ paddingBottom: 100 }}
+          contentContainerStyle={{ paddingBottom: 120 }}
           ListEmptyComponent={
             loading ? (
               <TableSkeleton rowCount={5} />

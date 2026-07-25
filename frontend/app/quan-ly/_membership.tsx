@@ -276,7 +276,7 @@ export default function MembershipScreen() {
           data={tiers}
           keyExtractor={(t) => t.id}
           renderItem={renderMobileTierCard}
-          contentContainerStyle={{ paddingBottom: 100 }}
+          contentContainerStyle={{ paddingBottom: 120 }}
           ListEmptyComponent={
             loading ? (
               <TableSkeleton rowCount={5} />

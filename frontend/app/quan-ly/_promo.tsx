@@ -300,7 +300,7 @@ export default function PromoScreen() {
           data={tab === 'vouchers' ? vouchers : rules}
           keyExtractor={(item) => item.id}
           renderItem={renderMobilePromoCard}
-          contentContainerStyle={{ paddingBottom: 100 }}
+          contentContainerStyle={{ paddingBottom: 120 }}
           ListEmptyComponent={
             loading ? (
               <TableSkeleton rowCount={5} />

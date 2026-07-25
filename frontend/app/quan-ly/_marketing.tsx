@@ -265,7 +265,7 @@ export default function MarketingScreen() {
           data={campaigns}
           keyExtractor={(c) => c.id}
           renderItem={renderMobileCampaignCard}
-          contentContainerStyle={{ paddingBottom: 100 }}
+          contentContainerStyle={{ paddingBottom: 120 }}
           ListEmptyComponent={
             loading ? (
               <TableSkeleton rowCount={5} />
