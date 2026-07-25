@@ -50,9 +50,10 @@ export function applySort<T>(
   return sortDir === 'desc' ? sorted.reverse() : sorted;
 }
 
-/** Sum a numeric extractor over rows. */
+/** Sum a numeric extractor over rows safely. */
 export function sumBy<T>(rows: T[], fn: (row: T) => number): number {
-  return rows.reduce((acc, r) => acc + (Number(fn(r)) || 0), 0);
+  const safeRows = Array.isArray(rows) ? rows : [];
+  return safeRows.reduce((acc, r) => acc + (Number(fn(r)) || 0), 0);
 }
 
 /** Format a number as VND. */
