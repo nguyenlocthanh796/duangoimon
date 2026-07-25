@@ -15,7 +15,17 @@ import { TableSkeleton } from '../../lib/components/ui/Skeleton';
 
 interface FormState { name: string; area: string; capacity: string; }
 const EMPTY_FORM: FormState = { name: '', area: '', capacity: '4' };
-const AREAS = ['Trong nhà', 'VIP', 'Ngoài Trời', 'Tầng 1', 'Tầng 2'];
+
+const AREA_FILTER_CONFIG: Array<{ key: string; label: string; icon: string }> = [
+  { key: 'Tất cả', label: 'Tất cả', icon: 'view-grid-outline' },
+  { key: 'Trong nhà', label: 'Trong nhà', icon: 'home-outline' },
+  { key: 'VIP', label: 'VIP', icon: 'crown-outline' },
+  { key: 'Ngoài Trời', label: 'Ngoài trời', icon: 'tree-outline' },
+  { key: 'Tầng 1', label: 'Tầng 1', icon: 'numeric-1-box-outline' },
+  { key: 'Tầng 2', label: 'Tầng 2', icon: 'numeric-2-box-outline' },
+];
+
+const FORM_AREAS = ['Trong nhà', 'VIP', 'Ngoài Trời', 'Tầng 1', 'Tầng 2'];
 
 export default function TablesScreen() {
   const { isWide } = useResponsive();
@@ -78,6 +88,11 @@ export default function TablesScreen() {
 
   const counts = { trong: 0, co_khach: 0, da_dat: 0, dang_don: 0 };
   tables.forEach(t => { if (t.status in counts) counts[t.status as keyof typeof counts]++; });
+
+  const getAreaCount = (areaKey: string) => {
+    if (areaKey === 'Tất cả') return tables.length;
+    return tables.filter(t => (t.area || 'Trong nhà') === areaKey).length;
+  };
 
   const filteredTables = selectedArea === 'Tất cả'
     ? tables
@@ -148,7 +163,7 @@ export default function TablesScreen() {
         <View style={{ marginBottom: 12 }}>
           <AppText variant="sm" weight="bold" color={colors.text.primary} style={{ marginBottom: 6 }}>Khu vực</AppText>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 6 }}>
-            {AREAS.map(a => (
+            {FORM_AREAS.map(a => (
               <TouchableOpacity
                 key={a}
                 style={[styles.areaChip, form.area === a && styles.areaChipActive]}
@@ -240,14 +255,41 @@ export default function TablesScreen() {
         </View>
       </View>
 
-      {/* Area filter tabs - Facebook Sub-Filter Chips */}
+      {/* Area filter tabs - Facebook Sub-Filter Chips with Icon & Count */}
       <View style={styles.filterRow}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6, paddingHorizontal: 12 }}>
-          {['Tất cả', 'Trong nhà', 'VIP', 'Ngoài Trời', 'Tầng 1', 'Tầng 2'].map((area) => {
-            const active = selectedArea === area;
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingHorizontal: 12 }}>
+          {AREA_FILTER_CONFIG.map((item) => {
+            const active = selectedArea === item.key;
+            const count = getAreaCount(item.key);
             return (
-              <TouchableOpacity key={area} onPress={() => setSelectedArea(area)} style={[styles.areaTab, active && styles.areaTabActive]}>
-                <AppText variant="sm" color={active ? colors.brand.primary : '#050505'} weight={active ? 'bold' : 'normal'}>{area}</AppText>
+              <TouchableOpacity
+                key={item.key}
+                onPress={() => setSelectedArea(item.key)}
+                activeOpacity={0.7}
+                style={[styles.areaTab, active && styles.areaTabActive]}
+              >
+                <Icon
+                  name={item.icon as any}
+                  size={15}
+                  color={active ? colors.brand.primary : '#65676B'}
+                />
+                <AppText
+                  variant="sm"
+                  color={active ? colors.brand.primary : '#050505'}
+                  weight={active ? 'bold' : 'normal'}
+                >
+                  {item.label}
+                </AppText>
+                <View style={[styles.countBadge, active && styles.countBadgeActive]}>
+                  <AppText
+                    variant="sm"
+                    color={active ? colors.brand.primary : '#65676B'}
+                    weight="bold"
+                    style={{ fontSize: 11 }}
+                  >
+                    {count}
+                  </AppText>
+                </View>
               </TouchableOpacity>
             );
           })}
@@ -406,12 +448,34 @@ const styles = StyleSheet.create({
     height: 34,
     borderRadius: 17,
     alignItems: 'center',
-    justifyContent: 'center',
+    justify: 'center',
   },
 
   filterRow: { marginVertical: 4, marginBottom: 8 },
-  areaTab: { paddingHorizontal: 14, height: 34, borderRadius: 999, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center' },
-  areaTabActive: { backgroundColor: colors.brand.primaryBg, borderWidth: 1, borderColor: '#FFEDD5' },
+  areaTab: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
+    height: 36,
+    borderRadius: 999,
+    backgroundColor: colors.surface.card,
+  },
+  areaTabActive: {
+    backgroundColor: colors.brand.primaryBg,
+    borderWidth: 1,
+    borderColor: '#FFEDD5',
+  },
+  countBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+    borderRadius: 999,
+    backgroundColor: colors.surface.app,
+    marginLeft: 2,
+  },
+  countBadgeActive: {
+    backgroundColor: '#FFEDD5',
+  },
 
   statsBar: {
     flexDirection: 'row',
