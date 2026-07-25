@@ -1,71 +1,123 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { View, StyleSheet, TextInput, Alert, TouchableOpacity, ScrollView, FlatList } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import { colors, font } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
-import type { Campaign } from '../../lib/api/client';
 import DataTable, { type Column } from '../../lib/components/ui/DataTable';
 import FormModal from '../../lib/components/ui/FormModal';
 import FAB from '../../lib/components/ui/FAB';
 import AppText from '../../lib/components/ui/AppText';
+import { TableSkeleton } from '../../lib/components/ui/Skeleton';
+import EmptyState from '../../lib/components/ui/EmptyState';
 
 const API = '/api/v1/quan-ly';
 
-interface CampaignEx extends Campaign {
+interface CampaignEx {
+  id: string;
+  name: string;
+  type?: string;
+  sent_count?: number;
+  open_rate?: number;
+  status?: string;
+  is_active?: boolean;
   content?: string;
-  open_count?: number;
-  click_count?: number;
 }
 
 export default function MarketingScreen() {
   const { isWide } = useResponsive();
   const [campaigns, setCampaigns] = useState<CampaignEx[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState<CampaignEx | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<CampaignEx | null>(null);
-  const [selected, setSelected] = useState<CampaignEx | null>(null);
-  const [form, setForm] = useState({ name: '', type: 'email', content: '', is_active: true });
   const [sortKey, setSortKey] = useState<string>('name');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
+  const [form, setForm] = useState({ name: '', type: 'email', content: '', is_active: true });
+
   const load = useCallback(async () => {
-    try { setLoading(true); const data: any = await request(`${API}/campaigns`); setCampaigns(Array.isArray(data) ? data : (data?.items || [])); }
-    catch { /* ignore */ } finally { setLoading(false); }
+    try {
+      setLoading(true);
+      const data: any = await request(`${API}/marketing/campaigns`);
+      const list = Array.isArray(data) ? data : (data?.items || []);
+      setCampaigns(list);
+      if (list.length > 0 && !selected) setSelected(list[0]);
+    } catch { /* ignore */ } finally { setLoading(false); }
   }, []);
+
   useEffect(() => { load(); }, [load]);
 
-  const openNew = () => { setEditing(null); setForm({ name: '', type: 'email', content: '', is_active: true }); setShowForm(true); };
-  const openEdit = (c: CampaignEx) => { setEditing(c); setForm({ name: c.name, type: c.type, content: c.content || '', is_active: c.is_active ?? true }); setShowForm(true); };
+  const stats = useMemo(() => {
+    const total = campaigns.length;
+    const active = campaigns.filter(c => c.is_active ?? true).length;
+    const sent = campaigns.reduce((s, c) => s + (c.sent_count || 0), 0);
+    return { total, active, sent };
+  }, [campaigns]);
+
+  const openNew = () => {
+    setEditing(null);
+    setForm({ name: '', type: 'email', content: '', is_active: true });
+    setShowForm(true);
+  };
+
+  const openEdit = (c: CampaignEx) => {
+    setEditing(c);
+    setForm({
+      name: c.name,
+      type: c.type || 'email',
+      content: c.content || '',
+      is_active: c.is_active ?? true,
+    });
+    setShowForm(true);
+  };
 
   const handleSave = async () => {
     if (!form.name) { Alert.alert('Lỗi', 'Tên chiến dịch là bắt buộc'); return; }
     try {
-      const body = { name: form.name, type: form.type, content: form.content, is_active: form.is_active };
-      if (editing) await request(`${API}/campaigns/${editing.id}`, { method: 'PUT', body: JSON.stringify(body) });
-      else await request(`${API}/campaigns`, { method: 'POST', body: JSON.stringify(body) });
+      if (editing) {
+        await request(`${API}/marketing/campaigns/${editing.id}`, { method: 'PUT', body: JSON.stringify(form) });
+      } else {
+        await request(`${API}/marketing/campaigns`, { method: 'POST', body: JSON.stringify(form) });
+      }
       setShowForm(false); load();
     } catch { Alert.alert('Lỗi', 'Không thể lưu chiến dịch'); }
   };
 
-  const stats = {
-    total: campaigns.length,
-    active: campaigns.filter(c => c.is_active).length,
-    sent: campaigns.reduce((s, c) => s + (c.sent_count || 0), 0),
+  const handleDelete = (id: string, name: string) => {
+    Alert.alert('Xóa chiến dịch', `Bạn có chắc muốn xóa "${name}"?`, [
+      { text: 'Hủy', style: 'cancel' },
+      {
+        text: 'Xóa',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await request(`${API}/marketing/campaigns/${id}`, { method: 'DELETE' });
+            load();
+          } catch { Alert.alert('Lỗi', 'Không thể xóa'); }
+        },
+      },
+    ]);
+  };
+
+  const handleSend = async (c: CampaignEx) => {
+    try {
+      await request(`${API}/marketing/campaigns/${c.id}/send`, { method: 'POST' });
+      Alert.alert('Thành công', `Đã phát chiến dịch "${c.name}" tới khách hàng`);
+      load();
+    } catch { Alert.alert('Lỗi', 'Không thể phát chiến dịch'); }
   };
 
   const columns: Column<CampaignEx>[] = [
     {
       key: 'name',
-      title: 'Tên chiến dịch',
+      title: 'Chiến dịch',
       flex: 1,
-      sortable: true,
-      sortValue: (c) => c.name || '',
       render: (c) => (
-        <View style={{ flex: 1 }}>
+        <View>
           <AppText variant="sm" weight="bold" color={colors.text.primary} numberOfLines={1}>{c.name}</AppText>
-          <AppText variant="sm" color={colors.text.muted}>{c.type.toUpperCase()}</AppText>
+          <AppText variant="sm" color={colors.text.muted}>Kênh: {(c.type || 'email').toUpperCase()}</AppText>
         </View>
       ),
     },
@@ -76,90 +128,150 @@ export default function MarketingScreen() {
       align: 'right',
       sortable: true,
       sortValue: (c) => c.sent_count || 0,
-      render: (c) => <AppText variant="sm" weight="bold" color={colors.text.primary}>{c.sent_count || 0}</AppText>,
+      render: (c) => <AppText variant="sm" color={colors.text.secondary}>{c.sent_count || 0}</AppText>,
     },
     {
       key: 'is_active',
       title: 'Trạng thái',
-      width: 80,
-      align: 'center',
-      sortable: true,
-      sortValue: (c) => c.is_active ? 1 : 0,
+      width: 90,
       render: (c) => (
-        <View style={[styles.chipSmall, { backgroundColor: c.is_active ? colors.brand.primaryBg : colors.surface.app }]}>
-          <AppText variant="sm" weight="bold" color={c.is_active ? colors.status.success : colors.text.muted}>{c.is_active ? 'ON' : 'OFF'}</AppText>
+        <View style={[styles.statusBadge, { backgroundColor: (c.is_active ?? true) ? '#ECFDF5' : colors.surface.app }]}>
+          <AppText variant="sm" weight="bold" color={(c.is_active ?? true) ? colors.status.success : colors.text.muted}>
+            {(c.is_active ?? true) ? 'Bật' : 'Tắt'}
+          </AppText>
         </View>
       ),
     },
   ];
-
-  const renderPanel = () => {
-    if (!selected) return null;
-    return (
-      <View style={styles.panelBox}>
-        <View style={styles.panelHeader}>
-          <Icon name="bullhorn" size={18} color={colors.brand.primary} />
-          <AppText variant="sm" weight="bold" color={colors.text.primary} style={{ flex: 1 }}>{selected.name}</AppText>
-        </View>
-        <View style={{ flexDirection: 'row', gap: 8 }}>
-          <View style={{ alignItems: 'center', flex: 1 }}>
-            <AppText variant="md" weight="bold" color={colors.text.primary}>{selected.sent_count || 0}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Đã gửi</AppText>
-          </View>
-          <View style={styles.panelDividerV} />
-          <View style={{ alignItems: 'center', flex: 1 }}>
-            <AppText variant="md" weight="bold" color={colors.status.success}>{selected.open_count || 0}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Đã mở</AppText>
-          </View>
-          <View style={styles.panelDividerV} />
-          <View style={{ alignItems: 'center', flex: 1 }}>
-            <AppText variant="md" weight="bold" color={colors.brand.primary}>{selected.click_count || 0}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Lượt click</AppText>
-          </View>
-        </View>
-        <View style={styles.panelDivider} />
-        <AppText variant="sm" weight="bold" color={colors.text.primary} style={{ marginBottom: 4 }}>Nội dung thông điệp</AppText>
-        <AppText variant="sm" color={colors.text.secondary} numberOfLines={4}>{selected.content || '—'}</AppText>
-        <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
-          <TouchableOpacity onPress={() => openEdit(selected)} style={[styles.panelBtn, { backgroundColor: colors.brand.primary }]}>
-            <Icon name="pencil" size={14} color={colors.text.inverse} />
-            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Sửa chiến dịch</AppText>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  };
 
   const handleSortChange = (key: string) => {
     if (key === sortKey) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
     else { setSortKey(key); setSortDir('asc'); }
   };
 
+  const renderPanel = () => {
+    if (!selected) return null;
+    return (
+      <View style={styles.panelBox}>
+        <View style={styles.panelHeader}>
+          <Icon name="bullhorn" size={20} color={colors.brand.primary} />
+          <AppText variant="sm" weight="bold" color={colors.text.primary} style={{ flex: 1 }}>{selected.name}</AppText>
+          <View style={[styles.statusBadge, { backgroundColor: (selected.is_active ?? true) ? '#ECFDF5' : colors.surface.app }]}>
+            <AppText variant="sm" weight="bold" color={(selected.is_active ?? true) ? colors.status.success : colors.text.muted}>
+              {(selected.is_active ?? true) ? 'Đang chạy' : 'Đã dừng'}
+            </AppText>
+          </View>
+        </View>
+
+        <View style={{ gap: 6 }}>
+          <AppText variant="sm" color={colors.text.secondary}>Kênh phát: <AppText variant="sm" weight="bold" color={colors.text.primary}>{(selected.type || 'email').toUpperCase()}</AppText></AppText>
+          <AppText variant="sm" color={colors.text.secondary}>Số người nhận: <AppText variant="sm" weight="bold" color={colors.brand.primary}>{selected.sent_count || 0} lượt</AppText></AppText>
+          {selected.content ? <AppText variant="sm" color={colors.text.secondary}>Nội dung: {selected.content}</AppText> : null}
+        </View>
+
+        <View style={styles.panelDivider} />
+
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          <TouchableOpacity onPress={() => handleSend(selected)} style={[styles.panelBtn, { backgroundColor: colors.brand.primary, flex: 1 }]}>
+            <Icon name="send" size={14} color={colors.text.inverse} />
+            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Phát chiến dịch</AppText>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => openEdit(selected)} style={[styles.panelBtn, { backgroundColor: colors.surface.app }]}>
+            <Icon name="pencil" size={14} color={colors.text.primary} />
+            <AppText variant="sm" color={colors.text.primary}>Sửa</AppText>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => handleDelete(selected.id, selected.name)} style={[styles.panelBtn, { backgroundColor: '#FEE2E2' }]}>
+            <Icon name="delete" size={14} color={colors.status.danger} />
+            <AppText variant="sm" weight="bold" color={colors.status.danger}>Xoá</AppText>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
+  const renderMobileCampaignCard = ({ item: c }: { item: CampaignEx }) => (
+    <View style={styles.itemMobile}>
+      <TouchableOpacity style={styles.cardHeaderRow} onPress={() => setSelected(c)} activeOpacity={0.8}>
+        <View style={[styles.avatarCircle, { backgroundColor: '#EEF2FF' }]}>
+          <Icon name="bullhorn" size={20} color={colors.brand.primary} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <AppText variant="md" weight="bold" color="#050505">{c.name}</AppText>
+            <View style={[styles.statusBadge, { backgroundColor: (c.is_active ?? true) ? '#ECFDF5' : colors.surface.app }]}>
+              <AppText variant="sm" weight="bold" color={(c.is_active ?? true) ? colors.status.success : colors.text.muted}>
+                {(c.is_active ?? true) ? 'Bật' : 'Tắt'}
+              </AppText>
+            </View>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 }}>
+            <AppText variant="sm" color="#65676B">Kênh: {(c.type || 'email').toUpperCase()}</AppText>
+            <AppText variant="sm" color="#65676B">· {c.sent_count || 0} đã gửi</AppText>
+          </View>
+        </View>
+      </TouchableOpacity>
+
+      <View style={styles.cardActionDivider} />
+
+      <View style={{ flexDirection: 'row', gap: 8, paddingHorizontal: 12, paddingTop: 8 }}>
+        <TouchableOpacity style={styles.panelBtnPrimary} onPress={() => handleSend(c)}>
+          <Icon name="send" size={14} color={colors.text.inverse} />
+          <AppText variant="sm" weight="bold" color={colors.text.inverse}>Gửi tin</AppText>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.panelBtnSecondary} onPress={() => openEdit(c)}>
+          <Icon name="pencil" size={14} color={colors.brand.primary} />
+          <AppText variant="sm" weight="bold" color={colors.brand.primary}>Sửa</AppText>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.panelBtnDanger} onPress={() => handleDelete(c.id, c.name)}>
+          <Icon name="trash-can-outline" size={14} color={colors.status.danger} />
+          <AppText variant="sm" weight="bold" color={colors.status.danger}>Xóa</AppText>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
   return (
     <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
-      {/* Stats bar */}
-      <View style={styles.statsBar}>
-        <View style={styles.statItem}>
-          <Icon name="bullhorn" size={16} color={colors.brand.primary} />
-          <View>
-            <AppText variant="sm" weight="bold" color={colors.text.primary}>{stats.total}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Chiến dịch</AppText>
+      {/* Top Action Bar on Mobile */}
+      {!isWide && (
+        <View style={styles.mobileActionRow}>
+          <AppText variant="md" weight="bold" color="#050505">{stats.total} chiến dịch</AppText>
+          <TouchableOpacity onPress={openNew} style={styles.addBtn}>
+            <Icon name="plus" size={16} color={colors.text.inverse} />
+            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Tạo chiến dịch</AppText>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* Facebook Story Highlight Metric Cards */}
+      <View style={styles.fbMetricContainer}>
+        <View style={styles.fbMetricCard}>
+          <View style={[styles.fbMetricIcon, { backgroundColor: '#EEF2FF' }]}>
+            <Icon name="bullhorn" size={18} color={colors.brand.primary} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <AppText variant="md" weight="bold" color="#050505">{stats.total}</AppText>
+            <AppText variant="sm" color="#65676B">Tổng chiến dịch</AppText>
           </View>
         </View>
-        <View style={styles.barDivider} />
-        <View style={styles.statItem}>
-          <Icon name="check-circle" size={16} color={colors.status.success} />
-          <View>
-            <AppText variant="sm" weight="bold" color={colors.status.success}>{stats.active}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Đang chạy</AppText>
+
+        <View style={styles.fbMetricCard}>
+          <View style={[styles.fbMetricIcon, { backgroundColor: '#ECFDF5' }]}>
+            <Icon name="check-circle" size={18} color={colors.status.success} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <AppText variant="md" weight="bold" color={colors.status.success}>{stats.active}</AppText>
+            <AppText variant="sm" color="#65676B">Đang chạy</AppText>
           </View>
         </View>
-        <View style={styles.barDivider} />
-        <View style={styles.statItem}>
-          <Icon name="send" size={16} color={colors.brand.primary} />
-          <View>
-            <AppText variant="sm" weight="bold" color={colors.text.primary}>{stats.sent}</AppText>
-            <AppText variant="sm" color={colors.text.muted}>Đã gửi</AppText>
+
+        <View style={styles.fbMetricCard}>
+          <View style={[styles.fbMetricIcon, { backgroundColor: '#FFF7ED' }]}>
+            <Icon name="send" size={18} color="#F97316" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <AppText variant="md" weight="bold" color="#F97316">{stats.sent}</AppText>
+            <AppText variant="sm" color="#65676B">Đã phát</AppText>
           </View>
         </View>
       </View>
@@ -194,24 +306,23 @@ export default function MarketingScreen() {
           </View>
         </View>
       ) : (
-        <View style={{ flex: 1, paddingHorizontal: 8 }}>
-          <DataTable<CampaignEx>
-            columns={columns}
-            data={campaigns}
-            getRowId={(c) => c.id}
-            loading={loading}
-            sortKey={sortKey}
-            sortDir={sortDir}
-            onSortChange={handleSortChange}
-            onRowPress={setSelected}
-            selectedRowId={selected?.id ?? null}
-            onRefresh={load}
-            compact
-            emptyIcon="bullhorn"
-            emptyTitle="Chưa có chiến dịch"
-            emptySubtitle="Tạo chiến dịch marketing đầu tiên"
-          />
-        </View>
+        <FlatList
+          data={campaigns}
+          keyExtractor={(item) => item.id}
+          renderItem={renderMobileCampaignCard}
+          contentContainerStyle={{ paddingBottom: 100 }}
+          ListEmptyComponent={
+            loading ? (
+              <TableSkeleton rowCount={5} />
+            ) : (
+              <EmptyState
+                icon="bullhorn"
+                title="Chưa có chiến dịch"
+                subtitle="Tạo chiến dịch marketing đầu tiên"
+              />
+            )
+          }
+        />
       )}
 
       {!isWide && <FAB onPress={openNew} />}
@@ -246,24 +357,138 @@ export default function MarketingScreen() {
 }
 
 const styles = StyleSheet.create({
-  statsBar: {
+  mobileActionRow: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 12,
     paddingVertical: 10,
     backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.lg,
-    marginHorizontal: 8,
-    marginVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
   },
-  statItem: { flex: 1, alignItems: 'center', flexDirection: 'row', gap: 8, justifyContent: 'center' },
-  barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-  chipSmall: { paddingVertical: 2, paddingHorizontal: 8, borderRadius: shape.radius.sm },
-  panelBox: { backgroundColor: colors.surface.card, borderRadius: shape.radius.lg, padding: 14, gap: 12 },
-  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  panelDivider: { height: 1, backgroundColor: colors.border.light },
-  panelDividerV: { width: 1, backgroundColor: colors.border.light },
-  panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 8, paddingHorizontal: 12, borderRadius: shape.radius.md },
-  fieldInput: { borderRadius: shape.radius.md, paddingHorizontal: 10, paddingVertical: 8, ...font.md, color: colors.text.primary, backgroundColor: colors.surface.app },
-  typeChip: { flex: 1, height: 44, borderRadius: shape.radius.md, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
+  addBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
+    height: 44,
+    borderRadius: 999,
+    backgroundColor: colors.brand.primary,
+  },
+
+  /* Facebook Story Highlight Metric Cards Container */
+  fbMetricContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 8,
+    backgroundColor: colors.surface.card,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
+    marginBottom: 8,
+    maxWidth: 520,
+  },
+  fbMetricCard: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: colors.surface.card,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    borderRadius: 12,
+  },
+  fbMetricIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justify: 'center',
+  },
+
+  statusBadge: {
+    paddingVertical: 2,
+    paddingHorizontal: 8,
+    borderRadius: 999,
+  },
+
+  /* 📱 Mobile Full-Width Facebook Feed Card Block */
+  itemMobile: {
+    backgroundColor: colors.surface.card,
+    width: '100%',
+    marginBottom: 8,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: colors.border.light,
+    paddingVertical: 12,
+  },
+  cardHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 12,
+  },
+  avatarCircle: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: 'center',
+    justify: 'center',
+  },
+  cardActionDivider: {
+    height: 1,
+    backgroundColor: colors.border.light,
+    marginTop: 10,
+  },
+  panelBtnPrimary: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justify: 'center',
+    gap: 6,
+    height: 44,
+    borderRadius: 999,
+    backgroundColor: colors.brand.primary,
+  },
+  panelBtnSecondary: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justify: 'center',
+    gap: 6,
+    height: 44,
+    borderRadius: 999,
+    backgroundColor: colors.brand.primaryBg,
+  },
+  panelBtnDanger: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justify: 'center',
+    gap: 6,
+    height: 44,
+    borderRadius: 999,
+    backgroundColor: '#FEE2E2',
+  },
+
+  panelBox: {
+    backgroundColor: colors.surface.card,
+    borderRadius: 16,
+    padding: 14,
+    gap: 12,
+  },
+  panelHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
+  },
+  panelDivider: { height: 1, backgroundColor: colors.border.light, marginVertical: 4 },
+  panelBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, height: 44, borderRadius: 999, paddingHorizontal: 12 },
+  typeChip: { flex: 1, height: 44, borderRadius: 12, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' },
   typeChipActive: { backgroundColor: colors.brand.primaryBg },
+  fieldInput: { borderRadius: 12, paddingHorizontal: 12, paddingVertical: 10, ...font.md, color: colors.text.primary, backgroundColor: colors.surface.app },
 });
