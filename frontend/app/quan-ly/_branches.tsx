@@ -91,6 +91,35 @@ export default function BranchesScreen() {
     },
   ];
 
+  const renderMobileCard = (b: Branch) => (
+    <TouchableOpacity
+      style={styles.mobileItemCard}
+      onPress={() => { setEditing(b); setForm({ name: b.name, code: b.code, address: b.address || '', phone: b.phone || '', is_active: b.is_active }); setShowForm(true); }}
+      activeOpacity={0.7}
+    >
+      <View style={styles.branchAvatar}>
+        <Icon name="storefront-outline" size={18} color={colors.brand.primary} />
+      </View>
+      <View style={{ flex: 1 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <AppText variant="sm" weight="bold" color={colors.text.primary} numberOfLines={1}>{b.name}</AppText>
+          <View style={styles.codeBadge}>
+            <AppText variant="sm" color={colors.text.muted}>{b.code}</AppText>
+          </View>
+        </View>
+        {b.address ? (
+          <AppText variant="sm" color={colors.text.muted} numberOfLines={1} style={{ marginTop: 2 }}>📍 {b.address}</AppText>
+        ) : null}
+      </View>
+      <View style={[styles.statusChip, { backgroundColor: b.is_active ? colors.brand.primaryBg : colors.surface.app }]}>
+        <View style={[styles.statusDot, { backgroundColor: b.is_active ? colors.status.success : colors.status.danger }]} />
+        <AppText variant="sm" weight="bold" color={b.is_active ? colors.status.success : colors.status.danger}>
+          {b.is_active ? 'Hoạt động' : 'Tắt'}
+        </AppText>
+      </View>
+    </TouchableOpacity>
+  );
+
   const renderPanel = () => {
     return (
       <View style={styles.panelBox}>
@@ -271,6 +300,7 @@ export default function BranchesScreen() {
             onRowPress={setSelected}
             selectedRowId={selected?.id ?? null}
             onRefresh={load}
+            renderMobileCard={renderMobileCard}
             compact
             emptyIcon="storefront-outline"
             emptyTitle="Chưa có chi nhánh"
@@ -309,7 +339,7 @@ export default function BranchesScreen() {
 const styles = StyleSheet.create({
   mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 8, paddingVertical: 8 },
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 36, borderRadius: 999, backgroundColor: colors.brand.primary },
-  branchAvatar: { width: 34, height: 34, borderRadius: 10, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' },
+  branchAvatar: { width: 36, height: 36, borderRadius: 10, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' },
 
   statsBar: {
     flexDirection: 'row',
@@ -322,8 +352,15 @@ const styles = StyleSheet.create({
   },
   statItem: { flex: 1, alignItems: 'center', flexDirection: 'row', gap: 6, justifyContent: 'center' },
   barDivider: { width: 1, backgroundColor: colors.border.light, marginVertical: 2 },
-  statusChip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 2, paddingHorizontal: 10, borderRadius: 999 },
+  statusChip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 3, paddingHorizontal: 10, borderRadius: 999 },
   statusDot: { width: 6, height: 6, borderRadius: 3 },
+  codeBadge: { paddingHorizontal: 6, paddingVertical: 1, borderRadius: 4, backgroundColor: colors.surface.app },
+
+  mobileItemCard: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: colors.surface.card, marginBottom: 8,
+    borderRadius: 16, padding: 12,
+  },
 
   panelBox: { backgroundColor: colors.surface.card, borderRadius: 16, padding: 16, gap: 12 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },

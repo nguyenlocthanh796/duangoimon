@@ -79,6 +79,33 @@ export default function AuditScreen() {
     },
   ];
 
+  const renderMobileCard = (l: any) => {
+    const icon = ACTION_ICONS[l.action] || 'information';
+    const color = ACTION_COLORS[l.action] || colors.text.muted;
+    const bg = ACTION_BG[l.action] || colors.surface.app;
+    return (
+      <TouchableOpacity
+        style={styles.mobileItemCard}
+        onPress={() => setSelectedLog(l)}
+        activeOpacity={0.7}
+      >
+        <View style={[styles.actionBadge, { backgroundColor: bg }]}>
+          <Icon name={icon as any} size={16} color={color} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <AppText variant="sm" weight="bold" color={color} style={{ textTransform: 'capitalize' }}>{l.action}</AppText>
+            {l.resource ? <AppText variant="sm" color={colors.text.secondary}>· {l.resource}</AppText> : null}
+          </View>
+          <AppText variant="sm" color={colors.text.muted}>@{l.user_name || 'Hệ thống'}</AppText>
+        </View>
+        <AppText variant="sm" color={colors.text.muted} style={{ fontSize: 11 }}>
+          {l.created_at ? new Date(l.created_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : ''}
+        </AppText>
+      </TouchableOpacity>
+    );
+  };
+
   const renderPanel = () => {
     const c: Record<string, number> = {};
     logs.forEach(l => { c[l.action] = (c[l.action] || 0) + 1; });
@@ -244,6 +271,7 @@ export default function AuditScreen() {
             onRowPress={setSelectedLog}
             selectedRowId={selectedLog?.id ?? null}
             onRefresh={load}
+            renderMobileCard={renderMobileCard}
             compact
             emptyIcon="clipboard-text-off"
             emptyTitle="Chưa có log kiểm toán"
@@ -271,7 +299,13 @@ const styles = StyleSheet.create({
   filterRow: { paddingHorizontal: 8, marginBottom: 8 },
   chip: { paddingHorizontal: 14, height: 34, borderRadius: 999, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center' },
   chipActive: { backgroundColor: colors.brand.primaryBg },
-  actionBadge: { width: 30, height: 30, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+  actionBadge: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
+
+  mobileItemCard: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    backgroundColor: colors.surface.card, marginBottom: 8,
+    borderRadius: 16, padding: 12,
+  },
 
   panelBox: { backgroundColor: colors.surface.card, borderRadius: 16, padding: 16, gap: 12 },
   panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 8, borderBottomWidth: 1, borderBottomColor: colors.border.light },
