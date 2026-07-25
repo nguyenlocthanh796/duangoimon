@@ -478,7 +478,7 @@ const styles = StyleSheet.create({
     height: 42,
     borderRadius: 21,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
   activeDotSmall: {
     width: 6,

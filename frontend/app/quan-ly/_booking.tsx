@@ -430,7 +430,7 @@ const styles = StyleSheet.create({
     height: 34,
     borderRadius: 17,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
 
   /* Filter chips */
@@ -440,7 +440,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     backgroundColor: colors.surface.card,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
   chipActive: {
     backgroundColor: colors.brand.primaryBg,
@@ -475,7 +475,7 @@ const styles = StyleSheet.create({
     height: 42,
     borderRadius: 21,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
   cardActionDivider: {
     height: 1,
@@ -486,7 +486,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
     gap: 6,
     height: 44,
     borderRadius: 999,
@@ -496,7 +496,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
     gap: 6,
     height: 44,
     borderRadius: 999,
@@ -521,7 +521,7 @@ const styles = StyleSheet.create({
   panelBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
     gap: 6,
     height: 44,
     borderRadius: 999,
@@ -529,7 +529,7 @@ const styles = StyleSheet.create({
   panelCta: {
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
     gap: 6,
     backgroundColor: colors.brand.primary,
     borderRadius: 999,

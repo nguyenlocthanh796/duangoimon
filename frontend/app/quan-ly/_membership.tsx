@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
     height: 34,
     borderRadius: 17,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
 
   statusBadge: {
@@ -418,7 +418,7 @@ const styles = StyleSheet.create({
     height: 42,
     borderRadius: 21,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
   cardActionDivider: {
     height: 1,
@@ -429,7 +429,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
     gap: 6,
     height: 44,
     borderRadius: 999,
@@ -439,7 +439,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
     gap: 6,
     height: 44,
     borderRadius: 999,

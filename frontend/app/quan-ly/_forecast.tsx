@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
     height: 38,
     borderRadius: 19,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
 
   /* Filter chips */
@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
     height: 42,
     borderRadius: 21,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
 
   panelBox: {
@@ -402,7 +402,7 @@ const styles = StyleSheet.create({
   panelDivider: { height: 1, backgroundColor: colors.border.light },
   pnlRow: {
     flexDirection: 'row',
-    justify: 'space-between',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
 });

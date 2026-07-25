@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
     height: 38,
     borderRadius: 19,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
   },
 
   chip: {
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     backgroundColor: colors.surface.card,
     alignItems: 'center',
-    justify: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
     borderColor: '#E2E8F0',
   },
