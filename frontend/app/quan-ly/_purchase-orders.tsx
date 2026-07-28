@@ -1,36 +1,46 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { TableSkeleton } from '../../lib/components/ui/Skeleton';
 import {
-  View, FlatList, TouchableOpacity, StyleSheet,
-  Alert, RefreshControl, ScrollView,
+  View,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  RefreshControl,
+  ScrollView,
+  TextInput,
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useResponsive } from '../../lib/hooks/useResponsive';
-import { colors, font, formatVND } from '../../lib/theme';
+import { colors, font, formatVND, ss } from '../../lib/theme';
 import AppText from '../../lib/components/ui/AppText';
+import StatusBadge from '../../lib/components/ui/StatusBadge';
 import EmptyState from '../../lib/components/ui/EmptyState';
 import POForm from '../../lib/components/purchaseOrders/POForm';
 import ReceiveModal from '../../lib/components/purchaseOrders/ReceiveModal';
+import FAB from '../../lib/components/ui/FAB';
+import ScreenHeader from '../../lib/components/ui/ScreenHeader';
+import DetailModal from '../../lib/components/ui/DetailModal';
 import { request } from '../../lib/api/client';
 
 const STATUS_LABEL: Record<string, string> = {
   draft: 'Nháp',
   sent: 'Đã gửi PO',
-  partial: 'Nhập một phần',
+  partial: 'Nhập 1 phần',
   received: 'Đã nhập kho',
   cancelled: 'Đã hủy',
 };
 
 const STATUS_COLOR: Record<string, string> = {
-  draft: colors.text.muted,
+  draft: '#64748B',
   sent: colors.brand.primary,
-  partial: colors.status.warning,
-  received: colors.status.success,
+  partial: '#D97706',
+  received: '#16A34A',
   cancelled: colors.status.danger,
 };
 
 const STATUS_BG: Record<string, string> = {
-  draft: colors.surface.app,
+  draft: '#F1F5F9',
   sent: colors.brand.primaryBg,
   partial: '#FEF3C7',
   received: '#ECFDF5',
@@ -39,13 +49,51 @@ const STATUS_BG: Record<string, string> = {
 
 function generateFallbackPOList() {
   return [
-    { id: 'po1', po_number: 'PO-202607-001', supplier_name: 'Công Ty Thực Phẩm Sạch CP', total_amount: 15400000, status: 'received', created_at: '2026-07-22', note: 'Đã hoàn tất nhập kho 50kg thịt bò', items: [{ material_name: 'Thịt Bò Mỹ Nhập Khẩu', unit_price: 220000, quantity: 50, unit: 'kg', total_price: 11000000 }] },
-    { id: 'po2', po_number: 'PO-202607-002', supplier_name: 'Nông Sản Sạch Đà Lạt Farm', total_amount: 4800000, status: 'sent', created_at: '2026-07-24', note: 'Đơn hàng rau củ quả chuẩn bị giao sáng mai', items: [{ material_name: 'Rau Xà Lách Hữu Cơ', unit_price: 35000, quantity: 40, unit: 'kg', total_price: 1400000 }] },
-    { id: 'po3', po_number: 'PO-202607-003', supplier_name: 'Đồ Uống & Nước Giải Khát Tân Hiệp', total_amount: 8200000, status: 'partial', created_at: '2026-07-25', note: 'Đã nhận đợt 1 bao gồm 10 thùng siro', items: [{ material_name: 'Siro Đào Monin', unit_price: 180000, quantity: 12, unit: 'chai', total_price: 2160000 }] },
+    {
+      id: 'po1',
+      po_number: 'PO-202607-001',
+      supplier_name: 'Công Ty Thực Phẩm Sạch CP',
+      total_amount: 15400000,
+      status: 'received',
+      created_at: '2026-07-22',
+      note: 'Đã hoàn tất nhập kho 50kg thịt bò Mỹ',
+      items: [
+        { material_name: 'Thịt Bò Mỹ Nhập Khẩu', unit_price: 220000, quantity: 50, unit: 'kg', total_price: 11000000 },
+        { material_name: 'Sữa Tươi Vinamilk 1L', unit_price: 32000, quantity: 100, unit: 'hộp', total_price: 3200000 },
+        { material_name: 'Đường Cát Trắng Biên Hòa', unit_price: 24000, quantity: 50, unit: 'kg', total_price: 1200000 },
+      ],
+    },
+    {
+      id: 'po2',
+      po_number: 'PO-202607-002',
+      supplier_name: 'Nông Sản Sạch Đà Lạt Farm',
+      total_amount: 4800000,
+      status: 'sent',
+      created_at: '2026-07-24',
+      note: 'Đơn hàng rau củ quả chuẩn bị giao sáng mai',
+      items: [
+        { material_name: 'Rau Xà Lách Hữu Cơ', unit_price: 35000, quantity: 40, unit: 'kg', total_price: 1400000 },
+        { material_name: 'Cà Rốt Đà Lạt Fresh', unit_price: 25000, quantity: 60, unit: 'kg', total_price: 1500000 },
+        { material_name: 'Trà Oolong Lâm Đồng', unit_price: 150000, quantity: 12, unit: 'kg', total_price: 1800000 },
+      ],
+    },
+    {
+      id: 'po3',
+      po_number: 'PO-202607-003',
+      supplier_name: 'Đồ Uống & Nước Giải Khát Tân Hiệp',
+      total_amount: 8200000,
+      status: 'partial',
+      created_at: '2026-07-25',
+      note: 'Đã nhận đợt 1 bao gồm 12 chai siro',
+      items: [
+        { material_name: 'Siro Đào Monin', unit_price: 180000, quantity: 12, unit: 'chai', total_price: 2160000 },
+        { material_name: 'Hạt Cà Phê Arabica Cầu Đất', unit_price: 180000, quantity: 30, unit: 'kg', total_price: 5400000 },
+      ],
+    },
   ];
 }
 
-export default function PurchaseOrdersScreen() {
+export default function PurchaseOrdersScreen({ isSearchOpen }: { isSearchOpen?: boolean } = {}) {
   const { isWide } = useResponsive();
   const [orders, setOrders] = useState<any[]>([]);
   const [suppliers, setSuppliers] = useState<any[]>([]);
@@ -53,6 +101,7 @@ export default function PurchaseOrdersScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [statusFilter, setStatusFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedPo, setSelectedPo] = useState<any | null>(null);
 
   const [showCreate, setShowCreate] = useState(false);
@@ -67,9 +116,9 @@ export default function PurchaseOrdersScreen() {
         request('/api/v1/quan-ly/raw-materials').catch(() => []),
       ]);
 
-      const pos = Array.isArray(posRes) ? posRes : (posRes?.items || []);
-      const sups = Array.isArray(supRes) ? supRes : (supRes?.items || []);
-      const mats = Array.isArray(matRes) ? matRes : (matRes?.items || []);
+      const pos = Array.isArray(posRes) ? posRes : posRes?.items || [];
+      const sups = Array.isArray(supRes) ? supRes : supRes?.items || [];
+      const mats = Array.isArray(matRes) ? matRes : matRes?.items || [];
 
       const finalPos = pos.length > 0 ? pos : generateFallbackPOList();
 
@@ -77,42 +126,58 @@ export default function PurchaseOrdersScreen() {
       setSuppliers(sups);
       setRawMaterials(mats);
 
-      if (finalPos.length > 0 && !selectedPo) {
+      if (isWide && finalPos.length > 0 && !selectedPo) {
         setSelectedPo(finalPos[0]);
       }
     } catch {
       const fallbacks = generateFallbackPOList();
       setOrders(fallbacks);
-      setSelectedPo(fallbacks[0]);
+      if (isWide) setSelectedPo(fallbacks[0]);
     } finally {
-      setLoading(false); setRefreshing(false);
+      setLoading(false);
+      setRefreshing(false);
     }
-  }, [selectedPo]);
+  }, [isWide, selectedPo]);
 
-  useEffect(() => { loadData(); }, [loadData]);
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
-  const onRefresh = () => { setRefreshing(true); loadData(); };
+  const onRefresh = () => {
+    setRefreshing(true);
+    loadData();
+  };
 
   const filtered = useMemo(() => {
     if (statusFilter === 'all') return orders;
-    return orders.filter(o => o.status === statusFilter);
+    return orders.filter((o) => o.status === statusFilter);
   }, [orders, statusFilter]);
 
   const openAdd = () => {
     setShowCreate(true);
   };
 
+  // Total amount sum
+  const totalAmountSum = orders.reduce((acc, o) => acc + (o.total_amount || 0), 0);
+  const pendingCount = orders.filter((o) => o.status === 'sent' || o.status === 'partial' || o.status === 'draft').length;
+
+  // ── Master Detail Right Inspector Panel ──
   const renderDetailPanel = () => {
     if (!selectedPo) {
       return (
-        <View style={s.panelBox}>
-          <View style={s.panelHeader}>
-            <Icon name="file-document-outline" size={20} color={colors.brand.primary} />
-            <AppText variant="md" weight="bold" color="#050505">Chi Tiết Đơn Nhập Hàng PO</AppText>
-          </View>
-          <AppText variant="sm" color="#65676B" style={{ textAlign: 'center', marginVertical: 20 }}>
-            Chọn một đơn nhập kho từ danh sách để xem chi tiết
+        <View style={ss.detailPanelEmpty}>
+          <AppText variant="md" weight="bold" color="#050505">
+            Chi Tiết Đơn Nhập Hàng PO
           </AppText>
+          <AppText variant="sm" color="#65676B" style={{ textAlign: 'center' }}>
+            Chọn một đơn nhập kho từ danh sách bên trái để xem thông tin chi tiết
+          </AppText>
+          <TouchableOpacity style={ss.panelCta} onPress={openAdd}>
+            <Icon name="plus" size={18} color="#FFF" />
+            <AppText variant="sm" weight="bold" color="#FFF">
+              Tạo đơn PO mới
+            </AppText>
+          </TouchableOpacity>
         </View>
       );
     }
@@ -123,33 +188,57 @@ export default function PurchaseOrdersScreen() {
     const sl = STATUS_LABEL[po.status] || po.status;
 
     return (
-      <View style={s.panelBox}>
-        <View style={s.panelHeader}>
+      <View style={ss.detailPanel}>
+        <View style={s.detailHeader}>
           <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#050505">{po.po_number}</AppText>
+            <AppText variant="md" weight="bold" color="#050505">
+              {po.po_number}
+            </AppText>
             <AppText variant="sm" color="#65676B">
-              {new Date(po.created_at || Date.now()).toLocaleDateString('vi-VN')}
+              Ngày tạo: {po.created_at || 'Mới'}
             </AppText>
           </View>
-          <View style={[s.badge, { backgroundColor: sbg }]}>
-            <AppText variant="sm" weight="bold" color={sc}>{sl}</AppText>
-          </View>
+          <StatusBadge
+            label={sl}
+            severity={po.status === 'received' ? 'success' : po.status === 'cancelled' ? 'danger' : po.status === 'partial' || po.status === 'sent' ? 'warning' : 'neutral'}
+          />
         </View>
 
         <View style={{ gap: 6, paddingTop: 4 }}>
-          <AppText variant="sm" color="#65676B">Nhà cung cấp: <AppText variant="sm" weight="bold" color="#050505">{po.supplier_name || '—'}</AppText></AppText>
-          <AppText variant="sm" color="#65676B">Tổng giá trị đơn: <AppText variant="md" weight="bold" color={colors.brand.primary}>{formatVND(po.total_amount || 0)}</AppText></AppText>
-          {po.note ? <AppText variant="sm" color="#65676B">Ghi chú: {po.note}</AppText> : null}
+          <AppText variant="sm" color="#65676B">
+            Nhà cung cấp:{' '}
+            <AppText variant="sm" weight="bold" color="#050505">
+              {po.supplier_name || '—'}
+            </AppText>
+          </AppText>
+
+          <AppText variant="sm" color="#65676B">
+            Tổng giá trị đơn nhập:{' '}
+            <AppText variant="md" weight="bold" color={colors.brand.primary}>
+              {formatVND(po.total_amount || 0)}
+            </AppText>
+          </AppText>
+
+          {po.note ? (
+            <AppText variant="sm" color="#65676B">
+              Ghi chú: {po.note}
+            </AppText>
+          ) : null}
         </View>
 
         <View style={s.panelDivider} />
 
-        <AppText variant="sm" weight="bold" color="#050505">Danh Sách Mặt Hàng Nhập ({po.items?.length || 0})</AppText>
-        <ScrollView style={{ maxHeight: 200 }} showsVerticalScrollIndicator={false}>
+        <AppText variant="sm" weight="bold" color="#050505">
+          Danh Sách Mặt Hàng Nhập ({po.items?.length || 0})
+        </AppText>
+
+        <ScrollView style={{ maxHeight: 220 }} showsVerticalScrollIndicator={false}>
           {(po.items || []).map((it: any, idx: number) => (
             <View key={idx} style={s.itemRow}>
               <View style={{ flex: 1 }}>
-                <AppText variant="sm" weight="bold" color="#050505">{it.material_name || it.material_id}</AppText>
+                <AppText variant="sm" weight="bold" color="#050505">
+                  {it.material_name || it.material_id || 'Nguyên liệu'}
+                </AppText>
                 <AppText variant="sm" color="#65676B">
                   Đơn giá: {formatVND(it.unit_price || 0)} / {it.unit || 'kg'}
                 </AppText>
@@ -159,7 +248,7 @@ export default function PurchaseOrdersScreen() {
                   {it.quantity} {it.unit || 'kg'}
                 </AppText>
                 <AppText variant="sm" weight="bold" color={colors.brand.primary}>
-                  {formatVND(it.total_price || ((it.quantity || 0) * (it.unit_price || 0)))}
+                  {formatVND(it.total_price || (it.quantity || 0) * (it.unit_price || 0))}
                 </AppText>
               </View>
             </View>
@@ -168,11 +257,13 @@ export default function PurchaseOrdersScreen() {
 
         {po.status !== 'received' && po.status !== 'cancelled' && (
           <TouchableOpacity
-            onPress={() => { setShowReceive(true); }}
-            style={[s.panelBtn, { backgroundColor: colors.brand.primary, justifyContent: 'center', marginTop: 8 }]}
+            onPress={() => setShowReceive(true)}
+            style={ss.panelCta}
           >
-            <Icon name="package-down" size={16} color={colors.text.inverse} />
-            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Nhập kho tự động</AppText>
+            <Icon name="package-down" size={18} color="#FFF" />
+            <AppText variant="sm" weight="bold" color="#FFF">
+              Tự động nhập kho PO này
+            </AppText>
           </TouchableOpacity>
         )}
       </View>
@@ -186,68 +277,74 @@ export default function PurchaseOrdersScreen() {
     const isSelected = selectedPo?.id === item.id;
 
     if (!isWide) {
-      // 📱 Facebook Mobile Feed Card (Full Width)
       return (
-        <View style={s.itemMobile}>
-          <TouchableOpacity style={s.cardHeaderRow} onPress={() => setSelectedPo(isSelected ? null : item)} activeOpacity={0.8}>
-            <View style={[s.avatarCircle, { backgroundColor: sbg }]}>
-              <Icon name="file-document-outline" size={20} color={sc} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>{item.po_number}</AppText>
-                <View style={[s.badge, { backgroundColor: sbg }]}>
-                  <AppText variant="sm" weight="bold" color={sc}>{sl}</AppText>
-                </View>
-              </View>
-              <AppText variant="sm" color="#65676B" style={{ marginTop: 2 }}>NCC: {item.supplier_name || 'Chưa chọn'}</AppText>
-            </View>
+        <View style={ss.listRow}>
+          <View style={[s.posAvatarMiniCircle, { backgroundColor: sbg }]}>
+            <AppText variant="sm" weight="bold" color={sc} style={{ fontSize: 10 }}>
+              {sl?.slice(0, 2)}
+            </AppText>
+          </View>
+
+          <TouchableOpacity
+            style={{ flex: 1, paddingRight: 8 }}
+            onPress={() => setSelectedPo(item)}
+            activeOpacity={0.7}
+          >
+            <AppText variant="sm" weight="bold" color="#0F172A" numberOfLines={1}>
+              {item.po_number}
+            </AppText>
+            <AppText variant="sm" color="#64748B" numberOfLines={1}>
+              NCC: {item.supplier_name || 'Chưa chọn'}
+            </AppText>
           </TouchableOpacity>
 
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 12, marginTop: 8 }}>
-            <AppText variant="sm" color="#65676B">Tổng đơn PO:</AppText>
-            <AppText variant="md" weight="bold" color={colors.brand.primary}>{formatVND(item.total_amount || 0)}</AppText>
+          <View style={{ alignItems: 'flex-end', marginRight: 10 }}>
+            <AppText variant="sm" weight="bold" color={colors.brand.primary}>
+              {formatVND(item.total_amount || 0)}
+            </AppText>
+            <AppText variant="sm" color={sc}>
+              {sl}
+            </AppText>
           </View>
 
-          <View style={s.cardActionDivider} />
-
-          <View style={{ flexDirection: 'row', gap: 8, paddingHorizontal: 12, paddingTop: 8 }}>
-            <TouchableOpacity style={s.panelBtnSecondary} onPress={() => setSelectedPo(item)}>
-              <Icon name="eye" size={14} color={colors.brand.primary} />
-              <AppText variant="sm" color={colors.brand.primary}>Chi tiết</AppText>
-            </TouchableOpacity>
-            {item.status !== 'received' && (
-              <TouchableOpacity style={s.panelBtnPrimary} onPress={() => { setSelectedPo(item); setShowReceive(true); }}>
-                <Icon name="package-down" size={14} color={colors.text.inverse} />
-                <AppText variant="sm" weight="bold" color={colors.text.inverse}>Nhập kho</AppText>
-              </TouchableOpacity>
-            )}
-          </View>
+          <TouchableOpacity style={ss.miniActionBtn} onPress={() => setSelectedPo(item)}>
+            <Icon name="eye-outline" size={16} color={colors.brand.primary} />
+          </TouchableOpacity>
         </View>
       );
     }
 
-    // 💻 Wide Screen Card
     return (
       <TouchableOpacity
         onPress={() => setSelectedPo(isSelected ? null : item)}
-        style={[s.card, isSelected && { backgroundColor: colors.brand.primaryBg }]}
+        style={[s.cardWide, isSelected && { borderColor: colors.brand.primary, backgroundColor: colors.brand.primaryBg }]}
         activeOpacity={0.7}
       >
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-            <View style={[s.avatarCircle, { backgroundColor: sbg, width: 36, height: 36, borderRadius: 18 }]}>
-              <Icon name="file-document-outline" size={18} color={sc} />
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+            <View style={[s.avatarCircle, { backgroundColor: sbg, alignItems: 'center', justifyContent: 'center' }]}>
+              <AppText variant="sm" weight="bold" color={sc} style={{ fontSize: 11 }}>
+                PO
+              </AppText>
             </View>
             <View>
-              <AppText variant="md" weight="bold" color="#050505">{item.po_number}</AppText>
-              <AppText variant="sm" color="#65676B">NCC: {item.supplier_name || '—'}</AppText>
+              <AppText variant="md" weight="bold" color="#050505">
+                {item.po_number}
+              </AppText>
+              <AppText variant="sm" color="#65676B" style={{ marginTop: 2 }}>
+                NCC: {item.supplier_name || 'Chưa chọn'}
+              </AppText>
             </View>
           </View>
+
           <View style={{ alignItems: 'flex-end' }}>
-            <AppText variant="md" weight="bold" color={colors.brand.primary}>{formatVND(item.total_amount || 0)}</AppText>
-            <View style={[s.badge, { backgroundColor: sbg, marginTop: 2 }]}>
-              <AppText variant="sm" weight="bold" color={sc}>{sl}</AppText>
+            <AppText variant="md" weight="bold" color={colors.brand.primary}>
+              {formatVND(item.total_amount || 0)}
+            </AppText>
+            <View style={[s.badge, { backgroundColor: sbg, marginTop: 4 }]}>
+              <AppText variant="sm" weight="bold" color={sc}>
+                {sl}
+              </AppText>
             </View>
           </View>
         </View>
@@ -257,158 +354,235 @@ export default function PurchaseOrdersScreen() {
 
   return (
     <View style={s.container}>
-      {/* Top Mobile Header */}
-      {!isWide && (
-        <View style={s.mobileActionRow}>
-          <AppText variant="md" weight="bold" color="#050505">{orders.length} đơn PO nhập hàng</AppText>
-          <TouchableOpacity onPress={openAdd} style={s.addBtn}>
-            <Icon name="plus" size={16} color={colors.text.inverse} />
-            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Tạo PO mới</AppText>
-          </TouchableOpacity>
+      {/* Unified Top Action Bar: Search Input + Add Button */}
+      <View style={ss.topActionBar}>
+        <View style={ss.searchInputWrap}>
+          <Icon name="magnify" size={20} color="#64748B" />
+          <TextInput
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder="Tìm mã PO, nhà cung cấp..."
+            placeholderTextColor="#94A3B8"
+            style={ss.searchTextInput}
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchQuery('')}>
+              <Icon name="close-circle" size={18} color="#94A3B8" />
+            </TouchableOpacity>
+          )}
+        </View>
+
+        <TouchableOpacity style={ss.addBtn} onPress={() => setShowCreate(true)} activeOpacity={0.8}>
+          <Icon name="plus" size={18} color="#FFFFFF" />
+          <AppText variant="sm" weight="bold" color="#FFFFFF">
+            Tạo PO
+          </AppText>
+        </TouchableOpacity>
+      </View>
+
+      {/* Unified Status Filter Chips */}
+      <View style={{ width: '100%', marginBottom: 6 }}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={{ width: '100%', flexGrow: 0, height: 46 }}
+          contentContainerStyle={{ minWidth: '100%', alignItems: 'center', backgroundColor: '#FFFFFF', flexDirection: 'row', gap: 6, paddingHorizontal: 12 }}
+        >
+        {[
+          { key: 'all', label: 'Tất cả' },
+          { key: 'sent', label: 'Đã gửi PO' },
+          { key: 'partial', label: 'Nhập 1 phần' },
+          { key: 'received', label: 'Đã nhập kho' },
+          { key: 'cancelled', label: 'Đã hủy' },
+        ].map((sItem) => {
+          const active = statusFilter === sItem.key;
+          return (
+            <TouchableOpacity
+              key={sItem.key}
+              onPress={() => setStatusFilter(sItem.key)}
+              style={[ss.filterChip, active && ss.filterChipActive]}
+            >
+              <AppText
+                variant="sm"
+                weight="bold"
+                color={active ? colors.brand.primary : '#334155'}
+              >
+                {sItem.label}
+              </AppText>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
+    </View>
+
+      {/* ── Metric Cards (Desktop Only) ────────────────────────── */}
+      {isWide && (
+        <View style={ss.metricContainer}>
+          <View style={ss.metricCard}>
+            <View style={[ss.metricIcon, { backgroundColor: '#EEF2FF' }]}>
+              <AppText variant="sm" weight="bold" color={colors.brand.primary} style={{ fontSize: 11 }}>PO</AppText>
+            </View>
+            <View style={{ flex: 1 }}>
+              <AppText variant="md" weight="bold" color="#050505">
+                {orders.length} đơn PO
+              </AppText>
+              <AppText variant="sm" color="#65676B">
+                Tổng số đơn hàng
+              </AppText>
+            </View>
+          </View>
+
+          <View style={ss.metricCard}>
+            <View style={[ss.metricIcon, { backgroundColor: '#FEF3C7' }]}>
+              <AppText variant="sm" weight="bold" color="#D97706" style={{ fontSize: 11 }}>chờ</AppText>
+            </View>
+            <View style={{ flex: 1 }}>
+              <AppText variant="md" weight="bold" color="#D97706">
+                {pendingCount} chờ nhập
+              </AppText>
+              <AppText variant="sm" color="#65676B">
+                Cần xử lý
+              </AppText>
+            </View>
+          </View>
+
+          <View style={ss.metricCard}>
+            <View style={[ss.metricIcon, { backgroundColor: '#ECFDF5' }]}>
+              <AppText variant="sm" weight="bold" color="#16A34A" style={{ fontSize: 11 }}>đ</AppText>
+            </View>
+            <View style={{ flex: 1 }}>
+              <AppText variant="md" weight="bold" color="#16A34A">
+                {formatVND(totalAmountSum)}
+              </AppText>
+              <AppText variant="sm" color="#65676B">
+                Tổng giá trị PO
+              </AppText>
+            </View>
+          </View>
         </View>
       )}
 
-      {/* 📊 Native App Style KPI Widget Cards Strip */}
-      <View style={s.fbMetricContainer}>
-        <View style={s.fbMetricCard}>
-          <View style={[s.fbMetricIcon, { backgroundColor: '#EEF2FF' }]}>
-            <Icon name="file-document-outline" size={20} color={colors.brand.primary} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#050505">{orders.length} đơn</AppText>
-            <AppText variant="sm" color="#65676B">Tổng đơn PO</AppText>
-          </View>
-        </View>
-
-        <View style={s.fbMetricCard}>
-          <View style={[s.fbMetricIcon, { backgroundColor: '#FFF7ED' }]}>
-            <Icon name="clock-outline" size={20} color="#F97316" />
-          </View>
-          <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#F97316">
-              {orders.filter(o => o.status === 'sent' || o.status === 'draft').length} đơn
-            </AppText>
-            <AppText variant="sm" color="#65676B">Chờ nhập kho</AppText>
-          </View>
-        </View>
-
-        <View style={s.fbMetricCard}>
-          <View style={[s.fbMetricIcon, { backgroundColor: '#ECFDF5' }]}>
-            <Icon name="check-circle" size={20} color={colors.status.success} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color={colors.status.success}>
-              {formatVND(orders.reduce((acc, o) => acc + (o.total_amount || 0), 0))}
-            </AppText>
-            <AppText variant="sm" color="#65676B">Tổng giá trị PO</AppText>
-          </View>
-        </View>
-      </View>
-
-      {/* Filter Chips Bar */}
-      <View style={{ marginVertical: 4, marginBottom: 8 }}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 12, gap: 8 }}>
-          {[
-            { key: 'all', label: 'Tất cả' },
-            { key: 'sent', label: 'Đã gửi PO' },
-            { key: 'partial', label: 'Nhập 1 phần' },
-            { key: 'received', label: 'Đã nhập kho' },
-            { key: 'cancelled', label: 'Đã hủy' },
-          ].map(sItem => {
-            const active = statusFilter === sItem.key;
-            return (
-              <TouchableOpacity
-                key={sItem.key}
-                onPress={() => setStatusFilter(sItem.key)}
-                style={[s.chip, active && s.chipActive]}
-              >
-                <AppText variant="sm" weight={active ? "bold" : "normal"} color={active ? colors.brand.primary : "#050505"}>
-                  {sItem.label}
-                </AppText>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-      </View>
-
+      {/* ── Main Body Split Layout ────────────────────────── */}
       {isWide ? (
         <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: 12, paddingBottom: 12, gap: 12 }}>
           <View style={{ flex: 0.55 }}>
-            <FlatList
-              data={filtered}
-              keyExtractor={item => item.id}
-              renderItem={renderCard}
-              contentContainerStyle={{ paddingBottom: 20 }}
-              showsVerticalScrollIndicator={false}
-              refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-              ListEmptyComponent={
-                loading ? (
-                  <TableSkeleton rowCount={5} />
-                ) : (
-                  <EmptyState
-                    icon="file-document-off-outline"
-                    title="Chưa có đơn PO nào"
-                    subtitle="Nhấn + Tạo PO mới để lập đơn nhập hàng"
-                  />
-                )
-              }
-            />
-          </View>
-          <View style={{ flex: 0.45 }}>{renderDetailPanel()}</View>
-        </View>
-      ) : (
-        <FlatList
-          data={filtered}
-          keyExtractor={item => item.id}
-          renderItem={renderCard}
-          contentContainerStyle={{ paddingBottom: 120 }}
-          showsVerticalScrollIndicator={false}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-          ListEmptyComponent={
-            loading ? (
+            {loading ? (
               <TableSkeleton rowCount={5} />
+            ) : filtered.length > 0 ? (
+              <FlatList
+                data={filtered}
+                keyExtractor={(item) => item.id}
+                renderItem={renderCard}
+                contentContainerStyle={{ gap: 10, paddingBottom: 24 }}
+                showsVerticalScrollIndicator={false}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+              />
             ) : (
               <EmptyState
                 icon="file-document-off-outline"
                 title="Chưa có đơn PO nào"
-                subtitle="Nhấn + Tạo PO mới để lập đơn nhập hàng"
+                subtitle="Nhấn nút Tạo PO Mới để khởi tạo đơn hàng đầu tiên"
               />
-            )
+            )}
+          </View>
+          <View style={{ flex: 0.45 }}>{renderDetailPanel()}</View>
+        </View>
+      ) : (
+        <View style={{ flex: 1 }}>
+          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 6, paddingTop: 6, gap: 8, paddingBottom: 100 }}>
+            <View style={ss.sectionWrap}>
+              <View style={ss.sectionHeader}>
+                <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1, letterSpacing: 0.5 }}>
+                  DANH SÁCH ĐƠN NHẬP HÀNG ({filtered.length})
+                </AppText>
+              </View>
+
+              <View style={ss.sectionItems}>
+                {filtered.map(item => (
+                  <React.Fragment key={item.id}>
+                    {renderCard({ item })}
+                  </React.Fragment>
+                ))}
+              </View>
+            </View>
+          </ScrollView>
+        </View>
+      )}
+
+      {/* Mobile Detail Modal */}
+      {!isWide && (
+        <DetailModal
+          visible={!!selectedPo}
+          title={selectedPo?.po_number || 'Chi tiết đơn PO'}
+          subtitle={selectedPo ? `Nhà cung cấp: ${selectedPo.supplier_name || 'N/A'}` : undefined}
+          onClose={() => setSelectedPo(null)}
+          onDelete={selectedPo ? () => {
+            const po = selectedPo;
+            Alert.alert('Xác nhận', `Xóa đơn PO "${po.po_number}"?`, [
+              { text: 'Hủy', style: 'cancel' },
+              {
+                text: 'Xóa',
+                style: 'destructive',
+                onPress: async () => {
+                  try {
+                    await request(`/api/v1/quan-ly/purchase-orders/${po.id}`, { method: 'DELETE' });
+                    setSelectedPo(null);
+                    loadData();
+                  } catch {
+                    Alert.alert('Lỗi', 'Không thể xóa đơn PO');
+                  }
+                },
+              },
+            ]);
+          } : undefined}
+          actions={
+            selectedPo
+              ? [
+                  {
+                    label: 'Nhận hàng',
+                    icon: 'package-down',
+                    variant: 'primary',
+                    onPress: () => setShowReceive(true),
+                  },
+                ]
+              : []
           }
-        />
+        >
+          {renderDetailPanel()}
+        </DetailModal>
       )}
 
-      {showCreate && (
-        <POForm
-          visible={showCreate}
-          suppliers={suppliers}
-          rawMaterials={rawMaterials}
-          onClose={() => setShowCreate(false)}
-          onSuccess={() => { setShowCreate(false); loadData(); }}
-        />
-      )}
+      <POForm
+        visible={showCreate}
+        suppliers={suppliers}
+        materials={rawMaterials}
+        onClose={() => setShowCreate(false)}
+        onSaved={loadData}
+      />
 
-      {showReceive && selectedPo && (
-        <ReceiveModal
-          visible={showReceive}
-          po={selectedPo}
-          onClose={() => setShowReceive(false)}
-          onSuccess={() => { setShowReceive(false); loadData(); }}
-        />
-      )}
+      <ReceiveModal
+        visible={showReceive}
+        po={selectedPo}
+        onClose={() => setShowReceive(false)}
+        onSaved={loadData}
+      />
     </View>
   );
 }
 
+// ── Styles ──
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface.app },
-
+  container: {
+    flex: 1,
+    backgroundColor: colors.surface.app,
+    position: 'relative',
+  },
   mobileActionRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingVertical: 6,
     backgroundColor: colors.surface.card,
     borderBottomWidth: 1,
     borderBottomColor: colors.border.light,
@@ -416,15 +590,12 @@ const s = StyleSheet.create({
   addBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
     gap: 6,
     paddingHorizontal: 14,
     height: 44,
     borderRadius: 999,
     backgroundColor: colors.brand.primary,
   },
-
-  /* Facebook Story Highlight Metric Cards Container */
   fbMetricContainer: {
     flexDirection: 'row',
     paddingHorizontal: 12,
@@ -456,24 +627,73 @@ const s = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
-  /* Filter chips */
-  chip: {
-    paddingHorizontal: 14,
-    height: 36,
-    borderRadius: 999,
-    backgroundColor: colors.surface.card,
+  toolbarRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingHorizontal: 12,
+    marginBottom: 8,
+  },
+  pillChip: {
+    height: 46,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#E2E8F0',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  chipActive: {
-    backgroundColor: colors.brand.primaryBg,
-    borderColor: '#FFEDD5',
+  pillChipActive: {
+    backgroundColor: '#FFF7ED',
+    borderColor: colors.brand.primary,
   },
-
-  /* 📱 Mobile Full-Width Facebook Feed Card Block */
+  mainBody: {
+    flex: 1,
+    gap: 12,
+    paddingHorizontal: 12,
+    paddingBottom: 12,
+  },
+  cardWide: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    padding: 12,
+  },
+  avatarCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  /* Detail-specific */
+  detailHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
+  },
+  panelDivider: {
+    height: 1,
+    backgroundColor: '#F1F5F9',
+  },
+  itemRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#F8FAFC',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 6,
+  },
   itemMobile: {
     backgroundColor: colors.surface.card,
     width: '100%',
@@ -486,23 +706,15 @@ const s = StyleSheet.create({
   cardHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    justifyContent: 'space-between',
     paddingHorizontal: 12,
   },
-  avatarCircle: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  badge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 999, alignSelf: 'flex-start' },
   cardActionDivider: {
     height: 1,
     backgroundColor: colors.border.light,
-    marginTop: 10,
+    marginVertical: 10,
   },
-  panelBtnPrimary: {
+  btnBluePill: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
@@ -510,9 +722,9 @@ const s = StyleSheet.create({
     gap: 6,
     height: 44,
     borderRadius: 999,
-    backgroundColor: colors.brand.primary,
+    backgroundColor: '#EFF6FF',
   },
-  panelBtnSecondary: {
+  btnOrangePill: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
@@ -520,30 +732,14 @@ const s = StyleSheet.create({
     gap: 6,
     height: 44,
     borderRadius: 999,
-    backgroundColor: colors.brand.primaryBg,
+    backgroundColor: '#FFF7ED',
   },
-
-  /* 💻 Wide Screen Card */
-  card: {
-    backgroundColor: colors.surface.card,
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
+  posAvatarMiniCircle: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
   },
-
-  /* Panel */
-  panelBox: {
-    backgroundColor: colors.surface.card,
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    gap: 12,
-  },
-  panelHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  panelDivider: { height: 1, backgroundColor: colors.border.light },
-  itemRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
-  panelBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 44, borderRadius: 999 },
 });

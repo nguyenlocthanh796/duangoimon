@@ -162,7 +162,7 @@ export function useCart() {
         );
         const nextCart = [...prev];
         if (confirmAll) {
-          nextCart[idx] = { ...item, serviceType: targetType };
+          nextCart[idx] = { ...item, serviceType: targetType as 'dine_in' | 'takeaway' };
         } else {
           // Reduce qty of existing item by 1
           nextCart[idx] = { ...item, qty: item.qty - 1 };
@@ -171,7 +171,7 @@ export function useCart() {
             ...item,
             cartItemId: `cart_split_${genCartId()}`,
             qty: 1,
-            serviceType: targetType,
+            serviceType: targetType as 'dine_in' | 'takeaway',
             isSent: false, // New split row is unsent until saved/sent
           };
           nextCart.push(newItem);
@@ -234,6 +234,10 @@ export function useCart() {
     if (orderId) setActiveOrderId(orderId);
   }, []);
 
+  const markSent = useCallback(() => {
+    setCart((prev) => prev.map((i) => ({ ...i, isSent: true })));
+  }, []);
+
   return {
     cart,
     total,
@@ -257,5 +261,6 @@ export function useCart() {
     getItemCartCount,
     getRealItemId,
     genCartId,
+    markSent,
   };
 }

@@ -60,7 +60,8 @@ async def test_login_nonexistent_user(client: AsyncClient):
     assert resp.status_code == 401
 
 
-async def test_rate_limit(client: AsyncClient):
+async def test_rate_limit(client: AsyncClient, monkeypatch):
+    monkeypatch.setattr("app.core.rate_limiter.RATE_LIMIT_LOGIN", 5)
     for _ in range(5):
         await client.post("/api/v1/auth/login", json={
             "username": "admin", "password": "wrongpass",
@@ -132,6 +133,43 @@ async def test_list_tables_paginated(client: AsyncClient):
 async def test_list_orders_paginated(client: AsyncClient):
     resp = await _list_with(client, "admin", "admin123", "/api/v1/ban-hang/orders/")
     assert resp.status_code in (200, 403)
+
+
+async def test_update_order_non_existent_404(client: AsyncClient):
+    token = await _login(client, "admin", "admin123")
+    fake_id = "00000000-0000-0000-0000-000000000000"
+    resp = await client.put(
+        f"/api/v1/ban-hang/orders/{fake_id}",
+        headers={"Authorization": f"Bearer {token}"},
+        json={"items": []},
+    )
+    assert resp.status_code == 404
+
+
+async def test_create_order_takeaway_and_zero_price(client: AsyncClient):
+    token = await _login(client, "admin", "admin123")
+    # First get a valid product ID
+    p_resp = await client.get("/api/v1/ban-hang/products", headers={"Authorization": f"Bearer {token}"})
+    assert p_resp.status_code == 200
+    p_data = p_resp.json()
+    items_list = p_data.get("items", p_data) if isinstance(p_data, dict) else p_data
+    if items_list and len(items_list) > 0:
+        prod_id = items_list[0]["id"]
+        order_resp = await client.post(
+            "/api/v1/ban-hang/orders/",
+            headers={"Authorization": f"Bearer {token}"},
+            json={
+                "table_id": "TAKEAWAY",
+                "items": [
+                    {
+                        "product_id": prod_id,
+                        "quantity": 1,
+                        "unit_price": 0,
+                    }
+                ],
+            },
+        )
+        assert order_resp.status_code == 201
 
 
 async def test_list_users_paginated(client: AsyncClient):

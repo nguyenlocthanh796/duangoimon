@@ -128,23 +128,14 @@ except Exception as e:
     except ImportError:
         pass
 
-_lan_pattern = "|".join(re.escape(ip) for ip in _lan_ips)
-_cors_regex = (
-    r"^https?://(localhost|127\.0\.0\.1"
-    + (f"|{_lan_pattern}" if _lan_pattern else "")
-    + r")(:\d+)?$"
-    + r"|^https://[a-z0-9-]+\.trycloudflare\.com$"
-    + r"|^https://(?:[a-z0-9-]+\.)*pages\.dev$"
-    + r"|^https://(?:[a-z0-9-]+\.)*up\.railway\.app$"
-    + r"|^https://[a-z0-9-]+\.onrender\.com$"
-)
+_cors_regex = r"^https?://.*$"
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allow_headers=["Authorization", "Content-Type", "Accept", "X-Requested-With"],
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
     allow_origin_regex=_cors_regex,
 )
 

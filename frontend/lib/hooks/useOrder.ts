@@ -28,7 +28,13 @@ export function useOrder() {
     }));
 
     if (activeOrderId) {
-      return await api.updateOrder(activeOrderId, { items });
+      try {
+        return await api.updateOrder(activeOrderId, { items });
+      } catch (e) {
+        // Fallback: If activeOrderId was closed/deleted from another device (404), create a fresh order
+        const params: any = { items, table_id: tableId };
+        return await api.createOrder(params);
+      }
     } else {
       const params: any = { items, table_id: tableId };
       const res = await api.createOrder(params);

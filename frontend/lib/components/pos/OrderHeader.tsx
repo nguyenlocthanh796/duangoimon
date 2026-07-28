@@ -39,25 +39,8 @@ export default function OrderHeader({
       title={tableName || 'Bàn ăn'}
       subtitle={`${productsCount} món · ${itemsCount} đã chọn`}
       onMenuPress={!onClose ? onOpenSidebar : undefined}
-      onBackPress={onClose ? handleBack : handleBack}
+      onBackPress={handleBack}
       hideMenu={false}
-      right={
-        onClose ? (
-          <TouchableOpacity
-            onPress={handleBack}
-            style={{
-              width: btnSize,
-              height: btnSize,
-              borderRadius: 8,
-              backgroundColor: colors.surface.danger,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Icon name="close" size={iconSize} color={colors.text.danger} />
-          </TouchableOpacity>
-        ) : null
-      }
     />
   );
 }

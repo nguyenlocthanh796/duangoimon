@@ -99,10 +99,10 @@ export default function MoveTableModal({
             }}
           >
             <View>
-              <AppText variant="lg" color={colors.text.primary} weight="bold">
+              <AppText variant="md" color={colors.text.primary} weight="bold">
                 {title}
               </AppText>
-              <AppText variant="xs" color={colors.text.muted}>
+              <AppText variant="sm" color={colors.text.muted}>
                 Chọn bàn từ sơ đồ khu vực trực quan bên dưới
               </AppText>
             </View>
@@ -165,7 +165,7 @@ export default function MoveTableModal({
                   <AppText variant="sm" weight="bold" color={colors.brand.primary}>
                     Bàn đã chọn: {selectedTable.name}
                   </AppText>
-                  <AppText variant="xs" color={colors.text.muted}>
+                  <AppText variant="sm" color={colors.text.muted}>
                     {selectedTable.area || 'Khu vực chung'} · Trạng thái: {selectedTable.status === 'co_khach' ? 'Đã có khách' : 'Bàn trống'}
                   </AppText>
                 </View>
@@ -177,7 +177,7 @@ export default function MoveTableModal({
                 ) : null}
               </View>
             ) : (
-              <AppText variant="xs" color={colors.text.muted} style={{ textAlign: 'center' }}>
+              <AppText variant="sm" color={colors.text.muted} style={{ textAlign: 'center' }}>
                 Vui lòng bấm chọn một bàn trên sơ đồ
               </AppText>
             )}

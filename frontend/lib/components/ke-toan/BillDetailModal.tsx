@@ -188,7 +188,7 @@ export default function BillDetailModal({ visible, orderId, onClose }: BillDetai
 
   return (
     <Modal visible={visible} transparent={false} animationType="slide" onRequestClose={onClose}>
-      <SafeAreaView style={styles.mobileScreenContainer} edges={['top', 'left', 'right', 'bottom']}>
+      <SafeAreaView style={styles.mobileScreenContainer} edges={['top', 'left', 'right']}>
         <View style={styles.mobileHeader}>
           <TouchableOpacity onPress={onClose} style={styles.mobileBackBtn}>
             <Icon name="arrow-left" size={22} color={colors.brand.primary} />
@@ -279,12 +279,12 @@ const styles = StyleSheet.create({
   },
   shopName: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#171717',
     textAlign: 'center',
   },
   shopSub: {
-    fontSize: 13,
+    fontSize: 12,
     color: '#737373',
     textAlign: 'center',
     marginTop: 2,
@@ -297,8 +297,8 @@ const styles = StyleSheet.create({
     marginVertical: 12,
   },
   receiptTitle: {
-    fontSize: 13,
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: '700',
     color: '#171717',
     textAlign: 'center',
     marginBottom: 8,
@@ -309,11 +309,11 @@ const styles = StyleSheet.create({
     marginVertical: 2,
   },
   infoLabel: {
-    fontSize: 13,
+    fontSize: 12,
     color: '#737373',
   },
   infoVal: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '600',
     color: '#171717',
   },
@@ -322,8 +322,8 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   headCell: {
-    fontSize: 13,
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: '700',
     color: '#404040',
   },
   tableRow: {
@@ -333,17 +333,17 @@ const styles = StyleSheet.create({
     borderBottomColor: '#E5E5E5',
   },
   itemName: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '600',
     color: '#171717',
   },
   itemOps: {
-    fontSize: 13,
+    fontSize: 12,
     color: colors.text.brand,
     marginTop: 2,
   },
   cellText: {
-    fontSize: 13,
+    fontSize: 14,
     color: '#171717',
   },
   summaryRow: {
@@ -352,16 +352,16 @@ const styles = StyleSheet.create({
     marginVertical: 2,
   },
   summaryLabel: {
-    fontSize: 13,
+    fontSize: 14,
     color: '#404040',
   },
   summaryVal: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '600',
     color: '#171717',
   },
   thankyou: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '600',
     color: '#737373',
     textAlign: 'center',

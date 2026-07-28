@@ -49,6 +49,7 @@ const COLLAPSED_W = 72;
 
 // ─── Logo header ──────────────────────────────────────────
 function LogoHeader({ collapsed, onToggle }: { collapsed: boolean; onToggle?: () => void }) {
+  const insets = useSafeAreaInsets();
   return (
     <TouchableOpacity
       activeOpacity={0.7}
@@ -56,28 +57,21 @@ function LogoHeader({ collapsed, onToggle }: { collapsed: boolean; onToggle?: ()
       disabled={!onToggle}
       style={{
         paddingHorizontal: collapsed ? 12 : 20,
-        paddingVertical: 16,
+        paddingTop: Math.max(insets.top, 16),
+        paddingBottom: 16,
         borderBottomWidth: 1,
         borderBottomColor: colors.border.default,
         alignItems: collapsed ? 'center' : 'flex-start',
       }}
     >
       {collapsed ? (
-        <View style={{ width: 40, height: 40, borderRadius: shape.radius.sm, overflow: 'hidden' }}>
-          <Image
-            source={ASSETS.brand.logoMark}
-            style={{ width: 40, height: 40 }}
-            resizeMode="contain"
-          />
+        <View style={{ width: 40, height: 40, borderRadius: shape.radius.sm, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' }}>
+          <Icon name="storefront-outline" size={24} color={colors.brand.primary} />
         </View>
       ) : (
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-          <View style={{ width: 36, height: 36, borderRadius: shape.radius.sm, overflow: 'hidden' }}>
-            <Image
-              source={ASSETS.brand.logoMark}
-              style={{ width: 36, height: 36 }}
-              resizeMode="contain"
-            />
+          <View style={{ width: 36, height: 36, borderRadius: shape.radius.sm, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' }}>
+            <Icon name="storefront-outline" size={22} color={colors.brand.primary} />
           </View>
           <View>
             <Text style={{ ...font.lg, color: colors.text.primary }}>OngChu POS</Text>
@@ -224,7 +218,8 @@ function NavItemRow({
   return (
     <TouchableOpacity
       onPress={onPress}
-      activeOpacity={0.7}
+      delayPressIn={0}
+      activeOpacity={0.6}
       style={{
         flexDirection: 'row',
         alignItems: 'center',
@@ -294,10 +289,13 @@ function NavItemRow({
 // ─── Logout button ─────────────────────────────────────────
 function LogoutButton({ collapsed, onClose }: { collapsed: boolean; onClose: (() => void) | null }) {
   const { logout } = useAuth();
+  const insets = useSafeAreaInsets();
   return (
     <View
       style={{
-        padding: collapsed ? 8 : 16,
+        paddingHorizontal: collapsed ? 8 : 16,
+        paddingTop: 16,
+        paddingBottom: Math.max(insets.bottom, 16),
         borderTopWidth: 1,
         borderTopColor: colors.border.default,
       }}

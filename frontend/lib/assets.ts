@@ -4,6 +4,7 @@ export const ASSETS = {
     logoMark: null,
   },
   images: {
+    loginBg: require('../assets/images/login_bg.jpg'),
     foodPlaceholder: null,
     emptyStateMenu: null,
     emptyStateOrders: null,

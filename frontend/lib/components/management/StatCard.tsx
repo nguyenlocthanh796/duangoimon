@@ -72,12 +72,12 @@ export default function StatCard({
         )}
       </View>
 
-      {/* Row 2: Label */}
+      {/* Row 2: Label — Item Content size (17px) with center text alignment */}
       <AppText
-        variant="sm"
+        variant="md"
         color={colors.text.secondary}
         numberOfLines={1}
-        style={{ marginTop: 4 }}
+        style={styles.labelText}
       >
         {label}
       </AppText>
@@ -89,6 +89,8 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.surface.card,
     borderRadius: shape.radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border.light,
     justifyContent: 'center',
   },
   trendBadge: {
@@ -105,17 +107,23 @@ const styles = StyleSheet.create({
   },
   row1: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   iconBg: {
-    width: 32,
-    height: 32,
+    width: 36,
+    height: 36,
     borderRadius: shape.radius.md,
     alignItems: 'center',
     justifyContent: 'center',
   },
   valueText: {
     fontSize: 16,
+    fontFamily: 'BeVietnamPro_700Bold',
     fontWeight: '700',
     color: colors.text.primary,
+    letterSpacing: -0.2,
     flex: 1,
     flexShrink: 1,
+  },
+  labelText: {
+    marginTop: 6,
+    textAlign: 'center',
   },
 });

@@ -10,9 +10,12 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { colors, font } from '../../theme';
+import { colors, font, ss } from '../../theme';
 import { shape } from '../../theme/shape';
 import { request } from '../../api/client';
+import ScreenHeader from '../ui/ScreenHeader';
+import { useSidebar } from '../../context/SidebarContext';
+import { useResponsive } from '../../hooks/useResponsive';
 
 const API = '/api/v1/quan-ly';
 interface RM {
@@ -166,10 +169,116 @@ function RawMaterialPicker({
   );
 }
 
+/* ── Product Picker ── */
+function ProductPicker({
+  products = [],
+  value,
+  onChange,
+}: {
+  products: any[];
+  value: string;
+  onChange: (prod: any) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [q, setQ] = useState('');
+  const sel = products.find((p) => p.id === value || p.product_id === value);
+  const filtered = q.trim()
+    ? products.filter(
+        (p) =>
+          (p.name || '').toLowerCase().includes(q.toLowerCase()) ||
+          (p.code || '').toLowerCase().includes(q.toLowerCase())
+      )
+    : products;
+  return (
+    <View style={{ zIndex: 1000 }}>
+      <TouchableOpacity
+        onPress={() => setOpen(!open)}
+        style={[
+          s.input,
+          {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            backgroundColor: '#FFFFFF',
+          },
+        ]}
+      >
+        <Text
+          style={{ ...font.md, color: sel ? colors.text.primary : colors.text.muted, flex: 1 }}
+          numberOfLines={1}
+        >
+          {sel ? `${sel.name} (${formatVND(sel.price || sel.selling_price || 0)})` : value || 'Chọn món ăn / đồ uống...'}
+        </Text>
+        <Icon name="chevron-down" size={18} color={colors.icon.muted} />
+      </TouchableOpacity>
+      {open && (
+        <View
+          style={{
+            position: 'absolute',
+            zIndex: 1001,
+            top: 48,
+            left: 0,
+            right: 0,
+            backgroundColor: colors.surface.card,
+            borderWidth: 1,
+            borderColor: colors.border.default,
+            borderRadius: 10,
+            maxHeight: 200,
+          }}
+        >
+          <TextInput
+            value={q}
+            onChangeText={setQ}
+            placeholder="Tìm tên món ăn..."
+            style={{
+              padding: 10,
+              borderBottomWidth: 1,
+              borderBottomColor: colors.border.default,
+              ...font.sm,
+            }}
+          />
+          <ScrollView keyboardShouldPersistTaps="handled">
+            {filtered.map((p) => (
+              <TouchableOpacity
+                key={p.id}
+                onPress={() => {
+                  onChange(p);
+                  setOpen(false);
+                  setQ('');
+                }}
+                style={{
+                  paddingVertical: 10,
+                  paddingHorizontal: 12,
+                  borderBottomWidth: 1,
+                  borderBottomColor: '#F1F5F9',
+                  backgroundColor: value === p.id ? colors.brand.primaryBg : 'transparent',
+                }}
+              >
+                <Text
+                  style={{
+                    ...font.smBold,
+                    color: value === p.id ? colors.brand.primary : colors.text.primary,
+                  }}
+                >
+                  {p.name}
+                </Text>
+                <Text style={{ ...font.sm, color: colors.text.muted }}>
+                  Giá bán: {formatVND(p.price || p.selling_price || 0)}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      )}
+    </View>
+  );
+}
+
 /* ── Recipe Form ── */
 interface Props {
   visible: boolean;
   materials: RM[];
+  products?: any[];
   onClose: () => void;
   onSaved: () => void;
   editRecipe?: any;
@@ -179,6 +288,7 @@ interface Props {
 export default function RecipeForm({
   visible,
   materials,
+  products = [],
   onClose,
   onSaved,
   editRecipe,
@@ -216,13 +326,14 @@ export default function RecipeForm({
           ? `${source.name || source.recipe_name} (Copy)`
           : source.name || source.recipe_name || ''
       );
+      const rawItems = source.items || source.ingredients || [];
       setItems(
-        (source.items || []).map((it: any) => ({
-          raw_material_id: it.raw_material_id,
-          raw_material_name: '',
-          quantity: String(it.quantity || ''),
+        rawItems.map((it: any) => ({
+          raw_material_id: it.raw_material_id || it.material_id || it.id || '',
+          raw_material_name: it.raw_material_name || it.material_name || it.name || '',
+          quantity: String(it.quantity ?? 0),
           unit: it.unit || 'kg',
-          cost: String(it.cost || ''),
+          cost: String(it.cost ?? it.unit_price ?? 0),
         }))
       );
     } else {
@@ -270,24 +381,41 @@ export default function RecipeForm({
     }
   };
 
+  const { openSidebar } = useSidebar();
+  const { isWide } = useResponsive();
+
+  if (!visible) return null;
+
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
-      <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface.card }}>
-        <View style={s.modalHeader}>
-          <TouchableOpacity onPress={onClose}>
-            <Text style={{ ...font.mdBold, color: colors.text.muted }}>Huỷ</Text>
-          </TouchableOpacity>
-          <Text style={{ ...font.lg, color: colors.text.primary }}>
-            {isEdit ? 'Sửa công thức' : isClone ? 'Nhân bản công thức' : 'Công thức mới'}
-          </Text>
-          <TouchableOpacity onPress={save} disabled={saving}>
-            <Text
-              style={{ ...font.mdBold, color: saving ? colors.text.muted : colors.brand.primary }}
-            >
+    <View style={[StyleSheet.absoluteFill, { top: isWide ? 0 : -45, zIndex: 10000, backgroundColor: colors.surface.app || '#F8FAFC' }]}>
+      <ScreenHeader
+        title={isEdit ? 'Sửa công thức' : isClone ? 'Nhân bản công thức' : 'Tạo công thức mới'}
+        subtitle={name ? `BOM: ${name}` : undefined}
+        showBack
+        onBackPress={onClose}
+        onMenuPress={openSidebar}
+        compact
+        right={
+          <TouchableOpacity
+            onPress={save}
+            disabled={saving}
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 4,
+              backgroundColor: colors.brand.primary,
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+              borderRadius: 6,
+            }}
+          >
+            <Icon name="check" size={16} color="#FFF" />
+            <Text style={{ ...font.smBold, color: '#FFF' }}>
               {saving ? 'Đang lưu...' : 'Lưu'}
             </Text>
           </TouchableOpacity>
-        </View>
+        }
+      />
 
         {/* Simulation bar */}
         {salePrice > 0 && simMode && (
@@ -316,37 +444,45 @@ export default function RecipeForm({
           </View>
         )}
 
-        <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }}>
-          <View>
-            <Text style={s.label}>Món (ID sản phẩm)</Text>
-            <TextInput
-              value={productId}
-              onChangeText={setProductId}
-              placeholder="Nhập product_id..."
-              style={s.input}
-            />
-          </View>
-          <View>
-            <Text style={s.label}>Tên công thức</Text>
-            <TextInput
-              value={name}
-              onChangeText={setName}
-              placeholder="VD: Phở bò - công thức chuẩn"
-              style={s.input}
-            />
+        <ScrollView contentContainerStyle={{ paddingHorizontal: 6, paddingTop: 6, gap: 8, paddingBottom: 100 }}>
+          {/* CardBox 1: Thông tin món áp dụng BOM */}
+          <View style={ss.sectionWrap}>
+            <View style={ss.sectionHeader}>
+              <Text style={{ ...font.smBold, color: '#1E293B', letterSpacing: 0.5 }}>
+                THÔNG TIN MÓN ÁP DỤNG BOM
+              </Text>
+            </View>
+            <View style={{ padding: 10, gap: 10 }}>
+              <View style={{ zIndex: 2000 }}>
+                <Text style={s.label}>Món ăn / Đồ uống áp dụng (*)</Text>
+                <ProductPicker
+                  products={products}
+                  value={productId}
+                  onChange={(p) => {
+                    setProductId(p.id || p.product_id);
+                    if (!name) setName(`BOM ${p.name}`);
+                  }}
+                />
+              </View>
+              <View>
+                <Text style={s.label}>Tên công thức định lượng (*)</Text>
+                <TextInput
+                  value={name}
+                  onChangeText={setName}
+                  placeholder="VD: BOM Phở Bò Đặc Biệt"
+                  style={s.input}
+                />
+              </View>
+            </View>
           </View>
 
-          <View>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: 8,
-              }}
-            >
-              <Text style={s.label}>Nguyên liệu</Text>
-              <View style={{ flexDirection: 'row', gap: 8 }}>
+          {/* CardBox 2: Danh sách nguyên liệu định lượng (BOM) */}
+          <View style={ss.sectionWrap}>
+            <View style={[ss.sectionHeader, { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}>
+              <Text style={{ ...font.smBold, color: '#1E293B', letterSpacing: 0.5 }}>
+                ĐỊNH LƯỢNG NGUYÊN LIỆU ({items.length})
+              </Text>
+              <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }}>
                 {salePrice > 0 && (
                   <TouchableOpacity
                     onPress={() => {
@@ -357,88 +493,83 @@ export default function RecipeForm({
                   >
                     <Icon
                       name="chart-timeline-variant"
-                      size={16}
+                      size={14}
                       color={simMode ? colors.brand.primary : colors.text.muted}
                     />
-                    <Text
-                      style={{
-                        ...font.sm,
-                        color: simMode ? colors.brand.primary : colors.text.muted,
-                      }}
-                    >
-                      {simMode ? 'Đang mô phỏng' : 'What-If'}
+                    <Text style={{ ...font.sm, color: simMode ? colors.brand.primary : colors.text.muted }}>
+                      {simMode ? 'Mô phỏng' : 'What-If'}
                     </Text>
                   </TouchableOpacity>
                 )}
                 <TouchableOpacity
                   onPress={addItem}
-                  style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
+                  style={s.addBtnSm}
                 >
-                  <Icon name="plus-circle-outline" size={18} color={colors.brand.primary} />
-                  <Text style={{ ...font.sm, color: colors.brand.primary }}>Thêm</Text>
+                  <Icon name="plus" size={14} color="#FFF" />
+                  <Text style={{ ...font.smBold, color: '#FFF' }}>Thêm NL</Text>
                 </TouchableOpacity>
               </View>
             </View>
 
-            {items.map((it, idx) => {
-              const rm = materials.find((m) => m.id === it.raw_material_id);
-              const isLowStock = rm ? rm.current_stock < rm.min_stock : false;
-              const currentCost =
-                simMode && simCosts[idx] !== undefined ? simCosts[idx] : parseFloat(it.cost) || 0;
+            <View style={{ padding: 10, gap: 8 }}>
+              {items.map((it, idx) => {
+                const rm = materials.find((m) => m.id === it.raw_material_id);
+                const isLowStock = rm ? rm.current_stock < rm.min_stock : false;
 
-              return (
-                <View key={idx} style={s.ingredientRow}>
-                  <View style={{ flex: 2 }}>
-                    <RawMaterialPicker
-                      materials={materials}
-                      value={it.raw_material_id}
-                      onChange={(id, name) => {
-                        updateItem(idx, 'raw_material_id', id);
-                        updateItem(idx, 'raw_material_name', name);
-                      }}
-                    />
+                return (
+                  <View key={idx} style={s.ingredientRow}>
+                    <View style={{ flex: 2 }}>
+                      <RawMaterialPicker
+                        materials={materials}
+                        value={it.raw_material_id}
+                        onChange={(id, rawName) => {
+                          updateItem(idx, 'raw_material_id', id);
+                          updateItem(idx, 'raw_material_name', rawName);
+                        }}
+                      />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <TextInput
+                        value={it.quantity}
+                        onChangeText={(v) => updateItem(idx, 'quantity', v)}
+                        placeholder="SL"
+                        keyboardType="decimal-pad"
+                        style={s.inputSmall}
+                      />
+                    </View>
+                    <View style={{ flex: 1.2 }}>
+                      <TextInput
+                        value={it.cost}
+                        onChangeText={(v) => {
+                          updateItem(idx, 'cost', v);
+                          if (simMode) setSimCosts((prev) => ({ ...prev, [idx]: parseFloat(v) || 0 }));
+                        }}
+                        placeholder="CP (VNĐ)"
+                        keyboardType="decimal-pad"
+                        style={[s.inputSmall, simMode && { borderColor: colors.brand.primary }]}
+                      />
+                    </View>
+                    {isLowStock && (
+                      <Icon name="alert-circle-outline" size={16} color={colors.status.warning} />
+                    )}
+                    <TouchableOpacity onPress={() => removeItem(idx)} style={s.deleteBtnSm}>
+                      <Icon name="trash-can-outline" size={16} color="#DC2626" />
+                    </TouchableOpacity>
                   </View>
-                  <View style={{ flex: 1 }}>
-                    <TextInput
-                      value={it.quantity}
-                      onChangeText={(v) => updateItem(idx, 'quantity', v)}
-                      placeholder="SL"
-                      keyboardType="decimal-pad"
-                      style={s.inputSmall}
-                    />
-                  </View>
-                  <View style={{ flex: 1.2 }}>
-                    <TextInput
-                      value={it.cost}
-                      onChangeText={(v) => {
-                        updateItem(idx, 'cost', v);
-                        if (simMode)
-                          setSimCosts((prev) => ({ ...prev, [idx]: parseFloat(v) || 0 }));
-                      }}
-                      placeholder="CP"
-                      keyboardType="decimal-pad"
-                      style={[s.inputSmall, simMode && { borderColor: colors.brand.primary }]}
-                    />
-                  </View>
-                  {isLowStock && (
-                    <Icon name="alert-circle-outline" size={18} color={colors.status.warning} />
-                  )}
-                  <TouchableOpacity onPress={() => removeItem(idx)} style={{ padding: 8 }}>
-                    <Icon name="close-circle" size={20} color={colors.status.danger} />
-                  </TouchableOpacity>
+                );
+              })}
+
+              {items.length === 0 && (
+                <View style={{ paddingVertical: 12, alignItems: 'center' }}>
+                  <Text style={{ ...font.sm, color: colors.text.muted, fontStyle: 'italic' }}>
+                    Chưa có nguyên liệu. Nhấn "+ Thêm NL" để bắt đầu lập BOM.
+                  </Text>
                 </View>
-              );
-            })}
-
-            {items.length === 0 && (
-              <Text style={{ ...font.sm, color: colors.text.muted, fontStyle: 'italic' }}>
-                Chưa có nguyên liệu. Nhấn "Thêm" để bắt đầu.
-              </Text>
-            )}
+              )}
+            </View>
           </View>
         </ScrollView>
-      </SafeAreaView>
-    </Modal>
+    </View>
   );
 }
 
@@ -454,32 +585,51 @@ const s = StyleSheet.create({
   },
   label: { ...font.smBold, color: colors.text.secondary, marginBottom: 4 },
   input: {
-    borderWidth: 1.5,
-    borderColor: colors.border.default,
-    borderRadius: 10,
-    padding: 12,
-    ...font.md,
-    color: colors.text.primary,
-    backgroundColor: colors.surface.app,
-  },
-  inputSmall: {
-    borderWidth: 1.5,
-    borderColor: colors.border.default,
-    borderRadius: 8,
-    padding: 8,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    height: 36,
     ...font.sm,
     color: colors.text.primary,
-    backgroundColor: colors.surface.app,
+    backgroundColor: '#FFFFFF',
   },
-  ingredientRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 },
+  inputSmall: {
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    height: 36,
+    ...font.sm,
+    color: colors.text.primary,
+    backgroundColor: '#FFFFFF',
+  },
+  ingredientRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 6 },
   miniBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
     paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: shape.radius.sm,
-    backgroundColor: colors.surface.disabled,
+    height: 28,
+    borderRadius: 6,
+    backgroundColor: '#F1F5F9',
+  },
+  addBtnSm: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    height: 28,
+    borderRadius: 6,
+    backgroundColor: colors.brand.primary,
+  },
+  deleteBtnSm: {
+    width: 32,
+    height: 32,
+    borderRadius: 6,
+    backgroundColor: '#FEE2E2',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   simBar: {
     paddingHorizontal: 16,

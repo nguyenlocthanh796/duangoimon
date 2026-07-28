@@ -331,7 +331,7 @@ export default function CartPanel({
       style={{
         paddingHorizontal: 8,
         paddingTop: 8,
-        paddingBottom: isWide ? insets.bottom + 8 : 8,
+        paddingBottom: 8,
         gap: 8,
         borderTopWidth: 1,
         borderTopColor: colors.border.default,
@@ -583,7 +583,7 @@ export default function CartPanel({
     <Modal visible={cartSheet} animationType="slide" presentationStyle="fullScreen">
       <SafeAreaView
         style={{ flex: 1, backgroundColor: colors.surface.card }}
-        edges={['top', 'bottom', 'left', 'right']}
+        edges={['top', 'left', 'right']}
       >
         {content}
       </SafeAreaView>

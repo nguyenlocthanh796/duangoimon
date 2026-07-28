@@ -3,14 +3,27 @@
  * Allows iPad / Android tablet users to input local server IP (e.g., http://192.168.1.100:8000).
  */
 
-import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 
 const SERVER_URL_KEY = 'pos_custom_server_url_v1';
 let _cachedCustomUrl: string | null = null;
 
 // ── Cloudflare Tunnel Base (single source of truth) ─────────────────────
-// Quick Tunnel URL changes each restart. Update this ONE value to fix all.
 export const CLOUDFLARE_TUNNEL_BASE = 'https://established-clouds-flame-tel.trycloudflare.com';
+
+// Extract local developer machine IP address from Expo Metro packager
+function getExpoDevServerIp(): string | null {
+  try {
+    const hostUri = Constants.expoConfig?.hostUri || (Constants as any).manifest?.debuggerHost;
+    if (hostUri) {
+      const ip = hostUri.split(':')[0];
+      if (ip && ip !== 'localhost' && ip !== '127.0.0.1') {
+        return ip;
+      }
+    }
+  } catch {}
+  return null;
+}
 
 // Read custom server URL from storage synchronously
 export function getCustomServerUrlSync(): string | null {
@@ -27,7 +40,6 @@ export function setCustomServerUrl(url: string) {
   if (formatted && !formatted.startsWith('http://') && !formatted.startsWith('https://')) {
     formatted = `http://${formatted}`;
   }
-  // Strip trailing slashes
   formatted = formatted.replace(/\/+$/, '');
   
   _cachedCustomUrl = formatted;
@@ -49,22 +61,24 @@ export function getApiBaseUrl(): string {
     return custom.endsWith('/api/v1') ? custom : `${custom}/api/v1`;
   }
 
+  if (typeof window !== 'undefined' && window.location) {
+    const host = window.location.hostname;
+    if (host.endsWith('.pages.dev') || host.endsWith('.cloudflare.com')) {
+      return `${CLOUDFLARE_TUNNEL_BASE}/api/v1`;
+    }
+    // Always target port 8000 on active hostname (localhost, 127.0.0.1, or 192.168.x.x)
+    return `${window.location.protocol}//${host}:8000/api/v1`;
+  }
+
   if (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_API_URL) {
     return process.env.EXPO_PUBLIC_API_URL;
   }
 
-  if (typeof window !== 'undefined' && window.location) {
-    const host = window.location.hostname;
-    if (host === 'localhost' || host === '127.0.0.1') {
-      return `http://${host}:8000/api/v1`;
-    }
-    if (host.endsWith('.pages.dev') || host.endsWith('.cloudflare.com')) {
-      // Cloudflare Pages -> proxy via tunnel
-      return `${CLOUDFLARE_TUNNEL_BASE}/api/v1`;
-    }
-    return `${window.location.protocol}//${window.location.host}/api/v1`;
+  // Native devices (iPhone / iPad):
+  const devIp = getExpoDevServerIp();
+  if (devIp) {
+    return `http://${devIp}:8000/api/v1`;
   }
 
-  // Fallback for native devices when no IP is set
-  return 'http://localhost:8000/api/v1';
+  return `${CLOUDFLARE_TUNNEL_BASE}/api/v1`;
 }

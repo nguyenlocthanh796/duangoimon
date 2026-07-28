@@ -190,9 +190,9 @@ const styles = StyleSheet.create({
   bar: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     backgroundColor: colors.surface.card,
     borderBottomWidth: 1,
     borderBottomColor: colors.border.light,

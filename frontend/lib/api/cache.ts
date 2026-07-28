@@ -69,3 +69,14 @@ export function invalidateCache(key?: string) {
   if (key) _store.delete(key);
   else _store.clear();
 }
+
+export function mutateCacheSync<T>(key: string, updater: (current: T | undefined) => T) {
+  const existing = _store.get(key);
+  const updatedData = updater(existing ? existing.data : undefined);
+  const now = Date.now();
+  _store.set(key, {
+    data: updatedData,
+    staleAt: now + DEFAULT_STALE_MS,
+    expiresAt: now + DEFAULT_EXPIRE_MS,
+  });
+}

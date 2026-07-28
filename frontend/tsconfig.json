@@ -25,6 +25,7 @@
   ],
   "exclude": [
     "dist",
+    "backup_ui_stable",
     "**/__tests__/**",
     "**/*.test.ts",
     "**/*.test.tsx"

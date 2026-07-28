@@ -15,6 +15,7 @@ router = APIRouter(prefix="/ke-toan", tags=["ke-toan"])
 
 @router.get("/dashboard")
 async def dashboard(
+    branch_id: str | None = None,
     db: AsyncSession = Depends(get_db),
     _user: dict = Depends(get_current_user),
 ):
@@ -24,6 +25,8 @@ async def dashboard(
 
     # ── 1. Summaries ─────────────────────────────────────────────────────
     tx_stmt = select(Transaction)
+    if branch_id:
+        tx_stmt = tx_stmt.where(Transaction.branch_id == branch_id)
     tx_result = await db.execute(tx_stmt.order_by(Transaction.created_at.desc()).limit(200))
     all_tx = tx_result.scalars().all()
 
@@ -113,6 +116,8 @@ async def dashboard(
 
     # ── 5. Invoices summary ──────────────────────────────────────────────
     inv_stmt = select(Invoice)
+    if branch_id:
+        inv_stmt = inv_stmt.where(Invoice.branch_id == branch_id)
     inv_result = await db.execute(inv_stmt.order_by(Invoice.created_at.desc()).limit(100))
     all_inv = inv_result.scalars().all()
     exported_count = sum(1 for i in all_inv if i.status == "da_xuat")

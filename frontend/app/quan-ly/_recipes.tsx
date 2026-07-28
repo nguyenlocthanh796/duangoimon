@@ -6,11 +6,13 @@ import {
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useResponsive } from '../../lib/hooks/useResponsive';
-import { colors, font, formatVND } from '../../lib/theme';
+import { colors, font, formatVND, ss } from '../../lib/theme';
 import AppText from '../../lib/components/ui/AppText';
 import SearchBar from '../../lib/components/ui/SearchBar';
 import EmptyState from '../../lib/components/ui/EmptyState';
 import RecipeForm from '../../lib/components/recipes/RecipeForm';
+import ScreenHeader from '../../lib/components/ui/ScreenHeader';
+import DetailModal from '../../lib/components/ui/DetailModal';
 import { request } from '../../lib/api/client';
 
 function foodCostColor(pct: number) {
@@ -21,14 +23,68 @@ function foodCostColor(pct: number) {
 
 function generateFallbackRecipes() {
   return [
-    { id: 'r1', recipe_name: 'BOM Phở Bò Đặc Biệt', product_name: 'Phở Bò Đặc Biệt', product_price: 65000, cost_price: 22000, food_cost_pct: 34, ingredient_count: 5 },
-    { id: 'r2', recipe_name: 'BOM Cà Phê Sữa Đá', product_name: 'Cà Phê Sữa Đá Sài Gòn', product_price: 35000, cost_price: 9500, food_cost_pct: 27, ingredient_count: 3 },
-    { id: 'r3', recipe_name: 'BOM Trà Đào Cam Sả', product_name: 'Trà Đào Cam Sả', product_price: 45000, cost_price: 12500, food_cost_pct: 28, ingredient_count: 4 },
-    { id: 'r4', recipe_name: 'BOM Bánh Mì Thịt Nướng', product_name: 'Bánh Mì Thịt Nướng', product_price: 30000, cost_price: 9000, food_cost_pct: 30, ingredient_count: 4 },
+    {
+      id: 'r1',
+      recipe_name: 'BOM Phở Bò Đặc Biệt',
+      product_name: 'Phở Bò Đặc Biệt',
+      product_id: 'p1',
+      product_price: 65000,
+      cost_price: 22000,
+      food_cost_pct: 34,
+      ingredient_count: 3,
+      items: [
+        { raw_material_id: 'rm1', raw_material_name: 'Bánh Phở Tươi', quantity: 0.2, unit: 'kg', cost: 4000 },
+        { raw_material_id: 'rm2', raw_material_name: 'Thịt Bò Mỹ Nhập Khẩu', quantity: 0.1, unit: 'kg', cost: 15000 },
+        { raw_material_id: 'rm3', raw_material_name: 'Hành Tây & Rau Thơm', quantity: 0.05, unit: 'kg', cost: 3000 },
+      ],
+    },
+    {
+      id: 'r2',
+      recipe_name: 'BOM Cà Phê Sữa Đá',
+      product_name: 'Cà Phê Sữa Đá Sài Gòn',
+      product_id: 'p2',
+      product_price: 35000,
+      cost_price: 9500,
+      food_cost_pct: 27,
+      ingredient_count: 2,
+      items: [
+        { raw_material_id: 'rm4', raw_material_name: 'Hạt Cà Phê Robusta', quantity: 0.025, unit: 'kg', cost: 4500 },
+        { raw_material_id: 'rm5', raw_material_name: 'Sữa Đặc Ngôi Sao', quantity: 0.04, unit: 'hộp', cost: 5000 },
+      ],
+    },
+    {
+      id: 'r3',
+      recipe_name: 'BOM Trà Đào Cam Sả',
+      product_name: 'Trà Đào Cam Sả',
+      product_id: 'p3',
+      product_price: 45000,
+      cost_price: 12500,
+      food_cost_pct: 28,
+      ingredient_count: 3,
+      items: [
+        { raw_material_id: 'rm6', raw_material_name: 'Siro Đào Monin', quantity: 0.03, unit: 'chai', cost: 5500 },
+        { raw_material_id: 'rm7', raw_material_name: 'Đào Ngâm Hộp', quantity: 0.5, unit: 'miếng', cost: 4000 },
+        { raw_material_id: 'rm8', raw_material_name: 'Cam Tươi & Sả Tươi', quantity: 0.1, unit: 'kg', cost: 3000 },
+      ],
+    },
+    {
+      id: 'r4',
+      recipe_name: 'BOM Bánh Mì Thịt Nướng',
+      product_name: 'Bánh Mì Thịt Nướng',
+      product_id: 'p4',
+      product_price: 30000,
+      cost_price: 9000,
+      food_cost_pct: 30,
+      ingredient_count: 2,
+      items: [
+        { raw_material_id: 'rm9', raw_material_name: 'Thịt Heo Ức Nướng', quantity: 0.08, unit: 'kg', cost: 7000 },
+        { raw_material_id: 'rm10', raw_material_name: 'Vỏ Bánh Mì Giòn', quantity: 1, unit: 'ổ', cost: 2000 },
+      ],
+    },
   ];
 }
 
-export default function RecipesScreen() {
+export default function RecipesScreen({ isSearchOpen }: { isSearchOpen?: boolean } = {}) {
   const { isWide } = useResponsive();
   const [recipes, setRecipes] = useState<any[]>([]);
   const [materials, setMaterials] = useState<any[]>([]);
@@ -39,34 +95,61 @@ export default function RecipesScreen() {
   const [cloneRecipe, setCloneRecipe] = useState<any | null>(null);
   const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
 
+  const [products, setProducts] = useState<any[]>([]);
+  const [costFilter, setCostFilter] = useState<'all' | 'normal' | 'high' | 'missing'>('all');
+
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
-      const [r, m] = await Promise.all([
+      const [r, m, p] = await Promise.all([
         request('/api/v1/quan-ly/recipes').catch(() => []),
         request('/api/v1/quan-ly/raw-materials').catch(() => []),
+        request('/api/v1/quan-ly/products').catch(() => []),
       ]);
       const rList = Array.isArray(r) ? r : [];
-      setRecipes(rList.length > 0 ? rList : generateFallbackRecipes());
+      const finalRecipes = rList.length > 0 ? rList : generateFallbackRecipes();
+      setRecipes(finalRecipes);
       setMaterials(Array.isArray(m) ? m : []);
+      setProducts(Array.isArray(p) ? p : []);
+      if (isWide && finalRecipes.length > 0 && !selectedRecipeId) {
+        setSelectedRecipeId(finalRecipes[0].id);
+      }
     } catch {
-      setRecipes(generateFallbackRecipes());
+      const fallbacks = generateFallbackRecipes();
+      setRecipes(fallbacks);
       setMaterials([]);
+      setProducts([]);
+      if (isWide && fallbacks.length > 0 && !selectedRecipeId) {
+        setSelectedRecipeId(fallbacks[0].id);
+      }
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isWide, selectedRecipeId]);
 
   useEffect(() => { loadData(); }, [loadData]);
 
+  const missingBOMProducts = useMemo(() => {
+    if (!products.length) return [];
+    const recipeProductNames = new Set(recipes.map(r => (r.product_name || r.name || '').toLowerCase()));
+    return products.filter(p => p.name && !recipeProductNames.has(p.name.toLowerCase()));
+  }, [products, recipes]);
+
   const filtered = useMemo(() => {
-    if (!search.trim()) return recipes;
+    let list = recipes;
+    if (costFilter === 'normal') list = list.filter(r => (r.food_cost_pct ?? 0) <= 30);
+    if (costFilter === 'high') list = list.filter(r => (r.food_cost_pct ?? 0) > 30);
+    if (costFilter === 'missing') {
+      const missingNames = new Set(missingBOMProducts.map(p => (p.name || '').toLowerCase()));
+      list = recipes.filter(r => missingNames.has((r.product_name || r.name || '').toLowerCase()));
+    }
+    if (!search.trim()) return list;
     const q = search.toLowerCase();
-    return recipes.filter(
+    return list.filter(
       r => (r.recipe_name || r.name || '').toLowerCase().includes(q) ||
            (r.product_name || '').toLowerCase().includes(q)
     );
-  }, [recipes, search]);
+  }, [recipes, search, costFilter, missingBOMProducts]);
 
   const selectedRecipe = useMemo(
     () => recipes.find(r => r.id === selectedRecipeId) || null,
@@ -124,55 +207,38 @@ export default function RecipesScreen() {
     const isSelected = selectedRecipeId === item.id;
 
     if (!isWide) {
-      // 📱 Facebook Mobile Feed Card (Full Width)
+      // 📱 POS Row 48px Layout (Menu Standard)
       return (
-        <View style={s.itemMobile}>
-          <TouchableOpacity style={s.cardHeaderRow} onPress={() => setSelectedRecipeId(isSelected ? null : item.id)} activeOpacity={0.8}>
-            <View style={[s.avatarCircle, { backgroundColor: cc.bg }]}>
-              <Icon name="flask-outline" size={20} color={cc.text} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>
-                  {item.recipe_name || item.name}
-                </AppText>
-                <View style={[s.badge, { backgroundColor: cc.bg }]}>
-                  <AppText variant="sm" weight="bold" color={cc.text}>{pct}% Cost</AppText>
-                </View>
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 }}>
-                <AppText variant="sm" color="#65676B">Món: {item.product_name || 'Chưa gắn'}</AppText>
-                <AppText variant="sm" color="#65676B">· {item.ingredient_count || 0} NL</AppText>
-              </View>
-            </View>
-          </TouchableOpacity>
+        <TouchableOpacity
+          key={item.id}
+          style={ss.listRow}
+          onPress={() => handleEdit(item)}
+          activeOpacity={0.7}
+        >
+          <View style={[ss.iconCircleSm, { backgroundColor: cc.bg, marginRight: 8, alignItems: 'center', justifyContent: 'center' }]}>
+            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: cc.text }} />
+          </View>
 
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 12, marginTop: 8 }}>
-            <AppText variant="sm" color="#65676B">Chi phí: <AppText variant="sm" weight="bold" color={colors.text.primary}>{formatVND(item.cost_price)}</AppText></AppText>
-            {profit !== null && (
-              <AppText variant="sm" color={profit >= 0 ? colors.status.success : colors.status.danger}>
-                Lợi nhuận: <AppText variant="sm" weight="bold" color={profit >= 0 ? colors.status.success : colors.status.danger}>{formatVND(profit)} ({profitPct}%)</AppText>
+          <View style={{ flex: 1, paddingRight: 8 }}>
+            <AppText variant="sm" weight="bold" color="#0F172A" numberOfLines={1}>
+              {item.recipe_name || item.name}
+            </AppText>
+            <AppText variant="sm" weight="normal" color="#64748B" numberOfLines={1} style={{ marginTop: 1 }}>
+              {item.product_name || 'Chưa gắn món'} · {item.ingredient_count || 0} NL
+            </AppText>
+          </View>
+
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <View style={[s.badge, { backgroundColor: cc.bg }]}>
+              <AppText variant="sm" weight="bold" color={cc.text}>
+                {pct}% Cost
               </AppText>
-            )}
-          </View>
-
-          <View style={s.cardActionDivider} />
-
-          <View style={{ flexDirection: 'row', gap: 8, paddingHorizontal: 12, paddingTop: 8 }}>
-            <TouchableOpacity style={s.panelBtnSecondary} onPress={() => handleEdit(item)}>
-              <Icon name="pencil" size={14} color={colors.brand.primary} />
-              <AppText variant="sm" weight="bold" color={colors.brand.primary}>Chỉnh sửa</AppText>
-            </TouchableOpacity>
-            <TouchableOpacity style={s.panelBtnSecondary} onPress={() => handleClone(item)}>
-              <Icon name="content-copy" size={14} color={colors.brand.primary} />
-              <AppText variant="sm" weight="bold" color={colors.brand.primary}>Nhân bản</AppText>
-            </TouchableOpacity>
-            <TouchableOpacity style={s.panelBtnDanger} onPress={() => deleteRecipe(item.id || item.product_id)}>
-              <Icon name="trash-can-outline" size={14} color={colors.status.danger} />
-              <AppText variant="sm" color={colors.status.danger}>Xóa</AppText>
+            </View>
+            <TouchableOpacity style={ss.miniActionBtn} onPress={() => handleEdit(item)}>
+              <Icon name="pencil-outline" size={16} color="#64748B" />
             </TouchableOpacity>
           </View>
-        </View>
+        </TouchableOpacity>
       );
     }
 
@@ -237,8 +303,7 @@ export default function RecipesScreen() {
   const renderDetailPanel = () => {
     if (!selectedRecipe) {
       return (
-        <View style={s.detailEmpty}>
-          <Icon name="flask-empty-outline" size={40} color={colors.text.muted} />
+        <View style={ss.detailPanelEmpty}>
           <AppText variant="sm" color={colors.text.muted} style={{ textAlign: 'center' }}>
             Chọn một công thức để xem chi tiết định lượng nguyên liệu
           </AppText>
@@ -249,7 +314,7 @@ export default function RecipesScreen() {
     const pct = r.food_cost_pct ?? 0;
     const cc = foodCostColor(pct);
     return (
-      <ScrollView style={s.detailPanel} showsVerticalScrollIndicator={false}>
+      <ScrollView style={ss.detailPanel} showsVerticalScrollIndicator={false}>
         <View style={{ gap: 12 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <View style={{ flex: 1 }}>
@@ -291,7 +356,7 @@ export default function RecipesScreen() {
             </AppText>
           )}
 
-          <TouchableOpacity style={s.panelCta} onPress={() => handleEdit(r)}>
+          <TouchableOpacity style={ss.panelCta} onPress={() => handleEdit(r)}>
             <Icon name="pencil" size={16} color={colors.text.inverse} />
             <AppText variant="sm" weight="bold" color={colors.text.inverse}>Chỉnh sửa công thức</AppText>
           </TouchableOpacity>
@@ -302,53 +367,128 @@ export default function RecipesScreen() {
 
   return (
     <View style={s.container}>
-      {/* Top Mobile Header */}
-      {!isWide && (
-        <View style={s.mobileActionRow}>
-          <AppText variant="md" weight="bold" color="#050505">{recipes.length} công thức BOM</AppText>
-          <TouchableOpacity onPress={openAdd} style={s.addBtn}>
-            <Icon name="plus" size={16} color={colors.text.inverse} />
-            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm công thức</AppText>
+      {/* Unified Top Action Bar: Search Input + Add Button */}
+      <View style={ss.topActionBar}>
+        <View style={ss.searchInputWrap}>
+          <Icon name="magnify" size={20} color="#64748B" />
+          <TextInput
+            value={search}
+            onChangeText={setSearch}
+            placeholder="Tìm công thức, tên món..."
+            placeholderTextColor="#94A3B8"
+            style={ss.searchTextInput}
+          />
+          {search.length > 0 && (
+            <TouchableOpacity onPress={() => setSearch('')}>
+              <Icon name="close-circle" size={18} color="#94A3B8" />
+            </TouchableOpacity>
+          )}
+        </View>
+
+        <TouchableOpacity style={ss.addBtn} onPress={openAdd} activeOpacity={0.8}>
+          <Icon name="plus" size={18} color="#FFFFFF" />
+          <AppText variant="sm" weight="bold" color="#FFFFFF">
+            Thêm công thức
+          </AppText>
+        </TouchableOpacity>
+      </View>
+
+      {/* Unified Horizontal Category Chips Filter */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={{ flexGrow: 0, height: 46 }}
+        contentContainerStyle={ss.filterChipsContainer}
+      >
+        <TouchableOpacity
+          onPress={() => setCostFilter('all')}
+          style={[ss.filterChip, costFilter === 'all' && ss.filterChipActive]}
+        >
+          <AppText
+            variant="sm"
+            weight="bold"
+            color={costFilter === 'all' ? colors.brand.primary : '#334155'}
+          >
+            Tất cả ({recipes.length})
+          </AppText>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => setCostFilter('normal')}
+          style={[ss.filterChip, costFilter === 'normal' && ss.filterChipActive]}
+        >
+          <AppText
+            variant="sm"
+            weight="bold"
+            color={costFilter === 'normal' ? colors.brand.primary : '#334155'}
+          >
+            Food Cost Chuẩn (≤30%)
+          </AppText>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => setCostFilter('high')}
+          style={[ss.filterChip, costFilter === 'high' && ss.filterChipActive]}
+        >
+          <AppText
+            variant="sm"
+            weight="bold"
+            color={costFilter === 'high' ? colors.brand.primary : '#334155'}
+          >
+            {"Food Cost Cao (>30%)"}
+          </AppText>
+        </TouchableOpacity>
+
+        {missingBOMProducts.length > 0 && (
+          <TouchableOpacity
+            onPress={() => setCostFilter('missing')}
+            style={[ss.filterChip, costFilter === 'missing' && ss.filterChipActive]}
+          >
+            <AppText
+              variant="sm"
+              weight="bold"
+              color={costFilter === 'missing' ? colors.status.danger : '#334155'}
+            >
+              Chưa có BOM ({missingBOMProducts.length})
+            </AppText>
           </TouchableOpacity>
+        )}
+      </ScrollView>
+
+      {/* Overview Metric Badges (Desktop Only) */}
+      {isWide && (
+        <View style={ss.metricContainer}>
+          <View style={ss.metricCard}>
+            <View style={[ss.metricIcon, { backgroundColor: '#EEF2FF' }]}>
+              <AppText variant="sm" weight="bold" color={colors.brand.primary} style={{ fontSize: 11 }}>BOM</AppText>
+            </View>
+            <View style={{ flex: 1 }}>
+              <AppText variant="md" weight="bold" color="#050505">{recipes.length} công thức</AppText>
+              <AppText variant="sm" color="#65676B">Tổng BOM định lượng</AppText>
+            </View>
+          </View>
+
+          <View style={ss.metricCard}>
+            <View style={[ss.metricIcon, { backgroundColor: '#ECFDF5' }]}>
+              <AppText variant="sm" weight="bold" color={colors.status.success} style={{ fontSize: 12 }}>%</AppText>
+            </View>
+            <View style={{ flex: 1 }}>
+              <AppText variant="md" weight="bold" color={colors.status.success}>{avgCostPct}% Cost</AppText>
+              <AppText variant="sm" color="#65676B">Tỷ lệ vốn trung bình</AppText>
+            </View>
+          </View>
+
+          <View style={ss.metricCard}>
+            <View style={[ss.metricIcon, { backgroundColor: '#FFF7ED' }]}>
+              <AppText variant="sm" weight="bold" color="#F97316" style={{ fontSize: 11 }}>70%</AppText>
+            </View>
+            <View style={{ flex: 1 }}>
+              <AppText variant="md" weight="bold" color="#F97316">Tối ưu 70%</AppText>
+              <AppText variant="sm" color="#65676B">Biên lợi nhuận gộp</AppText>
+            </View>
+          </View>
         </View>
       )}
-
-      {/* 📊 Native App Style KPI Widget Cards Strip */}
-      <View style={s.fbMetricContainer}>
-        <View style={s.fbMetricCard}>
-          <View style={[s.fbMetricIcon, { backgroundColor: '#EEF2FF' }]}>
-            <Icon name="flask-outline" size={20} color={colors.brand.primary} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#050505">{recipes.length} công thức</AppText>
-            <AppText variant="sm" color="#65676B">Tổng BOM định lượng</AppText>
-          </View>
-        </View>
-
-        <View style={s.fbMetricCard}>
-          <View style={[s.fbMetricIcon, { backgroundColor: '#ECFDF5' }]}>
-            <Icon name="percent" size={20} color={colors.status.success} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color={colors.status.success}>{avgCostPct}% Cost</AppText>
-            <AppText variant="sm" color="#65676B">Tỷ lệ vốn trung bình</AppText>
-          </View>
-        </View>
-
-        <View style={s.fbMetricCard}>
-          <View style={[s.fbMetricIcon, { backgroundColor: '#FFF7ED' }]}>
-            <Icon name="chart-box-outline" size={20} color="#F97316" />
-          </View>
-          <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#F97316">Tối ưu 70%</AppText>
-            <AppText variant="sm" color="#65676B">Biên lợi nhuận gộp</AppText>
-          </View>
-        </View>
-      </View>
-
-      <View style={{ paddingHorizontal: 12, marginBottom: 8 }}>
-        <SearchBar value={search} onChangeText={setSearch} placeholder="Tìm công thức theo tên hoặc tên món..." />
-      </View>
 
       {isWide ? (
         <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: 12, paddingBottom: 12, gap: 12 }}>
@@ -375,34 +515,82 @@ export default function RecipesScreen() {
           <View style={{ flex: 0.45 }}>{renderDetailPanel()}</View>
         </View>
       ) : (
-        <FlatList
-          data={filtered}
-          keyExtractor={item => item.id}
-          renderItem={renderCard}
-          contentContainerStyle={{ paddingBottom: 120 }}
-          showsVerticalScrollIndicator={false}
-          ListEmptyComponent={
-            loading ? (
-              <TableSkeleton rowCount={5} />
-            ) : (
-              <EmptyState
-                icon="flask-empty-outline"
-                title="Chưa có công thức nào"
-                subtitle="Nhấn + Thêm công thức để tạo BOM định lượng"
-              />
-            )
-          }
-        />
+        <View style={{ flex: 1 }}>
+
+          {/* Section Header & List */}
+          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 6, paddingTop: 6, gap: 8, paddingBottom: 100 }}>
+            <View style={ss.sectionWrap}>
+              <View style={ss.sectionHeader}>
+                <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1, letterSpacing: 0.5 }}>
+                  CÔNG THỨC BOM ({filtered.length})
+                </AppText>
+              </View>
+
+              <View style={ss.sectionItems}>
+                {filtered.length === 0 ? (
+                  loading ? (
+                    <TableSkeleton rowCount={5} />
+                  ) : (
+                    <EmptyState
+                      icon="flask-empty-outline"
+                      title="Chưa có công thức nào"
+                      subtitle="Nhấn + Thêm công thức để tạo BOM định lượng"
+                    />
+                  )
+                ) : (
+                  filtered.map((item) => (
+                    <React.Fragment key={item.id}>
+                      {renderCard({ item })}
+                    </React.Fragment>
+                  ))
+                )}
+              </View>
+            </View>
+          </ScrollView>
+        </View>
+      )}
+
+      {/* Mobile Detail Modal */}
+      {!isWide && (
+        <DetailModal
+          visible={!!selectedRecipe}
+          title={selectedRecipe?.product_name || 'Chi tiết công thức'}
+          subtitle={selectedRecipe ? `Mã món: ${selectedRecipe.product_code || 'N/A'}` : undefined}
+          onClose={() => setSelectedRecipeId(null)}
+          onEdit={selectedRecipe ? () => { const item = selectedRecipe; setEditRecipe(item); setShowForm(true); } : undefined}
+          onDelete={selectedRecipe ? () => {
+            const item = selectedRecipe;
+            Alert.alert('Xác nhận', `Xóa công thức "${item.product_name}"?`, [
+              { text: 'Hủy', style: 'cancel' },
+              {
+                text: 'Xóa',
+                style: 'destructive',
+                onPress: async () => {
+                  try {
+                    await request(`/api/v1/quan-ly/recipes/${item.id}`, { method: 'DELETE' });
+                    setSelectedRecipeId(null);
+                    loadData();
+                  } catch {
+                    Alert.alert('Lỗi', 'Không thể xóa công thức');
+                  }
+                },
+              },
+            ]);
+          } : undefined}
+        >
+          {renderDetailPanel()}
+        </DetailModal>
       )}
 
       {showForm && (
         <RecipeForm
           visible={showForm}
-          recipe={editRecipe}
-          cloneRecipe={cloneRecipe}
+          editRecipe={editRecipe}
+          cloneFrom={cloneRecipe}
           materials={materials}
+          products={products}
           onClose={() => setShowForm(false)}
-          onSuccess={() => { setShowForm(false); loadData(); }}
+          onSaved={() => { setShowForm(false); loadData(); }}
         />
       )}
     </View>
@@ -410,14 +598,14 @@ export default function RecipesScreen() {
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface.app },
+  container: { flex: 1, backgroundColor: colors.surface.app, position: 'relative' },
 
   mobileActionRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingVertical: 6,
     backgroundColor: colors.surface.card,
     borderBottomWidth: 1,
     borderBottomColor: colors.border.light,
@@ -494,26 +682,6 @@ const s = StyleSheet.create({
     backgroundColor: colors.border.light,
     marginTop: 10,
   },
-  panelBtnSecondary: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    height: 44,
-    borderRadius: 999,
-    backgroundColor: colors.brand.primaryBg,
-  },
-  panelBtnDanger: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    height: 44,
-    borderRadius: 999,
-    backgroundColor: '#FEE2E2',
-  },
 
   /* 💻 Wide Screen Cards */
   card: {
@@ -531,26 +699,8 @@ const s = StyleSheet.create({
   cardActions: { flexDirection: 'row', gap: 12, marginTop: 8, justifyContent: 'flex-end' },
   actionBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 4, paddingHorizontal: 8 },
 
-  /* Right Detail Panel */
-  detailPanel: {
-    backgroundColor: colors.surface.card,
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  detailEmpty: {
-    backgroundColor: colors.surface.card,
-    borderRadius: 16,
-    padding: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 12,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
+  /* Detail-specific */
   detailRow: { flexDirection: 'row', gap: 12 },
-  detailStatBox: { flex: 1, backgroundColor: '#F8FAFC', padding: 10, borderRadius: 8 },
+  detailStatBox: { flex: 1, backgroundColor: '#F8FAFC', padding: 12, borderRadius: 8 },
   ingRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
-  panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: colors.brand.primary, borderRadius: 999, height: 44, marginTop: 12 },
 });

@@ -8,7 +8,7 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors } from '../../theme/colors';
 import { shape } from '../../theme/shape';
-import { CATEGORIES } from '../../constants/categories';
+import { CATEGORIES, getMergedCategories } from '../../constants/categories';
 import type { Category } from './types';
 import AppText from '../ui/AppText';
 
@@ -49,8 +49,8 @@ const CategoryChip = React.memo(function CategoryChip({ cat, active, onPress }: 
           flexDirection: 'row',
           alignItems: 'center',
           gap: 6,
-          paddingHorizontal: 16,
-          height: 44,
+          paddingHorizontal: 12,
+          height: 36,
           borderRadius: shape.radius.md,
           backgroundColor: active ? colors.brand.primary : colors.surface.disabled,
           borderWidth: 1,
@@ -61,12 +61,13 @@ const CategoryChip = React.memo(function CategoryChip({ cat, active, onPress }: 
         {cat.icon && (
           <MaterialCommunityIcons
             name={cat.icon as any}
-            size={16}
+            size={15}
             color={active ? colors.text.inverse : colors.icon.default}
           />
         )}
         <AppText
           variant="md"
+          weight="bold"
           color={active ? colors.text.inverse : colors.text.primary}
         >
           {cat.name}
@@ -109,12 +110,12 @@ const CategoryTabs = React.memo(function CategoryTabs({
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{
           paddingHorizontal: 12,
-          paddingVertical: 10,
+          paddingVertical: 6,
           alignItems: 'center',
           gap: 8,
         }}
       >
-        {CATEGORIES.map((cat) => (
+        {getMergedCategories().map((cat) => (
           <CategoryChip
             key={cat.id}
             cat={cat}

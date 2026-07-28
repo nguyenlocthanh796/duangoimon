@@ -1,50 +1,66 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { colors, font } from '../../theme';
-import { shape } from '../../theme/shape';
+import { View, StyleSheet, ViewStyle } from 'react-native';
+import AppText from './AppText';
+import { colors } from '../../theme';
 
-export type BadgeSeverity = 'success' | 'warning' | 'danger' | 'info' | 'neutral' | 'critical' | 'muted';
+export type BadgeSeverity = 'success' | 'warning' | 'danger' | 'info' | 'neutral' | 'critical';
+
+const SEVERITY_MAP: Record<BadgeSeverity, { color: string; bg: string }> = {
+  success: { color: colors.status.success, bg: `${colors.status.success}18` },
+  warning: { color: colors.status.warning, bg: `${colors.status.warning}18` },
+  danger: { color: colors.status.danger, bg: `${colors.status.danger}18` },
+  info: { color: colors.status.info, bg: `${colors.status.info}18` },
+  neutral: { color: colors.text.secondary, bg: '#F1F5F9' },
+  critical: { color: '#7F1D1D', bg: '#FEE2E2' },
+};
 
 export interface StatusBadgeProps {
   label: string;
   severity?: BadgeSeverity;
-  size?: 'sm' | 'md';
-  /** pill shape (rounded) vs flat — default flat */
-  pill?: boolean;
+  color?: string;
+  bgColor?: string;
+  showDot?: boolean;
+  style?: ViewStyle;
 }
 
-const SEVERITY_MAP: Record<BadgeSeverity, { bg: string; text: string }> = {
-  success: { bg: colors.badge.success.bg, text: colors.badge.success.text },
-  warning: { bg: colors.badge.warning.bg, text: colors.badge.warning.text },
-  danger:  { bg: colors.badge.danger.bg, text: colors.badge.danger.text },
-  info:    { bg: colors.badge.info.bg, text: colors.badge.info.text },
-  neutral: { bg: colors.badge.neutral.bg, text: colors.badge.neutral.text },
-  critical: { bg: colors.badge.danger.bg, text: colors.badge.danger.text },
-  muted:   { bg: colors.badge.neutral.bg, text: colors.badge.neutral.text },
-};
+export default function StatusBadge({
+  label,
+  severity,
+  color,
+  bgColor,
+  showDot = true,
+  style,
+}: StatusBadgeProps) {
+  let badgeColor = color ?? colors.text.primary;
+  let bg = bgColor ?? '#F1F5F9';
 
-export default function StatusBadge({ label, severity = 'neutral', size = 'md', pill = false }: StatusBadgeProps) {
-  const palette = SEVERITY_MAP[severity];
-  const isSmall = size === 'sm';
+  if (severity && SEVERITY_MAP[severity]) {
+    badgeColor = color ?? SEVERITY_MAP[severity].color;
+    bg = bgColor ?? SEVERITY_MAP[severity].bg;
+  } else if (color) {
+    bg = bgColor ?? `${color}18`;
+  }
+
   return (
-    <View
-      style={{
-        paddingHorizontal: isSmall ? shape.spacing.xs : shape.spacing.sm,
-        paddingVertical: isSmall ? 2 : 3,
-        borderRadius: pill ? shape.radius.full : shape.radius.xs,
-        backgroundColor: palette.bg,
-        alignSelf: 'flex-start',
-      }}
-    >
-      <Text
-        style={{
-          ...(isSmall ? font.sm : font.smBold),
-          fontWeight: '600',
-          color: palette.text,
-        }}
-      >
-        {label}
-      </Text>
+    <View style={[styles.badge, { backgroundColor: bg }, style]}>
+      <AppText variant="sm" weight="bold" color={badgeColor} style={styles.text}>
+        {showDot ? `● ${label}` : label}
+      </AppText>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  badge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'flex-start',
+  },
+  text: {
+    fontSize: 11,
+    lineHeight: 14,
+  },
+});

@@ -12,6 +12,7 @@ interface VisualTablePickerProps {
   excludeTableId?: string;
   filterStatus?: 'all' | 'co_khach' | 'trong';
   containerHeight?: number;
+  layoutMode?: 'grid' | 'list'; // Dạng ô vuông (grid) vs dạng danh sách (list)
 }
 
 export default function VisualTablePicker({
@@ -21,13 +22,13 @@ export default function VisualTablePicker({
   excludeTableId,
   filterStatus = 'all',
   containerHeight = 360,
+  layoutMode = 'grid',
 }: VisualTablePickerProps) {
   const [selectedArea, setSelectedArea] = useState('Tất cả');
   const [searchQuery, setSearchQuery] = useState('');
 
   const abbreviateArea = (areaName?: string) => {
     if (!areaName) return '';
-    // Map of common area abbreviations
     const lower = areaName.toLowerCase();
     if (lower.includes('trong nhà') || lower.includes('trong nha')) return 'T.Nhà';
     if (lower.includes('ngoài trời') || lower.includes('ngoai troi')) return 'N.Trời';
@@ -110,7 +111,7 @@ export default function VisualTablePicker({
                   }}
                 >
                   <AppText
-                    variant="xs"
+                    variant="sm"
                     weight={active ? 'bold' : 'normal'}
                     color={active ? colors.text.inverse : colors.text.secondary}
                   >
@@ -123,12 +124,12 @@ export default function VisualTablePicker({
         )}
       </View>
 
-      {/* Visual Table Grid */}
+      {/* Table List / Grid Content */}
       <ScrollView
         style={{ maxHeight: containerHeight }}
         contentContainerStyle={{
-          flexDirection: 'row',
-          flexWrap: 'wrap',
+          flexDirection: layoutMode === 'list' ? 'column' : 'row',
+          flexWrap: layoutMode === 'list' ? 'nowrap' : 'wrap',
           gap: 10,
           paddingBottom: 8,
         }}
@@ -146,6 +147,96 @@ export default function VisualTablePicker({
             const isOccupied = table.status === 'co_khach';
             const isSelected = selectedTableId === table.id;
 
+            if (layoutMode === 'list') {
+              // 📜 List View Row Style
+              return (
+                <TouchableOpacity
+                  key={table.id}
+                  onPress={() => onSelectTable(table)}
+                  activeOpacity={0.7}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                    paddingHorizontal: 14,
+                    paddingVertical: 12,
+                    borderRadius: shape.radius.md,
+                    backgroundColor: isSelected
+                      ? colors.brand.primaryBg
+                      : isOccupied
+                      ? '#FEF2F2'
+                      : colors.surface.card,
+                    borderWidth: isSelected ? 2 : 1,
+                    borderColor: isSelected
+                      ? colors.brand.primary
+                      : isOccupied
+                      ? '#FECACA'
+                      : '#E2E8F0',
+                  }}
+                >
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flex: 1 }}>
+                    <View
+                      style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: 18,
+                        backgroundColor: isOccupied ? colors.status.dangerBg : colors.status.successBg,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Icon
+                        name={isOccupied ? 'silverware-fork-knife' : 'table-chair'}
+                        size={18}
+                        color={isOccupied ? colors.status.danger : colors.status.success}
+                      />
+                    </View>
+
+                    <View style={{ flex: 1 }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                        <AppText variant="md" weight="bold" color={colors.text.primary}>
+                          {table.name}
+                        </AppText>
+                        <View
+                          style={{
+                            paddingHorizontal: 6,
+                            paddingVertical: 1,
+                            borderRadius: 4,
+                            backgroundColor: isOccupied ? '#FEE2E2' : '#DCFCE7',
+                          }}
+                        >
+                          <AppText
+                            variant="sm"
+                            weight="bold"
+                            color={isOccupied ? colors.status.danger : colors.status.success}
+                          >
+                            {isOccupied ? 'Có khách' : 'Bàn trống'}
+                          </AppText>
+                        </View>
+                      </View>
+                      <AppText variant="sm" color={colors.text.muted}>
+                        {table.area || 'Chung'} · {table.capacity || 4} ghế
+                      </AppText>
+                    </View>
+                  </View>
+
+                  <View style={{ alignItems: 'flex-end' }}>
+                    {isOccupied && table.orderTotal ? (
+                      <AppText variant="sm" weight="bold" color={colors.status.danger}>
+                        {formatPrice(table.orderTotal)}
+                      </AppText>
+                    ) : (
+                      <AppText variant="sm" color={colors.status.success}>
+                        Sẵn sàng
+                      </AppText>
+                    )}
+                  </View>
+                </TouchableOpacity>
+              );
+            }
+
+            // 🔳 Grid Card View Style (Default)
             return (
               <TouchableOpacity
                 key={table.id}
@@ -194,14 +285,14 @@ export default function VisualTablePicker({
                 </View>
 
                 {/* Subtitle: Area / Capacity */}
-                <AppText variant="xs" color={colors.text.muted} numberOfLines={1}>
+                <AppText variant="sm" color={colors.text.muted} numberOfLines={1}>
                   {abbreviateArea(table.area) || 'Khu vực chung'} · {table.capacity || 4} chỗ
                 </AppText>
 
                 {/* Order total if occupied */}
                 {isOccupied && table.orderTotal ? (
                   <AppText
-                    variant="xs"
+                    variant="sm"
                     weight="bold"
                     color={colors.status.danger}
                     style={{ marginTop: 2 }}
@@ -210,7 +301,7 @@ export default function VisualTablePicker({
                     {formatPrice(table.orderTotal)}
                   </AppText>
                 ) : (
-                  <AppText variant="xs" color={colors.status.success} style={{ marginTop: 2 }}>
+                  <AppText variant="sm" color={colors.status.success} style={{ marginTop: 2 }}>
                     Trống
                   </AppText>
                 )}

@@ -47,6 +47,7 @@ export default React.memo(function ProductCard({
   return (
     <TouchableOpacity
       onPress={onQuickAdd}
+      delayPressIn={0}
       activeOpacity={0.85}
       style={{
         width: cardSize,
@@ -86,22 +87,23 @@ export default React.memo(function ProductCard({
         />
       )}
 
-      {/* Bottom text overlay - transparent LinearGradient transition */}
+      {/* Bottom text overlay - transparent 3-stage LinearGradient transition */}
       <LinearGradient
-        colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.92)']}
+        colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.65)', 'rgba(0, 0, 0, 0.95)']}
         style={{
           position: 'absolute',
           bottom: 0,
           left: 0,
           right: 0,
           paddingHorizontal: 8,
-          paddingTop: 24,
+          paddingTop: 32,
           paddingBottom: 8,
           justifyContent: 'flex-end',
         }}
       >
         <AppText
-          variant="sm"
+          variant="md"
+          weight="bold"
           color={colors.text.inverse}
           style={{ textAlign: 'center' }}
           numberOfLines={2}
@@ -110,17 +112,42 @@ export default React.memo(function ProductCard({
           {item.name}
         </AppText>
         <AppText
-          variant="sm"
+          variant="md"
           weight="bold"
           color={palette.orange[300]}
-          style={{ textAlign: 'center', marginTop: 4 }}
+          style={{ textAlign: 'center', marginTop: 2 }}
           numberOfLines={1}
         >
           {formatPrice(item.price)}
         </AppText>
       </LinearGradient>
 
-      {/* Badge số lượng — 24pt, viền trắng 2pt */}
+      {/* Option/Modifier button at Top-Left */}
+      {hasModifiers && (
+        <TouchableOpacity
+          onPress={onPress}
+          delayPressIn={0}
+          hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
+          style={{
+            position: 'absolute',
+            top: 6,
+            left: 6,
+            width: 26,
+            height: 26,
+            borderRadius: shape.radius.md,
+            backgroundColor: 'rgba(0, 0, 0, 0.55)',
+            borderWidth: 1,
+            borderColor: 'rgba(255, 255, 255, 0.25)',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 5,
+          }}
+        >
+          <Icon name="tune" size={15} color={colors.text.inverse} />
+        </TouchableOpacity>
+      )}
+
+      {/* Badge số lượng — Top-Right */}
       {inCartCount > 0 && (
         <View
           style={{
@@ -148,26 +175,6 @@ export default React.memo(function ProductCard({
             {inCartCount > 99 ? '99+' : inCartCount}
           </AppText>
         </View>
-      )}
-
-      {/* Settings/Info button to trigger modifiers */}
-      {hasModifiers && (
-        <TouchableOpacity
-          onPress={onPress}
-          hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
-          style={{
-            position: 'absolute',
-            bottom: 52, // Đưa nút lên trên phần text overlay
-            right: 6,
-            padding: 6,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            borderRadius: shape.radius.md,
-            borderWidth: 1,
-            borderColor: 'rgba(255,255,255,0.2)'
-          }}
-        >
-          <Icon name="tune" size={16} color={colors.text.inverse} />
-        </TouchableOpacity>
       )}
     </TouchableOpacity>
   );

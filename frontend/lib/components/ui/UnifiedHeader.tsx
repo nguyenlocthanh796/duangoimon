@@ -64,41 +64,44 @@ export default function UnifiedHeader({
         styles.header,
         compact ? styles.headerCompact : styles.headerDefault,
         {
-          paddingTop: insets.top,
-          height: insets.top + (isWide ? 56 : 52),
-          paddingHorizontal: isWide ? shape.spacing.xl : shape.spacing.md,
-          justifyContent: 'center',
+          paddingTop: isWide ? 6 : 2,
+          paddingBottom: isWide ? 8 : 6,
+          paddingHorizontal: isWide ? shape.spacing.xl : 12,
           opacity: fadeAnim,
           transform: [{ translateY: slideAnim }],
         },
       ]}
     >
-      <View style={styles.row}>
+      <View style={[styles.row, { height: isWide ? shape.header.heightTablet : 42 }]}>
         {/* Left: back / menu button */}
         {showLeftButton && !hideMenu && (
           onBackPress ? (
             <TouchableOpacity
               onPress={onBackPress}
-              style={styles.menuBtn}
+              delayPressIn={0}
+              activeOpacity={0.6}
+              style={[styles.menuBtn, !isWide && styles.menuBtnMobile]}
               accessibilityLabel={backLabel || 'Quay lại'}
             >
-              <Icon name={backIcon as any} size={20} color={colors.brand.primary} />
+              <Icon name={backIcon as any} size={isWide ? 20 : 18} color={colors.brand.primary} />
             </TouchableOpacity>
           ) : onMenuPress ? (
             <TouchableOpacity
               onPress={onMenuPress}
-              style={[styles.menuBtn, !isWide && { marginLeft: -8 }]}
+              delayPressIn={0}
+              activeOpacity={0.6}
+              style={[styles.menuBtn, !isWide && styles.menuBtnMobile]}
               accessibilityLabel="Mở menu"
             >
-              <Icon name="menu" size={24} color={colors.brand.primary} />
+              <Icon name="menu" size={isWide ? 24 : 22} color={colors.brand.primary} />
             </TouchableOpacity>
           ) : null
         )}
 
         {/* Icon */}
         {icon && (
-          <View style={styles.iconWrap}>
-            <Icon name={icon as any} size={20} color={colors.brand.primary} />
+          <View style={[styles.iconWrap, !isWide && styles.iconWrapMobile]}>
+            <Icon name={icon as any} size={isWide ? 20 : 18} color={colors.brand.primary} />
           </View>
         )}
 
@@ -108,8 +111,8 @@ export default function UnifiedHeader({
             titleComponent
           ) : (
             <>
-              <Text style={styles.title} numberOfLines={1}>{title}</Text>
-              {subtitle && <Text style={styles.subtitle} numberOfLines={1}>{subtitle}</Text>}
+              <Text style={[styles.title, !isWide && styles.titleMobile]} numberOfLines={1}>{title}</Text>
+              {subtitle && <Text style={[styles.subtitle, !isWide && styles.subtitleMobile]} numberOfLines={1}>{subtitle}</Text>}
             </>
           )}
         </View>
@@ -142,20 +145,42 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'transparent',
   },
+  menuBtnMobile: {
+    width: 36,
+    height: 36,
+    marginLeft: -4,
+  },
   iconWrap: {
     width: 36,
     height: 36,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.brand.primaryBg,
+    borderRadius: shape.radius.sm,
+  },
+  iconWrapMobile: {
+    width: 30,
+    height: 30,
   },
   title: {
-    ...font.lg,
+    fontFamily: 'BeVietnamPro_700Bold',
+    fontSize: 18,
+    fontWeight: '700',
     color: colors.text.primary,
   },
+  titleMobile: {
+    fontSize: 18,
+    lineHeight: 22,
+  },
   subtitle: {
-    ...font.sm,
+    fontFamily: 'BeVietnamPro_400Regular_Italic',
+    fontSize: 12,
+    fontStyle: 'italic',
     color: colors.text.muted,
     marginTop: 1,
+  },
+  subtitleMobile: {
+    fontSize: 12,
+    lineHeight: 16,
   },
 });

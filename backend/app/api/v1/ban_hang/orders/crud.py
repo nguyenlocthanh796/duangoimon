@@ -17,6 +17,15 @@ from app.models.ban_hang import Order, OrderItem, Product, Table
 from app.schemas.ban_hang import OrderOut
 
 
+def _safe_uuid(val: str | None) -> uuid.UUID | None:
+    if not val:
+        return None
+    try:
+        return parse_uuid(val)
+    except Exception:
+        return None
+
+
 def _uuid(val: str) -> uuid.UUID:
     try:
         return parse_uuid(val)
@@ -46,7 +55,7 @@ class OrderItemCreate(BaseModel):
     product_name: str = ""  # ignored by server, always fetched from DB
     quantity: int = Field(default=1, ge=1, description="Must be >= 1")
     unit_price: float = Field(
-        default=0, gt=0, description="Must be > 0 (server uses DB price anyway)"
+        default=0, ge=0, description="Must be >= 0 (server uses DB price anyway)"
     )
     options: dict | None = None
     vat_rate: float = Field(default=8.0, ge=0, le=100)
@@ -65,8 +74,8 @@ class OrderItemCreate(BaseModel):
     @field_validator("unit_price")
     @classmethod
     def _check_price(cls, v: float) -> float:
-        if v <= 0:
-            raise ValueError("Đơn giá phải > 0")
+        if v < 0:
+            raise ValueError("Đơn giá phải >= 0")
         return v
 
     @field_validator("vat_rate")
@@ -83,7 +92,7 @@ class OrderStatusUpdate(BaseModel):
 
 
 class OrderCreate(BaseModel):
-    table_id: str
+    table_id: str | None = None
     items: list[OrderItemCreate]
     note: str | None = None
 
@@ -98,27 +107,28 @@ class OrderUpdate(BaseModel):
 
 @router.get("/")
 async def list_orders(
-    status: str | None = Query(
-        None, description="moi|gui_bep|dang_lam|hoan_thanh|da_thanh_toan|da_gop|da_huy"
-    ),
-    page: PageParams = Depends(),
+    params: PageParams = Depends(),
     db: AsyncSession = Depends(get_db),
     _user: dict = Depends(get_current_user),
+    status: str | None = Query(None),
+    table_id: str | None = Query(None),
 ):
     query = select(Order).options(selectinload(Order.items)).order_by(Order.created_at.desc())
     if status:
         query = query.where(Order.status == status)
-    result = await paginate(db, query, page.page, page.page_size)
-    # Populate table_name on each order for kitchen / frontend display
+    if table_id:
+        query = query.where(Order.table_id == parse_uuid(table_id))
+
+    result = await paginate(db, query, params.page, params.page_size)
+    # Populate table_name for each order
     orders = result["items"]
-    if orders:
-        table_ids = [o.table_id for o in orders if o.table_id]
-        if table_ids:
-            tables_q = await db.execute(select(Table).where(Table.id.in_(table_ids)))
-            tables = {str(t.id): t.name for t in tables_q.scalars().all()}
-            for o in orders:
-                if o.table_id and str(o.table_id) in tables:
-                    o.table_name = tables[str(o.table_id)]
+    tbl_ids = [o.table_id for o in orders if o.table_id]
+    if tbl_ids:
+        t_res = await db.execute(select(Table).where(Table.id.in_(tbl_ids)))
+        tables = {str(t.id): t.name for t in t_res.scalars().all()}
+        for o in orders:
+            if o.table_id and str(o.table_id) in tables:
+                o.table_name = tables[str(o.table_id)]
     return result
 
 
@@ -142,15 +152,15 @@ async def create_order(
         prod = prod_map.get(str(pid))
         if not prod:
             raise HTTPException(status_code=404, detail=f"Product {item.product_id} not found")
-        db_price = float(prod.price)
+        db_price = float(prod.price or 0.0)
         total += db_price * item.quantity
-        db_vat_rate = float(prod.vat_rate)  # ← from DB, NEVER from client
+        db_vat_rate = float(prod.vat_rate or 0.0)  # ← from DB, NEVER from client
         total_tax += round(db_price * item.quantity * db_vat_rate / 100, 2)
 
-    table_uuid = None if body.table_id == "TAKEAWAY" else _uuid(body.table_id)
+    table_uuid = None if not body.table_id or str(body.table_id).upper() == "TAKEAWAY" else _uuid(body.table_id)
     order = Order(
         table_id=table_uuid,
-        cashier_id=parse_uuid(current_user["sub"]),
+        cashier_id=_safe_uuid(current_user.get("sub")),
         total_amount=total,
         tax_amount=total_tax,
         note=body.note,
@@ -161,9 +171,9 @@ async def create_order(
     for item in body.items:
         pid = _uuid(item.product_id)
         prod = prod_map.get(str(pid))
-        db_price = float(prod.price) if prod else 0
+        db_price = float(prod.price or 0.0) if prod else 0.0
         db_name = prod.name if prod else ""
-        db_vat_rate = float(prod.vat_rate) if prod else 8.0
+        db_vat_rate = float(prod.vat_rate or 0.0) if prod else 8.0
         oi = OrderItem(
             order_id=order.id,
             product_id=pid,
@@ -202,18 +212,17 @@ async def create_order(
 
     from app.core.ws_manager import ws_manager
 
-    await ws_manager.broadcast(
-        "kitchen",
-        {
-            "event": "new_order",
-            "order": {
-                "id": str(order.id),
-                "table_id": str(order.table_id),
-                "total": float(order.total_amount),
-                "note": order.note,
-            },
+    event_data = {
+        "event": "new_order",
+        "order": {
+            "id": str(order.id),
+            "table_id": str(order.table_id),
+            "total": float(order.total_amount),
+            "note": order.note,
         },
-    )
+    }
+    await ws_manager.broadcast("kitchen", event_data)
+    await ws_manager.broadcast("pos", event_data)
 
     # Invalidate in-memory caches so GET /tables, /kitchen-feed, /orders immediately show fresh data
     invalidate_fast_cache()
@@ -307,6 +316,8 @@ async def update_order(
         select(Order).options(selectinload(Order.items)).where(Order.id == parse_uuid(order_id))
     )
     order = result.scalar_one_or_none()
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
     if order.status in ("da_thanh_toan", "da_gop", "da_huy"):
         # If the order is already closed/paid, do not fail with 400 Bad Request.
         # If new items exist, spawn a new active order for the table; otherwise return existing order.
@@ -333,9 +344,9 @@ async def update_order(
         prod = prod_map.get(str(pid))
         if not prod:
             raise HTTPException(status_code=404, detail=f"Product {item.product_id} not found")
-        db_price = float(prod.price)
+        db_price = float(prod.price or 0.0)
         db_name = prod.name
-        db_vat_rate = float(prod.vat_rate)
+        db_vat_rate = float(prod.vat_rate or 0.0)
         oi = OrderItem(
             order_id=order.id,
             product_id=pid,
@@ -353,10 +364,10 @@ async def update_order(
         db.add(oi)
 
     order.total_amount = sum(
-        float(prod_map[str(_uuid(i.product_id))].price) * i.quantity for i in body.items
+        float(prod_map[str(_uuid(i.product_id))].price or 0.0) * i.quantity for i in body.items
     )
     order.tax_amount = sum(
-        round(float(prod_map[str(_uuid(i.product_id))].price) * i.quantity * float(prod_map[str(_uuid(i.product_id))].vat_rate) / 100, 2)
+        round(float(prod_map[str(_uuid(i.product_id))].price or 0.0) * i.quantity * float(prod_map[str(_uuid(i.product_id))].vat_rate or 0.0) / 100, 2)
         for i in body.items
     )
     if body.note is not None:
@@ -372,20 +383,22 @@ async def update_order(
 
     from app.core.ws_manager import ws_manager
 
-    await ws_manager.broadcast(
-        "kitchen",
-        {
-            "event": "order_updated",
-            "order": {
-                "id": str(order.id),
-                "table_id": str(order.table_id) if order.table_id else None,
-                "total": float(order.total_amount),
-                "note": order.note,
-                "status": order.status,
-                "created_at": str(order.created_at),
-            },
+    event_data = {
+        "event": "order_updated",
+        "order": {
+            "id": str(order.id),
+            "table_id": str(order.table_id) if order.table_id else None,
+            "total": float(order.total_amount or 0.0),
+            "note": order.note,
+            "status": order.status,
+            "created_at": str(order.created_at),
         },
-    )
+    }
+    await ws_manager.broadcast("kitchen", event_data)
+    await ws_manager.broadcast("pos", event_data)
+
+    # Invalidate in-memory caches so GET /tables, /kitchen-feed, /orders immediately show fresh data
+    invalidate_fast_cache()
 
     return order
 

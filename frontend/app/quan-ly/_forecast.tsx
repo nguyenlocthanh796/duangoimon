@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, ScrollView, FlatList } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useResponsive } from '../../lib/hooks/useResponsive';
-import { colors, font } from '../../lib/theme';
+import { colors, font, ss } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import DataTable, { type Column } from '../../lib/components/ui/DataTable';
@@ -45,7 +45,7 @@ export default function ForecastScreen() {
   const load = useCallback(async () => {
     try {
       setLoading(true);
-      const res: any = await request(`${API}/reports/forecast?days=${days}`);
+      const res: any = await request(`${API}/forecast/demand?days_ahead=${days}`).catch(() => request(`${API}/reports/forecast?days=${days}`));
       const list = Array.isArray(res) ? res : (res?.items || []);
       if (list && list.length > 0) {
         setData(list);
@@ -108,41 +108,45 @@ export default function ForecastScreen() {
     const maxVal = Math.max(...safeData.map(r => r.predicted_orders || 0), 1);
 
     return (
-      <View style={styles.panelBox}>
-        <View style={styles.panelHeader}>
-          <Icon name="brain" size={20} color={colors.brand.primary} />
-          <AppText variant="md" weight="bold" color="#050505">Mô phỏng nhu cầu AI ({days} ngày)</AppText>
+      <View style={ss.sectionWrap}>
+        <View style={ss.sectionHeader}>
+          <View style={[ss.iconCircleSm, { backgroundColor: '#EEF2FF' }]}>
+            <Icon name="brain" size={14} color={colors.brand.primary} />
+          </View>
+          <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1 }}>Mô phỏng nhu cầu AI ({days} ngày)</AppText>
         </View>
 
-        <View style={{ gap: 10, paddingTop: 4 }}>
-          <View style={styles.pnlRow}>
-            <AppText variant="sm" color={colors.text.secondary}>Tổng nhu cầu dự kiến</AppText>
-            <AppText variant="sm" color={colors.brand.primary}>{total} đơn</AppText>
-          </View>
-          <View style={styles.pnlRow}>
-            <AppText variant="sm" color={colors.text.secondary}>Trung bình / ngày</AppText>
-            <AppText variant="sm" color="#050505">{Math.round(total / days)} đơn/ngày</AppText>
-          </View>
-        </View>
-
-        <View style={styles.panelDivider} />
-
-        <AppText variant="md" weight="bold" color="#050505">Biểu đồ dự báo đơn hàng AI</AppText>
-        <ScrollView style={{ maxHeight: 220 }} showsVerticalScrollIndicator={false}>
-          {safeData.map((item: any, i: number) => (
-            <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 4 }}>
-              <AppText variant="sm" color={colors.text.primary} style={{ width: 85 }} numberOfLines={1}>
-                {item.date?.slice(5) || item.date}
-              </AppText>
-              <View style={{ flex: 1, height: 10, backgroundColor: '#F1F5F9', borderRadius: 5, overflow: 'hidden' }}>
-                <View style={{ width: `${Math.max(8, ((item.predicted_orders || 0) / maxVal) * 100)}%`, height: 10, backgroundColor: colors.brand.primary, borderRadius: 5 }} />
-              </View>
-              <AppText variant="sm" weight="bold" color={colors.brand.primary} style={{ width: 45, textAlign: 'right' }}>
-                {item.predicted_orders}
-              </AppText>
+        <View style={{ padding: 10, gap: 10 }}>
+          <View style={{ gap: 6 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <AppText variant="sm" color="#64748B">Tổng nhu cầu dự kiến</AppText>
+              <AppText variant="sm" weight="bold" color={colors.brand.primary}>{total} đơn</AppText>
             </View>
-          ))}
-        </ScrollView>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <AppText variant="sm" color="#64748B">Trung bình / ngày</AppText>
+              <AppText variant="sm" weight="bold" color="#0F172A">{Math.round(total / days)} đơn/ngày</AppText>
+            </View>
+          </View>
+
+          <View style={{ height: 1, backgroundColor: '#E5E9F0', marginVertical: 4 }} />
+
+          <AppText variant="sm" weight="bold" color="#1E293B">Biểu đồ dự báo đơn hàng AI</AppText>
+          <ScrollView style={{ maxHeight: 220 }} showsVerticalScrollIndicator={false}>
+            {safeData.map((item: any, i: number) => (
+              <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 4 }}>
+                <AppText variant="sm" color="#0F172A" style={{ width: 85 }} numberOfLines={1}>
+                  {item.date?.slice(5) || item.date}
+                </AppText>
+                <View style={{ flex: 1, height: 8, backgroundColor: '#F1F5F9', borderRadius: 4, overflow: 'hidden' }}>
+                  <View style={{ width: `${Math.max(8, ((item.predicted_orders || 0) / maxVal) * 100)}%`, height: 8, backgroundColor: colors.brand.primary, borderRadius: 4 }} />
+                </View>
+                <AppText variant="sm" weight="bold" color={colors.brand.primary} style={{ width: 45, textAlign: 'right' }}>
+                  {item.predicted_orders}
+                </AppText>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
       </View>
     );
   };
@@ -152,25 +156,22 @@ export default function ForecastScreen() {
   const avgConf = safeData.length ? Math.round(safeData.reduce((s, r) => s + (r.confidence || 90), 0) / safeData.length) : 92;
 
   const renderMobileForecastCard = ({ item: r }: { item: any }) => (
-    <View style={styles.itemMobile}>
-      <View style={styles.cardHeaderRow}>
-        <View style={[styles.avatarCircle, { backgroundColor: '#EFF6FF' }]}>
-          <Icon name="chart-timeline-variant" size={20} color={colors.brand.primary} />
-        </View>
-        <View style={{ flex: 1 }}>
-          <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>
-            Dự báo ngày {r.date}
-          </AppText>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 }}>
-            <AppText variant="sm" color="#65676B">Nhu cầu dự kiến: {r.predicted_orders || 0} đơn</AppText>
-          </View>
-        </View>
-        <View style={{ alignItems: 'flex-end' }}>
-          <AppText variant="md" weight="bold" color={colors.status.success}>{r.confidence || 92}%</AppText>
-          <AppText variant="sm" color="#65676B">Độ tin cậy</AppText>
-        </View>
+    <TouchableOpacity activeOpacity={0.7} style={ss.listRow} key={r.id || r.date}>
+      <View style={{ flex: 1 }}>
+        <AppText variant="sm" weight="bold" color="#0F172A" numberOfLines={1}>
+          Ngày {r.date}
+        </AppText>
+        <AppText variant="sm" color="#64748B" numberOfLines={1} style={{ marginTop: 1 }}>
+          Dự kiến: {r.predicted_orders || 0} đơn
+        </AppText>
       </View>
-    </View>
+
+      <View style={{ backgroundColor: '#ECFDF5', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 }}>
+        <AppText variant="sm" weight="bold" color={colors.status.success}>
+          {r.confidence || 92}% tin cậy
+        </AppText>
+      </View>
+    </TouchableOpacity>
   );
 
   const handleSortChange = (key: string) => {
@@ -178,65 +179,58 @@ export default function ForecastScreen() {
     else { setSortKey(key); setSortDir('asc'); }
   };
 
-  return (
-    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
-      {/* Top Mobile Header */}
-      {!isWide && (
-        <View style={styles.mobileActionRow}>
-          <AppText variant="md" weight="bold" color="#050505">Dự báo AI ({days} ngày)</AppText>
-          <TouchableOpacity onPress={load} style={styles.addBtn}>
-            <Icon name="refresh" size={16} color={colors.text.inverse} />
-            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Chạy AI</AppText>
-          </TouchableOpacity>
-        </View>
-      )}
-
+  const renderHeader = () => (
+    <View>
       {/* 📊 Native App Style KPI Widget Cards Strip */}
-      <View style={styles.fbMetricContainer}>
-        <View style={styles.fbMetricCard}>
-          <View style={[styles.fbMetricIcon, { backgroundColor: '#EEF2FF' }]}>
-            <Icon name="chart-line" size={20} color={colors.brand.primary} />
+      <View style={ss.metricContainer}>
+        <View style={ss.metricCard}>
+          <View style={[ss.metricIcon, { backgroundColor: '#EEF2FF' }]}>
+            <Icon name="chart-line" size={18} color={colors.brand.primary} />
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#050505">{total} đơn</AppText>
-            <AppText variant="sm" color="#65676B">Tổng đơn</AppText>
+            <AppText variant="md" weight="bold" color="#0F172A">{total} đơn</AppText>
+            <AppText variant="sm" color="#64748B">Tổng đơn</AppText>
           </View>
         </View>
 
-        <View style={styles.fbMetricCard}>
-          <View style={[styles.fbMetricIcon, { backgroundColor: '#FFF7ED' }]}>
-            <Icon name="calendar" size={20} color="#F97316" />
+        <View style={ss.metricCard}>
+          <View style={[ss.metricIcon, { backgroundColor: '#FFF7ED' }]}>
+            <Icon name="calendar" size={18} color="#F97316" />
           </View>
           <View style={{ flex: 1 }}>
             <AppText variant="md" weight="bold" color="#F97316">{avg} đơn/ngày</AppText>
-            <AppText variant="sm" color="#65676B">TB/ngày</AppText>
+            <AppText variant="sm" color="#64748B">TB/ngày</AppText>
           </View>
         </View>
 
-        <View style={styles.fbMetricCard}>
-          <View style={[styles.fbMetricIcon, { backgroundColor: '#ECFDF5' }]}>
-            <Icon name="shield-check" size={20} color={colors.status.success} />
+        <View style={ss.metricCard}>
+          <View style={[ss.metricIcon, { backgroundColor: '#ECFDF5' }]}>
+            <Icon name="shield-check" size={18} color={colors.status.success} />
           </View>
           <View style={{ flex: 1 }}>
             <AppText variant="md" weight="bold" color={colors.status.success}>{avgConf}%</AppText>
-            <AppText variant="sm" color="#65676B">Độ tin cậy AI</AppText>
+            <AppText variant="sm" color="#64748B">Độ tin cậy AI</AppText>
           </View>
         </View>
       </View>
 
       {/* Filter chips */}
-      <View style={{ marginVertical: 4, marginBottom: 8 }}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 12, gap: 8 }}>
+      <View style={{ width: '100%', marginBottom: 6 }}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={{ width: '100%', flexGrow: 0, height: 44 }}
+          contentContainerStyle={{ alignItems: 'center', flexDirection: 'row', gap: 6 }}
+        >
           {[3, 7, 14].map(d => {
             const active = days === d;
             return (
               <TouchableOpacity
                 key={d}
                 onPress={() => setDays(d)}
-                style={[styles.chip, active && styles.chipActive]}
+                style={[ss.filterChip, active && ss.filterChipActive]}
               >
-                <Icon name="brain" size={14} color={active ? colors.brand.primary : '#65676B'} />
-                <AppText variant="sm" weight={active ? "bold" : "normal"} color={active ? colors.brand.primary : "#050505"}>
+                <AppText variant="sm" weight="bold" color={active ? colors.brand.primary : "#334155"}>
                   Dự báo {d} ngày tới
                 </AppText>
               </TouchableOpacity>
@@ -244,67 +238,138 @@ export default function ForecastScreen() {
           })}
         </ScrollView>
       </View>
+    </View>
+  );
 
+  return (
+    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
       {isWide ? (
-        <View style={{ flex: 1, flexDirection: 'row', padding: 12, gap: 12 }}>
-          <View style={{ flex: 0.55 }}>
-            <DataTable<any>
-              columns={columns}
-              data={safeData}
-              getRowId={(r: any) => r?.id || r?.date || String(Math.random())}
-              loading={loading}
-              sortKey={sortKey}
-              sortDir={sortDir}
-              onSortChange={handleSortChange}
-              onRefresh={load}
-              compact
-              emptyIcon="chart-timeline-variant"
-              emptyTitle="Chưa có dữ liệu dự báo"
-              emptySubtitle=""
-            />
+        <View style={{ flex: 1 }}>
+          {renderHeader()}
+          <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: 12, paddingBottom: 12, gap: 12 }}>
+            <View style={{ flex: 0.55 }}>
+              <DataTable<any>
+                columns={columns}
+                data={safeData}
+                getRowId={(r: any) => r?.id || r?.date || String(Math.random())}
+                loading={loading}
+                sortKey={sortKey}
+                sortDir={sortDir}
+                onSortChange={handleSortChange}
+                onRefresh={load}
+                compact
+                emptyIcon="chart-timeline-variant"
+                emptyTitle="Chưa có dữ liệu dự báo"
+                emptySubtitle=""
+              />
+            </View>
+            <View style={{ flex: 0.45 }}>{renderPanel()}</View>
           </View>
-          <View style={{ flex: 0.45 }}>{renderPanel()}</View>
         </View>
       ) : (
-        <FlatList
-          data={safeData}
-          keyExtractor={(r: any, idx) => r?.id || r?.date || String(idx)}
-          renderItem={renderMobileForecastCard}
-          contentContainerStyle={{ paddingBottom: 100 }}
-          ListEmptyComponent={
-            loading ? (
-              <TableSkeleton rowCount={5} />
-            ) : (
-              <EmptyState
-                icon="chart-timeline-variant"
-                title="Chưa có dữ liệu dự báo"
-                subtitle=""
-              />
-            )
-          }
-        />
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 6, paddingTop: 6, gap: 8, paddingBottom: 100 }}>
+          {renderHeader()}
+          
+          {/* 📦 Section CardBox bọc Danh Sách Dự Báo AI */}
+          <View style={ss.sectionWrap}>
+            <View style={ss.sectionHeader}>
+              <View style={[ss.iconCircleSm, { backgroundColor: '#EFF6FF' }]}>
+                <Icon name="brain" size={14} color={colors.brand.primary} />
+              </View>
+              <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1 }}>
+                DANH SÁCH DỰ BÁO NHU CẦU AI ({safeData.length})
+              </AppText>
+            </View>
+
+            <View style={{ paddingHorizontal: 10, paddingVertical: safeData.length ? 4 : 16 }}>
+              {loading ? (
+                <TableSkeleton rowCount={5} />
+              ) : safeData.length === 0 ? (
+                <EmptyState
+                  icon="chart-timeline-variant"
+                  title="Chưa có dữ liệu dự báo"
+                  subtitle="Vui lòng chọn số ngày dự báo khác"
+                />
+              ) : (
+                safeData.map(r => renderMobileForecastCard({ item: r }))
+              )}
+            </View>
+          </View>
+
+          {/* 📊 Bổ sung Biểu đồ & Mô phỏng nhu cầu AI trên Mobile */}
+          {renderPanel()}
+        </ScrollView>
       )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  mobileActionRow: {
+  pnlRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    backgroundColor: '#F8FAFC',
+    padding: 10,
+    borderRadius: 8,
+  },
+  mobileTopActionBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingVertical: 6,
     backgroundColor: colors.surface.card,
     borderBottomWidth: 1,
     borderBottomColor: colors.border.light,
+    gap: 6,
+  },
+  mobileAddBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
+    height: 40,
+    borderRadius: 999,
+    backgroundColor: colors.brand.primary,
+  },
+  posTableRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 48,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
+  },
+  posCatSectionWrap: {
+    marginBottom: 16,
+  },
+  posCatHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: '#F8FAFC',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  catIconMiniCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  posCatItemsGroup: {
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 12,
   },
   addBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
     paddingHorizontal: 14,
-    height: 44,
+    height: 40,
     borderRadius: 999,
     backgroundColor: colors.brand.primary,
   },
@@ -313,11 +378,8 @@ const styles = StyleSheet.create({
   fbMetricContainer: {
     flexDirection: 'row',
     paddingHorizontal: 12,
-    paddingVertical: 10,
-    gap: 8,
-    backgroundColor: colors.surface.card,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border.light,
+    paddingVertical: 6,
+    gap: 6,
     marginBottom: 8,
     flexWrap: 'wrap',
   },
@@ -328,7 +390,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     backgroundColor: colors.surface.card,
-    paddingVertical: 8,
+    paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: 14,
     borderWidth: 1,
@@ -367,7 +429,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: colors.border.light,
-    paddingVertical: 12,
+    paddingVertical: 8,
   },
   cardHeaderRow: {
     flexDirection: 'row',
@@ -400,9 +462,4 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.border.light,
   },
   panelDivider: { height: 1, backgroundColor: colors.border.light },
-  pnlRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
 });

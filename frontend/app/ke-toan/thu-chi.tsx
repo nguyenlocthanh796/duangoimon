@@ -30,16 +30,16 @@ const formatDate = (iso: string | null) => (iso ? iso.slice(0, 10) : '');
 
 function generateFallbackTxs(): Transaction[] {
   return [
-    { id: 'tx1', type: 'thu', category: 'Bán hàng', amount: 28536644, created_at: '2026-07-31', note: 'Tiền bán hàng sự kiện ca sáng' },
-    { id: 'tx2', type: 'chi', category: 'Vật tư', amount: 1602434, created_at: '2026-07-31', note: 'Mua bao bì, hộp đựng ly mang về' },
-    { id: 'tx3', type: 'chi', category: 'Khác', amount: 183921, created_at: '2026-07-29', note: 'Phí ngân hàng & chuyển tiền tự động' },
-    { id: 'tx4', type: 'thu', category: 'Bán hàng', amount: 39483124, created_at: '2026-07-29', note: 'Thu tiền đặt cọc bàn tiệc sự kiện' },
-    { id: 'tx5', type: 'chi', category: 'Lương', amount: 4754095, created_at: '2026-07-29', note: 'Đóng bảo hiểm xã hội nhân viên' },
-    { id: 'tx6', type: 'chi', category: 'Vật tư', amount: 973598, created_at: '2026-07-29', note: 'Mua đồ vệ sinh, hóa chất tẩy rửa' },
-    { id: 'tx7', type: 'thu', category: 'Bán hàng', amount: 7426779, created_at: '2026-07-29', note: 'Thu tiền giao hàng tận nơi ứng dụng' },
-    { id: 'tx8', type: 'chi', category: 'Vật tư', amount: 693376, created_at: '2026-07-27', note: 'Mua khăn giấy, ống hút sinh học' },
-    { id: 'tx9', type: 'chi', category: 'Khác', amount: 265554, created_at: '2026-07-27', note: 'Phí đăng ký gia hạn kinh doanh' },
-    { id: 'tx10', type: 'thu', category: 'Bán hàng', amount: 25162751, created_at: '2026-07-27', note: 'Công ty ABC thanh toán hóa đơn tiệc' },
+    { id: 'tx1', type: 'thu', category: 'Bán hàng', amount: 28536644, ref_id: null, created_at: '2026-07-31', note: 'Tiền bán hàng sự kiện ca sáng' },
+    { id: 'tx2', type: 'chi', category: 'Vật tư', amount: 1602434, ref_id: null, created_at: '2026-07-31', note: 'Mua bao bì, hộp đựng ly mang về' },
+    { id: 'tx3', type: 'chi', category: 'Khác', amount: 183921, ref_id: null, created_at: '2026-07-29', note: 'Phí ngân hàng & chuyển tiền tự động' },
+    { id: 'tx4', type: 'thu', category: 'Bán hàng', amount: 39483124, ref_id: null, created_at: '2026-07-29', note: 'Thu tiền đặt cọc bàn tiệc sự kiện' },
+    { id: 'tx5', type: 'chi', category: 'Lương', amount: 4754095, ref_id: null, created_at: '2026-07-29', note: 'Đóng bảo hiểm xã hội nhân viên' },
+    { id: 'tx6', type: 'chi', category: 'Vật tư', amount: 973598, ref_id: null, created_at: '2026-07-29', note: 'Mua đồ vệ sinh, hóa chất tẩy rửa' },
+    { id: 'tx7', type: 'thu', category: 'Bán hàng', amount: 7426779, ref_id: null, created_at: '2026-07-29', note: 'Thu tiền giao hàng tận nơi ứng dụng' },
+    { id: 'tx8', type: 'chi', category: 'Vật tư', amount: 693376, ref_id: null, created_at: '2026-07-27', note: 'Mua khăn giấy, ống hút sinh học' },
+    { id: 'tx9', type: 'chi', category: 'Khác', amount: 265554, ref_id: null, created_at: '2026-07-27', note: 'Phí đăng ký gia hạn kinh doanh' },
+    { id: 'tx10', type: 'thu', category: 'Bán hàng', amount: 25162751, ref_id: null, created_at: '2026-07-27', note: 'Công ty ABC thanh toán hóa đơn tiệc' },
   ];
 }
 
@@ -340,7 +340,7 @@ export default function ThuChiScreen() {
         <View style={{ gap: 8, paddingVertical: 6 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
             <AppText variant="sm" color="#65676B">Số tiền giao dịch:</AppText>
-            <AppText variant="lg" weight="bold" color={isThu ? colors.status.success : colors.status.danger}>
+            <AppText variant="md" weight="bold" color={isThu ? colors.status.success : colors.status.danger}>
               {isThu ? '+' : '-'}{formatVND(t.amount)}
             </AppText>
           </View>
@@ -440,7 +440,7 @@ export default function ThuChiScreen() {
             <Icon name="arrow-bottom-left" size={20} color={colors.status.success} />
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="lg" weight="bold" color={colors.status.success}>{formatVND(totalThu)}</AppText>
+            <AppText variant="md" weight="bold" color={colors.status.success}>{formatVND(totalThu)}</AppText>
             <AppText variant="sm" color="#65676B">Tổng thu</AppText>
           </View>
         </View>
@@ -450,7 +450,7 @@ export default function ThuChiScreen() {
             <Icon name="arrow-top-right" size={20} color={colors.status.danger} />
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="lg" weight="bold" color={colors.status.danger}>{formatVND(totalChi)}</AppText>
+            <AppText variant="md" weight="bold" color={colors.status.danger}>{formatVND(totalChi)}</AppText>
             <AppText variant="sm" color="#65676B">Tổng chi</AppText>
           </View>
         </View>
@@ -460,7 +460,7 @@ export default function ThuChiScreen() {
             <Icon name="scale-balance" size={20} color="#2563EB" />
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="lg" weight="bold" color={totalThu - totalChi >= 0 ? colors.status.success : colors.status.danger}>
+            <AppText variant="md" weight="bold" color={totalThu - totalChi >= 0 ? colors.status.success : colors.status.danger}>
               {formatVND(totalThu - totalChi)}
             </AppText>
             <AppText variant="sm" color="#65676B">Thực tế (Cân đối)</AppText>

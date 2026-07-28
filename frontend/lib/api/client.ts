@@ -1,22 +1,9 @@
 import { ApiError, ExpectedNotFoundError } from '../logger';
+import { getApiBaseUrl } from './serverConfig';
 
-// API URL resolution:
-// In production, EXPO_PUBLIC_API_URL is set during build via .env
-// If not set, use the Render backend URL directly
 function getApiUrl(): string {
-  if (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_API_URL) {
-    return process.env.EXPO_PUBLIC_API_URL;
-  }
-  if (typeof window !== 'undefined' && window.location) {
-    const host = window.location.hostname;
-    if (host === 'localhost' || host === '127.0.0.1') {
-      return `http://${host}:8000/api/v1`;
-    }
-  }
-  return 'https://pos-quanan-backend.onrender.com/api/v1';
+  return getApiBaseUrl();
 }
-
-const API_URL = getApiUrl();
 
 import { getToken as getSecureToken, setToken as setSecureToken, clearToken as clearSecureToken } from '../secure-storage';
 
@@ -55,23 +42,21 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 15000);
   try {
+    const activeApiUrl = getApiUrl();
     const cleanPath = path.startsWith('/api/v1') ? path.substring(7) : path;
-    const res = await fetch(`${API_URL}${cleanPath}`, {
+    const res = await fetch(`${activeApiUrl}${cleanPath}`, {
       ...options,
       headers,
       signal: controller.signal,
     });
     clearTimeout(timeoutId);
     if (!res.ok) {
-      if (res.status === 401) {
+      if (res.status === 401 || res.status === 403) {
         clearToken();
-        window.location.href = '/login';
-        throw new ApiError('Unauthorized', 401);
-      }
-      if (res.status === 403) {
-        clearToken();
-        window.location.href = '/login';
-        throw new ApiError('Forbidden', 403);
+        if (typeof window !== 'undefined' && window.location && typeof window.location.href === 'string') {
+          window.location.href = '/login';
+        }
+        throw new ApiError(res.status === 401 ? 'Unauthorized' : 'Forbidden', res.status);
       }
       const err = await res.json().catch(() => ({ detail: res.statusText }));
       if (res.status === 404) {
@@ -99,7 +84,7 @@ export type Transaction = {
   type: string;
   category: string | null;
   amount: number;
-  ref_id: string | null;
+  ref_id?: string | null;
   note: string | null;
   created_at: string | null;
 };
@@ -107,7 +92,7 @@ export type Transaction = {
 export type Invoice = {
   id: string;
   invoice_number: string;
-  token: string;
+  token?: string;
   order_id: string;
   buyer_name: string | null;
   buyer_tax_code?: string | null;
@@ -116,8 +101,9 @@ export type Invoice = {
   vat_rate?: number;
   invoice_symbol?: string;
   status: string;
-  exported_at: string | null;
+  exported_at?: string | null;
   created_at: string | null;
+  branch_id?: string | null;
 };
 
 export interface Product {

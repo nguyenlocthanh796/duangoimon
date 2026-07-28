@@ -17,17 +17,13 @@ let _pongTimeoutTimer: ReturnType<typeof setTimeout> | null = null;
 
 const _listeners = new Set<(data: any) => void>();
 
+import { getApiBaseUrl } from '../api/serverConfig';
+
 function getWsBaseUrl(): string {
-  if (typeof process !== 'undefined' && process.env?.EXPO_PUBLIC_WS_URL) {
-    return process.env.EXPO_PUBLIC_WS_URL;
-  }
-  if (typeof window !== 'undefined' && window.location) {
-    const host = window.location.hostname;
-    if (host === 'localhost' || host === '127.0.0.1') {
-      return `ws://${host}:8000/ws`;
-    }
-  }
-  return 'wss://pos-quanan-backend.onrender.com/ws';
+  const httpUrl = getApiBaseUrl();
+  const wsProto = httpUrl.startsWith('https') ? 'wss' : 'ws';
+  const hostAndPort = httpUrl.replace(/^https?:\/\//, '').replace(/\/api\/v1\/?$/, '');
+  return `${wsProto}://${hostAndPort}/ws`;
 }
 
 function startHeartbeat() {
@@ -114,7 +110,7 @@ function connectWebSocket() {
 
         if (message && (message.event === 'order_updated' || message.event === 'table_updated')) {
           if (message.table_id) {
-            mutateCacheSync<any[]>('tables_ban_hang', (tables) => {
+            mutateCacheSync<any[]>('tables_ban_hang', (tables: any[] | undefined) => {
               if (!Array.isArray(tables)) return tables || [];
               return tables.map((t) =>
                 t.id === message.table_id

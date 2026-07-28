@@ -9,7 +9,7 @@ interface ScreenHeaderProps {
   title: string;
   subtitle?: string;
   showBack?: boolean;
-  onMenuPress: () => void;
+  onMenuPress?: () => void;
   onBackPress?: () => void;
   onRefresh?: () => void;
   right?: React.ReactNode;

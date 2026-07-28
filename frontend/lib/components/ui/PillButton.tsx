@@ -64,6 +64,7 @@ export default function PillButton({
         style,
       ]}
       onPress={onPress}
+      delayPressIn={0}
       disabled={disabled || loading}
       activeOpacity={0.8}
       {...(Platform.OS === 'web'

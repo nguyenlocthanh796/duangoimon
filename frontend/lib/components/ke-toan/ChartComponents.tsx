@@ -283,7 +283,7 @@ export function StatChartCard({
       <View style={sccStyles.top}>
         <View style={{ flex: 1 }}>
           <AppText variant="sm" style={sccStyles.title}>{title}</AppText>
-          <AppText variant="lg" weight="bold" style={[sccStyles.value, { color }]} numberOfLines={1}>
+          <AppText variant="md" weight="bold" style={[sccStyles.value, { color }]} numberOfLines={1}>
             {value}
           </AppText>
           {trend !== undefined && (

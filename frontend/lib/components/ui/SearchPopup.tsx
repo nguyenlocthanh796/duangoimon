@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     flex: 1,
     color: colors.text.primary,
     paddingVertical: 0,
-    fontSize: 16,
+    fontSize: 14,
   },
   filtersSection: {
     paddingBottom: 8,

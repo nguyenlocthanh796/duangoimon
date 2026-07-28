@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View, FlatList, TouchableOpacity, StyleSheet,
   Alert, ActivityIndicator, TextInput, ScrollView,
@@ -6,10 +6,11 @@ import {
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api, Product } from '../../lib/api';
 import { useResponsive } from '../../lib/hooks/useResponsive';
-import { colors, font, formatVND } from '../../lib/theme';
+import { colors, font, formatVND, ss } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import AppText from '../../lib/components/ui/AppText';
 import FormModal from '../../lib/components/ui/FormModal';
+import DetailModal from '../../lib/components/ui/DetailModal';
 import FAB from '../../lib/components/ui/FAB';
 import EmptyState from '../../lib/components/ui/EmptyState';
 import { TableSkeleton } from '../../lib/components/ui/Skeleton';
@@ -54,10 +55,10 @@ function getCatStyle(cat: string | null, name: string = '') {
 
 // Compute BCG matrix tag based on price & index
 function getBcgTag(price: number, idx: number) {
-  if (price >= 40000) return { label: 'Star ⭐', color: '#D97706', bg: '#FEF3C7' };
-  if (price >= 25000) return { label: 'Plowhorse 🐴', color: '#2563EB', bg: '#EFF6FF' };
-  if (idx % 2 === 0) return { label: 'Puzzle 🧩', color: '#9333EA', bg: '#F3E8FF' };
-  return { label: 'Dog 🐶', color: '#64748B', bg: '#F1F5F9' };
+  if (price >= 40000) return { label: 'Star', color: '#D97706', bg: '#FEF3C7' };
+  if (price >= 25000) return { label: 'Plowhorse', color: '#2563EB', bg: '#EFF6FF' };
+  if (idx % 2 === 0) return { label: 'Puzzle', color: '#9333EA', bg: '#F3E8FF' };
+  return { label: 'Dog', color: '#64748B', bg: '#F1F5F9' };
 }
 
 export default function MenuEngScreen() {
@@ -69,6 +70,9 @@ export default function MenuEngScreen() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const selectedItem = useMemo(() => products.find(p => p.id === selectedId), [products, selectedId]);
 
   const load = useCallback(async () => {
     try {
@@ -165,7 +169,6 @@ export default function MenuEngScreen() {
   const renderStatsPanel = () => (
     <View style={styles.panelBox}>
       <View style={styles.panelHeader}>
-        <Icon name="silverware-fork-knife" size={20} color={colors.brand.primary} />
         <AppText variant="md" weight="bold" color="#050505">Menu Engineering (BCG Matrix)</AppText>
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.brand.primaryBg, padding: 12, borderRadius: 12 }}>
@@ -200,10 +203,10 @@ export default function MenuEngScreen() {
         <MenuFormContent form={form} onChange={(updates) => setForm(f => ({ ...f, ...updates }))} />
       </ScrollView>
       <View style={{ flexDirection: 'row', gap: 12, marginTop: 8 }}>
-        <TouchableOpacity style={{ flex: 1, height: 44, borderRadius: 999, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' }} onPress={() => setShowForm(false)}>
+        <TouchableOpacity style={{ flex: 1, height: 40, borderRadius: 999, backgroundColor: colors.surface.app, alignItems: 'center', justifyContent: 'center' }} onPress={() => setShowForm(false)}>
           <AppText variant="sm" color={colors.text.secondary}>Hủy</AppText>
         </TouchableOpacity>
-        <TouchableOpacity style={{ flex: 1.5, height: 44, borderRadius: 999, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }} onPress={handleSave} disabled={saving}>
+        <TouchableOpacity style={{ flex: 1.5, height: 40, borderRadius: 999, backgroundColor: colors.brand.primary, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 }} onPress={handleSave} disabled={saving}>
           {saving && <ActivityIndicator size="small" color={colors.text.inverse} />}
           <AppText variant="sm" weight="bold" color={colors.text.inverse}>{editingId ? 'Cập nhật' : 'Lưu'}</AppText>
         </TouchableOpacity>
@@ -216,48 +219,41 @@ export default function MenuEngScreen() {
     const bcg = getBcgTag(item.price || 0, index);
 
     if (!isWide) {
-      // 📱 Facebook Mobile Feed Card (Full Width) with Vivid Food Icons & BCG Badges
+      // 📱 Compact 48px POS Row Layout
       return (
-        <View style={styles.itemMobile}>
-          <TouchableOpacity style={styles.cardHeaderRow} onPress={() => openEdit(item)} activeOpacity={0.8}>
-            <View style={[styles.avatarCircle, { backgroundColor: cat.bg }]}>
-              <Icon name={cat.icon as any} size={22} color={cat.color} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>{item.name}</AppText>
-                <View style={[styles.bcgBadge, { backgroundColor: bcg.bg }]}>
-                  <AppText variant="sm" weight="bold" color={bcg.color}>{bcg.label}</AppText>
-                </View>
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 4 }}>
-                <AppText variant="sm" color="#65676B">Mã: {item.code || 'N/A'}</AppText>
-                <AppText variant="sm" color="#65676B">· {item.category || cat.key}</AppText>
-                <AppText variant="sm" color="#65676B">· {item.unit}</AppText>
+        <View style={ss.listRow} key={item.id}>
+          <View style={[styles.catIconMiniCircle, { backgroundColor: cat.bg, alignItems: 'center', justifyContent: 'center' }]}>
+            <AppText variant="sm" color={cat.color} style={{ fontSize: 9 }}>
+              {(item.category || cat.key || '??').slice(0, 2).toUpperCase()}
+            </AppText>
+          </View>
+
+          <TouchableOpacity style={{ flex: 1, paddingRight: 8 }} onPress={() => setSelectedId(item.id)} activeOpacity={0.7}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <AppText variant="sm" color="#0F172A" numberOfLines={1}>
+                {item.name}
+              </AppText>
+              <View style={[styles.bcgBadge, { backgroundColor: bcg.bg, paddingHorizontal: 6, paddingVertical: 1 }]}>
+                <AppText variant="sm" color={bcg.color} style={{ fontSize: 11 }}>{bcg.label}</AppText>
               </View>
             </View>
-            <View style={{ alignItems: 'flex-end' }}>
-              <AppText variant="md" weight="bold" color={colors.brand.primary}>{formatVND(item.price)}</AppText>
-              <View style={[styles.activeBadge, { backgroundColor: item.is_active ? '#ECFDF5' : '#F1F5F9', marginTop: 2 }]}>
-                <AppText variant="sm" color={item.is_active ? colors.status.success : colors.text.muted}>
-                  {item.is_active ? 'Đang bán' : 'Tạm ngưng'}
-                </AppText>
-              </View>
-            </View>
+            <AppText variant="sm" color="#64748B" numberOfLines={1}>
+              Mã: {item.code || 'N/A'} · {item.category || cat.key}
+            </AppText>
           </TouchableOpacity>
 
-          <View style={styles.cardActionDivider} />
-
-          <View style={{ flexDirection: 'row', gap: 8, paddingHorizontal: 12, paddingTop: 8 }}>
-            <TouchableOpacity style={styles.panelBtnSecondary} onPress={() => openEdit(item)}>
-              <Icon name="pencil" size={14} color={colors.brand.primary} />
-              <AppText variant="sm" weight="bold" color={colors.brand.primary}>Chỉnh sửa</AppText>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.panelBtnDanger} onPress={() => handleDelete(item.id, item.name)}>
-              <Icon name="trash-can-outline" size={14} color={colors.status.danger} />
-              <AppText variant="sm" color={colors.status.danger}>Xóa món</AppText>
-            </TouchableOpacity>
+          <View style={{ alignItems: 'flex-end', marginRight: 10 }}>
+            <AppText variant="sm" weight="bold" color={colors.brand.primary}>
+              {formatVND(item.price)}
+            </AppText>
+            <AppText variant="sm" color={item.is_active ? colors.status.success : colors.text.muted}>
+              {item.is_active ? 'Đang bán' : 'Tạm ngưng'}
+            </AppText>
           </View>
+
+          <TouchableOpacity style={styles.miniActionBtn} onPress={() => openEdit(item)}>
+            <Icon name="pencil" size={16} color={colors.brand.primary} />
+          </TouchableOpacity>
         </View>
       );
     }
@@ -266,19 +262,21 @@ export default function MenuEngScreen() {
     return (
       <TouchableOpacity style={styles.card} onPress={() => openEdit(item)} activeOpacity={0.7}>
         <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, gap: 12 }}>
-          <View style={[styles.avatarCircle, { backgroundColor: cat.bg, width: 40, height: 40, borderRadius: 20 }]}>
-            <Icon name={cat.icon as any} size={20} color={cat.color} />
+          <View style={[styles.avatarCircle, { backgroundColor: cat.bg, width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' }]}>
+            <AppText variant="sm" color={cat.color} style={{ fontSize: 12 }}>
+              {(item.category || cat.key || '??').slice(0, 2).toUpperCase()}
+            </AppText>
           </View>
           <View style={{ flex: 1 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>{item.name}</AppText>
+              <AppText variant="md" color="#050505" numberOfLines={1}>{item.name}</AppText>
               <View style={[styles.bcgBadge, { backgroundColor: bcg.bg }]}>
-                <AppText variant="sm" weight="bold" color={bcg.color}>{bcg.label}</AppText>
+                <AppText variant="sm" color={bcg.color} style={{ fontSize: 11 }}>{bcg.label}</AppText>
               </View>
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 4 }}>
               <View style={[styles.codeTag, { backgroundColor: cat.bg }]}>
-                <AppText variant="sm" weight="bold" color={cat.color}>{item.code || 'N/A'}</AppText>
+                <AppText variant="sm" color={cat.color}>{item.code || 'N/A'}</AppText>
               </View>
               <AppText variant="sm" color="#65676B">{item.category || cat.key}</AppText>
               <AppText variant="sm" color="#65676B">· {item.unit}</AppText>
@@ -318,34 +316,138 @@ export default function MenuEngScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
-      {/* Top Action Bar on Mobile */}
-      {!isWide && (
-        <View style={styles.mobileActionRow}>
-          <AppText variant="md" weight="bold" color="#050505">{products.length} món Menu Engineering</AppText>
-          <TouchableOpacity onPress={openAdd} style={styles.addBtn}>
-            <Icon name="plus" size={16} color={colors.text.inverse} />
-            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm món</AppText>
-          </TouchableOpacity>
-        </View>
-      )}
-
       {isWide ? (
-        <View style={{ flex: 1, flexDirection: 'row', padding: 12, gap: 12 }}>
+        <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: 12, paddingBottom: 12, gap: 12 }}>
           <View style={{ flex: 0.55 }}>{renderList()}</View>
           <View style={{ flex: 0.45 }}>
             {showForm ? renderInlineForm() : renderStatsPanel()}
           </View>
         </View>
       ) : (
-        renderList()
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 6, paddingTop: 6, gap: 8, paddingBottom: 100 }}>
+          {/* Mobile Top Bar: Search Input + Add Button */}
+          <View style={ss.mobileActionRow}>
+            <View style={ss.searchInputWrap}>
+              <Icon name="magnify" size={16} color="#64748B" />
+              <TextInput
+                value={search}
+                onChangeText={setSearch}
+                placeholder="Tìm món theo tên, mã..."
+                placeholderTextColor="#94A3B8"
+                style={ss.searchTextInput}
+              />
+              {search.length > 0 && (
+                <TouchableOpacity onPress={() => setSearch('')}>
+                  <Icon name="close-circle" size={16} color="#94A3B8" />
+                </TouchableOpacity>
+              )}
+            </View>
+
+            <TouchableOpacity style={ss.addBtn} onPress={openAdd} activeOpacity={0.8}>
+              <Icon name="plus" size={16} color="#FFFFFF" />
+              <AppText variant="sm" weight="bold" color="#FFFFFF">
+                Thêm món
+              </AppText>
+            </TouchableOpacity>
+          </View>
+
+          <View style={ss.sectionWrap}>
+            <View style={ss.sectionHeader}>
+              <View style={[ss.iconCircleSm, { backgroundColor: '#EEF2FF' }]}>
+                <Icon name="silverware-fork-knife" size={14} color={colors.brand.primary} />
+              </View>
+              <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1 }}>
+                DANH SÁCH MENU ENGINEERING ({filtered.length})
+              </AppText>
+            </View>
+
+            <View style={{ paddingHorizontal: 10, paddingVertical: filtered.length ? 4 : 16 }}>
+              {loading ? (
+                <TableSkeleton rowCount={5} />
+              ) : filtered.length === 0 ? (
+                <EmptyState
+                  icon="silverware-fork-knife"
+                  title="Chưa có món nào"
+                  subtitle="Nhấn nút + Thêm món để tạo món đầu tiên"
+                />
+              ) : (
+                filtered.map((item, index) => renderItem({ item, index }))
+              )}
+            </View>
+          </View>
+        </ScrollView>
       )}
-      {!isWide && <FAB onPress={openAdd} />}
+
       {!isWide && (
-        <FormModal visible={showForm} title={editingId ? 'Sửa món' : 'Thêm món mới'}
-          onClose={() => setShowForm(false)}
-          onSave={handleSave} saveLabel={editingId ? 'Cập nhật' : 'Thêm mới'} saving={saving}>
-          <MenuFormContent form={form} onChange={(updates) => setForm(f => ({ ...f, ...updates }))} />
-        </FormModal>
+        <>
+          <FormModal visible={showForm} title={editingId ? 'Sửa món' : 'Thêm món mới'}
+            onClose={() => setShowForm(false)}
+            onSave={handleSave} saveLabel={editingId ? 'Cập nhật' : 'Thêm mới'} saving={saving}>
+            <MenuFormContent form={form} onChange={(updates) => setForm(f => ({ ...f, ...updates }))} />
+          </FormModal>
+
+          <DetailModal
+            visible={!!selectedItem}
+            title={selectedItem?.name || ''}
+            subtitle={selectedItem ? `Mã: ${selectedItem.code || 'N/A'} · ${selectedItem.category || 'Khác'}` : undefined}
+            onClose={() => setSelectedId(null)}
+            onEdit={selectedItem ? () => { const item = selectedItem; setSelectedId(null); openEdit(item); } : undefined}
+            onDelete={selectedItem ? () => { const item = selectedItem; setSelectedId(null); handleDelete(item.id, item.name); } : undefined}
+            actions={
+              selectedItem
+                ? [
+                    {
+                      label: selectedItem.is_active ? 'Ngưng bán' : 'Mở bán',
+                      icon: 'swap-horizontal',
+                      variant: selectedItem.is_active ? 'danger' : 'primary',
+                      onPress: async () => {
+                        try {
+                          await api.updateProduct(selectedItem.id, { ...selectedItem, is_active: !selectedItem.is_active });
+                          load();
+                          setSelectedId(null);
+                        } catch (err: any) {
+                          Alert.alert('Lỗi', err.message || 'Không thể đổi trạng thái');
+                        }
+                      },
+                    },
+                  ]
+                : []
+            }
+          >
+            {selectedItem && (() => {
+              const bcg = getBcgTag(selectedItem.price || 0, products.findIndex(p => p.id === selectedItem.id));
+              const profit = (selectedItem.price || 0) - (selectedItem.cost_price || 0);
+              return (
+                <View style={{ gap: 12 }}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <AppText variant="sm" color="#64748B">Giá bán niêm yết</AppText>
+                    <AppText variant="md" weight="bold" color={colors.brand.primary}>
+                      {formatVND(selectedItem.price || 0)}
+                    </AppText>
+                  </View>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <AppText variant="sm" color="#64748B">Giá vốn ước tính (BOM)</AppText>
+                    <AppText variant="md" color="#0F172A">
+                      {formatVND(selectedItem.cost_price || 0)}
+                    </AppText>
+                  </View>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <AppText variant="sm" color="#64748B">Lợi nhuận gộp / món</AppText>
+                    <AppText variant="md" weight="bold" color={profit >= 0 ? colors.status.success : colors.status.danger}>
+                      {formatVND(profit)}
+                    </AppText>
+                  </View>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <AppText variant="sm" color="#64748B">Phân loại BCG Matrix</AppText>
+                    <View style={{ backgroundColor: bcg.bg, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 }}>
+                      <AppText variant="sm" color={bcg.color}>{bcg.label}</AppText>
+                    </View>
+                  </View>
+                </View>
+              );
+            })()}
+          </DetailModal>
+        </>
       )}
     </View>
   );
@@ -357,7 +459,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingVertical: 6,
     backgroundColor: colors.surface.card,
     borderBottomWidth: 1,
     borderBottomColor: colors.border.light,
@@ -367,7 +469,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     paddingHorizontal: 14,
-    height: 44,
+    height: 40,
     borderRadius: 999,
     backgroundColor: colors.brand.primary,
   },
@@ -395,7 +497,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: colors.border.light,
-    paddingVertical: 12,
+    paddingVertical: 8,
   },
   cardHeaderRow: {
     flexDirection: 'row',
@@ -431,7 +533,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    height: 44,
+    height: 40,
     borderRadius: 999,
     backgroundColor: colors.brand.primaryBg,
   },
@@ -441,7 +543,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    height: 44,
+    height: 40,
     borderRadius: 999,
     backgroundColor: '#FEE2E2',
   },
@@ -479,5 +581,81 @@ const styles = StyleSheet.create({
   panelDivider: { height: 1, backgroundColor: colors.border.light },
   catRow: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 6, paddingHorizontal: 10, borderRadius: 8, backgroundColor: '#F8FAFC' },
   catDot: { width: 8, height: 8, borderRadius: 4 },
-  panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: colors.brand.primary, borderRadius: 999, height: 44, marginTop: 4 },
+  panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: colors.brand.primary, borderRadius: 999, height: 40, marginTop: 4 },
+
+  mobileTopActionBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: colors.surface.card,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
+    gap: 10,
+  },
+  mobileSearchInputWrap: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F1F5F9',
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    height: 40,
+    gap: 6,
+  },
+  mobileSearchTextInput: {
+    flex: 1,
+    fontSize: 14,
+    color: '#0F172A',
+    paddingVertical: 0,
+  },
+  mobileAddBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
+    height: 40,
+    borderRadius: 999,
+    backgroundColor: colors.brand.primary,
+  },
+  posTableRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 48,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
+  },
+  miniActionBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#F1F5F9',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  posCatSectionWrap: {
+    marginBottom: 16,
+  },
+  posCatHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: '#F8FAFC',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  catIconMiniCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  posCatItemsGroup: {
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 12,
+  },
 });

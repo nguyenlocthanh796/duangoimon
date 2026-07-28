@@ -27,34 +27,55 @@ export default function SystemModule() {
   const { width } = useWindowDimensions();
   const isWide = width >= 768;
   const [activeTab, setActiveTab] = useState('users');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  const searchableTabs = ['users', 'tables', 'stations', 'branches', 'audit'];
+  const isSearchable = searchableTabs.includes(activeTab);
+
+  const toggleSearch = () => {
+    if (isSearchable) setIsSearchOpen(!isSearchOpen);
+  };
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'users': return <UsersScreen />;
-      case 'tables': return <TablesScreen />;
-      case 'stations': return <StationsScreen />;
-      case 'branches': return <BranchesScreen />;
-      case 'audit': return <AuditScreen />;
+      case 'users': return <UsersScreen isSearchOpen={isSearchOpen} />;
+      case 'tables': return <TablesScreen isSearchOpen={isSearchOpen} />;
+      case 'stations': return <StationsScreen isSearchOpen={isSearchOpen} />;
+      case 'branches': return <BranchesScreen isSearchOpen={isSearchOpen} />;
+      case 'audit': return <AuditScreen isSearchOpen={isSearchOpen} />;
       default: return null;
     }
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom', 'left', 'right']}>
       <ScreenHeader
         title="Hệ thống & Vận hành"
         subtitle="Quản lý tài khoản nhân viên, sơ đồ bàn & cấu hình trạm bếp"
         onMenuPress={openSidebar}
         compact={!isWide}
         right={
-          <View style={styles.iconCircle}>
-            <Icon name="magnify" size={18} color={colors.text.secondary} />
-          </View>
+          <TouchableOpacity 
+            onPress={toggleSearch}
+            disabled={!isSearchable}
+            style={{ padding: 8, opacity: isSearchable ? 1 : 0.3 }}
+          >
+            <Icon name={isSearchOpen ? 'close' : 'magnify'} size={22} color={colors.text.primary} />
+          </TouchableOpacity>
         }
       />
-      <ModuleTabs tabs={tabs} activeTab={activeTab} onSelectTab={setActiveTab} />
-      <View style={styles.content}>
-        {renderContent()}
+      <View style={styles.contentWrap}>
+        <ModuleTabs
+          tabs={tabs}
+          activeTab={activeTab}
+          onSelectTab={(tab) => {
+            setActiveTab(tab);
+            setIsSearchOpen(false);
+          }}
+        />
+        <View style={styles.content}>
+          {renderContent()}
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -63,10 +84,16 @@ export default function SystemModule() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.surface.app,
+    backgroundColor: '#FFFFFF',
+  },
+  contentWrap: {
+    flex: 1,
+    position: 'relative',
   },
   content: {
     flex: 1,
+    position: 'relative',
+    zIndex: 10,
   },
   iconCircle: {
     width: 34,

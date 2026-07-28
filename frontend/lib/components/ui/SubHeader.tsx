@@ -15,7 +15,7 @@ export default function SubHeader({ title, subtitle, right }: SubHeaderProps) {
   return (
     <View style={styles.container}>
       <View style={styles.left}>
-        {title && <AppText variant="lg" weight="bold" color={colors.text.primary}>{title}</AppText>}
+        {title && <AppText variant="md" weight="bold" color={colors.text.primary}>{title}</AppText>}
         {subtitle && <AppText variant="sm" color={colors.text.muted}>{subtitle}</AppText>}
       </View>
       <View style={styles.right}>

@@ -1,8 +1,7 @@
 import { View, Text, TextInput, TouchableOpacity, ScrollView, Switch } from 'react-native';
 import { StyleSheet } from 'react-native';
-import { colors, font } from '../../../theme';
-
-const CATEGORIES = ['Đồ ăn', 'Đồ uống', 'Tráng miệng', 'Snack', 'Khác'];
+import { colors, font, ss } from '../../../theme';
+import { useCategoryOptionSettings } from '../../../hooks/useCategoryOptionSettings';
 
 interface MenuFormContentProps {
   form: {
@@ -18,108 +17,123 @@ interface MenuFormContentProps {
 }
 
 export default function MenuFormContent({ form, onChange }: MenuFormContentProps) {
+  const { categories } = useCategoryOptionSettings();
+
+  // Combine default categories with any custom categories saved in settings
+  const categoryNames = categories.map((c) => c.name);
+
   return (
     <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-      <View style={styles.formRow}>
-        <View style={[styles.inputWrap, { flex: 1 }]}>
-          <Text style={styles.inputLabel}>Mã món *</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Tự động hoặc nhập mã"
-            placeholderTextColor={colors.text.muted}
-            value={form.code}
-            onChangeText={(v) => onChange({ code: v })}
-          />
+      <View style={ss.sectionWrap}>
+        <View style={ss.sectionHeader}>
+          <Text style={{ ...font.smBold, color: '#1E293B', letterSpacing: 0.5 }}>
+            THÔNG TIN MÓN ĂN
+          </Text>
         </View>
-        <View style={[styles.inputWrap, { flex: 1 }]}>
-          <Text style={styles.inputLabel}>Đơn vị</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="phần"
-            placeholderTextColor={colors.text.muted}
-            value={form.unit}
-            onChangeText={(v) => onChange({ unit: v })}
-          />
-        </View>
-      </View>
 
-      <View style={styles.inputWrap}>
-        <Text style={styles.inputLabel}>Tên món *</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="VD: Phở bò, Cà phê đen..."
-          placeholderTextColor={colors.text.muted}
-          value={form.name}
-          onChangeText={(v) => onChange({ name: v })}
-        />
-      </View>
+        <View style={{ padding: 12 }}>
+          <View style={styles.formRow}>
+            <View style={[styles.inputWrap, { flex: 1 }]}>
+              <Text style={styles.inputLabel}>Mã món *</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Tự động hoặc nhập mã"
+                placeholderTextColor={colors.text.muted}
+                value={form.code}
+                onChangeText={(v) => onChange({ code: v })}
+              />
+            </View>
+            <View style={[styles.inputWrap, { flex: 1 }]}>
+              <Text style={styles.inputLabel}>Đơn vị tính</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="phần, ly, tô, dĩa..."
+                placeholderTextColor={colors.text.muted}
+                value={form.unit}
+                onChangeText={(v) => onChange({ unit: v })}
+              />
+            </View>
+          </View>
 
-      <View style={styles.inputWrap}>
-        <Text style={styles.inputLabel}>Danh mục</Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ gap: 8, paddingBottom: 4 }}
-        >
-          {CATEGORIES.map((cat) => {
-            const sel = form.category === cat;
-            return (
-              <TouchableOpacity
-                key={cat}
-                style={[
-                  styles.catChip,
-                  sel && {
-                    backgroundColor: colors.brand.primary,
-                    borderColor: colors.brand.primary,
-                  },
-                ]}
-                onPress={() => onChange({ category: form.category === cat ? '' : cat })}
-              >
-                <Text style={[styles.catChipText, sel && { color: colors.text.inverse }]}>
-                  {cat}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-      </View>
+          <View style={styles.inputWrap}>
+            <Text style={styles.inputLabel}>Tên món ăn / Đồ uống *</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="VD: Phở bò đặc biệt, Trà sữa Oolong Lài..."
+              placeholderTextColor={colors.text.muted}
+              value={form.name}
+              onChangeText={(v) => onChange({ name: v })}
+            />
+          </View>
 
-      <View style={styles.formRow}>
-        <View style={[styles.inputWrap, { flex: 1 }]}>
-          <Text style={styles.inputLabel}>Giá bán *</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="0"
-            placeholderTextColor={colors.text.muted}
-            keyboardType="numeric"
-            value={form.price}
-            onChangeText={(v) => onChange({ price: v })}
-          />
-        </View>
-        <View style={[styles.inputWrap, { flex: 1 }]}>
-          <Text style={styles.inputLabel}>Giá vốn</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="0"
-            placeholderTextColor={colors.text.muted}
-            keyboardType="numeric"
-            value={form.cost_price}
-            onChangeText={(v) => onChange({ cost_price: v })}
-          />
-        </View>
-      </View>
+          <View style={styles.inputWrap}>
+            <Text style={styles.inputLabel}>Danh mục món ăn</Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: 8, paddingBottom: 4 }}
+            >
+              {categoryNames.map((cat) => {
+                const sel = form.category === cat;
+                return (
+                  <TouchableOpacity
+                    key={cat}
+                    style={[
+                      styles.catChip,
+                      sel && {
+                        backgroundColor: colors.brand.primary,
+                        borderColor: colors.brand.primary,
+                      },
+                    ]}
+                    onPress={() => onChange({ category: form.category === cat ? '' : cat })}
+                  >
+                    <Text style={[styles.catChipText, sel && { color: colors.text.inverse }]}>
+                      {cat}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
 
-      <View style={styles.switchRow}>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.inputLabel}>Còn kinh doanh</Text>
-          <Text style={styles.switchSub}>Tắt để ẩn món khỏi chọn món</Text>
+          <View style={styles.formRow}>
+            <View style={[styles.inputWrap, { flex: 1 }]}>
+              <Text style={styles.inputLabel}>Giá bán *</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="0"
+                placeholderTextColor={colors.text.muted}
+                keyboardType="numeric"
+                value={form.price}
+                onChangeText={(v) => onChange({ price: v })}
+              />
+            </View>
+            <View style={[styles.inputWrap, { flex: 1 }]}>
+              <Text style={styles.inputLabel}>Giá vốn nguyên liệu</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="0"
+                placeholderTextColor={colors.text.muted}
+                keyboardType="numeric"
+                value={form.cost_price}
+                onChangeText={(v) => onChange({ cost_price: v })}
+              />
+            </View>
+          </View>
+
+          <View style={styles.switchRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.inputLabel}>Còn kinh doanh</Text>
+              <Text style={styles.switchSub}>Tắt để ẩn món khỏi màn hình chọn món Bán Hàng POS</Text>
+            </View>
+            <Switch
+              value={form.is_active}
+              onValueChange={(v) => onChange({ is_active: v })}
+              trackColor={{ false: '#CBD5E1', true: colors.brand.primary + '80' }}
+              thumbColor={form.is_active ? colors.brand.primary : '#F1F5F9'}
+            />
+          </View>
         </View>
-        <Switch
-          value={form.is_active}
-          onValueChange={(v) => onChange({ is_active: v })}
-          trackColor={{ false: '#CBD5E1', true: colors.brand.primary + '80' }}
-          thumbColor={form.is_active ? colors.brand.primary : '#F1F5F9'}
-        />
       </View>
     </ScrollView>
   );
@@ -128,26 +142,28 @@ export default function MenuFormContent({ form, onChange }: MenuFormContentProps
 const styles = StyleSheet.create({
   formRow: { flexDirection: 'row', gap: 10 },
   inputWrap: { marginBottom: 14 },
-  inputLabel: { ...font.smBold, color: colors.text.primary, marginBottom: 6 },
+  inputLabel: { ...font.smBold, color: '#0F172A', marginBottom: 6 },
   input: {
-    borderWidth: 1.5,
-    borderColor: colors.border.default,
-    borderRadius: 4,
+    height: 44,
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    borderRadius: 8,
     paddingHorizontal: 12,
-    paddingVertical: 10,
     ...font.md,
-    color: colors.text.primary,
-    backgroundColor: colors.surface.disabled,
+    color: '#0F172A',
+    backgroundColor: '#FFFFFF',
   },
   catChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: 4,
-    borderWidth: 1.5,
-    borderColor: colors.border.default,
-    backgroundColor: colors.surface.app,
+    paddingHorizontal: 16,
+    height: 40,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  catChipText: { ...font.sm, fontWeight: '600', color: colors.text.secondary },
+  catChipText: { ...font.sm, fontWeight: '600', color: '#475569' },
   switchRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',

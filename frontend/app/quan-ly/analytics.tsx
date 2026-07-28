@@ -29,21 +29,29 @@ export default function AnalyticsModule() {
   const { width } = useWindowDimensions();
   const isWide = width >= 768;
   const [activeTab, setActiveTab] = useState('execDashboard');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  const searchableTabs = ['reports', 'biReports', 'shifts'];
+  const isSearchable = searchableTabs.includes(activeTab);
+
+  const toggleSearch = () => {
+    if (isSearchable) setIsSearchOpen(!isSearchOpen);
+  };
 
   const renderContent = () => {
     switch (activeTab) {
       case 'execDashboard': return <ExecDashboardScreen />;
-      case 'reports': return <ReportsScreen />;
-      case 'biReports': return <BiReportsScreen />;
+      case 'reports': return <ReportsScreen isSearchOpen={isSearchOpen} />;
+      case 'biReports': return <BiReportsScreen isSearchOpen={isSearchOpen} />;
       case 'menuEng': return <MenuEngScreen />;
       case 'forecast': return <ForecastScreen />;
-      case 'shifts': return <ShiftsScreen />;
+      case 'shifts': return <ShiftsScreen isSearchOpen={isSearchOpen} />;
       default: return null;
     }
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom', 'left', 'right']}>
       <ScreenHeader
         title="Báo cáo & Phân tích"
         subtitle="Phân tích báo cáo điều hành, BI, P&L & dự báo doanh thu"
@@ -51,14 +59,22 @@ export default function AnalyticsModule() {
         compact={!isWide}
         right={
           <TouchableOpacity 
-            disabled={true}
-            style={{ padding: 8, opacity: 0.3 }}
+            onPress={toggleSearch}
+            disabled={!isSearchable}
+            style={{ padding: 8, opacity: isSearchable ? 1 : 0.3 }}
           >
-            <Icon name="magnify" size={22} color={colors.text.primary} />
+            <Icon name={isSearchOpen ? 'close' : 'magnify'} size={22} color={colors.text.primary} />
           </TouchableOpacity>
         }
       />
-      <ModuleTabs tabs={tabs} activeTab={activeTab} onSelectTab={setActiveTab} />
+      <ModuleTabs
+        tabs={tabs}
+        activeTab={activeTab}
+        onSelectTab={(tab) => {
+          setActiveTab(tab);
+          setIsSearchOpen(false);
+        }}
+      />
       <View style={styles.content}>
         {renderContent()}
       </View>
@@ -69,9 +85,11 @@ export default function AnalyticsModule() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.surface.app,
+    backgroundColor: '#FFFFFF',
   },
   content: {
     flex: 1,
+    position: 'relative',
+    zIndex: 10,
   },
 });

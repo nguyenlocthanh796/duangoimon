@@ -32,3 +32,27 @@ frontend/node_modules/
 
 ## Generated
 frontend/gen_b64.py
+
+## Backups / junk
+frontend_backup/
+iphonedep/
+p12/
+.wrangler/
+.agents/
+
+## Temp / local DB
+tmp_base64.txt
+tmp_logo_b64.txt
+tmp_logo_body.json
+backend/pos_local.db
+backend/app/core/.rate_limit_state.json
+
+## Archives
+frontend/dist.zip
+frontend/frontend.rar
+
+## Build artifacts (extra)
+frontend/eas.json
+frontend/wrangler.toml
+frontend/public/index.html.bak
+frontend/backup_ui_stable/

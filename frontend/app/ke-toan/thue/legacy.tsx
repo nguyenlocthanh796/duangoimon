@@ -2,36 +2,32 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   ScrollView,
-  Alert,
   RefreshControl,
   StyleSheet,
-  TouchableOpacity,
 } from 'react-native';
-import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { api, LegacyChecklist } from '../../../lib/api';
+
+import { api } from '../../../lib/api';
 import { colors, formatVND } from '../../../lib/theme';
 import AppText from '../../../lib/components/ui/AppText';
-import { useResponsive } from '../../../lib/hooks/useResponsive';
 import { useAuth } from '../../../lib/context/AuthContext';
 
-function generateFallbackLegacyChecklist(): LegacyChecklist {
+function generateFallbackLegacyChecklist() {
   return {
+    id: 'lc1',
     branch_id: 'b1',
-    generated_at: '2026-01-01',
+    total_value: 145000000,
     items: [
-      { product: 'Cà phê hạt Robusta Đắk Lắk (1kg)', opening_qty: 45, avg_cost: 180000, value: 8100000 },
-      { product: 'Sữa tươi tiệt trùng Vinamilk 1L', opening_qty: 120, avg_cost: 32000, value: 3840000 },
-      { product: 'Đường tinh luyện Biên Hòa (1kg)', opening_qty: 50, avg_cost: 22000, value: 1100000 },
-      { product: 'Ly giấy F&B 500ml mang về (cái)', opening_qty: 1500, avg_cost: 1200, value: 1800000 },
+      { product: 'Thịt bò tươi nhập khẩu (Kg)', opening_qty: 120, avg_cost: 250000, value: 30000000 },
+      { product: 'Bia Heineken thùng 24 lon', opening_qty: 150, avg_cost: 400000, value: 60000000 },
+      { product: 'Rượu vang Chile cao cấp (Chai)', opening_qty: 50, avg_cost: 1100000, value: 55000000 },
     ],
   };
 }
 
 export default function LegacyScreen() {
-  const { isWide } = useResponsive();
   const { branchId } = useAuth();
   
-  const [checklist, setChecklist] = useState<LegacyChecklist>(generateFallbackLegacyChecklist());
+  const [checklist, setChecklist] = useState<any>(generateFallbackLegacyChecklist());
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -41,7 +37,7 @@ export default function LegacyScreen() {
     try {
       const bid = branchId || 'demo-branch';
       const data = await api.getTaxLegacyChecklist(bid).catch(() => null);
-      if (data && Array.isArray(data.items) && data.items.length > 0) {
+      if (data && data.items) {
         setChecklist(data);
       } else {
         setChecklist(generateFallbackLegacyChecklist());
@@ -56,41 +52,42 @@ export default function LegacyScreen() {
 
   useEffect(() => { load(); }, [load]);
 
-  const totalValue = checklist.items.reduce((s, item) => s + (item.value || 0), 0);
+  const totalValue = (checklist?.items || []).reduce((s: number, item: any) => s + (item.value || 0), 0);
 
   return (
     <ScrollView
-      style={{ flex: 1, backgroundColor: colors.surface.app }}
-      contentContainerStyle={{ padding: 12, paddingBottom: 60 }}
+      style={{ flex: 1, backgroundColor: '#FFFFFF' }}
+      contentContainerStyle={{ padding: 6, paddingBottom: 60 }}
       showsVerticalScrollIndicator={false}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} />}
     >
       <View style={styles.cardBox}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-          <Icon name="package-variant-closed" size={24} color={colors.brand.primary} />
-          <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#050505">Bảng Kê Hàng Tồn Kho Thực Tế Đầu Kỳ (Mẫu 01/BK-HTK)</AppText>
-            <AppText variant="sm" color="#65676B">Xác nhận số dư tồn kho hàng hóa vật tư đầu kỳ</AppText>
-          </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+          <AppText variant="md" weight="bold" color="#0F172A">Dữ Liệu Chuyển Tiếp Tồn Kho Đầu Kỳ (Bảng kê 01/BK-HTK)</AppText>
+          <AppText variant="sm" color="#64748B">Kê khai ban đầu</AppText>
         </View>
 
         <View style={styles.totalRow}>
-          <AppText variant="sm" color="#65676B">Tổng giá trị tồn kho đầu kỳ:</AppText>
-          <AppText variant="lg" weight="bold" color={colors.brand.primary}>{formatVND(totalValue)}</AppText>
+          <AppText variant="sm" color="#64748B">Tổng giá trị tồn kho đầu kỳ:</AppText>
+          <AppText variant="md" weight="bold" color="#0F172A">
+            {formatVND(totalValue)}
+          </AppText>
         </View>
 
-        {checklist.items.map((item, idx) => (
+        {(checklist?.items || []).map((item: any, idx: number) => (
           <View key={idx} style={styles.itemRow}>
             <View style={styles.avatarIcon}>
-              <Icon name="cube-outline" size={20} color={colors.brand.primary} />
+              <AppText variant="sm" weight="bold" color="#F97316" style={{ fontSize: 12 }}>
+                {String(idx + 1).padStart(2, '0')}
+              </AppText>
             </View>
             <View style={{ flex: 1 }}>
-              <AppText variant="md" weight="bold" color="#050505">{item.product}</AppText>
-              <AppText variant="sm" color="#65676B" style={{ marginTop: 2 }}>
+              <AppText variant="md" weight="bold" color="#0F172A">{item.product}</AppText>
+              <AppText variant="sm" color="#64748B" style={{ marginTop: 2 }}>
                 Tồn: {item.opening_qty} · Đơn giá: {formatVND(item.avg_cost)}
               </AppText>
             </View>
-            <AppText variant="md" weight="bold" color="#050505">{formatVND(item.value)}</AppText>
+            <AppText variant="md" weight="bold" color="#0F172A">{formatVND(item.value)}</AppText>
           </View>
         ))}
       </View>
@@ -100,36 +97,36 @@ export default function LegacyScreen() {
 
 const styles = StyleSheet.create({
   cardBox: {
-    backgroundColor: colors.surface.card,
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: 10,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: '#E5E9F0',
   },
   totalRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 12,
+    padding: 8,
     backgroundColor: '#F8FAFC',
-    borderRadius: 12,
-    marginBottom: 12,
+    borderRadius: 6,
+    marginBottom: 8,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: '#E5E9F0',
   },
   itemRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    paddingVertical: 12,
+    gap: 8,
+    paddingVertical: 10,
     borderTopWidth: 1,
-    borderTopColor: colors.border.light,
+    borderTopColor: '#F1F5F9',
   },
   avatarIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.brand.primaryBg,
+    width: 32,
+    height: 32,
+    borderRadius: 6,
+    backgroundColor: '#FFF7ED',
     alignItems: 'center',
     justifyContent: 'center',
   },

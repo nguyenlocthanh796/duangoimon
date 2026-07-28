@@ -2,6 +2,18 @@
 export { getToken, setToken, clearToken, request } from './client';
 export type { Transaction, Invoice, Product, Table, User, Dashboard, SalesReport } from './client';
 export type { Branch } from './management';
+export type { HKDProfile, ProfileStatus, BankAccount, DeclarationDeadline, SoSachRow, TaxReport, LegacyChecklist } from './thue';
+
+export interface RawMaterial {
+  id: string;
+  code: string;
+  name: string;
+  category: string;
+  current_stock: number;
+  min_stock: number;
+  unit: string;
+  cost_price: number;
+}
 
 // ─── Re-export domain functions ─────────────────────────────────────────────
 export * as auth from './auth';
@@ -70,12 +82,16 @@ export const api = {
   // ── Ke-Toan Dashboard ──
   getKeToanDashboard: paymentsFns.getKeToanDashboard,
 
-  // ── Products ──
+  // ── Products & Raw Materials ──
   getProducts: productsFns.getProducts,
   getQuanLyProducts: productsFns.getQuanLyProducts,
   createProduct: productsFns.createProduct,
   updateProduct: productsFns.updateProduct,
   deleteProduct: productsFns.deleteProduct,
+  getRawMaterials: () => request<RawMaterial[]>('/quan-ly/raw-materials'),
+  createRawMaterial: (body: any) => request<any>('/quan-ly/raw-materials', { method: 'POST', body: JSON.stringify(body) }),
+  updateRawMaterial: (id: string, body: any) => request<any>(`/quan-ly/raw-materials/${id}`, { method: 'PUT', body: JSON.stringify(body) }),
+  deleteRawMaterial: (id: string) => request<any>(`/quan-ly/raw-materials/${id}`, { method: 'DELETE' }),
 
   // ── Tables ──
   getTables: tablesFns.getTables,

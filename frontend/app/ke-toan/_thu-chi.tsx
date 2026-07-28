@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  TextInput,
   ScrollView,
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
@@ -11,37 +12,42 @@ import { api, Transaction } from '../../lib/api';
 import { colors, formatVND } from '../../lib/theme';
 import AppText from '../../lib/components/ui/AppText';
 import { useResponsive } from '../../lib/hooks/useResponsive';
-import RowCard from '../../lib/components/ke-toan/RowCard';
 import FormModal from '../../lib/components/ui/FormModal';
+import DetailModal from '../../lib/components/ui/DetailModal';
 import TransactionFormContent, {
   TransactionFormValues,
 } from '../../lib/components/ke-toan/TransactionFormContent';
 import DataTable, { Column } from '../../lib/components/ui/DataTable';
-import SwipeableRow from '../../lib/components/ui/SwipeableRow';
 import { useSortState } from '../../lib/components/ui/tableUtils';
 import { toCsv, downloadText } from '../../lib/api/csvExport';
 
 type FilterType = null | 'thu' | 'chi';
-const formatDate = (iso: string | null) => (iso ? iso.slice(0, 10) : '');
+
+const formatDate = (iso: string | null) => {
+  if (!iso) return '';
+  const clean = iso.slice(0, 10);
+  const parts = clean.split('-');
+  if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+  return clean;
+};
 
 function generateFallbackTxs(): Transaction[] {
   return [
-    { id: 'tx1', type: 'thu', category: 'Bán hàng', amount: 28536644, created_at: '2026-07-31', note: 'Tiền bán hàng sự kiện ca sáng' },
-    { id: 'tx2', type: 'chi', category: 'Vật tư', amount: 1602434, created_at: '2026-07-31', note: 'Mua bao bì, hộp đựng ly mang về' },
-    { id: 'tx3', type: 'chi', category: 'Khác', amount: 183921, created_at: '2026-07-29', note: 'Phí ngân hàng & chuyển tiền tự động' },
-    { id: 'tx4', type: 'thu', category: 'Bán hàng', amount: 39483124, created_at: '2026-07-29', note: 'Thu tiền đặt cọc bàn tiệc sự kiện' },
-    { id: 'tx5', type: 'chi', category: 'Lương', amount: 4754095, created_at: '2026-07-29', note: 'Đóng bảo hiểm xã hội nhân viên' },
-    { id: 'tx6', type: 'chi', category: 'Vật tư', amount: 973598, created_at: '2026-07-29', note: 'Mua đồ vệ sinh, hóa chất tẩy rửa' },
-    { id: 'tx7', type: 'thu', category: 'Bán hàng', amount: 7426779, created_at: '2026-07-29', note: 'Thu tiền giao hàng tận nơi ứng dụng' },
-    { id: 'tx8', type: 'chi', category: 'Vật tư', amount: 693376, created_at: '2026-07-27', note: 'Mua khăn giấy, ống hút sinh học' },
-    { id: 'tx9', type: 'chi', category: 'Khác', amount: 265554, created_at: '2026-07-27', note: 'Phí đăng ký gia hạn kinh doanh' },
-    { id: 'tx10', type: 'thu', category: 'Bán hàng', amount: 25162751, created_at: '2026-07-27', note: 'Công ty ABC thanh toán hóa đơn tiệc' },
+    { id: 'tx1', type: 'thu', category: 'Bán hàng', amount: 28536644, ref_id: null, created_at: '2026-07-31', note: 'Tiền bán hàng sự kiện ca sáng' },
+    { id: 'tx2', type: 'chi', category: 'Vật tư', amount: 1602434, ref_id: null, created_at: '2026-07-31', note: 'Mua bao bì, hộp đựng ly mang về' },
+    { id: 'tx3', type: 'chi', category: 'Khác', amount: 183921, ref_id: null, created_at: '2026-07-29', note: 'Phí ngân hàng & chuyển tiền tự động' },
+    { id: 'tx4', type: 'thu', category: 'Bán hàng', amount: 39483124, ref_id: null, created_at: '2026-07-29', note: 'Thu tiền đặt cọc bàn tiệc sự kiện' },
+    { id: 'tx5', type: 'chi', category: 'Lương', amount: 4754095, ref_id: null, created_at: '2026-07-29', note: 'Đóng bảo hiểm xã hội nhân viên' },
+    { id: 'tx6', type: 'chi', category: 'Vật tư', amount: 973598, ref_id: null, created_at: '2026-07-29', note: 'Mua đồ vệ sinh, hóa chất tẩy rửa' },
+    { id: 'tx7', type: 'thu', category: 'Bán hàng', amount: 7426779, ref_id: null, created_at: '2026-07-29', note: 'Thu tiền giao hàng tận nơi ứng dụng' },
+    { id: 'tx8', type: 'chi', category: 'Vật tư', amount: 693376, ref_id: null, created_at: '2026-07-27', note: 'Mua khăn giấy, ống hút sinh học' },
+    { id: 'tx9', type: 'chi', category: 'Khác', amount: 265554, ref_id: null, created_at: '2026-07-27', note: 'Phí đăng ký gia hạn kinh doanh' },
+    { id: 'tx10', type: 'thu', category: 'Bán hàng', amount: 25162751, ref_id: null, created_at: '2026-07-27', note: 'Công ty ABC thanh toán hóa đơn tiệc' },
   ];
 }
 
-export default function ThuChiSubScreen() {
+export default function ThuChiSubScreen({ isSearchOpen }: { isSearchOpen?: boolean } = {}) {
   const { isWide } = useResponsive();
-  const hPad = 12;
 
   const [txs, setTxs] = useState<Transaction[]>([]);
   const [filter, setFilter] = useState<FilterType>(null);
@@ -59,6 +65,7 @@ export default function ThuChiSubScreen() {
   });
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [deleting, setDeleting] = useState(false);
+  const [search, setSearch] = useState('');
   const sort = useSortState('created_at', 'desc');
 
   const loadTxs = useCallback(
@@ -93,9 +100,20 @@ export default function ThuChiSubScreen() {
   }, [filter]);
 
   const filteredTxs = useMemo(() => {
-    if (!filter) return txs;
-    return txs.filter((t) => t.type === filter);
-  }, [txs, filter]);
+    let result = txs;
+    if (filter) {
+      result = result.filter((t) => t.type === filter);
+    }
+    if (search.trim()) {
+      const q = search.toLowerCase().trim();
+      result = result.filter((t) => (
+        (t.category && t.category.toLowerCase().includes(q)) ||
+        (t.note && t.note.toLowerCase().includes(q)) ||
+        String(t.amount).includes(q)
+      ));
+    }
+    return result;
+  }, [txs, filter, search]);
 
   const openCreate = () => {
     setEditingTx(null);
@@ -175,7 +193,7 @@ export default function ThuChiSubScreen() {
     }
     const headers = ['Thoi_gian', 'Loai', 'Danh_muc', 'So_tien', 'Ghi_chu'];
     const rows = txs.map((t) => [
-      (t.created_at || '').slice(0, 10),
+      formatDate(t.created_at),
       t.type === 'thu' ? 'Thu' : 'Chi',
       t.category || '',
       t.amount,
@@ -215,15 +233,15 @@ export default function ThuChiSubScreen() {
     {
       key: 'created_at',
       title: 'Thời gian',
-      width: 110,
+      width: 95,
       sortable: true,
       sortValue: (t) => t.created_at || '',
-      render: (t) => <AppText variant="md">{formatDate(t.created_at)}</AppText>,
+      render: (t) => <AppText variant="sm" color="#64748B" numberOfLines={1}>{formatDate(t.created_at)}</AppText>,
     },
     {
       key: 'type',
       title: 'Loại',
-      width: 90,
+      width: 65,
       sortable: true,
       align: 'center',
       sortValue: (t) => (t.type === 'thu' ? 0 : 1),
@@ -231,7 +249,7 @@ export default function ThuChiSubScreen() {
         const thu = t.type === 'thu';
         return (
           <View style={[styles.badgePill, { backgroundColor: thu ? '#ECFDF5' : '#FEE2E2' }]}>
-            <AppText variant="sm" weight="bold" color={thu ? colors.status.success : colors.status.danger}>
+            <AppText variant="sm" weight="bold" color={thu ? '#16A34A' : '#DC2626'}>
               {thu ? 'Thu' : 'Chi'}
             </AppText>
           </View>
@@ -241,11 +259,11 @@ export default function ThuChiSubScreen() {
     {
       key: 'category',
       title: 'Danh mục',
-      flex: 1,
+      width: 115,
       sortable: true,
       sortValue: (t) => t.category || '',
       render: (t) => (
-        <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>
+        <AppText variant="md" weight="bold" color="#0F172A" numberOfLines={1}>
           {t.category || '—'}
         </AppText>
       ),
@@ -253,14 +271,14 @@ export default function ThuChiSubScreen() {
     {
       key: 'amount',
       title: 'Số tiền',
-      width: 140,
+      width: 130,
       align: 'right',
       sortable: true,
       sortValue: (t) => t.amount,
       render: (t) => {
         const thu = t.type === 'thu';
         return (
-          <AppText variant="md" weight="bold" color={thu ? colors.status.success : colors.status.danger}>
+          <AppText variant="md" weight="bold" color={thu ? '#16A34A' : '#DC2626'} numberOfLines={1}>
             {thu ? '+' : '-'}{formatVND(t.amount)}
           </AppText>
         );
@@ -269,9 +287,9 @@ export default function ThuChiSubScreen() {
     {
       key: 'note',
       title: 'Ghi chú',
-      flex: 1.4,
+      flex: 1,
       render: (t) => (
-        <AppText variant="sm" color="#65676B" style={{ fontStyle: 'italic' }} numberOfLines={1}>
+        <AppText variant="sm" color="#64748B" style={{ fontStyle: 'italic' }} numberOfLines={1}>
           {t.note?.trim() || '—'}
         </AppText>
       ),
@@ -279,15 +297,15 @@ export default function ThuChiSubScreen() {
     {
       key: 'actions',
       title: 'Thao tác',
-      width: 100,
+      width: 75,
       align: 'center',
       render: (t) => (
         <View style={styles.actionRow}>
           <TouchableOpacity style={styles.iconBtn} onPress={() => openEdit(t)} activeOpacity={0.7}>
-            <Icon name="pencil-outline" size={16} color={colors.brand.primary} />
+            <Icon name="pencil-outline" size={15} color="#F97316" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconBtn} onPress={() => handleDeleteSingle(t)} activeOpacity={0.7}>
-            <Icon name="trash-can-outline" size={16} color={colors.status.danger} />
+            <Icon name="trash-can-outline" size={15} color="#DC2626" />
           </TouchableOpacity>
         </View>
       ),
@@ -297,12 +315,11 @@ export default function ThuChiSubScreen() {
   const renderDetailPanel = () => {
     if (!selectedTx) {
       return (
-        <View style={styles.panelBox}>
+        <View style={styles.flatCardBox}>
           <View style={styles.panelHeader}>
-            <Icon name="swap-vertical" size={20} color={colors.brand.primary} />
-            <AppText variant="md" weight="bold" color="#050505">Chi Tiết Giao Dịch Thu Chi</AppText>
+            <AppText variant="md" weight="bold" color="#0F172A">Chi Tiết Giao Dịch Thu Chi</AppText>
           </View>
-          <AppText variant="sm" color="#65676B" style={{ textAlign: 'center', marginVertical: 20 }}>
+          <AppText variant="sm" color="#64748B" style={{ textAlign: 'center', marginVertical: 20 }}>
             Chọn một giao dịch từ danh sách để xem chi tiết
           </AppText>
         </View>
@@ -313,146 +330,180 @@ export default function ThuChiSubScreen() {
     const isThu = t.type === 'thu';
 
     return (
-      <View style={styles.panelBox}>
+      <View style={styles.flatCardBox}>
         <View style={styles.panelHeader}>
-          <View style={[styles.avatarCircle, { backgroundColor: isThu ? '#ECFDF5' : '#FEE2E2' }]}>
-            <Icon name={isThu ? 'arrow-bottom-left' : 'arrow-top-right'} size={20} color={isThu ? colors.status.success : colors.status.danger} />
+          <View style={[styles.avatarCircleMini, { backgroundColor: isThu ? '#ECFDF5' : '#FEE2E2' }]}>
+            <AppText variant="sm" weight="bold" color={isThu ? '#16A34A' : '#DC2626'} style={{ fontSize: 14 }}>
+              {isThu ? '+' : '-'}
+            </AppText>
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#050505">{t.category || 'Giao dịch'}</AppText>
-            <AppText variant="sm" color="#65676B">{formatDate(t.created_at)}</AppText>
+            <AppText variant="md" weight="bold" color="#0F172A">{t.category || 'Giao dịch'}</AppText>
+            <AppText variant="sm" color="#64748B">{formatDate(t.created_at)}</AppText>
           </View>
           <View style={[styles.badgePill, { backgroundColor: isThu ? '#ECFDF5' : '#FEE2E2' }]}>
-            <AppText variant="sm" weight="bold" color={isThu ? colors.status.success : colors.status.danger}>
-              {isThu ? 'Giao dịch Thu' : 'Giao dịch Chi'}
+            <AppText variant="sm" weight="bold" color={isThu ? '#16A34A' : '#DC2626'}>
+              {isThu ? 'Thu' : 'Chi'}
             </AppText>
           </View>
         </View>
 
-        <View style={{ gap: 8, paddingVertical: 6 }}>
+        <View style={{ gap: 8, paddingVertical: 8 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <AppText variant="sm" color="#65676B">Số tiền giao dịch:</AppText>
-            <AppText variant="lg" weight="bold" color={isThu ? colors.status.success : colors.status.danger}>
+            <AppText variant="sm" color="#64748B">Số tiền giao dịch:</AppText>
+            <AppText variant="md" weight="bold" color={isThu ? '#16A34A' : '#DC2626'}>
               {isThu ? '+' : '-'}{formatVND(t.amount)}
             </AppText>
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <AppText variant="sm" color="#65676B">Danh mục:</AppText>
-            <AppText variant="md" weight="bold" color="#050505">{t.category || 'Chưa phân loại'}</AppText>
+            <AppText variant="sm" color="#64748B">Danh mục:</AppText>
+            <AppText variant="md" weight="bold" color="#0F172A">{t.category || 'Chưa phân loại'}</AppText>
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <AppText variant="sm" color="#65676B">Ngày ghi nhận:</AppText>
-            <AppText variant="sm" color="#050505">{formatDate(t.created_at)}</AppText>
+            <AppText variant="sm" color="#64748B">Ngày ghi nhận:</AppText>
+            <AppText variant="sm" color="#0F172A">{formatDate(t.created_at)}</AppText>
           </View>
           {t.note ? (
             <View style={{ marginTop: 4 }}>
-              <AppText variant="sm" color="#65676B">Ghi chú chi tiết:</AppText>
-              <AppText variant="sm" color="#050505" style={{ fontStyle: 'italic', marginTop: 2 }}>{t.note}</AppText>
+              <AppText variant="sm" color="#64748B">Ghi chú chi tiết:</AppText>
+              <AppText variant="sm" color="#0F172A" style={{ fontStyle: 'italic', marginTop: 2 }}>{t.note}</AppText>
             </View>
           ) : null}
         </View>
 
         <View style={styles.panelDivider} />
 
-        <View style={{ flexDirection: 'row', gap: 10, marginTop: 4 }}>
+        <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
           <TouchableOpacity style={styles.panelBtnPrimary} onPress={() => openEdit(t)}>
-            <Icon name="pencil" size={16} color={colors.text.inverse} />
-            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Chỉnh sửa</AppText>
+            <Icon name="pencil" size={15} color="#FFFFFF" />
+            <AppText variant="sm" weight="bold" color="#FFFFFF">Chỉnh sửa</AppText>
           </TouchableOpacity>
           <TouchableOpacity style={styles.panelBtnDanger} onPress={() => handleDeleteSingle(t)}>
-            <Icon name="trash-can-outline" size={16} color={colors.status.danger} />
-            <AppText variant="sm" weight="bold" color={colors.status.danger}>Xóa</AppText>
+            <Icon name="trash-can-outline" size={15} color="#DC2626" />
+            <AppText variant="sm" weight="bold" color="#DC2626">Xóa</AppText>
           </TouchableOpacity>
         </View>
       </View>
     );
   };
 
-  const renderMobileCard = (t: Transaction) => (
-    <SwipeableRow
-      rightActions={[
-        {
-          key: 'edit',
-          label: 'Sửa',
-          icon: 'pencil-outline',
-          color: colors.brand.primary,
-          onPress: () => openEdit(t),
-        },
-        {
-          key: 'delete',
-          label: 'Xóa',
-          icon: 'trash-can-outline',
-          color: colors.status.danger,
-          onPress: () => handleDeleteSingle(t),
-        },
-      ]}
-    >
-      <TouchableOpacity onPress={() => setSelectedTx(t)} activeOpacity={0.8}>
-        <RowCard
-          leftIcon={t.type === 'thu' ? 'arrow-bottom-left' : 'arrow-top-right'}
-          leftIconColor={t.type === 'thu' ? colors.status.success : colors.status.danger}
-          title={t.category || 'Giao dịch'}
-          subtitle={`${formatDate(t.created_at)} · ${t.note || 'Không có ghi chú'}`}
-          right={
-            <AppText variant="md" weight="bold" style={{ color: t.type === 'thu' ? colors.status.success : colors.status.danger }}>
-              {t.type === 'thu' ? '+' : '-'}{formatVND(t.amount)}
-            </AppText>
-          }
-        />
-      </TouchableOpacity>
-    </SwipeableRow>
-  );
+  const renderCard = ({ item: t }: { item: Transaction }) => {
+    const isThu = t.type === 'thu';
+    return (
+      <View style={styles.posTableRow}>
+        <View style={[styles.posAvatarMiniCircle, { backgroundColor: isThu ? '#ECFDF5' : '#FEE2E2' }]}>
+          <AppText variant="sm" weight="bold" color={isThu ? '#16A34A' : '#DC2626'} style={{ fontSize: 13 }}>
+            {isThu ? '+' : '-'}
+          </AppText>
+        </View>
+
+        <TouchableOpacity
+          style={{ flex: 1, paddingRight: 6 }}
+          onPress={() => setSelectedTx(t)}
+          activeOpacity={0.7}
+        >
+          <AppText variant="sm" weight="bold" color="#0F172A" numberOfLines={1}>
+            {t.category || 'Giao dịch'}
+          </AppText>
+          <AppText variant="sm" color="#64748B" numberOfLines={1} style={{ fontSize: 11 }}>
+            {formatDate(t.created_at)} {t.note ? `· ${t.note}` : ''}
+          </AppText>
+        </TouchableOpacity>
+
+        <View style={{ alignItems: 'flex-end', marginRight: 8 }}>
+          <AppText variant="sm" weight="bold" color={isThu ? '#16A34A' : '#DC2626'}>
+            {isThu ? '+' : '-'}{formatVND(t.amount)}
+          </AppText>
+        </View>
+
+        <TouchableOpacity style={styles.miniActionBtn} onPress={() => openEdit(t)}>
+          <Icon name="pencil" size={15} color="#F97316" />
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
-      {/* Top Mobile Action Row */}
-      {!isWide && (
-        <View style={styles.mobileActionRow}>
-          <AppText variant="md" weight="bold" color="#050505">{txs.length} giao dịch</AppText>
-          <TouchableOpacity onPress={openCreate} style={styles.headerBtnPrimary}>
-            <Icon name="plus" size={16} color={colors.text.inverse} />
-            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm thu chi</AppText>
+    <View style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
+      {/* Top Search & Action Bar */}
+      {isWide ? (
+        <View style={styles.actionHeaderBar}>
+          <AppText variant="md" weight="bold" color="#0F172A">{filteredTxs.length} giao dịch thu chi</AppText>
+          <View style={{ flexDirection: 'row', gap: 6 }}>
+            <TouchableOpacity onPress={exportCsv} style={styles.headerBtnOutline}>
+              <Icon name="file-excel-outline" size={15} color="#16A34A" />
+              <AppText variant="sm" weight="bold" color="#16A34A">Xuất CSV</AppText>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={openCreate} style={styles.headerBtnPrimary}>
+              <Icon name="plus" size={16} color="#FFFFFF" />
+              <AppText variant="sm" weight="bold" color="#FFFFFF">Tạo thu chi</AppText>
+            </TouchableOpacity>
+          </View>
+        </View>
+      ) : (
+        <View style={styles.mobileTopActionBar}>
+          <View style={styles.mobileSearchInputWrap}>
+            <Icon name="magnify" size={18} color="#64748B" />
+            <TextInput
+              value={search}
+              onChangeText={setSearch}
+              placeholder="Tìm kiếm giao dịch, ghi chú..."
+              placeholderTextColor="#94A3B8"
+              style={styles.mobileSearchTextInput}
+            />
+            {search.length > 0 && (
+              <TouchableOpacity onPress={() => setSearch('')}>
+                <Icon name="close-circle" size={16} color="#94A3B8" />
+              </TouchableOpacity>
+            )}
+          </View>
+
+          <TouchableOpacity style={styles.mobileAddBtn} onPress={openCreate} activeOpacity={0.8}>
+            <Icon name="plus" size={16} color="#FFFFFF" />
+            <AppText variant="sm" weight="bold" color="#FFFFFF">
+              Tạo
+            </AppText>
           </TouchableOpacity>
         </View>
       )}
 
-      {/* 📊 Native App Style KPI Widget Cards Strip */}
+      {/* 📊 Flat Metrics Strip */}
       <View style={styles.fbMetricContainer}>
         <View style={styles.fbMetricCard}>
           <View style={[styles.fbMetricIcon, { backgroundColor: '#ECFDF5' }]}>
-            <Icon name="arrow-bottom-left" size={20} color={colors.status.success} />
+            <AppText variant="sm" weight="bold" color="#16A34A" style={{ fontSize: 13 }}>+</AppText>
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="lg" weight="bold" color={colors.status.success}>{formatVND(totalThu)}</AppText>
-            <AppText variant="sm" color="#65676B">Tổng thu</AppText>
+            <AppText variant="md" weight="bold" color="#16A34A">{formatVND(totalThu)}</AppText>
+            <AppText variant="sm" color="#64748B">Tổng thu</AppText>
           </View>
         </View>
 
         <View style={styles.fbMetricCard}>
           <View style={[styles.fbMetricIcon, { backgroundColor: '#FEE2E2' }]}>
-            <Icon name="arrow-top-right" size={20} color={colors.status.danger} />
+            <AppText variant="sm" weight="bold" color="#DC2626" style={{ fontSize: 13 }}>-</AppText>
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="lg" weight="bold" color={colors.status.danger}>{formatVND(totalChi)}</AppText>
-            <AppText variant="sm" color="#65676B">Tổng chi</AppText>
+            <AppText variant="md" weight="bold" color="#DC2626">{formatVND(totalChi)}</AppText>
+            <AppText variant="sm" color="#64748B">Tổng chi</AppText>
           </View>
         </View>
 
         <View style={styles.fbMetricCard}>
           <View style={[styles.fbMetricIcon, { backgroundColor: '#EEF2FF' }]}>
-            <Icon name="scale-balance" size={20} color="#2563EB" />
+            <AppText variant="sm" weight="bold" color="#2563EB" style={{ fontSize: 11 }}>=</AppText>
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="lg" weight="bold" color={totalThu - totalChi >= 0 ? colors.status.success : colors.status.danger}>
+            <AppText variant="md" weight="bold" color={totalThu - totalChi >= 0 ? '#16A34A' : '#DC2626'}>
               {formatVND(totalThu - totalChi)}
             </AppText>
-            <AppText variant="sm" color="#65676B">Thực tế (Cân đối)</AppText>
+            <AppText variant="sm" color="#64748B">Cân đối</AppText>
           </View>
         </View>
       </View>
 
-      {/* Filter Segmented Pills Bar */}
-      <View style={[styles.filterRow, { paddingHorizontal: hPad }]}>
+      {/* Filter Segmented Chips Bar */}
+      <View style={styles.filterRow}>
         {([null, 'thu', 'chi'] as FilterType[]).map((f) => {
           const active = filter === f;
           return (
@@ -461,20 +512,18 @@ export default function ThuChiSubScreen() {
               style={[styles.chipPill, active && styles.chipPillActive]}
               onPress={() => setFilter(f)}
             >
-              {f === 'thu' && <Icon name="arrow-bottom-left" size={14} color={active ? colors.brand.primary : colors.status.success} />}
-              {f === 'chi' && <Icon name="arrow-top-right" size={14} color={active ? colors.brand.primary : colors.status.danger} />}
-              <AppText variant="sm" weight={active ? "bold" : "normal"} color={active ? colors.brand.primary : "#050505"}>
-                {f ? (f === 'thu' ? 'Thu' : 'Chi') : 'Tất cả'}
+              <AppText variant="sm" weight={active ? 'bold' : 'normal'} color={active ? '#F97316' : '#0F172A'}>
+                {f ? (f === 'thu' ? '+ Thu' : '- Chi') : 'Tất cả'}
               </AppText>
             </TouchableOpacity>
           );
         })}
       </View>
 
-      {/* Main Content Area */}
+      {/* Main Content Area: Table vs Mobile Flat List */}
       {isWide ? (
-        <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: hPad, paddingBottom: 12, gap: 12 }}>
-          <View style={{ flex: 0.55 }}>
+        <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: 6, paddingBottom: 6, gap: 6 }}>
+          <View style={{ flex: 0.65 }}>
             <DataTable<Transaction>
               columns={columns}
               compact={true}
@@ -502,29 +551,26 @@ export default function ThuChiSubScreen() {
               emptySubtitle="Thêm giao dịch thu chi để theo dõi dòng tiền."
             />
           </View>
-          <View style={{ flex: 0.45 }}>{renderDetailPanel()}</View>
+          <View style={{ flex: 0.35 }}>{renderDetailPanel()}</View>
         </View>
       ) : (
-        <View style={{ flex: 1, paddingHorizontal: hPad }}>
-          <DataTable<Transaction>
-            columns={columns}
-            compact={true}
-            data={filteredTxs}
-            getRowId={(t) => t.id}
-            loading={loading}
-            refreshing={refreshing}
-            onRefresh={() => loadTxs(true)}
-            sortKey={sort.sortKey}
-            sortDir={sort.sortDir}
-            onSortChange={sort.toggle}
-            selectable
-            selectedIds={selectedIds}
-            onSelectionChange={setSelectedIds}
-            renderMobileCard={renderMobileCard}
-            emptyTitle="Chưa có giao dịch"
-            emptySubtitle="Thêm giao dịch thu chi để theo dõi dòng tiền."
-          />
-        </View>
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 6, paddingTop: 6, gap: 8, paddingBottom: 100 }}>
+          <View style={styles.posCatSectionWrap}>
+            <View style={styles.posCatHeader}>
+              <AppText variant="sm" weight="bold" color="#0F172A" style={{ flex: 1, letterSpacing: 0.5 }}>
+                DANH SÁCH GIAO DỊCH ({filteredTxs.length})
+              </AppText>
+            </View>
+
+            <View style={styles.posCatItemsGroup}>
+              {filteredTxs.map((t) => (
+                <React.Fragment key={t.id}>
+                  {renderCard({ item: t })}
+                </React.Fragment>
+              ))}
+            </View>
+          </View>
+        </ScrollView>
       )}
 
       {modalVisible && (
@@ -540,145 +586,311 @@ export default function ThuChiSubScreen() {
           <TransactionFormContent initial={form} onChange={(v) => setForm(v)} />
         </FormModal>
       )}
+
+      {!isWide && (
+        <DetailModal
+          visible={!!selectedTx}
+          title={selectedTx?.category || 'Chi Tiết Giao Dịch'}
+          subtitle={selectedTx ? `${selectedTx.type === 'thu' ? 'Thu' : 'Chi'} · ${formatVND(selectedTx.amount)}` : undefined}
+          onClose={() => setSelectedTx(null)}
+          onEdit={() => {
+            if (selectedTx) {
+              openEdit(selectedTx);
+            }
+          }}
+          onDelete={selectedTx ? async () => {
+            try {
+              await api.bulkDeleteTransactions([selectedTx.id]);
+              setSelectedTx(null);
+              await loadTxs();
+            } catch (e: any) {
+              Alert.alert('Lỗi', e.message || 'Xóa thất bại');
+            }
+          } : undefined}
+        >
+          {selectedTx && (
+            <View style={{ gap: 12 }}>
+              <View style={{ gap: 8 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <AppText variant="sm" color="#64748B">Loại giao dịch</AppText>
+                  <AppText variant="sm" weight="bold" color={selectedTx.type === 'thu' ? '#16A34A' : '#DC2626'}>
+                    {selectedTx.type === 'thu' ? 'PHIẾU THU' : 'PHIẾU CHI'}
+                  </AppText>
+                </View>
+                <View style={{ height: 1, backgroundColor: '#E2E8F0' }} />
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <AppText variant="sm" color="#64748B">Số tiền</AppText>
+                  <AppText variant="md" weight="bold" color={selectedTx.type === 'thu' ? '#16A34A' : '#DC2626'}>
+                    {formatVND(selectedTx.amount)}
+                  </AppText>
+                </View>
+                <View style={{ height: 1, backgroundColor: '#E2E8F0' }} />
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <AppText variant="sm" color="#64748B">Danh mục</AppText>
+                  <AppText variant="sm" color="#0F172A">{selectedTx.category}</AppText>
+                </View>
+                <View style={{ height: 1, backgroundColor: '#E2E8F0' }} />
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <AppText variant="sm" color="#64748B">Phương thức</AppText>
+                  <AppText variant="sm" color="#0F172A">{(selectedTx as any).payment_method || 'Tiền mặt'}</AppText>
+                </View>
+                <View style={{ height: 1, backgroundColor: '#E2E8F0' }} />
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <AppText variant="sm" color="#64748B">Ngày tạo</AppText>
+                  <AppText variant="sm" color="#0F172A">{formatDate(selectedTx.created_at)}</AppText>
+                </View>
+                {selectedTx.note && (
+                  <>
+                    <View style={{ height: 1, backgroundColor: '#E2E8F0' }} />
+                    <AppText variant="sm" color="#64748B">Ghi chú</AppText>
+                    <AppText variant="sm" color="#0F172A">📝 {selectedTx.note}</AppText>
+                  </>
+                )}
+              </View>
+            </View>
+          )}
+        </DetailModal>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  mobileActionRow: {
+  actionHeaderBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 12,
-    paddingVertical: 10,
-    backgroundColor: colors.surface.card,
+    paddingVertical: 8,
+    gap: 6,
+    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderBottomColor: colors.border.light,
+    borderBottomColor: '#E5E9F0',
   },
   headerBtnPrimary: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 4,
+    paddingHorizontal: 12,
+    height: 36,
+    borderRadius: 6,
+    backgroundColor: '#F97316',
+  },
+  headerBtnOutline: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+    paddingHorizontal: 12,
+    height: 36,
+    borderRadius: 6,
+    backgroundColor: '#ECFDF5',
+    borderWidth: 1,
+    borderColor: '#A7F3D0',
+  },
+  mobileTopActionBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 6,
+    paddingVertical: 6,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E9F0',
     gap: 6,
-    paddingHorizontal: 14,
-    height: 40,
-    borderRadius: 999,
-    backgroundColor: colors.brand.primary,
+  },
+  mobileSearchInputWrap: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F8FAFC',
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#E5E9F0',
+    paddingHorizontal: 10,
+    height: 36,
+    gap: 6,
+  },
+  mobileSearchTextInput: {
+    flex: 1,
+    fontSize: 13,
+    color: '#0F172A',
+    paddingVertical: 0,
+  },
+  mobileAddBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 12,
+    height: 36,
+    borderRadius: 6,
+    backgroundColor: '#F97316',
   },
   fbMetricContainer: {
     flexDirection: 'row',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    gap: 8,
-    backgroundColor: colors.surface.card,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border.light,
-    marginBottom: 8,
-    flexWrap: 'wrap',
+    paddingHorizontal: 6,
+    paddingVertical: 6,
+    gap: 6,
+    backgroundColor: '#FFFFFF',
   },
   fbMetricCard: {
     flex: 1,
-    minWidth: 140,
+    minWidth: 100,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    backgroundColor: colors.surface.card,
+    gap: 6,
+    backgroundColor: '#FFFFFF',
     paddingVertical: 8,
-    paddingHorizontal: 10,
-    borderRadius: 14,
+    paddingHorizontal: 8,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: '#E5E9F0',
   },
   fbMetricIcon: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 32,
+    height: 32,
+    borderRadius: 6,
     alignItems: 'center',
     justifyContent: 'center',
   },
   filterRow: {
     flexDirection: 'row',
-    gap: 8,
-    marginVertical: 4,
-    marginBottom: 8,
+    paddingHorizontal: 6,
+    gap: 6,
+    marginBottom: 6,
   },
   chipPill: {
-    paddingHorizontal: 16,
-    height: 36,
-    borderRadius: 999,
-    backgroundColor: colors.surface.card,
+    paddingHorizontal: 10,
+    height: 30,
+    borderRadius: 6,
+    backgroundColor: '#F8FAFC',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
+    gap: 4,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: '#E5E9F0',
   },
   chipPillActive: {
-    backgroundColor: colors.brand.primaryBg,
-    borderColor: '#FFEDD5',
+    backgroundColor: '#FFF7ED',
+    borderColor: '#F97316',
   },
   badgePill: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 999,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
     alignItems: 'center',
     justifyContent: 'center',
-    alignSelf: 'center',
   },
-  actionRow: { flexDirection: 'row', gap: 6, justifyContent: 'center' },
+  actionRow: { flexDirection: 'row', gap: 4, justifyContent: 'center' },
   iconBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 28,
+    height: 28,
+    borderRadius: 6,
     backgroundColor: '#F8FAFC',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: '#E5E9F0',
   },
-  panelBox: {
-    backgroundColor: colors.surface.card,
-    borderRadius: 16,
-    padding: 16,
+  flatCardBox: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: 10,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    gap: 12,
+    borderColor: '#E5E9F0',
+    gap: 8,
   },
   panelHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    paddingBottom: 10,
+    gap: 8,
+    paddingBottom: 8,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border.light,
+    borderBottomColor: '#F1F5F9',
   },
-  avatarCircle: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
+  avatarCircleMini: {
+    width: 32,
+    height: 32,
+    borderRadius: 6,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  panelDivider: { height: 1, backgroundColor: colors.border.light },
+  panelDivider: { height: 1, backgroundColor: '#F1F5F9' },
   panelBtnPrimary: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
-    height: 44,
-    borderRadius: 999,
-    backgroundColor: colors.brand.primary,
+    gap: 4,
+    height: 36,
+    borderRadius: 6,
+    backgroundColor: '#F97316',
   },
   panelBtnDanger: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
-    height: 44,
-    borderRadius: 999,
+    gap: 4,
+    height: 36,
+    borderRadius: 6,
     backgroundColor: '#FEE2E2',
+  },
+  posCatSectionWrap: {
+    marginTop: 4,
+  },
+  posCatHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    backgroundColor: '#F8FAFC',
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E5E9F0',
+  },
+  catIconMiniCircle: {
+    width: 22,
+    height: 22,
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  posCatItemsGroup: {
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 10,
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
+    borderWidth: 1,
+    borderTopWidth: 0,
+    borderColor: '#E5E9F0',
+  },
+  posTableRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 48,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
+  },
+  posAvatarMiniCircle: {
+    width: 28,
+    height: 28,
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
+  },
+  miniActionBtn: {
+    width: 28,
+    height: 28,
+    borderRadius: 6,
+    backgroundColor: '#FFF7ED',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#FED7AA',
   },
 });

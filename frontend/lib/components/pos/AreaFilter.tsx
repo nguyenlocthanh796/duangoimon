@@ -58,7 +58,7 @@ function AreaChip({ areaName, isSelected, onPress }: AreaChipProps) {
           alignItems: 'center',
           gap: 6,
           paddingHorizontal: 16,
-          height: 44,
+          height: 46,
           borderRadius: shape.radius.md,
           backgroundColor: isSelected ? colors.brand.primary : colors.surface.disabled,
           borderWidth: 1,
@@ -69,13 +69,14 @@ function AreaChip({ areaName, isSelected, onPress }: AreaChipProps) {
         {AREA_ICONS[areaName] && (
           <Icon
             name={AREA_ICONS[areaName] as any}
-            size={16}
-            color={isSelected ? colors.text.inverse : colors.icon.default}
+            size={18}
+            color={isSelected ? colors.text.inverse : colors.text.secondary}
           />
         )}
         <AppText
           variant="md"
-          color={isSelected ? colors.text.inverse : colors.text.primary}
+          weight={isSelected ? 'bold' : 'normal'}
+          color={isSelected ? colors.text.inverse : colors.text.secondary}
         >
           {areaName}
         </AppText>
@@ -100,7 +101,7 @@ export default function AreaFilter({ areas, selectedArea, onSelectArea }: AreaFi
       }}
       contentContainerStyle={{
         paddingHorizontal: 12,
-        paddingVertical: 10,
+        paddingVertical: 6,
         alignItems: 'center',
         gap: 8,
       }}

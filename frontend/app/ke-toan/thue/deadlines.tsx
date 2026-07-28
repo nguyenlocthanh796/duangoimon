@@ -6,7 +6,7 @@ import {
   RefreshControl,
   StyleSheet,
 } from 'react-native';
-import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
+
 import { api, DeclarationDeadline } from '../../../lib/api';
 import { colors } from '../../../lib/theme';
 import AppText from '../../../lib/components/ui/AppText';
@@ -54,29 +54,28 @@ export default function DeadlinesScreen() {
 
   return (
     <ScrollView
-      style={{ flex: 1, backgroundColor: colors.surface.app }}
-      contentContainerStyle={{ padding: 12, paddingBottom: 60 }}
+      style={{ flex: 1, backgroundColor: '#FFFFFF' }}
+      contentContainerStyle={{ padding: 6, paddingBottom: 60 }}
       showsVerticalScrollIndicator={false}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} />}
     >
       <View style={styles.cardBox}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-          <Icon name="calendar-alert" size={24} color={colors.brand.primary} />
-          <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#050505">Hạn Nộp Thuế & Leo Thang Cảnh Báo</AppText>
-            <AppText variant="sm" color="#65676B">Theo dõi lịch nộp thuế D-14, D-7, D-3, D-1 tự động</AppText>
-          </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+          <AppText variant="md" weight="bold" color="#0F172A">Lịch Hạn Nộp Thuế & Tờ Khai Năm 2026</AppText>
+          <AppText variant="sm" color="#64748B">{deadlines.length} mốc thời gian</AppText>
         </View>
 
-        {deadlines.map((item) => (
-          <View key={item.id} style={styles.itemRow}>
-            <View style={[styles.avatarIcon, { backgroundColor: item.submitted ? '#ECFDF5' : '#FEF3C7' }]}>
-              <Icon name={item.submitted ? 'check-circle' : 'clock-outline'} size={20} color={item.submitted ? colors.status.success : colors.status.warning} />
+        {deadlines.map((item, idx) => (
+          <View key={item.id || idx} style={styles.itemRow}>
+            <View style={[styles.avatarIcon, { backgroundColor: item.submitted ? '#DCFCE7' : '#FEF3C7' }]}>
+              <AppText variant="sm" weight="bold" color={item.submitted ? '#16A34A' : '#D97706'} style={{ fontSize: 13 }}>
+                {item.submitted ? '✓' : '!'}
+              </AppText>
             </View>
             <View style={{ flex: 1 }}>
-              <AppText variant="md" weight="bold" color="#050505">{item.form}</AppText>
-              <AppText variant="sm" color="#65676B" style={{ marginTop: 2 }}>
-                Hạn nộp: {item.due_date} · Loại: {item.period_type === 'thang' ? 'Tháng' : item.period_type === 'quy' ? 'Quý' : 'Năm'}
+              <AppText variant="md" weight="bold" color="#0F172A">{item.form}</AppText>
+              <AppText variant="sm" color="#64748B" style={{ marginTop: 2 }}>
+                Hạn chót: {item.due_date} · {item.period_type === 'thang' ? 'Tháng' : item.period_type === 'quy' ? 'Quý' : 'Năm'}
               </AppText>
             </View>
             <StatusBadge label={item.submitted ? 'Đã hoàn thành' : 'Đang theo dõi'} severity={item.submitted ? 'success' : 'warning'} />
@@ -89,24 +88,24 @@ export default function DeadlinesScreen() {
 
 const styles = StyleSheet.create({
   cardBox: {
-    backgroundColor: colors.surface.card,
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: 10,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: '#E5E9F0',
   },
   itemRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    paddingVertical: 12,
+    gap: 8,
+    paddingVertical: 10,
     borderTopWidth: 1,
-    borderTopColor: colors.border.light,
+    borderTopColor: '#F1F5F9',
   },
   avatarIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 32,
+    height: 32,
+    borderRadius: 6,
     alignItems: 'center',
     justifyContent: 'center',
   },

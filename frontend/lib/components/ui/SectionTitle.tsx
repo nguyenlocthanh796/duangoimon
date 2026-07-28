@@ -21,7 +21,7 @@ export function SectionTitle({
       <View style={styles.left}>
         {icon && <Icon name={icon as any} size={18} color={colors.brand.primary} />}
         <View>
-          <AppText variant="lg" weight="bold">{title}</AppText>
+          <AppText variant="md" weight="bold">{title}</AppText>
           {subtitle ? <AppText variant="sm" style={{ marginTop: 2 }}>{subtitle}</AppText> : null}
         </View>
       </View>
@@ -67,5 +67,5 @@ const styles = StyleSheet.create({
     minWidth: 96,
   },
   pillLabel: { ...font.sm, color: colors.text.muted, fontWeight: '600' },
-  pillValue: { ...font.lg, fontWeight: '600', marginTop: 2 },
+  pillValue: { ...font.mdBold, marginTop: 2 },
 });

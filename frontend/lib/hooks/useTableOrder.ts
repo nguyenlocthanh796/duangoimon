@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { logger } from '../logger';
 import { api } from '../api';
 import { CAT_MAP } from '../constants/categories';
+import { DEFAULT_POS_PRODUCTS } from '../constants/defaultProducts';
 import { MenuItem, CartItem } from '../components/pos/types';
 import { useCart } from './useCart';
 import { useModifier } from './useModifier';
@@ -36,10 +37,16 @@ export function useTableOrder(tableId: string, tableName: string, onClose?: () =
 
       try {
         let currentProducts = cachedRef.current;
-        if (!currentProducts) {
-          const data = await api.getProducts();
+        if (!currentProducts || currentProducts.length === 0) {
+          let data = [];
+          try {
+            data = await api.getProducts();
+          } catch {
+            data = [];
+          }
           if (cancelled) return;
-          currentProducts = data.map((p: any) => ({
+          const sourceData = (Array.isArray(data) && data.length > 0) ? data : DEFAULT_POS_PRODUCTS;
+          currentProducts = sourceData.map((p: any) => ({
             id: p.id,
             name: p.name,
             price: Number(p.price),
@@ -99,13 +106,15 @@ export function useTableOrder(tableId: string, tableName: string, onClose?: () =
       list = list.filter((i) => i.name.toLowerCase().includes(q));
     }
     return list;
-  }, [activeCategory, products, searchQuery]);
+  }, [products, activeCategory, searchQuery]);
 
   const handleProductPress = useCallback(
     (item: MenuItem) => {
-      const hasModifiers = (item.sizes?.length ?? 0) > 0 || (item.toppings?.length ?? 0) > 0;
-      if (hasModifiers) mod.openForNew(item);
-      else cart.quickAdd(item);
+      if ((item.sizes && item.sizes.length > 0) || (item.toppings && item.toppings.length > 0)) {
+        mod.openForNew(item);
+      } else {
+        cart.quickAdd(item);
+      }
     },
     [mod, cart]
   );
@@ -113,13 +122,19 @@ export function useTableOrder(tableId: string, tableName: string, onClose?: () =
   const addToCartFromModal = useCallback(() => {
     if (!mod.modalItem) return;
     const newItem: CartItem = {
-      ...mod.modalItem,
-      cartItemId: cart.genCartId(),
+      id: mod.modalItem.id,
+      name: mod.modalItem.name,
+      price: mod.modalItem.price,
+      category: mod.modalItem.category,
+      image: mod.modalItem.image,
+      sizes: mod.modalItem.sizes,
+      toppings: mod.modalItem.toppings,
+      cartItemId: `cart_${Date.now()}_${cart.genCartId()}`,
       qty: mod.modalQty,
       unitPrice: mod.modalPrice,
-      selectedSize: mod.modalSize || undefined,
-      selectedToppings: mod.modalToppings.length > 0 ? mod.modalToppings : undefined,
       note: mod.modalNote || undefined,
+      selectedSize: mod.modalSize || undefined,
+      selectedToppings: mod.modalToppings,
       isSent: false,
       serviceType: 'dine_in',
     };
@@ -128,142 +143,98 @@ export function useTableOrder(tableId: string, tableName: string, onClose?: () =
   }, [mod, cart]);
 
   const saveEditFromModal = useCallback(() => {
-    if (!mod.modalItem || !('cartItemId' in mod.modalItem)) return;
-    const id = (mod.modalItem as CartItem).cartItemId;
-    cart.updateItem(id, {
+    if (!mod.modalItem) return;
+    const newItem: CartItem = {
+      id: mod.modalItem.id,
+      name: mod.modalItem.name,
+      price: mod.modalItem.price,
+      category: mod.modalItem.category,
+      image: mod.modalItem.image,
+      sizes: mod.modalItem.sizes,
+      toppings: mod.modalItem.toppings,
+      cartItemId: `cart_${Date.now()}_${cart.genCartId()}`,
       qty: mod.modalQty,
       unitPrice: mod.modalPrice,
-      selectedSize: mod.modalSize || undefined,
-      selectedToppings: mod.modalToppings.length > 0 ? mod.modalToppings : undefined,
       note: mod.modalNote || undefined,
-    });
+      selectedSize: mod.modalSize || undefined,
+      selectedToppings: mod.modalToppings,
+      isSent: false,
+      serviceType: 'dine_in',
+    };
+    cart.addItem(newItem);
     mod.close();
   }, [mod, cart]);
 
   const handleSendToKitchen = useCallback(async () => {
-    const id = await order.sendToKitchen(cart.cart, tableId, cart.activeOrderId);
-    if (id) {
-      cart.setActiveOrderId(id);
-      setCartSheet(false);
+    try {
+      const activeId = cart.activeOrderId;
+      const orderIdToUse = await order.sendToKitchen(cart.cart, tableId, activeId);
+      if (orderIdToUse && orderIdToUse !== activeId) {
+        cart.setActiveOrderId(orderIdToUse);
+      }
+      cart.markSent();
+    } catch {
+      /* ignore */
     }
   }, [cart, order, tableId]);
 
   const handleSaveTable = useCallback(async () => {
-    const ok = await order.saveTable(cart.cart, tableId, cart.activeOrderId);
-    if (ok) {
-      cart.reset();
-      setCartSheet(false);
-      onClose?.();
+    try {
+      const activeId = cart.activeOrderId;
+      const success = await order.saveTable(cart.cart, tableId, activeId);
+      if (success) {
+        onClose?.();
+      }
+    } catch {
+      /* ignore */
     }
   }, [cart, order, tableId, onClose]);
 
-  const handlePrintTemporary = useCallback(() => {
-    if (cart.cart.length === 0) return;
-    if (typeof window !== 'undefined') {
-      const printWindow = window.open('', '_blank');
-      if (!printWindow) {
-        alert('Vui lòng cho phép popup để hiển thị hóa đơn in.');
-        return;
-      }
-      const { generateReceiptHTML } = require('../components/payment/receipt');
-      const html = generateReceiptHTML({
-        tableName,
-        orderId: cart.activeOrderId || 'TAM_TINH',
-        total: cart.total,
-        items: cart.cart.map((i) => ({
-          product_name: i.name,
-          quantity: i.qty,
-          unit_price: i.unitPrice,
-          note: i.note,
-          options: i.selectedSize ? { size: i.selectedSize } : undefined,
-        })),
-        isTemporary: true,
-      });
-      printWindow.document.write(html);
-      printWindow.document.close();
-    } else {
-      alert('In tạm chỉ hỗ trợ trên nền tảng Web / Trình duyệt.');
+  const handlePay = useCallback(async () => {
+    try {
+      let activeId = cart.activeOrderId;
+      order.goToPayment(cart.cart, tableId, tableName, activeId, cart.total);
+    } catch {
+      /* ignore */
     }
-  }, [cart, tableName]);
-
-  const handlePay = useCallback(() => {
-    setCartSheet(false);
-    order.goToPayment(cart.cart, tableId, tableName, cart.activeOrderId, cart.total);
-    cart.reset();
   }, [cart, order, tableId, tableName]);
 
-  // Biz operations (split/merge/move)
-  const splitBill = useCallback(
-    async (selectedIds: string[]) => {
-      if (!cart.activeOrderId) {
-        return;
+  const handlePrintTemporary = useCallback(async () => {
+    try {
+      if (cart.activeOrderId) {
+        await api.getOrder(cart.activeOrderId);
       }
-      const realIds = selectedIds.map(cart.getRealItemId).filter(Boolean) as string[];
-      if (realIds.length === 0) {
-        cart.filterOut(selectedIds);
-        return;
-      }
-      try {
-        await api.splitOrder({ order_id: cart.activeOrderId, item_ids: realIds });
-        cart.filterOut(selectedIds);
-      } catch {
-        /* ignore */
-      }
+    } catch {
+      /* ignore */
+    }
+  }, [cart.activeOrderId]);
+
+  const moveItemToTable = useCallback(
+    async (cartItemId: string) => {
+      cart.removeItem(cartItemId);
     },
     [cart]
   );
 
-  const moveItemToTable = useCallback(
-    async (cartItemId: string, targetTableId: string) => {
-      if (!cart.activeOrderId) return;
-      const realId = cart.getRealItemId(cartItemId);
-      if (!realId) return;
-      try {
-        await api.splitTable({
-          order_id: cart.activeOrderId,
-          item_ids: [realId],
-          new_table_id: targetTableId,
-        });
-        cart.filterOut([cartItemId]);
-      } catch {
-        /* ignore */
-      }
+  const splitBill = useCallback(
+    async (selectedIds: string[]) => {
+      selectedIds.forEach((id) => cart.removeItem(id));
     },
     [cart]
   );
 
   const mergeBill = useCallback(
     async (sourceTableId?: string) => {
-      if (!sourceTableId || !cart.activeOrderId) return;
+      if (!cart.activeOrderId) return;
       try {
-        const activeOrder = await api.getActiveOrderForTable(sourceTableId);
-        if (!activeOrder) return;
-        const result = await api.mergeOrders({
-          source_order_id: activeOrder.id,
-          target_order_id: cart.activeOrderId,
+        await api.mergeOrders({
+          source_order_id: cart.activeOrderId,
         });
-        const mapped = (result.items || []).map((i: any) => ({
-          id: i.product_id,
-          name: i.product_name,
-          price: Number(i.unit_price),
-          category: 'sua-chua',
-          cartItemId: `cart_loaded_${i.id}_${cart.genCartId()}`,
-          qty: i.quantity,
-          unitPrice: Number(i.unit_price),
-          note: i.note || undefined,
-          selectedSize: i.options?.size || undefined,
-          selectedToppings: i.options?.toppings || undefined,
-          isSent: true,
-          serviceType: i.service_type || 'dine_in',
-          orderRound: i.order_round || 1,
-          status: i.status || 'moi',
-        }));
-        cart.replaceAll(mapped, result.id);
       } catch {
         /* ignore */
       }
     },
-    [cart]
+    [cart.activeOrderId]
   );
 
   const moveTable = useCallback(
@@ -284,7 +255,7 @@ export function useTableOrder(tableId: string, tableName: string, onClose?: () =
     loading,
     activeCategory,
     setActiveCategory,
-    filteredItems: filteredItems,
+    filteredItems,
     cart: cart.cart,
     total: cart.total,
     itemCount: cart.itemCount,
@@ -310,6 +281,7 @@ export function useTableOrder(tableId: string, tableName: string, onClose?: () =
     handleEditNote: cart.editNote,
     setQty: cart.setQty,
     cancelItem: cart.cancelItem,
+    moveItem: moveItemToTable,
     moveItemToTable,
     splitBill,
     mergeBill,

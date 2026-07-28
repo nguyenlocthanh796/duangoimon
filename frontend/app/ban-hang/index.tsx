@@ -19,6 +19,7 @@ import { formatPrice } from '../../lib/utils/format';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import { useTableOrder } from '../../lib/hooks/useTableOrder';
+import { usePOSSettings } from '../../lib/hooks/usePOSSettings';
 import TableCard from '../../lib/components/pos/TableCard';
 import TableScreenHeader from '../../lib/components/pos/TableScreenHeader';
 import CategoryTabs from '../../lib/components/pos/CategoryTabs';
@@ -34,6 +35,7 @@ import { subscribeRealtimeSync } from '../../lib/sync/realtimeSync';
 
 export default function TableSelection() {
   const { openSidebar } = useSidebar();
+  const { settings } = usePOSSettings();
   const gutter = 12; // Gap between table cards
   const hPad = 12;   // Horizontal padding around grid
   const gridPaddingBottom = 32;
@@ -139,7 +141,7 @@ export default function TableSelection() {
   } = orderState;
 
   const isSplitLayout = breakpoint !== 'mobile';
-  const CARD_COLS = breakpoint === 'mobile' || breakpoint === 'tablet-portrait' ? 3 : 4;
+  const CARD_COLS = breakpoint === 'mobile' ? 2 : breakpoint === 'tablet-portrait' ? 3 : 4;
   const panelWidth = isSplitLayout ? leftPanelWidth : containerWidth;
   const cardWidth = Math.floor((panelWidth - hPad * 2 - gutter * (CARD_COLS - 1)) / CARD_COLS);
 
@@ -198,10 +200,11 @@ export default function TableSelection() {
 
       setTables((prev) => {
         if (prev.length === newTables.length) {
-          const isSame = prev.every((pt, idx) => {
-            const nt = newTables[idx];
+          const newMap = new Map(newTables.map((t) => [t.id, t]));
+          const isSame = prev.every((pt) => {
+            const nt = newMap.get(pt.id);
             return (
-              pt.id === nt.id &&
+              nt !== undefined &&
               pt.name === nt.name &&
               pt.status === nt.status &&
               pt.orderTotal === nt.orderTotal &&
@@ -298,19 +301,45 @@ export default function TableSelection() {
           <Text style={{ ...font.sm, color: colors.text.muted, textAlign: 'center' }}>
             {error}
           </Text>
-          <TouchableOpacity
-            onPress={() => loadData()}
-            style={{
-              paddingHorizontal: 12,
-              minHeight: 40,
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: colors.brand.primary,
-              borderRadius: shape.radius.md,
-            }}
-          >
-            <Text style={{ ...font.smBold, color: colors.text.inverse }}>Thử lại</Text>
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', gap: 10, marginTop: 4 }}>
+            <TouchableOpacity
+              onPress={() => loadData()}
+              style={{
+                paddingHorizontal: 16,
+                minHeight: 42,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: colors.brand.primary,
+                borderRadius: shape.radius.md,
+              }}
+            >
+              <Text style={{ ...font.smBold, color: colors.text.inverse }}>Thử lại</Text>
+            </TouchableOpacity>
+
+            {(error?.includes('Unauthorized') || error?.includes('401') || error?.includes('Forbidden')) && (
+              <TouchableOpacity
+                onPress={() => {
+                  try {
+                    const { clearToken } = require('../../lib/api/client');
+                    clearToken();
+                  } catch {}
+                  router.replace('/login');
+                }}
+                style={{
+                  paddingHorizontal: 16,
+                  minHeight: 42,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: colors.surface.card,
+                  borderWidth: 1,
+                  borderColor: colors.border.brand,
+                  borderRadius: shape.radius.md,
+                }}
+              >
+                <Text style={{ ...font.smBold, color: colors.brand.primary }}>Đăng nhập lại</Text>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
       );
     return (
@@ -487,6 +516,7 @@ export default function TableSelection() {
                     onQuickAdd={quickAdd}
                     onQuickSubtract={quickSubtract}
                     getItemCartCount={getItemCartCount}
+                    menuLayoutMode={settings.menuLayoutMode}
                   />
                 </ScrollView>
               </>
@@ -572,7 +602,7 @@ export default function TableSelection() {
   // Mobile
   return (
     <SafeAreaView
-      edges={['left', 'right', 'bottom']}
+      edges={['left', 'right']}
       style={{ flex: 1, backgroundColor: colors.surface.app }}
     >
       <TableScreenHeader

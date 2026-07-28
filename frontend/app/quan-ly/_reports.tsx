@@ -4,14 +4,14 @@ import {
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api, SalesReport } from '../../lib/api';
-import { colors, font, formatVND } from '../../lib/theme';
+import { colors, font, formatVND, ss } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import BarChart from '../../lib/components/management/BarChart';
 import { DailyReportTable, TopProductsTable } from '../../lib/components/management/ReportTables';
 import AppText from '../../lib/components/ui/AppText';
 
-export default function ReportsScreen() {
+export default function ReportsScreen({ isSearchOpen }: { isSearchOpen?: boolean } = {}) {
   const { isWide } = useResponsive();
   const [data, setData] = useState<SalesReport | null>(null);
   const [loading, setLoading] = useState(true);
@@ -67,24 +67,27 @@ export default function ReportsScreen() {
     : 0;
 
   const renderKpiPanel = () => (
-    <View style={styles.panelBox}>
-      <View style={styles.panelHeader}>
-        <Icon name="chart-box-outline" size={20} color={colors.brand.primary} />
-        <AppText variant="md" weight="bold" color="#050505">Tổng quan doanh thu kỳ này</AppText>
-      </View>
-      <View style={{ alignItems: 'center', paddingVertical: 12, backgroundColor: colors.brand.primaryBg, borderRadius: 14 }}>
-        <AppText variant="lg" weight="bold" color={colors.brand.primary}>{formatVND(totalRevenue)}</AppText>
-        <AppText variant="sm" color="#65676B" style={{ marginTop: 2 }}>Tổng doanh thu bán hàng</AppText>
-      </View>
-      <View style={styles.panelDivider} />
-      <View style={{ flexDirection: 'row', gap: 8 }}>
-        <View style={{ flex: 1, alignItems: 'center', backgroundColor: '#F8FAFC', paddingVertical: 10, borderRadius: 12 }}>
-          <AppText variant="md" weight="bold" color="#050505">{totalOrders}</AppText>
-          <AppText variant="sm" color="#65676B">Tổng số đơn</AppText>
+    <View style={ss.sectionWrap}>
+      <View style={ss.sectionHeader}>
+        <View style={[ss.iconCircleSm, { backgroundColor: '#FFF7ED' }]}>
+          <Icon name="chart-arc" size={14} color="#F97316" />
         </View>
-        <View style={{ flex: 1, alignItems: 'center', backgroundColor: '#F8FAFC', paddingVertical: 10, borderRadius: 12 }}>
-          <AppText variant="md" weight="bold" color={colors.status.success}>{formatVND(avgRevenuePerDay)}</AppText>
-          <AppText variant="sm" color="#65676B">TB mỗi ngày</AppText>
+        <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1 }}>Tổng quan doanh thu kỳ này</AppText>
+      </View>
+      <View style={{ padding: 12, gap: 10 }}>
+        <View style={{ alignItems: 'center', paddingVertical: 10, backgroundColor: '#FFF7ED', borderRadius: 6, borderWidth: 1, borderColor: '#FFEDD5' }}>
+          <AppText variant="md" weight="bold" color="#F97316">{formatVND(totalRevenue)}</AppText>
+          <AppText variant="sm" color="#64748B" style={{ marginTop: 2 }}>Tổng doanh thu bán hàng</AppText>
+        </View>
+        <View style={{ flexDirection: 'row', gap: 8 }}>
+          <View style={{ flex: 1, alignItems: 'center', backgroundColor: '#F8FAFC', paddingVertical: 8, borderRadius: 6, borderWidth: 1, borderColor: '#E2E8F0' }}>
+            <AppText variant="md" weight="bold" color="#0F172A">{totalOrders}</AppText>
+            <AppText variant="sm" color="#64748B">Tổng số đơn</AppText>
+          </View>
+          <View style={{ flex: 1, alignItems: 'center', backgroundColor: '#F8FAFC', paddingVertical: 8, borderRadius: 6, borderWidth: 1, borderColor: '#E2E8F0' }}>
+            <AppText variant="md" weight="bold" color={colors.status.success}>{formatVND(avgRevenuePerDay)}</AppText>
+            <AppText variant="sm" color="#64748B">TB mỗi ngày</AppText>
+          </View>
         </View>
       </View>
     </View>
@@ -92,122 +95,121 @@ export default function ReportsScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
-      {/* Top Mobile Header */}
-      {!isWide && (
-        <View style={styles.mobileActionRow}>
-          <AppText variant="md" weight="bold" color="#050505">Báo cáo bán hàng</AppText>
-          <TouchableOpacity onPress={load} style={styles.addBtn}>
-            <Icon name="refresh" size={16} color={colors.text.inverse} />
-            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Làm mới</AppText>
-          </TouchableOpacity>
-        </View>
-      )}
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 6, paddingTop: 6, gap: 8, paddingBottom: 100 }} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand.primary} />}>
+        {/* 📊 Native App Style KPI Widget Cards Strip */}
+        <View style={ss.metricContainer}>
+          <View style={ss.metricCard}>
+            <View style={[ss.metricIcon, { backgroundColor: '#ECFDF5' }]}>
+              <AppText variant="sm" weight="bold" color={colors.status.success} style={{ fontSize: 11 }}>đ</AppText>
+            </View>
+            <View style={{ flex: 1 }}>
+              <AppText variant="md" weight="bold" color={colors.status.success}>{formatVND(totalRevenue)}</AppText>
+              <AppText variant="sm" color="#64748B">Doanh thu</AppText>
+            </View>
+          </View>
 
-      {/* 📊 Native App Style KPI Widget Cards Strip */}
-      <View style={styles.fbMetricContainer}>
-        <View style={styles.fbMetricCard}>
-          <View style={[styles.fbMetricIcon, { backgroundColor: '#ECFDF5' }]}>
-            <Icon name="currency-usd" size={20} color={colors.status.success} />
+          <View style={ss.metricCard}>
+            <View style={[ss.metricIcon, { backgroundColor: '#EEF2FF' }]}>
+              <AppText variant="sm" weight="bold" color={colors.brand.primary} style={{ fontSize: 11 }}>đơn</AppText>
+            </View>
+            <View style={{ flex: 1 }}>
+              <AppText variant="md" weight="bold" color="#0F172A">{totalOrders} đơn</AppText>
+              <AppText variant="sm" color="#64748B">Số đơn</AppText>
+            </View>
           </View>
-          <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color={colors.status.success}>{formatVND(totalRevenue)}</AppText>
-            <AppText variant="sm" color="#65676B">Doanh thu</AppText>
-          </View>
-        </View>
 
-        <View style={styles.fbMetricCard}>
-          <View style={[styles.fbMetricIcon, { backgroundColor: '#EEF2FF' }]}>
-            <Icon name="receipt" size={20} color={colors.brand.primary} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#050505">{totalOrders} đơn</AppText>
-            <AppText variant="sm" color="#65676B">Số đơn</AppText>
-          </View>
-        </View>
-
-        <View style={styles.fbMetricCard}>
-          <View style={[styles.fbMetricIcon, { backgroundColor: '#FFF7ED' }]}>
-            <Icon name="chart-line" size={20} color="#F97316" />
-          </View>
-          <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#F97316">{formatVND(avgRevenuePerDay)}</AppText>
-            <AppText variant="sm" color="#65676B">TB/Ngày</AppText>
+          <View style={ss.metricCard}>
+            <View style={[ss.metricIcon, { backgroundColor: '#FFF7ED' }]}>
+              <AppText variant="sm" weight="bold" color="#F97316" style={{ fontSize: 11 }}>TB</AppText>
+            </View>
+            <View style={{ flex: 1 }}>
+              <AppText variant="md" weight="bold" color="#F97316">{formatVND(avgRevenuePerDay)}</AppText>
+              <AppText variant="sm" color="#64748B">TB/Ngày</AppText>
+            </View>
           </View>
         </View>
-      </View>
 
-      {/* Date Filter Row */}
-      <View style={{ marginVertical: 4, marginBottom: 8 }}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 12, gap: 8 }}>
-          {[
-            { id: '7d', label: '7 ngày' },
-            { id: '30d', label: '30 ngày' },
-            { id: 'thisMonth', label: 'Tháng này' },
-            { id: 'lastMonth', label: 'Tháng trước' },
-          ].map(r => {
-            const active = dateRange === r.id;
-            return (
-              <TouchableOpacity
-                key={r.id}
-                onPress={() => setDateRange(r.id as any)}
-                style={[styles.chip, active && styles.chipActive]}
-              >
-                <AppText variant="sm" color={active ? colors.brand.primary : "#050505"} weight={active ? 'bold' : 'normal'}>
-                  {r.label}
-                </AppText>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-      </View>
+        {/* Date Filter Row */}
+        <View style={{ width: '100%', marginBottom: 6 }}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{ width: '100%', flexGrow: 0, height: 44 }}
+            contentContainerStyle={{ alignItems: 'center', flexDirection: 'row', gap: 6, paddingHorizontal: 6 }}
+          >
+            {[
+              { id: '7d', label: '7 ngày' },
+              { id: '30d', label: '30 ngày' },
+              { id: 'thisMonth', label: 'Tháng này' },
+              { id: 'lastMonth', label: 'Tháng trước' },
+            ].map(r => {
+              const active = dateRange === r.id;
+              return (
+                <TouchableOpacity
+                  key={r.id}
+                  onPress={() => setDateRange(r.id as any)}
+                  style={[ss.filterChip, active && ss.filterChipActive]}
+                >
+                  <AppText variant="sm" color={active ? colors.brand.primary : "#334155"} weight="bold">
+                    {r.label}
+                  </AppText>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </View>
 
-      {isWide ? (
-        <View style={{ flex: 1, flexDirection: 'row', padding: 12, gap: 12 }}>
-          <View style={{ flex: 0.55 }}>
-            <ScrollView showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand.primary} />}>
-              <View style={styles.section}>
-                <View style={styles.sectionHeader}>
-                  <Icon name="chart-bar" size={20} color={colors.brand.primary} />
-                  <AppText variant="md" weight="bold" color="#050505">Doanh thu theo ngày</AppText>
+        {isWide ? (
+          <View style={{ flex: 1, flexDirection: 'row', gap: 12 }}>
+            <View style={{ flex: 0.55 }}>
+              <View style={ss.sectionWrap}>
+                <View style={ss.sectionHeader}>
+                  <View style={[ss.iconCircleSm, { backgroundColor: '#EFF6FF' }]}>
+                    <Icon name="chart-bar" size={14} color={colors.brand.primary} />
+                  </View>
+                  <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1 }}>Doanh thu theo ngày</AppText>
                 </View>
+                <View style={{ padding: 10 }}>
+                  {(data?.daily?.length ?? 0) === 0 ? (
+                    <View style={styles.emptyBox}>
+                      <AppText variant="sm" color={colors.text.muted}>Không có dữ liệu</AppText>
+                    </View>
+                  ) : (
+                    <BarChart data={data!.daily} />
+                  )}
+                </View>
+              </View>
+
+              {(data?.daily?.length ?? 0) > 0 && <DailyReportTable data={data!.daily} />}
+              <TopProductsTable data={data?.top_products ?? []} />
+            </View>
+            <View style={{ flex: 0.45 }}>{renderKpiPanel()}</View>
+          </View>
+        ) : (
+          <>
+            <View style={ss.sectionWrap}>
+              <View style={ss.sectionHeader}>
+                <View style={[ss.iconCircleSm, { backgroundColor: '#EFF6FF' }]}>
+                  <Icon name="chart-bar" size={14} color={colors.brand.primary} />
+                </View>
+                <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1 }}>Doanh thu theo ngày</AppText>
+              </View>
+              <View style={{ padding: 10 }}>
                 {(data?.daily?.length ?? 0) === 0 ? (
                   <View style={styles.emptyBox}>
-                    <Icon name="chart-bar" size={32} color={colors.icon.muted} />
                     <AppText variant="sm" color={colors.text.muted}>Không có dữ liệu</AppText>
                   </View>
                 ) : (
                   <BarChart data={data!.daily} />
                 )}
               </View>
-
-              {(data?.daily?.length ?? 0) > 0 && <DailyReportTable data={data!.daily} />}
-              <TopProductsTable data={data?.top_products ?? []} />
-            </ScrollView>
-          </View>
-          <View style={{ flex: 0.45 }}>{renderKpiPanel()}</View>
-        </View>
-      ) : (
-        <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand.primary} />}>
-          <View style={styles.sectionMobile}>
-            <View style={styles.sectionHeader}>
-              <Icon name="chart-bar" size={20} color={colors.brand.primary} />
-              <AppText variant="md" weight="bold" color="#050505">Doanh thu theo ngày</AppText>
             </View>
-            {(data?.daily?.length ?? 0) === 0 ? (
-              <View style={styles.emptyBox}>
-                <Icon name="chart-bar" size={32} color={colors.icon.muted} />
-                <AppText variant="sm" color={colors.text.muted}>Không có dữ liệu</AppText>
-              </View>
-            ) : (
-              <BarChart data={data!.daily} />
-            )}
-          </View>
 
-          {(data?.daily?.length ?? 0) > 0 && <DailyReportTable data={data!.daily} />}
-          <TopProductsTable data={data?.top_products ?? []} />
-          <View style={{ height: 40 }} />
-        </ScrollView>
-      )}
+            {(data?.daily?.length ?? 0) > 0 && <DailyReportTable data={data!.daily} />}
+            <TopProductsTable data={data?.top_products ?? []} />
+          </>
+        )}
+      </ScrollView>
     </View>
   );
 }
@@ -218,7 +220,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingVertical: 6,
+    gap: 6,
     backgroundColor: colors.surface.card,
     borderBottomWidth: 1,
     borderBottomColor: colors.border.light,
@@ -228,7 +231,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     paddingHorizontal: 14,
-    height: 44,
+    height: 40,
     borderRadius: 999,
     backgroundColor: colors.brand.primary,
   },
@@ -237,8 +240,8 @@ const styles = StyleSheet.create({
   fbMetricContainer: {
     flexDirection: 'row',
     paddingHorizontal: 12,
-    paddingVertical: 10,
-    gap: 8,
+    paddingVertical: 6,
+    gap: 6,
     backgroundColor: colors.surface.card,
     borderBottomWidth: 1,
     borderBottomColor: colors.border.light,
@@ -252,7 +255,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
     backgroundColor: colors.surface.card,
-    paddingVertical: 8,
+    paddingVertical: 6,
     paddingHorizontal: 10,
     borderRadius: 14,
     borderWidth: 1,
@@ -267,18 +270,17 @@ const styles = StyleSheet.create({
   },
 
   chip: {
-    paddingHorizontal: 14,
-    height: 36,
-    borderRadius: 999,
-    backgroundColor: colors.surface.card,
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: '#E2E8F0',
+    backgroundColor: '#F8FAFC',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    alignSelf: 'center',
   },
   chipActive: {
-    backgroundColor: colors.brand.primaryBg,
-    borderColor: '#FFEDD5',
+    backgroundColor: '#FFF7ED',
+    borderColor: colors.brand.primary,
   },
 
   panelBox: {
@@ -318,4 +320,24 @@ const styles = StyleSheet.create({
   },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 10 },
   emptyBox: { alignItems: 'center', paddingVertical: 18, gap: 6 },
+
+  mobileTopActionBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: colors.surface.card,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
+    gap: 10,
+  },
+  mobileAddBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
+    height: 40,
+    borderRadius: 999,
+    backgroundColor: colors.brand.primary,
+  },
 });

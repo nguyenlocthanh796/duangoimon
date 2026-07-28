@@ -301,11 +301,14 @@ const s = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 12,
     marginBottom: 24,
   },
   rememberRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    flexShrink: 1,
     gap: 8,
   },
   checkbox: {

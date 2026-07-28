@@ -5,6 +5,7 @@ import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font } from '../../theme';
 import { shape } from '../../theme/shape';
 import SkeletonBox from '../ui/SkeletonBox';
+import AppText from '../ui/AppText';
 import { useResponsive } from '../../hooks/useResponsive';
 import type { Dashboard } from '../../api';
 
@@ -100,19 +101,19 @@ const dtStyles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   headerCell: { flex: 1 },
-  headerText: { ...font.sm, color: colors.text.secondary, fontWeight: 'normal' },
+  headerText: { ...font.captionItalic, color: colors.text.secondary },
   dataRow: {
     flexDirection: 'row',
-    paddingVertical: 8,
+    paddingVertical: 10,
     paddingHorizontal: 8,
   },
   dataRowAlt: { backgroundColor: colors.surface.card },
   dataCell: { flex: 1, justifyContent: 'center' },
   cellRight: { alignItems: 'flex-end' },
   cellCenter: { alignItems: 'center' },
-  dataText: { ...font.sm, color: colors.text.primary },
+  dataText: { ...font.md, color: colors.text.primary },
   empty: { alignItems: 'center', paddingVertical: 18 },
-  emptyText: { ...font.sm, color: colors.text.muted },
+  emptyText: { ...font.captionItalic, color: colors.text.muted },
   statusDot: { width: 8, height: 8, borderRadius: 4 },
 });
 
@@ -161,10 +162,10 @@ export function TopProductsList({ data, loading }: TopProductsProps) {
 // ── Navigation Grid ──
 
 const NAV_ITEMS = [
-  { title: 'Thực Đơn & Kho', icon: 'package-variant-closed', route: '/quan-ly/products', color: '#4F46E5', bg: '#EEF2FF' },
-  { title: 'Khách Hàng & CRM', icon: 'account-group', route: '/quan-ly/crm', color: '#059669', bg: '#ECFDF5' },
-  { title: 'Báo Cáo Phân Tích', icon: 'chart-bar', route: '/quan-ly/analytics', color: '#7C3AED', bg: '#F5F3FF' },
-  { title: 'Hệ Thống Vận Hành', icon: 'cog-outline', route: '/quan-ly/system', color: '#F97316', bg: '#FFF7ED' },
+  { title: 'Thực đơn & Kho', icon: 'package-variant-closed', route: '/quan-ly/products', color: '#4F46E5', bg: '#EEF2FF' },
+  { title: 'Khách hàng', icon: 'account-group', route: '/quan-ly/crm', color: '#059669', bg: '#ECFDF5' },
+  { title: 'Báo cáo', icon: 'chart-bar', route: '/quan-ly/analytics', color: '#7C3AED', bg: '#F5F3FF' },
+  { title: 'Hệ thống', icon: 'cog-outline', route: '/quan-ly/system', color: '#F97316', bg: '#FFF7ED' },
 ];
 
 interface NavGridProps {
@@ -183,28 +184,33 @@ export function NavigationGrid({ compact }: NavGridProps) {
         subtitle={`${NAV_ITEMS.length} mục`}
         compact={compact}
       />
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 2 }}>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 4 }}>
         {NAV_ITEMS.map((item, i) => (
           <TouchableOpacity
             key={i}
             style={{
               width: width > 768 ? '23.8%' : '48.5%',
               backgroundColor: colors.surface.app,
-              padding: 10,
+              paddingVertical: 12,
+              paddingHorizontal: 12,
               borderRadius: shape.radius.md,
+              borderWidth: 1,
+              borderColor: colors.border.light,
               flexDirection: 'row',
               alignItems: 'center',
-              gap: 8,
+              gap: 10,
+              minHeight: 52,
             }}
             onPress={() => router.push(item.route as any)}
+            delayPressIn={0}
             activeOpacity={0.7}
           >
-            <View style={{ width: 34, height: 34, borderRadius: shape.radius.md, backgroundColor: item.bg, alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name={item.icon as any} size={18} color={item.color} />
+            <View style={{ width: 38, height: 38, borderRadius: shape.radius.md, backgroundColor: item.bg, alignItems: 'center', justifyContent: 'center' }}>
+              <Icon name={item.icon as any} size={20} color={item.color} />
             </View>
-            <Text style={{ ...font.sm, color: colors.text.primary, flex: 1 }} numberOfLines={1}>
+            <AppText variant="md" color={colors.text.primary} numberOfLines={1} style={{ flex: 1 }}>
               {item.title}
-            </Text>
+            </AppText>
           </TouchableOpacity>
         ))}
       </View>
@@ -336,7 +342,7 @@ export function RecentActivitiesList({ activities, loading }: ActivitiesProps) {
               ),
             },
             { key: 'time', label: 'Thời gian', flex: 1, align: 'right', render: (v) => (
-              <Text style={{ ...font.sm, color: colors.text.muted, textAlign: 'right' }}>{v}</Text>
+              <Text style={{ ...font.captionItalic, color: colors.text.muted, textAlign: 'right' }}>{v}</Text>
             ) },
           ]}
           data={acts.slice(0, 5)}
@@ -440,6 +446,8 @@ const styles = StyleSheet.create({
   section: {
     backgroundColor: colors.surface.card,
     borderRadius: shape.radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border.light,
     padding: 10,
   },
   sectionHeader: {
@@ -449,10 +457,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   sectionHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  sectionTitle: { ...font.smBold, color: colors.text.primary },
-  sectionSub: { ...font.sm, color: colors.text.secondary },
+  sectionTitle: { ...font.sectionTitle, color: colors.text.primary },
+  sectionSub: { ...font.captionItalic, color: colors.text.secondary },
   emptyBox: { alignItems: 'center', paddingVertical: 14, gap: 6 },
-  emptyText: { ...font.sm, color: colors.text.secondary },
+  emptyText: { ...font.captionItalic, color: colors.text.secondary },
 
   actDot: {
     width: 24,

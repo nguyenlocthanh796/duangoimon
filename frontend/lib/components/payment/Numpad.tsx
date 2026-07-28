@@ -29,6 +29,8 @@ export default function Numpad({ method, onKey }: NumpadProps) {
             key={i}
             disabled={!isCash}
             onPress={() => onKey(key)}
+            delayPressIn={0}
+            activeOpacity={0.65}
             style={{
               width: '30%',
               height: 44,

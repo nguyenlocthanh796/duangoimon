@@ -5,9 +5,9 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { colors } from '../../lib/theme';
+import { colors, font } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import ScreenHeader from '../../lib/components/ui/ScreenHeader';
@@ -30,6 +30,7 @@ function formatVND(v: number): string {
 
 export default function QuanLyDashboard() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { openSidebar } = useSidebar();
   const [data, setData] = useState<Dashboard | null>(null);
   const [loading, setLoading] = useState(true);
@@ -107,30 +108,34 @@ export default function QuanLyDashboard() {
   ];
 
   const renderQuickActions = () => (
-    <View style={{ backgroundColor: colors.surface.card, padding: isWide ? 14 : 10, borderRadius: shape.radius.lg, gap: 8 }}>
+    <View style={{ backgroundColor: colors.surface.card, padding: isWide ? 14 : 12, borderRadius: shape.radius.lg, borderWidth: 1, borderColor: colors.border.light, gap: 10 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-        <Icon name="flash-outline" size={16} color={colors.brand.primary} />
-        <AppText variant="sm" weight="bold" color={colors.text.primary}>Thao tác nhanh</AppText>
+        <Icon name="flash-outline" size={18} color={colors.brand.primary} />
+        <AppText style={{ ...font.sectionTitle, color: colors.text.primary }}>Thao tác nhanh</AppText>
       </View>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: isWide ? 10 : 6 }}>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: isWide ? 10 : 8 }}>
         {QUICK_ACTIONS.map((act, i) => (
           <TouchableOpacity
             key={i}
             onPress={() => router.push(act.route as any)}
+            delayPressIn={0}
+            activeOpacity={0.6}
             style={{
               width: isWide ? '23.8%' : '48.5%',
-              height: 40,
+              height: 48,
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: 6,
-              paddingHorizontal: 8,
+              gap: 8,
+              paddingHorizontal: 10,
               backgroundColor: act.bg,
               borderRadius: shape.radius.md,
+              borderWidth: 1,
+              borderColor: colors.border.light,
             }}
           >
-            <Icon name={act.icon as any} size={16} color={act.color} />
-            <AppText variant="sm" color={act.color} numberOfLines={1}>
+            <Icon name={act.icon as any} size={20} color={act.color} />
+            <AppText variant="md" color={act.color} numberOfLines={1}>
               {act.title}
             </AppText>
           </TouchableOpacity>
@@ -159,25 +164,31 @@ export default function QuanLyDashboard() {
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <ScreenHeader
         title="Quản Lý"
-        subtitle="Trung tâm tổng quan kinh doanh & vận hành"
+        subtitle={isWide ? "Trung tâm tổng quan kinh doanh & vận hành" : undefined}
         onMenuPress={openSidebar}
         compact={!isWide}
         right={
-          <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+          <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
             <TouchableOpacity
               onPress={onRefresh}
+              delayPressIn={0}
+              activeOpacity={0.7}
               style={{
-                width: isWide ? 38 : 34,
-                height: isWide ? 38 : 34,
-                borderRadius: isWide ? 19 : 17,
+                width: isWide ? 42 : 38,
+                height: isWide ? 42 : 38,
+                borderRadius: isWide ? 21 : 19,
                 backgroundColor: colors.brand.primaryBg,
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
-              <Icon name="refresh" size={isWide ? 18 : 16} color={colors.brand.primary} />
+              <Icon name="refresh" size={isWide ? 20 : 18} color={colors.brand.primary} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push('/ban-hang')} activeOpacity={0.9}>
+            <TouchableOpacity
+              onPress={() => router.push('/ban-hang')}
+              delayPressIn={0}
+              activeOpacity={0.85}
+            >
               <LinearGradient
                 colors={['#F97316', '#EA580C']}
                 start={{ x: 0, y: 0 }}
@@ -186,13 +197,18 @@ export default function QuanLyDashboard() {
                   flexDirection: 'row',
                   alignItems: 'center',
                   gap: 6,
-                  paddingHorizontal: isWide ? 16 : 10,
-                  paddingVertical: isWide ? 8 : 6,
+                  paddingHorizontal: isWide ? 14 : 10,
+                  height: isWide ? 40 : 36,
                   borderRadius: shape.radius.md,
+                  shadowColor: '#F97316',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.25,
+                  shadowRadius: 4,
+                  elevation: 3,
                 }}
               >
-                <Icon name="point-of-sale" size={16} color="#FFF" />
-                <AppText variant="sm" weight="bold" color="#FFF">Bán hàng</AppText>
+                <Icon name="point-of-sale" size={isWide ? 18 : 16} color="#FFF" />
+                <AppText variant="md" weight="bold" color="#FFF">Bán hàng</AppText>
               </LinearGradient>
             </TouchableOpacity>
           </View>
@@ -200,9 +216,10 @@ export default function QuanLyDashboard() {
       />
 
       <ScrollView
+        style={{ flex: 1, backgroundColor: '#FFFFFF' }}
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand.primary} />}
-        contentContainerStyle={{ padding: isWide ? 20 : 8, gap: isWide ? 12 : 8, paddingBottom: 40 }}
+        contentContainerStyle={{ paddingHorizontal: 6, paddingTop: 6, gap: isWide ? 10 : 6, paddingBottom: Math.max(40, insets.bottom + 20) }}
       >
         {/* Quick Actions Bar */}
         {renderQuickActions()}
@@ -259,5 +276,5 @@ export default function QuanLyDashboard() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface.app },
+  container: { flex: 1, backgroundColor: colors.surface.card },
 });

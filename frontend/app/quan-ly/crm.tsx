@@ -27,20 +27,28 @@ export default function CrmModule() {
   const { width } = useWindowDimensions();
   const isWide = width >= 768;
   const [activeTab, setActiveTab] = useState('customers');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  const searchableTabs = ['customers', 'membership', 'promo', 'marketing', 'booking'];
+  const isSearchable = searchableTabs.includes(activeTab);
+
+  const toggleSearch = () => {
+    if (isSearchable) setIsSearchOpen(!isSearchOpen);
+  };
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'customers': return <CustomersScreen />;
-      case 'membership': return <MembershipScreen />;
-      case 'promo': return <PromoScreen />;
-      case 'marketing': return <MarketingScreen />;
-      case 'booking': return <BookingScreen />;
+      case 'customers': return <CustomersScreen isSearchOpen={isSearchOpen} />;
+      case 'membership': return <MembershipScreen isSearchOpen={isSearchOpen} />;
+      case 'promo': return <PromoScreen isSearchOpen={isSearchOpen} />;
+      case 'marketing': return <MarketingScreen isSearchOpen={isSearchOpen} />;
+      case 'booking': return <BookingScreen isSearchOpen={isSearchOpen} />;
       default: return null;
     }
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom', 'left', 'right']}>
       <ScreenHeader
         title="Khách hàng & Marketing"
         subtitle="Quản lý CRM, tích điểm hội viên, voucher & đặt bàn"
@@ -48,16 +56,26 @@ export default function CrmModule() {
         compact={!isWide}
         right={
           <TouchableOpacity 
-            disabled={true}
-            style={{ padding: 8, opacity: 0.3 }}
+            onPress={toggleSearch}
+            disabled={!isSearchable}
+            style={{ padding: 8, opacity: isSearchable ? 1 : 0.3 }}
           >
-            <Icon name="magnify" size={22} color={colors.text.primary} />
+            <Icon name={isSearchOpen ? 'close' : 'magnify'} size={22} color={colors.text.primary} />
           </TouchableOpacity>
         }
       />
-      <ModuleTabs tabs={tabs} activeTab={activeTab} onSelectTab={setActiveTab} />
-      <View style={styles.content}>
-        {renderContent()}
+      <View style={styles.contentWrap}>
+        <ModuleTabs
+          tabs={tabs}
+          activeTab={activeTab}
+          onSelectTab={(tab) => {
+            setActiveTab(tab);
+            setIsSearchOpen(false);
+          }}
+        />
+        <View style={styles.content}>
+          {renderContent()}
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -66,9 +84,15 @@ export default function CrmModule() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.surface.app,
+    backgroundColor: '#FFFFFF',
+  },
+  contentWrap: {
+    flex: 1,
+    position: 'relative',
   },
   content: {
     flex: 1,
+    position: 'relative',
+    zIndex: 10,
   },
 });

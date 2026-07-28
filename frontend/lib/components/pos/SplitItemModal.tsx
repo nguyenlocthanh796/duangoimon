@@ -105,10 +105,10 @@ export default function SplitItemModal({
             }}
           >
             <View>
-              <AppText variant="lg" weight="bold" color={colors.text.primary}>
+              <AppText variant="md" weight="bold" color={colors.text.primary}>
                 Tách Món Từ {tableName}
               </AppText>
-              <AppText variant="xs" color={colors.text.muted}>
+              <AppText variant="sm" color={colors.text.muted}>
                 Chọn món và số lượng linh hoạt để tách sang bàn mới
               </AppText>
             </View>
@@ -137,8 +137,8 @@ export default function SplitItemModal({
               </AppText>
             </TouchableOpacity>
 
-            <AppText variant="xs" color={colors.text.muted}>
-              Đã chọn: <AppText variant="xs" weight="bold" color={colors.brand.primary}>{selectedCount}</AppText> món
+            <AppText variant="sm" color={colors.text.muted}>
+              Đã chọn: <AppText variant="sm" weight="bold" color={colors.brand.primary}>{selectedCount}</AppText> món
             </AppText>
           </View>
 
@@ -169,7 +169,7 @@ export default function SplitItemModal({
                       {item.name}
                     </AppText>
                     {mods ? (
-                      <AppText variant="xs" color={colors.text.muted} numberOfLines={1}>
+                      <AppText variant="sm" color={colors.text.muted} numberOfLines={1}>
                         {mods}
                       </AppText>
                     ) : null}

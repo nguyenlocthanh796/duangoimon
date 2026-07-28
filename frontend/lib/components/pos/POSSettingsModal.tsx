@@ -158,7 +158,7 @@ export default function POSSettingsModal({ visible, onClose }: POSSettingsModalP
                   <AppText variant="md" weight="bold" color={colors.text.primary}>Cấu hình In ấn & Mẫu Hóa đơn</AppText>
 
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <View style={{ flex: 1, pr: 12 }}>
+                    <View style={{ flex: 1, paddingRight: 12 }}>
                       <AppText variant="md" color={colors.text.primary}>Tự động in hóa đơn khi thanh toán</AppText>
                       <AppText variant="sm" color={colors.text.muted}>Tự động bật cửa sổ in khi hoàn thành đơn</AppText>
                     </View>
@@ -170,7 +170,7 @@ export default function POSSettingsModal({ visible, onClose }: POSSettingsModalP
                   </View>
 
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <View style={{ flex: 1, pr: 12 }}>
+                    <View style={{ flex: 1, paddingRight: 12 }}>
                       <AppText variant="md" color={colors.text.primary}>Tự động in phiếu bếp khi gửi bếp</AppText>
                       <AppText variant="sm" color={colors.text.muted}>Tự động in danh sách món mới gửi xuống nhà bếp</AppText>
                     </View>
@@ -344,7 +344,7 @@ export default function POSSettingsModal({ visible, onClose }: POSSettingsModalP
                   </View>
 
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <View style={{ flex: 1, pr: 12 }}>
+                    <View style={{ flex: 1, paddingRight: 12 }}>
                       <AppText variant="md" color={colors.text.primary}>Cho phép sửa giá món trực tiếp</AppText>
                       <AppText variant="sm" color={colors.text.muted}>Cho phép thu ngân nhập giá tùy chỉnh khi gọi món</AppText>
                     </View>
@@ -356,7 +356,7 @@ export default function POSSettingsModal({ visible, onClose }: POSSettingsModalP
                   </View>
 
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <View style={{ flex: 1, pr: 12 }}>
+                    <View style={{ flex: 1, paddingRight: 12 }}>
                       <AppText variant="md" color={colors.text.primary}>Tự động đóng giỏ hàng sau khi thêm món (Mobile)</AppText>
                       <AppText variant="sm" color={colors.text.muted}>Ẩn Bottom Sheet sau mỗi lần bấm chọn món</AppText>
                     </View>
@@ -409,7 +409,7 @@ export default function POSSettingsModal({ visible, onClose }: POSSettingsModalP
                   </View>
 
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <View style={{ flex: 1, pr: 12 }}>
+                    <View style={{ flex: 1, paddingRight: 12 }}>
                       <AppText variant="md" color={colors.text.primary}>Bật VietQR Động</AppText>
                       <AppText variant="sm" color={colors.text.muted}>Tự tạo mã QR ngân hàng khớp chính xác số tiền đơn hàng</AppText>
                     </View>
@@ -427,7 +427,7 @@ export default function POSSettingsModal({ visible, onClose }: POSSettingsModalP
                   <AppText variant="md" weight="bold" color={colors.text.primary}>Giao diện & Hiệu ứng Cảm giác</AppText>
 
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <View style={{ flex: 1, pr: 12 }}>
+                    <View style={{ flex: 1, paddingRight: 12 }}>
                       <AppText variant="md" color={colors.text.primary}>Âm thanh phản hồi (Sound Effects)</AppText>
                       <AppText variant="sm" color={colors.text.muted}>Phát tiếng bíp nhẹ khi thêm món hoặc hoàn thành đơn</AppText>
                     </View>
@@ -439,7 +439,7 @@ export default function POSSettingsModal({ visible, onClose }: POSSettingsModalP
                   </View>
 
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <View style={{ flex: 1, pr: 12 }}>
+                    <View style={{ flex: 1, paddingRight: 12 }}>
                       <AppText variant="md" color={colors.text.primary}>Hiệu ứng rung (Haptics Feedback)</AppText>
                       <AppText variant="sm" color={colors.text.muted}>Rung nhẹ khi chạm phím trên thiết bị di động</AppText>
                     </View>

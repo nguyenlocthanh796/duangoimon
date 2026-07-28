@@ -38,7 +38,7 @@ export default function MobileCartBar({
         left: 0,
         right: 0,
         backgroundColor: colors.surface.card,
-        paddingBottom: insets.bottom,
+        paddingBottom: 6,
         ...shape.shadow.top,
         zIndex: 100,
       }}
@@ -49,7 +49,7 @@ export default function MobileCartBar({
         activeOpacity={0.7}
         disabled={!hasItems}
         style={{
-          height: 44,
+          height: 34,
           flexDirection: 'row',
           alignItems: 'center',
           paddingHorizontal: 12,
@@ -60,9 +60,9 @@ export default function MobileCartBar({
       >
         <MaterialCommunityIcons
           name="shopping"
-          size={20}
+          size={16}
           color={hasItems ? colors.text.primary : colors.text.placeholder}
-          style={{ marginRight: 8 }}
+          style={{ marginRight: 6 }}
         />
         <Text
           style={{
@@ -91,7 +91,7 @@ export default function MobileCartBar({
           flexDirection: 'row',
           alignItems: 'center',
           paddingHorizontal: 12,
-          paddingVertical: 10,
+          paddingVertical: 8,
           gap: 8,
           backgroundColor: colors.surface.card,
           borderTopWidth: 1,
@@ -101,14 +101,16 @@ export default function MobileCartBar({
         {/* Gửi Bếp */}
         <TouchableOpacity
           onPress={onSendToKitchen}
+          delayPressIn={0}
+          activeOpacity={0.7}
           disabled={!hasUnsentItems || submitting}
           style={{
             flex: 1,
-            height: 52,
+            height: 50,
             borderRadius: shape.radius.md,
-            backgroundColor: hasUnsentItems ? colors.surface.card : colors.surface.disabled,
+            backgroundColor: hasUnsentItems ? colors.brand.primaryBg : colors.surface.disabled,
             borderWidth: 1.5,
-            borderColor: hasUnsentItems ? colors.brand.primary : colors.border.default,
+            borderColor: hasUnsentItems ? colors.border.brand : colors.border.default,
             alignItems: 'center',
             justifyContent: 'center',
           }}
@@ -116,24 +118,27 @@ export default function MobileCartBar({
           <Text
             style={{
               ...font.mdBold,
-              color: hasUnsentItems ? colors.brand.primary : colors.text.placeholder,
+              color: hasUnsentItems ? colors.text.brand : colors.text.muted,
+              fontSize: 14,
             }}
           >
-            Gửi Bếp
+            GỬI BẾP
           </Text>
         </TouchableOpacity>
 
         {/* Lưu HĐ */}
         <TouchableOpacity
           onPress={onSave}
+          delayPressIn={0}
+          activeOpacity={0.7}
           disabled={submitting}
           style={{
             flex: 1,
-            height: 52,
+            height: 50,
             borderRadius: shape.radius.md,
-            backgroundColor: colors.surface.card,
+            backgroundColor: colors.brand.primaryBg,
             borderWidth: 1.5,
-            borderColor: colors.border.default,
+            borderColor: colors.border.brand,
             alignItems: 'center',
             justifyContent: 'center',
           }}
@@ -141,20 +146,23 @@ export default function MobileCartBar({
           <Text
             style={{
               ...font.mdBold,
-              color: colors.text.secondary,
+              color: colors.text.brand,
+              fontSize: 14,
             }}
           >
-            Lưu HĐ
+            LƯU HĐ
           </Text>
         </TouchableOpacity>
 
-        {/* THANH TOÁN → hiển thị số tiền */}
+        {/* THANH TOÁN */}
         <TouchableOpacity
           onPress={onPay}
+          delayPressIn={0}
+          activeOpacity={0.85}
           disabled={submitting}
           style={{
-            flex: 1.8,
-            height: 52,
+            flex: 1.5,
+            height: 50,
             borderRadius: shape.radius.md,
             backgroundColor: colors.brand.primary,
             alignItems: 'center',
@@ -167,9 +175,10 @@ export default function MobileCartBar({
             style={{
               color: colors.text.inverse,
               ...font.mdBold,
+              fontSize: 14,
             }}
           >
-            {hasItems ? formatPrice(total) : 'Thanh toán'}
+            THANH TOÁN
           </Text>
         </TouchableOpacity>
       </View>

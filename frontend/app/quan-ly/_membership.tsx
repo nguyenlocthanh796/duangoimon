@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet, TextInput, Alert, TouchableOpacity, ScrollView, FlatList } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useResponsive } from '../../lib/hooks/useResponsive';
-import { colors, font, formatVND } from '../../lib/theme';
+import { colors, font, formatVND, ss } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import DataTable, { type Column } from '../../lib/components/ui/DataTable';
@@ -11,6 +11,10 @@ import FAB from '../../lib/components/ui/FAB';
 import AppText from '../../lib/components/ui/AppText';
 import { TableSkeleton } from '../../lib/components/ui/Skeleton';
 import EmptyState from '../../lib/components/ui/EmptyState';
+import DetailModal from '../../lib/components/ui/DetailModal';
+
+import ScreenHeader from '../../lib/components/ui/ScreenHeader';
+import { useSidebar } from '../../lib/context/SidebarContext';
 
 const API = '/api/v1/quan-ly';
 
@@ -32,13 +36,21 @@ function generateFallbackTiers(): MembershipTier[] {
   ];
 }
 
-export default function MembershipScreen() {
+export default function MembershipScreen({ isSearchOpen }: { isSearchOpen?: boolean } = {}) {
   const { isWide } = useResponsive();
+  const { openSidebar } = useSidebar();
   const [tiers, setTiers] = useState<MembershipTier[]>([]);
+  const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingTier, setEditingTier] = useState<MembershipTier | null>(null);
   const [form, setForm] = useState({ name: '', min_spend: '', discount_pct: '' });
+
+  const filteredTiers = useMemo(() => {
+    if (!search.trim()) return tiers;
+    const q = search.toLowerCase().trim();
+    return tiers.filter(t => t.name.toLowerCase().includes(q));
+  }, [tiers, search]);
 
   const load = useCallback(async () => {
     try {
@@ -100,8 +112,10 @@ export default function MembershipScreen() {
       flex: 1,
       render: (t) => (
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-          <View style={[styles.avatarCircle, { backgroundColor: '#FEF3C7', width: 36, height: 36, borderRadius: 18 }]}>
-            <Icon name={(t.icon || 'crown') as any} size={20} color={t.color || colors.brand.primary} />
+          <View style={[styles.avatarCircle, { backgroundColor: '#FEF3C7', width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' }]}>
+            <AppText variant="sm" weight="bold" color={t.color || colors.brand.primary} style={{ fontSize: 11 }}>
+              {t.name?.slice(0, 2).toUpperCase() || 'VIP'}
+            </AppText>
           </View>
           <AppText variant="sm" weight="bold" color="#050505" numberOfLines={1}>{t.name}</AppText>
         </View>
@@ -138,7 +152,6 @@ export default function MembershipScreen() {
   const renderPanel = () => (
     <View style={styles.panelBox}>
       <View style={styles.panelHeader}>
-        <Icon name="crown" size={20} color={colors.brand.primary} />
         <AppText variant="md" weight="bold" color="#050505">Quy Tắc Tích Điểm & Hạng VIP</AppText>
       </View>
 
@@ -161,7 +174,7 @@ export default function MembershipScreen() {
         {tiers.map((t, i) => (
           <View key={t.id} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-              <Icon name={(t.icon || 'crown') as any} size={18} color={t.color || colors.brand.primary} />
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: t.color || colors.brand.primary }} />
               <AppText variant="sm" weight="bold" color="#050505">{t.name}</AppText>
             </View>
             <AppText variant="sm" weight="bold" color={colors.status.success}>Giảm {t.discount_pct}%</AppText>
@@ -176,90 +189,118 @@ export default function MembershipScreen() {
     </View>
   );
 
+  const [selectedTier, setSelectedTier] = useState<MembershipTier | null>(null);
+
   const renderMobileTierCard = ({ item: t }: { item: MembershipTier }) => (
-    <View style={styles.itemMobile}>
-      <View style={styles.cardHeaderRow}>
-        <View style={[styles.avatarCircle, { backgroundColor: '#FEF3C7' }]}>
-          <Icon name={(t.icon || 'crown') as any} size={22} color={t.color || colors.brand.primary} />
-        </View>
-        <View style={{ flex: 1 }}>
-          <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>{t.name}</AppText>
-          <AppText variant="sm" color="#65676B" style={{ marginTop: 2 }}>
-            Tối thiểu: {formatVND(t.min_spend || 0)}
-          </AppText>
-        </View>
-        <View style={{ backgroundColor: '#ECFDF5', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999 }}>
-          <AppText variant="md" weight="bold" color={colors.status.success}>Giảm {t.discount_pct}%</AppText>
-        </View>
+    <TouchableOpacity
+      style={ss.listRow}
+      onPress={() => setSelectedTier(t)}
+      activeOpacity={0.7}
+    >
+      <View style={[ss.iconCircleSm, { backgroundColor: '#FEF3C7' }]}>
+        <Icon name={(t.icon as any) || 'crown'} size={16} color={t.color || colors.brand.primary} />
       </View>
-
-      <View style={styles.cardActionDivider} />
-
-      <View style={{ flexDirection: 'row', gap: 8, paddingHorizontal: 12, paddingTop: 8 }}>
-        <TouchableOpacity style={styles.panelBtnSecondary} onPress={() => openEdit(t)}>
-          <Icon name="pencil" size={14} color={colors.brand.primary} />
-          <AppText variant="sm" weight="bold" color={colors.brand.primary}>Chỉnh sửa</AppText>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.panelBtnDanger} onPress={() => handleDelete(t.id, t.name)}>
-          <Icon name="trash-can-outline" size={14} color={colors.status.danger} />
-          <AppText variant="sm" color={colors.status.danger}>Xóa</AppText>
-        </TouchableOpacity>
+      <View style={{ flex: 1, paddingLeft: 10, justifyContent: 'center' }}>
+        <AppText variant="sm" weight="bold" color="#0F172A" numberOfLines={1}>{t.name}</AppText>
+        <AppText variant="sm" color="#64748B" numberOfLines={1} style={{ marginTop: 2, fontSize: 11 }}>
+          Tối thiểu: {formatVND(t.min_spend || 0)}
+        </AppText>
       </View>
-    </View>
+      <View style={{ backgroundColor: '#ECFDF5', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999 }}>
+        <AppText variant="sm" weight="bold" color={colors.status.success} style={{ fontSize: 11 }}>Giảm {t.discount_pct}%</AppText>
+      </View>
+    </TouchableOpacity>
   );
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+    <View style={{ flex: 1, backgroundColor: colors.surface.app, position: 'relative' }}>
       {/* Top Mobile Header */}
       {!isWide && (
-        <View style={styles.mobileActionRow}>
-          <AppText variant="md" weight="bold" color="#050505">{tiers.length} hạng thành viên</AppText>
-          <TouchableOpacity onPress={openAdd} style={styles.addBtn}>
-            <Icon name="plus" size={16} color={colors.text.inverse} />
-            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm hạng</AppText>
-          </TouchableOpacity>
+        isSearchOpen || search.length > 0 ? (
+          <View style={ss.topActionBar}>
+            <View style={ss.searchInputWrap}>
+              <Icon name="magnify" size={20} color="#64748B" />
+              <TextInput
+                value={search}
+                onChangeText={setSearch}
+                placeholder="Tìm hạng thành viên..."
+                placeholderTextColor="#94A3B8"
+                style={ss.searchTextInput}
+                autoFocus
+              />
+              {search.length > 0 && (
+                <TouchableOpacity onPress={() => setSearch('')}>
+                  <Icon name="close-circle" size={18} color="#94A3B8" />
+                </TouchableOpacity>
+              )}
+            </View>
+            <TouchableOpacity onPress={openAdd} style={ss.addBtn}>
+              <Icon name="plus" size={16} color={colors.text.inverse} />
+              <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm hạng</AppText>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={ss.mobileActionRow}>
+            <AppText variant="md" weight="bold" color="#050505">{filteredTiers.length} hạng thành viên</AppText>
+            <TouchableOpacity onPress={openAdd} style={ss.addBtn}>
+              <Icon name="plus" size={16} color={colors.text.inverse} />
+              <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm hạng</AppText>
+            </TouchableOpacity>
+          </View>
+        )
+      )}
+
+      {/* 📊 Executive KPI Strip (Desktop only) */}
+      {isWide && (
+        <View style={ss.metricContainer}>
+          <View style={ss.metricCard}>
+            <View style={[ss.metricIcon, { backgroundColor: '#FEF3C7' }]}>
+              <AppText variant="sm" weight="bold" color="#D97706" style={{ fontSize: 11 }}>VIP</AppText>
+            </View>
+            <View style={{ flex: 1 }}>
+              <AppText variant="md" weight="bold" color="#050505">{tiers.length} hạng thành viên</AppText>
+              <AppText variant="sm" color="#65676B">Tổng số hạng VIP</AppText>
+            </View>
+          </View>
+
+          <View style={ss.metricCard}>
+            <View style={[ss.metricIcon, { backgroundColor: '#ECFDF5' }]}>
+              <AppText variant="sm" weight="bold" color={colors.status.success} style={{ fontSize: 12 }}>%</AppText>
+            </View>
+            <View style={{ flex: 1 }}>
+              <AppText variant="md" weight="bold" color={colors.status.success}>Giảm {maxDiscount}%</AppText>
+              <AppText variant="sm" color="#65676B">Ưu đãi tối đa</AppText>
+            </View>
+          </View>
+
+          <View style={ss.metricCard}>
+            <View style={[ss.metricIcon, { backgroundColor: '#EEF2FF' }]}>
+              <AppText variant="sm" weight="bold" color="#2563EB" style={{ fontSize: 11 }}>TĐ</AppText>
+            </View>
+            <View style={{ flex: 1 }}>
+              <AppText variant="md" weight="bold" color="#2563EB">Tự động tích điểm</AppText>
+              <AppText variant="sm" color="#65676B">Phân hạng hệ thống</AppText>
+            </View>
+          </View>
         </View>
       )}
 
-      {/* 📊 Native App Style KPI Widget Cards Strip */}
-      <View style={styles.fbMetricContainer}>
-        <View style={styles.fbMetricCard}>
-          <View style={[styles.fbMetricIcon, { backgroundColor: '#FEF3C7' }]}>
-            <Icon name="crown" size={20} color="#D97706" />
-          </View>
-          <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#050505">{tiers.length} hạng</AppText>
-            <AppText variant="sm" color="#65676B">Tổng hạng VIP</AppText>
-          </View>
-        </View>
-
-        <View style={styles.fbMetricCard}>
-          <View style={[styles.fbMetricIcon, { backgroundColor: '#ECFDF5' }]}>
-            <Icon name="percent" size={20} color={colors.status.success} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color={colors.status.success}>Giảm {maxDiscount}%</AppText>
-            <AppText variant="sm" color="#65676B">Giảm tối đa</AppText>
-          </View>
-        </View>
-
-        <View style={styles.fbMetricCard}>
-          <View style={[styles.fbMetricIcon, { backgroundColor: '#EEF2FF' }]}>
-            <Icon name="account-group" size={20} color="#2563EB" />
-          </View>
-          <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#2563EB">Tự động tích điểm</AppText>
-            <AppText variant="sm" color="#65676B">Thành viên</AppText>
-          </View>
-        </View>
-      </View>
-
+      {!isWide && (
+        <DetailModal
+          visible={!!selectedTier}
+          title={selectedTier?.name || 'Chi tiết hạng thành viên'}
+          subtitle={selectedTier ? `Giảm ${selectedTier.discount_pct}% · Chi tiêu từ ${formatVND(selectedTier.min_spend || 0)}` : undefined}
+          onClose={() => setSelectedTier(null)}
+        >
+          {renderPanel()}
+        </DetailModal>
+      )}
       {isWide ? (
         <View style={{ flex: 1, flexDirection: 'row', padding: 12, gap: 12 }}>
           <View style={{ flex: 0.55 }}>
             <DataTable<MembershipTier>
               columns={columns}
-              data={tiers}
+              data={filteredTiers}
               getRowId={(t) => t.id}
               loading={loading}
               onRefresh={load}
@@ -272,26 +313,27 @@ export default function MembershipScreen() {
           <View style={{ flex: 0.45 }}>{renderPanel()}</View>
         </View>
       ) : (
-        <FlatList
-          data={tiers}
-          keyExtractor={(t) => t.id}
-          renderItem={renderMobileTierCard}
-          contentContainerStyle={{ paddingBottom: 120 }}
-          ListEmptyComponent={
-            loading ? (
-              <TableSkeleton rowCount={5} />
-            ) : (
-              <EmptyState
-                icon="crown-outline"
-                title="Chưa có hạng thành viên"
-                subtitle="Nhấn + để tạo hạng thành viên đầu tiên"
-              />
-            )
-          }
-        />
-      )}
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 6, paddingTop: 6, gap: 8, paddingBottom: 100 }}>
+          <View style={ss.sectionWrap}>
+            <View style={ss.sectionHeader}>
+              <View style={[ss.iconCircleSm, { backgroundColor: '#FEF3C7' }]}>
+                <Icon name="crown" size={14} color="#D97706" />
+              </View>
+              <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1 }}>
+                DANH SÁCH HẠNG THÀNH VIÊN ({filteredTiers.length})
+              </AppText>
+            </View>
 
-      {!isWide && <FAB onPress={openAdd} />}
+            <View style={styles.sectionItems}>
+              {filteredTiers.map((t) => (
+                <React.Fragment key={t.id}>
+                  {renderMobileTierCard({ item: t })}
+                </React.Fragment>
+              ))}
+            </View>
+          </View>
+        </ScrollView>
+      )}
 
       <FormModal
         visible={showForm}
@@ -315,7 +357,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingVertical: 6,
     backgroundColor: colors.surface.card,
     borderBottomWidth: 1,
     borderBottomColor: colors.border.light,
@@ -325,7 +367,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     paddingHorizontal: 14,
-    height: 44,
+    height: 40,
     borderRadius: 999,
     backgroundColor: colors.brand.primary,
   },
@@ -430,6 +472,87 @@ const styles = StyleSheet.create({
   },
   panelDivider: { height: 1, backgroundColor: colors.border.light },
   panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: colors.brand.primary, borderRadius: 999, height: 44, marginTop: 4 },
+  topActionBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: colors.surface.card,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
+  },
+  searchInputWrap: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: '#F1F5F9',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    height: 38,
+  },
+  searchTextInput: {
+    flex: 1,
+    fontSize: 14,
+    color: '#0F172A',
+  },
+  listRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    height: 48,
+    backgroundColor: colors.surface.card,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
+  },
+  sectionWrap: {
+    backgroundColor: colors.surface.card,
+    marginTop: 8,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: '#F8FAFC',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+  },
+  sectionItems: {
+    backgroundColor: colors.surface.card,
+  },
+  metricContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 8,
+    backgroundColor: colors.surface.card,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
+    marginBottom: 8,
+    flexWrap: 'wrap',
+  },
+  metricCard: {
+    flex: 1,
+    minWidth: 140,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: colors.surface.card,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  metricIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   input: {
     height: 44,
     borderWidth: 1,

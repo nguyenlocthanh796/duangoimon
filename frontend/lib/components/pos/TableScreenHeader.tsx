@@ -28,54 +28,61 @@ export default function TableScreenHeader({
   const iconSize = isWide ? 20 : 18;
 
   const rightActions = (
-    <View style={{ flexDirection: 'row', gap: isWide ? 12 : 8, alignItems: 'center' }}>
+    <View style={{ flexDirection: 'row', gap: isWide ? 10 : 6, alignItems: 'center' }}>
       <TouchableOpacity
         onPress={onRefresh}
+        delayPressIn={0}
+        activeOpacity={0.7}
         style={{
-          width: btnSize,
-          height: btnSize,
+          width: isWide ? btnSize : 36,
+          height: isWide ? btnSize : 36,
           borderRadius: shape.radius.md,
           backgroundColor: colors.brand.primaryBg,
           alignItems: 'center',
           justifyContent: 'center',
         }}
       >
-        <Icon name="refresh" size={iconSize} color={colors.brand.primary} />
+        <Icon name="refresh" size={isWide ? 20 : 18} color={colors.brand.primary} />
       </TouchableOpacity>
 
       {onTakeaway ? (
         <TouchableOpacity
           onPress={onTakeaway}
+          delayPressIn={0}
+          activeOpacity={0.85}
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            gap: 6,
+            gap: 4,
             paddingHorizontal: isWide ? 14 : 10,
-            height: btnSize,
+            height: isWide ? btnSize : 36,
             borderRadius: shape.radius.md,
             backgroundColor: colors.brand.primary,
           }}
         >
-          <Icon name="bag-personal" size={iconSize} color={colors.text.inverse} />
-          <AppText variant="md" color={colors.text.inverse}>Mang Về</AppText>
+          <Icon name="bag-personal" size={isWide ? 20 : 16} color={colors.text.inverse} />
+          <AppText variant="md" weight="bold" color={colors.text.inverse}>Mang về</AppText>
         </TouchableOpacity>
-      ) : !isWide ? (
+      ) : (
         <TouchableOpacity
           onPress={() => router.push(`/ban-hang/pos?tableId=TAKEAWAY&tableName=Mang%20V%E1%BB%81`)}
+          delayPressIn={0}
+          activeOpacity={0.85}
           style={{
             flexDirection: 'row',
-            paddingHorizontal: 16,
-            height: btnSize,
+            gap: 4,
+            paddingHorizontal: isWide ? 14 : 10,
+            height: isWide ? btnSize : 36,
             justifyContent: 'center',
             alignItems: 'center',
             borderRadius: shape.radius.md,
             backgroundColor: colors.brand.primary,
           }}
         >
-          <Icon name="bag-personal" size={iconSize} color={colors.text.inverse} />
-          <AppText variant="md" color={colors.text.inverse}>Mang Về</AppText>
+          <Icon name="bag-personal" size={isWide ? 20 : 16} color={colors.text.inverse} />
+          <AppText variant="md" weight="bold" color={colors.text.inverse}>Mang về</AppText>
         </TouchableOpacity>
-      ) : null}
+      )}
     </View>
   );
 
@@ -83,7 +90,7 @@ export default function TableScreenHeader({
     <UnifiedHeader
       animated={true}
       title="Sơ đồ bàn"
-      subtitle={!isWide ? `${tablesCount} bàn · ${lastRefreshTime || ''}` : undefined}
+      subtitle={`${tablesCount} bàn · ${lastRefreshTime || ''}`}
       onMenuPress={onOpenSidebar}
       right={rightActions}
     />

@@ -2,18 +2,19 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { View, StyleSheet, TextInput, TouchableOpacity, Alert, Switch } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useResponsive } from '../../lib/hooks/useResponsive';
-import { colors, font } from '../../lib/theme';
+import { colors, font, ss } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import type { Station } from '../../lib/api/client';
 import DataTable, { type Column } from '../../lib/components/ui/DataTable';
 import FormModal from '../../lib/components/ui/FormModal';
+import DetailModal from '../../lib/components/ui/DetailModal';
 import AppText from '../../lib/components/ui/AppText';
 import { getKitchenModuleEnabled, setKitchenModuleEnabled } from '../../lib/utils/kitchenSettings';
 
 const API = '/api/v1/quan-ly';
 
-export default function StationsScreen() {
+export default function StationsScreen({ isSearchOpen }: { isSearchOpen?: boolean } = {}) {
   const { isWide } = useResponsive();
   const [kitchenEnabled, setKitchenEnabled] = useState(getKitchenModuleEnabled());
   const [items, setItems] = useState<Station[]>([]);
@@ -73,8 +74,10 @@ export default function StationsScreen() {
       sortValue: (s) => s.name || '',
       render: (s) => (
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          <View style={styles.stationAvatarCircle}>
-            <Icon name="stove" size={16} color={colors.brand.primary} />
+          <View style={[styles.stationAvatarCircle, { alignItems: 'center', justifyContent: 'center' }]}>
+            <AppText variant="sm" weight="bold" color={colors.brand.primary} style={{ fontSize: 10 }}>
+              {s.code?.slice(0, 2) || 'BK'}
+            </AppText>
           </View>
           <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>{s.name}</AppText>
         </View>
@@ -97,7 +100,7 @@ export default function StationsScreen() {
       sortValue: (s) => s.printer_name ? 1 : 0,
       render: (s) => s.printer_name ? (
         <View style={styles.chipSmall}>
-          <Icon name="printer" size={12} color={colors.status.success} />
+          <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: colors.status.success }} />
           <AppText variant="sm" weight="bold" color={colors.status.success}>Có</AppText>
         </View>
       ) : <AppText variant="sm" color={colors.text.muted}>—</AppText>,
@@ -107,12 +110,14 @@ export default function StationsScreen() {
   const renderMobileCard = (s: Station) => (
     <View style={styles.stationCardFbFullWidth} key={s.id}>
       <View style={styles.cardHeaderRow}>
-        <View style={styles.stationAvatarCircle}>
-          <Icon name="stove" size={20} color={colors.brand.primary} />
+        <View style={[styles.stationAvatarCircle, { alignItems: 'center', justifyContent: 'center' }]}>
+          <AppText variant="sm" weight="bold" color={colors.brand.primary} style={{ fontSize: 12 }}>
+            {s.code?.slice(0, 2) || 'BK'}
+          </AppText>
         </View>
         <View style={{ flex: 1 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>{s.name}</AppText>
+            <AppText variant="md" color="#050505" numberOfLines={1}>{s.name}</AppText>
             <View style={styles.codeBadge}>
               <AppText variant="sm" color={colors.text.muted}>{s.code}</AppText>
             </View>
@@ -127,8 +132,8 @@ export default function StationsScreen() {
         </View>
         {s.printer_name ? (
           <View style={styles.chipSmall}>
-            <Icon name="printer" size={12} color={colors.status.success} />
-            <AppText variant="sm" weight="bold" color={colors.status.success}>Có máy in</AppText>
+            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: colors.status.success }} />
+            <AppText variant="sm" color={colors.status.success}>Có máy in</AppText>
           </View>
         ) : (
           <AppText variant="sm" color={colors.text.muted}>—</AppText>
@@ -165,7 +170,6 @@ export default function StationsScreen() {
       </View>
 
       <View style={styles.panelHeader}>
-        <Icon name="stove" size={18} color={colors.brand.primary} />
         <AppText variant="md" weight="bold" color="#050505">Thống kê khu vực bếp</AppText>
       </View>
       <View style={{ flexDirection: 'row', gap: 8 }}>
@@ -212,11 +216,11 @@ export default function StationsScreen() {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+    <View style={{ flex: 1, backgroundColor: colors.surface.app, position: 'relative' }}>
       {/* Top Action Bar on Mobile */}
       {!isWide && (
         <View style={styles.mobileActionRow}>
-          <AppText variant="md" weight="bold" color="#050505">{stats.total} trạm bếp</AppText>
+          <AppText variant="md" color="#050505">{stats.total} trạm chế biến</AppText>
           <TouchableOpacity onPress={openNew} style={styles.addBtn}>
             <Icon name="plus" size={16} color={colors.text.inverse} />
             <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm trạm</AppText>
@@ -229,7 +233,7 @@ export default function StationsScreen() {
         <View style={styles.fbSwitchBannerFullWidth}>
           <View style={{ flex: 1, paddingRight: 8 }}>
             <AppText variant="md" weight="bold" color="#050505">
-              {kitchenEnabled ? 'Bật Module Bếp / Bar' : 'Tắt Module Bếp'}
+              {kitchenEnabled ? 'Bật Trạm Chế Biến / Bar' : 'Tắt Trạm Chế Biến'}
             </AppText>
             <AppText variant="sm" color="#65676B">
               {kitchenEnabled ? 'Tự động truyền đơn hàng sang trạm bếp' : 'Thanh toán trực tiếp bỏ qua trạm bếp'}
@@ -244,25 +248,25 @@ export default function StationsScreen() {
         </View>
       )}
 
-      {/* Facebook Story Highlight Metric Cards */}
-      <View style={styles.fbMetricContainer}>
-        <View style={styles.fbMetricCard}>
-          <View style={[styles.fbMetricIcon, { backgroundColor: colors.brand.primaryBg }]}>
-            <Icon name="stove" size={18} color={colors.brand.primary} />
+      {/* Metric Cards Container */}
+      <View style={ss.metricContainer}>
+        <View style={ss.metricCard}>
+          <View style={[ss.iconCircleSm, { backgroundColor: colors.brand.primaryBg }]}>
+            <Icon name="silverware-fork-knife" size={14} color={colors.brand.primary} />
           </View>
-          <View>
-            <AppText variant="md" weight="bold" color="#050505">{stats.total}</AppText>
-            <AppText variant="sm" color="#65676B">Tổng trạm bếp</AppText>
+          <View style={{ flex: 1 }}>
+            <AppText variant="md" weight="bold" color="#0F172A">{stats.total}</AppText>
+            <AppText variant="sm" color="#64748B">Tổng trạm chế biến</AppText>
           </View>
         </View>
 
-        <View style={styles.fbMetricCard}>
-          <View style={[styles.fbMetricIcon, { backgroundColor: '#ECFDF5' }]}>
-            <Icon name="printer" size={18} color={colors.status.success} />
+        <View style={ss.metricCard}>
+          <View style={[ss.iconCircleSm, { backgroundColor: '#ECFDF5' }]}>
+            <Icon name="printer" size={14} color={colors.status.success} />
           </View>
-          <View>
+          <View style={{ flex: 1 }}>
             <AppText variant="md" weight="bold" color={colors.status.success}>{stats.hasPrinter}</AppText>
-            <AppText variant="sm" color="#65676B">Có máy in</AppText>
+            <AppText variant="sm" color="#64748B">Có máy in</AppText>
           </View>
         </View>
       </View>
@@ -311,6 +315,18 @@ export default function StationsScreen() {
         </View>
       )}
 
+      {!isWide && (
+        <DetailModal
+          visible={!!selected}
+          title={selected?.name || 'Chi Tiết Trạm Bếp'}
+          subtitle={selected?.code ? `Mã: ${selected.code}` : undefined}
+          onClose={() => setSelected(null)}
+          onEdit={selected ? () => openEdit(selected) : undefined}
+        >
+          {renderPanel()}
+        </DetailModal>
+      )}
+
       <FormModal visible={showForm} title={editing ? 'Sửa trạm bếp' : 'Thêm trạm bếp'}
         onClose={() => setShowForm(false)} onSave={handleSave} saveLabel={editing ? 'Cập nhật' : 'Thêm'}>
         <View style={{ gap: 10, paddingTop: 4 }}>
@@ -335,8 +351,8 @@ export default function StationsScreen() {
 }
 
 const styles = StyleSheet.create({
-  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 44, borderRadius: 999, backgroundColor: colors.brand.primary },
+  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, gap: 6, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
+  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 38, borderRadius: 6, backgroundColor: colors.brand.primary },
   stationAvatarCircle: { width: 42, height: 42, borderRadius: 21, backgroundColor: colors.brand.primaryBg, alignItems: 'center', justifyContent: 'center' },
   codeBadge: { paddingHorizontal: 6, paddingVertical: 1, borderRadius: 4, backgroundColor: colors.surface.app },
 

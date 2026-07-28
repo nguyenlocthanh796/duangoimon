@@ -132,8 +132,16 @@ async def process_payment(
 
     # H2: Deduct inventory BEFORE commit (atomic)
     from app.core.inventory import deduct_inventory
-
     await deduct_inventory(str(order.id), db)
+
+    # 3. Update HKD Profile revenue_ytd automatically
+    from app.models.thue.hkd_profile import HKDProfile
+    from decimal import Decimal
+    profile_result = await db.execute(select(HKDProfile).where(HKDProfile.branch_id == order.branch_id))
+    hkd_profile = profile_result.scalar_one_or_none()
+    if hkd_profile:
+        hkd_profile.revenue_ytd = Decimal(str(hkd_profile.revenue_ytd or 0)) + Decimal(str(order.total_amount))
+        db.add(hkd_profile)
 
     await db.refresh(order)
 
@@ -155,21 +163,19 @@ async def process_payment(
 
     from app.core.ws_manager import ws_manager
 
-    await ws_manager.broadcast(
-        "kitchen",
-        {
-            "event": "order_updated",
-            "order": {"id": str(order.id), "status": "da_thanh_toan"},
-        },
-    )
+    order_evt = {
+        "event": "order_updated",
+        "order": {"id": str(order.id), "status": "da_thanh_toan"},
+    }
+    await ws_manager.broadcast("kitchen", order_evt)
+    await ws_manager.broadcast("pos", order_evt)
 
     if order.table_id:
-        await ws_manager.broadcast(
-            "kitchen",
-            {
-                "event": "table_updated",
-                "table": {"id": str(order.table_id), "status": "trong"},
-            },
-        )
+        tbl_evt = {
+            "event": "table_updated",
+            "table": {"id": str(order.table_id), "status": "trong"},
+        }
+        await ws_manager.broadcast("kitchen", tbl_evt)
+        await ws_manager.broadcast("pos", tbl_evt)
 
     return {"status": "ok", "order_id": str(order.id)}

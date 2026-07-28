@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { colors } from '../../theme';
+import { colors, font } from '../../theme';
 import AppText from '../ui/AppText';
 
 interface OccupancyProgressProps {
@@ -29,9 +29,9 @@ export default function OccupancyProgress({ trong, coKhach, daDat }: OccupancyPr
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <Icon name="chart-donut" size={18} color={colors.brand.primary} />
-          <AppText variant="sm" weight="bold" color={colors.text.primary}>Mật độ bàn ăn</AppText>
+          <AppText style={{ ...font.sectionTitle, color: colors.text.primary }}>Mật độ bàn ăn</AppText>
         </View>
-        <AppText variant="sm" color={colors.text.secondary}>
+        <AppText style={{ ...font.captionItalic, color: colors.text.secondary }}>
           {coKhach}/{total} bàn đang dùng
         </AppText>
       </View>
@@ -60,15 +60,15 @@ export default function OccupancyProgress({ trong, coKhach, daDat }: OccupancyPr
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.status.success }} />
-          <AppText variant="sm" color={colors.text.secondary}>Trống: {trong}</AppText>
+          <AppText variant="md" color={colors.text.secondary}>Trống: <AppText variant="md" weight="bold" color={colors.text.primary}>{trong}</AppText></AppText>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.brand.primary }} />
-          <AppText variant="sm" color={colors.text.secondary}>Có khách: {coKhach}</AppText>
+          <AppText variant="md" color={colors.text.secondary}>Có khách: <AppText variant="md" weight="bold" color={colors.brand.primary}>{coKhach}</AppText></AppText>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.text.muted }} />
-          <AppText variant="sm" color={colors.text.secondary}>Đã đặt: {daDat}</AppText>
+          <AppText variant="md" color={colors.text.secondary}>Đã đặt: <AppText variant="md" weight="bold" color={colors.text.primary}>{daDat}</AppText></AppText>
         </View>
       </View>
     </View>

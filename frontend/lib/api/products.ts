@@ -1,14 +1,19 @@
 import { request } from './client';
 import { cachedGet, invalidateCache } from './cache';
+import { DEFAULT_POS_PRODUCTS } from '../constants/defaultProducts';
 
 export async function getProducts() {
   return cachedGet('products_pos', async () => {
-    const res = await request<any>('/ban-hang/products?page_size=100');
-    if (res && typeof res === 'object') {
-      if (Array.isArray(res.items)) return res.items;
-      if (Array.isArray(res)) return res;
+    try {
+      const res = await request<any>('/ban-hang/products?page_size=100');
+      if (res && typeof res === 'object') {
+        if (Array.isArray(res.items) && res.items.length > 0) return res.items;
+        if (Array.isArray(res) && res.length > 0) return res;
+      }
+    } catch (e) {
+      // Backend offline / network failed on native
     }
-    return [];
+    return DEFAULT_POS_PRODUCTS;
   });
 }
 

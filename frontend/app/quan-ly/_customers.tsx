@@ -2,38 +2,50 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet, TextInput, Alert, TouchableOpacity, ScrollView, FlatList } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useResponsive } from '../../lib/hooks/useResponsive';
-import { colors, font, formatVND } from '../../lib/theme';
+import { colors, font, formatVND, ss } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
 import type { Customer } from '../../lib/api/client';
 import DataTable, { type Column } from '../../lib/components/ui/DataTable';
 import FormModal from '../../lib/components/ui/FormModal';
+import DetailModal from '../../lib/components/ui/DetailModal';
 import FAB from '../../lib/components/ui/FAB';
 import SearchBar from '../../lib/components/ui/SearchBar';
 import AppText from '../../lib/components/ui/AppText';
 import { TableSkeleton } from '../../lib/components/ui/Skeleton';
-import EmptyState from '../../lib/components/ui/EmptyState';
+import ScreenHeader from '../../lib/components/ui/ScreenHeader';
+import { useSidebar } from '../../lib/context/SidebarContext';
 
 const API = '/api/v1/quan-ly';
 
+export interface CustomerExt extends Customer {
+  total_orders?: number;
+  wallet_balance?: number;
+}
+
+export interface CustomersScreenProps {
+  isSearchOpen?: boolean;
+}
+
 // Generate fallback customers if database table is empty or API offline
-function generateFallbackCustomers(): Customer[] {
+function generateFallbackCustomers(): CustomerExt[] {
   return [
     { id: 'c1', name: 'Nguyễn Văn An', phone: '0987654321', email: 'an.nguyen@gmail.com', address: 'Quận 1, TP.HCM', total_orders: 14, total_spent: 2450000 },
     { id: 'c2', name: 'Trần Thị Bình', phone: '0912345678', email: 'binh.tran@yahoo.com', address: 'Quận 3, TP.HCM', total_orders: 8, total_spent: 1280000 },
     { id: 'c3', name: 'Lê Hoàng Cường', phone: '0903112233', email: 'cuong.le@gmail.com', address: 'Quận 7, TP.HCM', total_orders: 22, total_spent: 4890000 },
     { id: 'c4', name: 'Phạm Minh Dung', phone: '0977889900', email: 'dung.pham@outlook.com', address: 'Bình Thạnh, TP.HCM', total_orders: 5, total_spent: 650000 },
     { id: 'c5', name: 'Vũ Quốc Giang', phone: '0934567890', email: 'giang.vu@gmail.com', address: 'Phú Nhuận, TP.HCM', total_orders: 11, total_spent: 1950000 },
-  ] as Customer[];
+  ] as unknown as CustomerExt[];
 }
 
-export default function CustomersScreen() {
+export default function CustomersScreen({ isSearchOpen }: CustomersScreenProps = {}) {
   const { isWide } = useResponsive();
-  const [customers, setCustomers] = useState<Customer[]>([]);
+  const { openSidebar } = useSidebar();
+  const [customers, setCustomers] = useState<CustomerExt[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
-  const [selected, setSelected] = useState<Customer | null>(null);
+  const [selected, setSelected] = useState<CustomerExt | null>(null);
   const [form, setForm] = useState({ name: '', phone: '', email: '', address: '' });
   const [sortKey, setSortKey] = useState<string>('total_spent');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
@@ -45,20 +57,20 @@ export default function CustomersScreen() {
       const list = Array.isArray(data) ? data : (data?.items || []);
       if (list && list.length > 0) {
         setCustomers(list);
-        setSelected(list[0]);
+        if (isWide) setSelected(list[0]);
       } else {
         const fallbacks = generateFallbackCustomers();
         setCustomers(fallbacks);
-        setSelected(fallbacks[0]);
+        if (isWide) setSelected(fallbacks[0]);
       }
     } catch {
       const fallbacks = generateFallbackCustomers();
       setCustomers(fallbacks);
-      setSelected(fallbacks[0]);
+      if (isWide) setSelected(fallbacks[0]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isWide]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -70,10 +82,27 @@ export default function CustomersScreen() {
     } catch { Alert.alert('Lỗi', 'Không thể lưu khách hàng'); }
   };
 
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+
+  const vipCount = useMemo(() => customers.filter(c => (c.total_spent || 0) >= 5000000).length, [customers]);
+  const regCount = useMemo(() => customers.filter(c => (c.total_spent || 0) > 0 && (c.total_spent || 0) < 5000000).length, [customers]);
+  const newCount = useMemo(() => customers.filter(c => !(c.total_spent)).length, [customers]);
+
   const filtered = useMemo(() => {
-    let arr = search ? customers.filter(c => (c.name?.toLowerCase() || '').includes(search.toLowerCase()) || (c.phone || '').includes(search)) : [...customers];
+    let arr = [...customers];
+    if (statusFilter === 'vip') {
+      arr = arr.filter(c => (c.total_spent || 0) >= 5000000);
+    } else if (statusFilter === 'regular') {
+      arr = arr.filter(c => (c.total_spent || 0) > 0 && (c.total_spent || 0) < 5000000);
+    } else if (statusFilter === 'new') {
+      arr = arr.filter(c => !(c.total_spent));
+    }
+    if (search.trim()) {
+      const q = search.toLowerCase().trim();
+      arr = arr.filter(c => (c.name?.toLowerCase() || '').includes(q) || (c.phone || '').includes(q));
+    }
     return arr;
-  }, [customers, search]);
+  }, [customers, statusFilter, search]);
 
   const handleSortChange = (key: string) => {
     if (key === sortKey) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
@@ -87,15 +116,17 @@ export default function CustomersScreen() {
     return { total, totalSpent, totalVisits };
   }, [customers]);
 
-  const columns: Column<Customer>[] = [
+  const columns: Column<CustomerExt>[] = [
     {
       key: 'name',
       title: 'Khách hàng',
       flex: 1,
       render: (c) => (
         <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }} onPress={() => setSelected(c)}>
-          <View style={[styles.avatarCircle, { backgroundColor: '#EEF2FF', width: 36, height: 36, borderRadius: 18 }]}>
-            <Icon name="account" size={18} color={colors.brand.primary} />
+          <View style={[styles.avatarCircle, { backgroundColor: '#EEF2FF', width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' }]}>
+            <AppText variant="sm" weight="bold" color={colors.brand.primary}>
+              {c.name?.charAt(0)?.toUpperCase() || 'K'}
+            </AppText>
           </View>
           <View style={{ flex: 1 }}>
             <AppText variant="sm" weight="bold" color="#050505" numberOfLines={1}>{c.name}</AppText>
@@ -133,7 +164,6 @@ export default function CustomersScreen() {
       return (
         <View style={styles.panelBox}>
           <View style={styles.panelHeader}>
-            <Icon name="account-group" size={20} color={colors.brand.primary} />
             <AppText variant="md" weight="bold" color="#050505">Thông tin khách hàng</AppText>
           </View>
           <AppText variant="sm" color="#65676B" style={{ textAlign: 'center', marginVertical: 20 }}>
@@ -144,15 +174,19 @@ export default function CustomersScreen() {
     }
     const c = selected;
     return (
-      <View style={styles.panelBox}>
-        <View style={styles.panelHeader}>
-          <Icon name="account-check" size={20} color={colors.brand.primary} />
-          <AppText variant="md" weight="bold" color="#050505">Hồ Sơ Khách Hàng</AppText>
+      <View style={ss.sectionWrap}>
+        <View style={ss.sectionHeader}>
+          <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1, letterSpacing: 0.5 }}>
+            HỒ SƠ KHÁCH HÀNG
+          </AppText>
         </View>
 
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 6 }}>
-          <View style={[styles.avatarCircle, { backgroundColor: '#EEF2FF', width: 52, height: 52, borderRadius: 26 }]}>
-            <Icon name="account" size={28} color={colors.brand.primary} />
+        <View style={{ padding: 10, gap: 10 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+          <View style={[styles.avatarCircle, { backgroundColor: '#EEF2FF', width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center' }]}>
+            <AppText variant="md" weight="bold" color={colors.brand.primary} style={{ fontSize: 22 }}>
+              {c.name?.charAt(0)?.toUpperCase() || 'K'}
+            </AppText>
           </View>
           <View style={{ flex: 1 }}>
             <AppText variant="md" weight="bold" color="#050505">{c.name}</AppText>
@@ -165,12 +199,33 @@ export default function CustomersScreen() {
         <View style={{ gap: 8, backgroundColor: '#F8FAFC', padding: 12, borderRadius: 12 }}>
           {c.email ? <AppText variant="sm" color="#050505">✉️ Email: {c.email}</AppText> : null}
           {c.address ? <AppText variant="sm" color="#050505">📍 Địa chỉ: {c.address}</AppText> : null}
-          <AppText variant="sm" color="#050505">⭐ Hạng khách hàng: Khách hàng Thân Thiết</AppText>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+            <AppText variant="sm" color="#050505">⭐ Phân nhóm:</AppText>
+            <View style={{ backgroundColor: (c.total_spent || 0) > 5000000 ? '#FEF3C7' : '#EFF6FF', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6 }}>
+              <AppText variant="sm" weight="bold" color={(c.total_spent || 0) > 5000000 ? '#D97706' : '#2563EB'} style={{ fontSize: 11 }}>
+                {(c.total_spent || 0) > 5000000 ? '👑 Khách VIP' : (c.total_orders || 0) > 5 ? '🌟 Thân Thiết' : '🆕 Khách Mới'}
+              </AppText>
+            </View>
+          </View>
         </View>
 
         <View style={styles.panelDivider} />
 
+        {/* 💳 Ví trả trước & Tích lũy */}
         <View style={{ gap: 10 }}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#ECFDF5', padding: 10, borderRadius: 8 }}>
+            <View>
+              <AppText variant="sm" color="#065F46">Số dư Ví trả trước</AppText>
+              <AppText variant="md" weight="bold" color="#047857">{formatVND(c.wallet_balance || 0)}</AppText>
+            </View>
+            <TouchableOpacity
+              style={{ backgroundColor: '#10B981', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 6 }}
+              onPress={() => Alert.alert('Nạp tiền ví', `Đã mở giao diện nạp ví cho ${c.name}`)}
+            >
+              <AppText variant="sm" weight="bold" color="#FFFFFF">Nạp tiền</AppText>
+            </TouchableOpacity>
+          </View>
+
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
             <AppText variant="sm" color="#65676B">Tổng chi tiêu tích lũy</AppText>
             <AppText variant="md" weight="bold" color={colors.brand.primary}>{formatVND(c.total_spent || 0)}</AppText>
@@ -194,98 +249,163 @@ export default function CustomersScreen() {
             <AppText variant="sm" weight="bold" color={colors.text.inverse}>Chỉnh sửa</AppText>
           </TouchableOpacity>
         </View>
+        </View>
       </View>
     );
   };
 
-  const renderMobileCustomerCard = ({ item: c }: { item: Customer }) => (
-    <View style={styles.itemMobile}>
-      <TouchableOpacity style={styles.cardHeaderRow} onPress={() => setSelected(c)} activeOpacity={0.8}>
-        <View style={[styles.avatarCircle, { backgroundColor: '#EEF2FF' }]}>
-          <Icon name="account" size={22} color={colors.brand.primary} />
-        </View>
-        <View style={{ flex: 1 }}>
-          <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>{c.name}</AppText>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 }}>
-            <AppText variant="sm" color="#65676B">📱 {c.phone || 'Chưa có SĐT'}</AppText>
-            <AppText variant="sm" color="#65676B">· {c.total_orders || 0} đơn</AppText>
-          </View>
-        </View>
-        <View style={{ alignItems: 'flex-end' }}>
-          <AppText variant="md" weight="bold" color={colors.brand.primary}>{formatVND(c.total_spent || 0)}</AppText>
-          <AppText variant="sm" color="#65676B">Chi tiêu</AppText>
-        </View>
-      </TouchableOpacity>
-
-      <View style={styles.cardActionDivider} />
-
-      <View style={{ flexDirection: 'row', gap: 8, paddingHorizontal: 12, paddingTop: 8 }}>
-        <TouchableOpacity style={styles.panelBtnSecondary} onPress={() => setSelected(c)}>
-          <Icon name="account-details" size={14} color={colors.brand.primary} />
-          <AppText variant="sm" color={colors.brand.primary}>Chi tiết</AppText>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.panelBtnSecondary} onPress={() => { Alert.alert('Khách hàng', `SĐT: ${c.phone || 'Không có'}`); }}>
-          <Icon name="phone" size={14} color={colors.brand.primary} />
-          <AppText variant="sm" weight="bold" color={colors.brand.primary}>Gọi điện</AppText>
-        </TouchableOpacity>
+  const renderMobileCustomerCard = ({ item: c }: { item: CustomerExt }) => (
+    <TouchableOpacity
+      style={ss.listRow}
+      onPress={() => setSelected(c)}
+      activeOpacity={0.7}
+    >
+      <View style={[ss.iconCircleSm, { backgroundColor: '#EEF2FF', width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' }]}>
+        <AppText variant="sm" weight="bold" color={colors.brand.primary}>
+          {c.name?.charAt(0)?.toUpperCase() || 'K'}
+        </AppText>
       </View>
-    </View>
+      <View style={{ flex: 1, paddingLeft: 10, justifyContent: 'center' }}>
+        <AppText variant="sm" weight="normal" color="#0F172A" numberOfLines={1}>{c.name}</AppText>
+        <AppText variant="sm" color="#64748B" numberOfLines={1} style={{ marginTop: 2, fontSize: 11 }}>
+          📱 {c.phone || 'Chưa SĐT'} · {c.total_orders || 0} đơn
+        </AppText>
+      </View>
+      <View style={{ alignItems: 'flex-end', justifyContent: 'center' }}>
+        <AppText variant="sm" weight="bold" color={colors.brand.primary}>{formatVND(c.total_spent || 0)}</AppText>
+        <AppText variant="sm" color="#64748B" style={{ fontSize: 11 }}>Chi tiêu</AppText>
+      </View>
+    </TouchableOpacity>
   );
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+    <View style={{ flex: 1, backgroundColor: colors.surface.app, position: 'relative' }}>
       {/* Top Mobile Header */}
       {!isWide && (
-        <View style={styles.mobileActionRow}>
-          <AppText variant="md" weight="bold" color="#050505">{customers.length} khách hàng CRM</AppText>
-          <TouchableOpacity onPress={() => setShowForm(true)} style={styles.addBtn}>
-            <Icon name="plus" size={16} color={colors.text.inverse} />
-            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm khách</AppText>
-          </TouchableOpacity>
+        isSearchOpen || search.length > 0 ? (
+          <View style={ss.topActionBar}>
+            <View style={ss.searchInputWrap}>
+              <Icon name="magnify" size={20} color="#64748B" />
+              <TextInput
+                value={search}
+                onChangeText={setSearch}
+                placeholder="Tìm khách hàng, SĐT..."
+                placeholderTextColor="#94A3B8"
+                style={ss.searchTextInput}
+                autoFocus
+              />
+              {search.length > 0 && (
+                <TouchableOpacity onPress={() => setSearch('')}>
+                  <Icon name="close-circle" size={18} color="#94A3B8" />
+                </TouchableOpacity>
+              )}
+            </View>
+            <TouchableOpacity onPress={() => setShowForm(true)} style={ss.addBtn}>
+              <Icon name="plus" size={16} color={colors.text.inverse} />
+              <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm khách</AppText>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={ss.mobileActionRow}>
+            <AppText variant="md" weight="bold" color="#050505">{filtered.length} khách hàng</AppText>
+            <TouchableOpacity onPress={() => setShowForm(true)} style={ss.addBtn}>
+              <Icon name="plus" size={16} color={colors.text.inverse} />
+              <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm khách</AppText>
+            </TouchableOpacity>
+          </View>
+        )
+      )}
+
+      {/* ── Toolbar: Customer Segment Filter Chips ────────────────────────── */}
+      <View style={{ width: '100%', marginBottom: 6 }}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={{ width: '100%', flexGrow: 0, height: 44 }}
+          contentContainerStyle={{ alignItems: 'center', flexDirection: 'row', gap: 6, paddingHorizontal: 12 }}
+        >
+          {[
+            { key: 'all', label: `Tất cả (${stats.total})` },
+            { key: 'vip', label: `VIP (${vipCount})` },
+            { key: 'regular', label: `Thành viên (${regCount})` },
+            { key: 'new', label: `Khách mới (${newCount})` },
+          ].map((sItem) => {
+            const active = statusFilter === sItem.key;
+            return (
+              <TouchableOpacity
+                key={sItem.key}
+                onPress={() => setStatusFilter(sItem.key)}
+                style={[ss.filterChip, active && ss.filterChipActive]}
+              >
+                <AppText
+                  variant="sm"
+                  weight="bold"
+                  color={active ? colors.brand.primary : '#334155'}
+                >
+                  {sItem.label}
+                </AppText>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+      </View>
+
+      {/* 📊 Executive KPI Strip (Desktop only) */}
+      {isWide && (
+        <View style={ss.metricContainer}>
+          <View style={ss.metricCard}>
+            <View style={[ss.metricIcon, { backgroundColor: '#EEF2FF' }]}>
+              <AppText variant="sm" weight="bold" color={colors.brand.primary} style={{ fontSize: 11 }}>KH</AppText>
+            </View>
+            <View style={{ flex: 1 }}>
+              <AppText variant="md" weight="bold" color="#050505">{stats.total} khách hàng</AppText>
+              <AppText variant="sm" color="#65676B">Tổng cơ sở dữ liệu</AppText>
+            </View>
+          </View>
+
+          <View style={ss.metricCard}>
+            <View style={[ss.metricIcon, { backgroundColor: '#ECFDF5' }]}>
+              <AppText variant="sm" weight="bold" color={colors.status.success} style={{ fontSize: 11 }}>đ</AppText>
+            </View>
+            <View style={{ flex: 1 }}>
+              <AppText variant="md" weight="bold" color={colors.status.success}>{formatVND(stats.totalSpent)}</AppText>
+              <AppText variant="sm" color="#65676B">Tổng chi tiêu</AppText>
+            </View>
+          </View>
+
+          <View style={ss.metricCard}>
+            <View style={[ss.metricIcon, { backgroundColor: '#FFF7ED' }]}>
+              <AppText variant="sm" weight="bold" color="#F97316" style={{ fontSize: 11 }}>LT</AppText>
+            </View>
+            <View style={{ flex: 1 }}>
+              <AppText variant="md" weight="bold" color="#F97316">{stats.totalVisits} lượt mua</AppText>
+              <AppText variant="sm" color="#65676B">Tổng lượt ghé quán</AppText>
+            </View>
+          </View>
         </View>
       )}
 
-      {/* 📊 Native App Style KPI Widget Cards Strip */}
-      <View style={styles.fbMetricContainer}>
-        <View style={styles.fbMetricCard}>
-          <View style={[styles.fbMetricIcon, { backgroundColor: '#EEF2FF' }]}>
-            <Icon name="account-group" size={20} color={colors.brand.primary} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#050505">{stats.total} khách</AppText>
-            <AppText variant="sm" color="#65676B">Tổng khách hàng</AppText>
-          </View>
+      {isWide && (
+        <View style={{ paddingHorizontal: 12, marginBottom: 8 }}>
+          <SearchBar value={search} onChangeText={setSearch} placeholder="Tìm khách hàng theo tên, số điện thoại..." />
         </View>
+      )}
 
-        <View style={styles.fbMetricCard}>
-          <View style={[styles.fbMetricIcon, { backgroundColor: '#ECFDF5' }]}>
-            <Icon name="currency-usd" size={20} color={colors.status.success} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color={colors.status.success}>{formatVND(stats.totalSpent)}</AppText>
-            <AppText variant="sm" color="#65676B">Tổng chi tiêu</AppText>
-          </View>
-        </View>
-
-        <View style={styles.fbMetricCard}>
-          <View style={[styles.fbMetricIcon, { backgroundColor: '#FFF7ED' }]}>
-            <Icon name="cart-check" size={20} color="#F97316" />
-          </View>
-          <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#F97316">{stats.totalVisits} đơn</AppText>
-            <AppText variant="sm" color="#65676B">Tổng lượt mua</AppText>
-          </View>
-        </View>
-      </View>
-
-      <View style={{ paddingHorizontal: isWide ? 12 : 8, marginBottom: 8 }}>
-        <SearchBar value={search} onChangeText={setSearch} placeholder="Tìm tên hoặc số điện thoại..." />
-      </View>
+      {!isWide && (
+        <DetailModal
+          visible={!!selected}
+          title="Hồ Sơ Khách Hàng"
+          subtitle={selected?.name ? `${selected.name} · ${selected.phone || 'Chưa SĐT'}` : undefined}
+          onClose={() => setSelected(null)}
+        >
+          {renderPanel()}
+        </DetailModal>
+      )}
 
       {isWide ? (
         <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: 12, paddingBottom: 12, gap: 12 }}>
           <View style={{ flex: 0.55 }}>
-            <DataTable<Customer>
+            <DataTable<CustomerExt>
               columns={columns}
               data={filtered}
               getRowId={(c) => c.id}
@@ -303,26 +423,27 @@ export default function CustomersScreen() {
           <View style={{ flex: 0.45 }}>{renderPanel()}</View>
         </View>
       ) : (
-        <FlatList
-          data={filtered}
-          keyExtractor={(c) => c.id}
-          renderItem={renderMobileCustomerCard}
-          contentContainerStyle={{ paddingBottom: 120 }}
-          ListEmptyComponent={
-            loading ? (
-              <TableSkeleton rowCount={5} />
-            ) : (
-              <EmptyState
-                icon="account-off"
-                title="Chưa có khách hàng nào"
-                subtitle="Nhấn + để thêm khách hàng đầu tiên"
-              />
-            )
-          }
-        />
-      )}
+        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 6, paddingTop: 6, gap: 8, paddingBottom: 100 }}>
+          <View style={ss.sectionWrap}>
+            <View style={ss.sectionHeader}>
+              <View style={[ss.iconCircleSm, { backgroundColor: '#EEF2FF' }]}>
+                <Icon name="account-group" size={14} color={colors.brand.primary} />
+              </View>
+              <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1 }}>
+                DANH SÁCH KHÁCH HÀNG ({filtered.length})
+              </AppText>
+            </View>
 
-      {!isWide && <FAB onPress={() => setShowForm(true)} />}
+            <View style={ss.sectionItems}>
+              {filtered.map((c) => (
+                <React.Fragment key={c.id}>
+                  {renderMobileCustomerCard({ item: c })}
+                </React.Fragment>
+              ))}
+            </View>
+          </View>
+        </ScrollView>
+      )}
 
       <FormModal
         visible={showForm}
@@ -369,7 +490,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingVertical: 6,
     backgroundColor: colors.surface.card,
     borderBottomWidth: 1,
     borderBottomColor: colors.border.light,
@@ -379,12 +500,43 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     paddingHorizontal: 14,
-    height: 44,
+    height: 40,
     borderRadius: 999,
     backgroundColor: colors.brand.primary,
   },
 
   /* Facebook Story Highlight Metric Cards Container */
+  metricContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    gap: 6,
+    backgroundColor: colors.surface.card,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
+    marginBottom: 8,
+    flexWrap: 'wrap',
+  },
+  metricCard: {
+    flex: 1,
+    minWidth: 140,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: colors.surface.card,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  metricIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   fbMetricContainer: {
     flexDirection: 'row',
     paddingHorizontal: 12,
@@ -415,6 +567,63 @@ const styles = StyleSheet.create({
     borderRadius: 19,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  topActionBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: colors.surface.card,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border.light,
+  },
+  searchInputWrap: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: '#F1F5F9',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    height: 38,
+  },
+  searchTextInput: {
+    flex: 1,
+    fontSize: 14,
+    color: '#0F172A',
+  },
+  listRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    height: 48,
+    backgroundColor: colors.surface.card,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
+  },
+  iconCircleSm: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sectionWrap: {
+    backgroundColor: colors.surface.card,
+    marginTop: 8,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    backgroundColor: '#F8FAFC',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+  },
+  sectionItems: {
+    backgroundColor: colors.surface.card,
   },
 
   /* 📱 Mobile Full-Width Facebook Feed Card Block */
@@ -502,4 +711,18 @@ const styles = StyleSheet.create({
     ...font.md,
     color: colors.text.primary,
   },
+  pillChip: {
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    backgroundColor: '#F8FAFC',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    alignSelf: 'center',
+  },
+  pillChipActive: {
+    backgroundColor: '#FFF7ED',
+    borderColor: colors.brand.primary,
+  },
 });
+

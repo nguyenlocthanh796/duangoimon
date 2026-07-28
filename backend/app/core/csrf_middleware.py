@@ -12,9 +12,9 @@ ALLOWED_ORIGINS = set(
     if o.strip()
 )
 
-# Regex to support wildcards/subdomains for local, cloudflared, pages.dev, railway, and render
+# Regex to support wildcards/subdomains for local, LAN IPs (192.168.x.x, 10.x.x.x, 172.16-31.x.x), cloudflared, pages.dev, railway, and render
 ALLOWED_ORIGINS_REGEX = re.compile(
-    r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$"
+    r"^https?://(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(?:1[6-9]|2\d|3[01])\.\d+\.\d+)(:\d+)?$"
     r"|^https://[a-z0-9-]+\.trycloudflare\.com$"
     r"|^https://(?:[a-z0-9-]+\.)*pages\.dev$"
     r"|^https://(?:[a-z0-9-]+\.)*up\.railway\.app$"
@@ -44,7 +44,7 @@ async def csrf_middleware(request: Request, call_next):
 
     if origin:
         if origin not in ALLOWED_ORIGINS and not ALLOWED_ORIGINS_REGEX.match(origin):
-            raise HTTPException(status_code=403, detail="CSRF check: invalid Origin")
+            raise HTTPException(status_code=403, detail=f"CSRF check: invalid Origin '{origin}'")
     elif referer:
         allowed = False
         for o in ALLOWED_ORIGINS:
@@ -62,7 +62,7 @@ async def csrf_middleware(request: Request, call_next):
                 if ALLOWED_ORIGINS_REGEX.match(ref_origin):
                     allowed = True
         if not allowed:
-            raise HTTPException(status_code=403, detail="CSRF check: invalid Referer")
+            raise HTTPException(status_code=403, detail=f"CSRF check: invalid Referer '{referer}'")
 
     return await call_next(request)
 

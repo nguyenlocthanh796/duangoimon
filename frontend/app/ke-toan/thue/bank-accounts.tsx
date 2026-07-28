@@ -7,7 +7,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
+
 import { api, BankAccount } from '../../../lib/api';
 import { colors } from '../../../lib/theme';
 import AppText from '../../../lib/components/ui/AppText';
@@ -53,29 +53,28 @@ export default function BankAccountsScreen() {
 
   return (
     <ScrollView
-      style={{ flex: 1, backgroundColor: colors.surface.app }}
-      contentContainerStyle={{ padding: 12, paddingBottom: 60 }}
+      style={{ flex: 1, backgroundColor: '#FFFFFF' }}
+      contentContainerStyle={{ padding: 6, paddingBottom: 60 }}
       showsVerticalScrollIndicator={false}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} />}
     >
       <View style={styles.cardBox}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-          <Icon name="bank" size={24} color={colors.brand.primary} />
-          <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#050505">Tài Khoản Ngân Hàng Kê Khai Thuế</AppText>
-            <AppText variant="sm" color="#65676B">Theo dõi thông báo mẫu 01/BK-STK với Cơ quan Thuế</AppText>
-          </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+          <AppText variant="md" weight="bold" color="#0F172A">Tài Khoản Ngân Hàng Đã Đăng Ký Thuế (Phụ lục II-1)</AppText>
+          <AppText variant="sm" color="#64748B">{accounts.length} tài khoản</AppText>
         </View>
 
-        {accounts.map((acc) => (
-          <View key={acc.id} style={styles.itemRow}>
+        {accounts.map((acc, idx) => (
+          <View key={acc.id || idx} style={styles.itemRow}>
             <View style={styles.avatarBank}>
-              <Icon name="bank" size={20} color={colors.brand.primary} />
+              <AppText variant="sm" weight="bold" color="#2563EB" style={{ fontSize: 10 }}>
+                {acc.bank_name?.split(' ').map((w: string) => w[0]).join('').slice(0, 3).toUpperCase() || 'BNK'}
+              </AppText>
             </View>
             <View style={{ flex: 1 }}>
-              <AppText variant="md" weight="bold" color="#050505">{acc.bank_name}</AppText>
-              <AppText variant="sm" color="#65676B" style={{ marginTop: 2 }}>
-                Số TK: {acc.account_number} · MST: {acc.tax_code}
+              <AppText variant="md" weight="bold" color="#0F172A">{acc.bank_name}</AppText>
+              <AppText variant="sm" color="#64748B" style={{ marginTop: 2 }}>
+                STK: {acc.account_number} · Chủ TK: {(acc as any).account_holder}
               </AppText>
             </View>
             <StatusBadge label="Đã thông báo TCT" severity="success" />
@@ -88,25 +87,25 @@ export default function BankAccountsScreen() {
 
 const styles = StyleSheet.create({
   cardBox: {
-    backgroundColor: colors.surface.card,
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: 10,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: '#E5E9F0',
   },
   itemRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    paddingVertical: 12,
+    gap: 8,
+    paddingVertical: 10,
     borderTopWidth: 1,
-    borderTopColor: colors.border.light,
+    borderTopColor: '#F1F5F9',
   },
   avatarBank: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.brand.primaryBg,
+    width: 32,
+    height: 32,
+    borderRadius: 6,
+    backgroundColor: '#EFF6FF',
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -630,9 +630,9 @@ const styles = StyleSheet.create({
   headCell: { paddingVertical: 12, paddingHorizontal: 12, justifyContent: 'center' },
   headCellActive: { backgroundColor: colors.brand.primaryBg },
   headInner: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  headText: { ...font.smBold, color: colors.text.tableHeader, fontWeight: '600' },
-  headTextActive: { color: colors.brand.primaryDark },
-  headTextCompact: { ...font.smBold, color: colors.text.tableHeader, fontWeight: '600' },
+  headText: { ...font.sm, fontStyle: 'italic', color: colors.text.tableHeader },
+  headTextActive: { color: colors.brand.primaryDark, fontWeight: 'bold' },
+  headTextCompact: { ...font.sm, fontStyle: 'italic', color: colors.text.tableHeader },
   bodyRow: {
     flexDirection: 'row',
     alignItems: 'center',

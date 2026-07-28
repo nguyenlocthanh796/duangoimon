@@ -90,10 +90,10 @@ export default function ModifierSheet({
           }}
         >
           <View style={{ flex: 1 }}>
-            <AppText variant="lg" color={colors.text.primary} style={{ marginBottom: 4 }}>
+            <AppText variant="md" weight="bold" color={colors.text.primary} style={{ marginBottom: 4 }}>
               {modalItem?.name}
             </AppText>
-            <AppText variant="lg" weight="bold" color={colors.brand.primary}>{formatPrice(modalPrice)}</AppText>
+            <AppText variant="md" weight="bold" color={colors.brand.primary}>{formatPrice(modalPrice)}</AppText>
           </View>
           <TouchableOpacity
             onPress={onClose}
@@ -159,7 +159,8 @@ export default function ModifierSheet({
                                 <MaterialCommunityIcons name="minus" size={22} color={colors.brand.primary} />
               </TouchableOpacity>
               <AppText
-                variant="lg"
+                variant="md"
+                weight="bold"
                 color={colors.text.primary}
                 style={{
                   width: 60,
@@ -228,7 +229,7 @@ export default function ModifierSheet({
                         }}
                       >
                         <AppText
-                          variant="lg"
+                          variant="md"
                           weight="bold"
                           color={sel ? colors.brand.primary : colors.text.body}
                         >
@@ -432,6 +433,8 @@ export default function ModifierSheet({
           <View style={{ flexDirection: 'row', gap: 10 }}>
             <TouchableOpacity
               onPress={onClose}
+              delayPressIn={0}
+              activeOpacity={0.7}
               style={{
                 flex: 1,
                 paddingVertical: 14,
@@ -444,6 +447,8 @@ export default function ModifierSheet({
             </TouchableOpacity>
             <TouchableOpacity
               onPress={isEditMode ? onSave : onAdd}
+              delayPressIn={0}
+              activeOpacity={0.85}
               style={{
                 flex: 2.5,
                 borderRadius: 8,
@@ -471,7 +476,7 @@ export default function ModifierSheet({
                   size={18}
                   color={colors.text.inverse}
                 />
-                <AppText variant="md" color={colors.text.inverse}>
+                <AppText variant="md" weight="bold" color={colors.text.inverse}>
                   {isEditMode ? 'Cập nhật' : 'Thêm vào giỏ'} · {formatPrice(modalPrice * modalQty)}
                 </AppText>
               </LinearGradient>

@@ -1,16 +1,18 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import {
   View, StyleSheet, TouchableOpacity, ScrollView, TextInput,
   ActivityIndicator, Alert,
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { colors, font } from '../../lib/theme';
+import { colors, font, ss } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import { api } from '../../lib/api';
 import type { Table } from '../../lib/types';
 import FormModal from '../../lib/components/ui/FormModal';
+import DetailModal from '../../lib/components/ui/DetailModal';
 import AppText from '../../lib/components/ui/AppText';
+import SummaryRow from '../../lib/components/layout/SummaryRow';
 import { TableSkeleton } from '../../lib/components/ui/Skeleton';
 
 interface FormState { name: string; area: string; capacity: string; }
@@ -27,7 +29,7 @@ const AREA_FILTER_CONFIG: Array<{ key: string; label: string; icon: string }> = 
 
 const FORM_AREAS = ['Trong nhà', 'VIP', 'Ngoài Trời', 'Tầng 1', 'Tầng 2'];
 
-export default function TablesScreen() {
+export default function TablesScreen({ isSearchOpen }: { isSearchOpen?: boolean } = {}) {
   const { isWide } = useResponsive();
   const [tables, setTables] = useState<Table[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,6 +38,10 @@ export default function TablesScreen() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [selectedArea, setSelectedArea] = useState('Tất cả');
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const selectedTable = useMemo(() => tables.find(t => t.id === selectedId), [tables, selectedId]);
 
   const load = useCallback(async () => {
     try {
@@ -94,50 +100,58 @@ export default function TablesScreen() {
     return tables.filter(t => (t.area || 'Trong nhà') === areaKey).length;
   };
 
-  const filteredTables = selectedArea === 'Tất cả'
-    ? tables
-    : tables.filter(t => (t.area || 'Trong nhà') === selectedArea);
+  const filteredTables = useMemo(() => {
+    let list = selectedArea === 'Tất cả'
+      ? tables
+      : tables.filter(t => (t.area || 'Trong nhà') === selectedArea);
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      list = list.filter(t =>
+        t.name.toLowerCase().includes(q) ||
+        (t.area || 'Trong nhà').toLowerCase().includes(q)
+      );
+    }
+    return list;
+  }, [tables, selectedArea, searchQuery]);
 
   const renderMobileCard = (table: Table) => {
     const isOccupied = table.status === 'co_khach';
+    const statusColor = isOccupied ? colors.brand.primary : colors.status.success;
+    const statusBg = isOccupied ? '#FFF7ED' : '#ECFDF5';
+
     return (
-      <View style={styles.tableCardFbFullWidth} key={table.id}>
-        {/* Card Header */}
-        <View style={styles.cardHeaderRow}>
-          <View style={[styles.tableAvatarCircle, { backgroundColor: isOccupied ? colors.brand.primaryBg : '#ECFDF5' }]}>
-            <Icon name="table-furniture" size={20} color={isOccupied ? colors.brand.primary : colors.status.success} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <AppText variant="md" weight="bold" color="#050505">{table.name}</AppText>
-              <View style={[styles.statusChip, { backgroundColor: isOccupied ? colors.brand.primaryBg : '#ECFDF5' }]}>
-                <View style={[styles.statusDot, { backgroundColor: isOccupied ? colors.brand.primary : colors.status.success }]} />
-                <AppText variant="sm" weight="bold" color={isOccupied ? colors.brand.primary : colors.status.success}>
-                  {isOccupied ? 'Có khách' : 'Bàn trống'}
-                </AppText>
-              </View>
-            </View>
-            <AppText variant="sm" color="#65676B" style={{ marginTop: 2 }}>
-              Khu vực: {table.area || 'Trong nhà'} · Sức chứa: {table.capacity || 4} người
-            </AppText>
-          </View>
-          <TouchableOpacity style={styles.actionCircleBtn} onPress={() => openEdit(table)}>
-            <Icon name="dots-horizontal" size={20} color="#050505" />
-          </TouchableOpacity>
+      <View style={ss.listRow} key={table.id}>
+        <View style={[styles.tableAvatarCircle, { backgroundColor: statusBg, alignItems: 'center', justifyContent: 'center' }]}>
+          <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: statusColor }} />
         </View>
 
-        {/* Facebook Equal Bottom Action Bar */}
-        <View style={styles.cardActionBar}>
-          <TouchableOpacity style={styles.cardActionItem} onPress={() => openEdit(table)}>
-            <Icon name="pencil-outline" size={16} color={colors.brand.primary} />
-            <AppText variant="sm" weight="bold" color={colors.brand.primary}>Chỉnh sửa bàn</AppText>
-          </TouchableOpacity>
-          <View style={styles.cardActionDivider} />
-          <TouchableOpacity style={styles.cardActionItem} onPress={() => openEdit(table)}>
-            <Icon name="swap-horizontal" size={16} color={colors.text.secondary} />
-            <AppText variant="sm" weight="bold" color={colors.text.secondary}>Đổi khu vực</AppText>
-          </TouchableOpacity>
+        <TouchableOpacity
+          style={{ flex: 1, paddingRight: 8 }}
+          onPress={() => setSelectedId(table.id)}
+          activeOpacity={0.7}
+        >
+          <AppText variant="sm" color="#0F172A" numberOfLines={1}>
+            {table.name}
+          </AppText>
+          <AppText variant="sm" color="#64748B" numberOfLines={1}>
+            Khu vực: {table.area || 'Trong nhà'} · Sức chứa: {table.capacity || 4} người
+          </AppText>
+        </TouchableOpacity>
+
+        <View style={{ alignItems: 'flex-end', marginRight: 8 }}>
+          <View style={{ backgroundColor: statusBg, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 }}>
+            <AppText variant="sm" color={statusColor}>
+              {isOccupied ? 'Có khách' : 'Bàn trống'}
+            </AppText>
+          </View>
         </View>
+
+        <TouchableOpacity
+          style={ss.miniActionBtn}
+          onPress={() => setSelectedId(table.id)}
+        >
+          <Icon name="eye-outline" size={16} color={colors.brand.primary} />
+        </TouchableOpacity>
       </View>
     );
   };
@@ -150,7 +164,7 @@ export default function TablesScreen() {
       </View>
       <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, marginVertical: 8 }}>
         <View style={{ marginBottom: 12 }}>
-          <AppText variant="sm" weight="bold" color={colors.text.primary} style={{ marginBottom: 6 }}>Tên bàn *</AppText>
+          <AppText variant="sm" color={colors.text.primary} style={{ marginBottom: 6 }}>Tên bàn *</AppText>
           <TextInput
             style={styles.fieldInput}
             placeholder="VD: A01, Bàn 1..."
@@ -161,7 +175,7 @@ export default function TablesScreen() {
         </View>
 
         <View style={{ marginBottom: 12 }}>
-          <AppText variant="sm" weight="bold" color={colors.text.primary} style={{ marginBottom: 6 }}>Khu vực</AppText>
+          <AppText variant="sm" color={colors.text.primary} style={{ marginBottom: 6 }}>Khu vực</AppText>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 6 }}>
             {FORM_AREAS.map(a => (
               <TouchableOpacity
@@ -183,8 +197,8 @@ export default function TablesScreen() {
         </View>
 
         <View style={{ marginBottom: 12 }}>
-          <AppText variant="sm" weight="bold" color={colors.text.primary} style={{ marginBottom: 6 }}>Sức chứa (người)</AppText>
-          <View style={{ flexDirection: 'row', gap: 6 }}>
+          <AppText variant="sm" color={colors.text.primary} style={{ marginBottom: 6 }}>Sức chứa (người)</AppText>
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
             {[2, 4, 6, 8, 10, 12].map(n => (
               <TouchableOpacity
                 key={n}
@@ -209,55 +223,72 @@ export default function TablesScreen() {
     </View>
   );
 
-  return (
-    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
-      {/* Top Action Bar on Mobile */}
+  const renderHeader = () => (
+    <View style={{ gap: 8 }}>
+      {/* Top Mobile Action Bar */}
       {!isWide && (
-        <View style={styles.mobileActionRow}>
-          <AppText variant="md" weight="bold" color="#050505">{tables.length} bàn ăn</AppText>
-          <TouchableOpacity onPress={openAdd} style={styles.addBtn}>
-            <Icon name="plus" size={16} color={colors.text.inverse} />
-            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm bàn</AppText>
+        <View style={ss.topActionBar}>
+          <View style={ss.searchInputWrap}>
+            <Icon name="magnify" size={16} color="#64748B" />
+            <TextInput
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder="Tìm tên bàn, khu vực..."
+              placeholderTextColor="#94A3B8"
+              style={ss.searchTextInput}
+            />
+          </View>
+
+          <TouchableOpacity style={ss.addBtn} onPress={openAdd} activeOpacity={0.8}>
+            <Icon name="plus" size={16} color="#FFFFFF" />
+            <AppText variant="sm" weight="bold" color="#FFFFFF">
+              Thêm bàn
+            </AppText>
           </TouchableOpacity>
         </View>
       )}
 
-      {/* Facebook Story Highlight Metric Cards */}
-      <View style={styles.fbMetricContainer}>
-        <View style={styles.fbMetricCard}>
-          <View style={[styles.fbMetricIcon, { backgroundColor: colors.surface.app }]}>
-            <Icon name="table-furniture" size={18} color="#050505" />
+      {/* KPI Cards Strip */}
+      <View style={ss.metricContainer}>
+        <View style={ss.metricCard}>
+          <View style={[ss.iconCircleSm, { backgroundColor: '#EEF2FF' }]}>
+            <Icon name="table-furniture" size={14} color={colors.brand.primary} />
           </View>
-          <View>
-            <AppText variant="md" weight="bold" color="#050505">{tables.length}</AppText>
-            <AppText variant="sm" color="#65676B">Tổng bàn</AppText>
+          <View style={{ flex: 1 }}>
+            <AppText variant="md" weight="bold" color="#0F172A">{tables.length}</AppText>
+            <AppText variant="sm" color="#64748B">Tổng số bàn</AppText>
           </View>
         </View>
 
-        <View style={styles.fbMetricCard}>
-          <View style={[styles.fbMetricIcon, { backgroundColor: '#ECFDF5' }]}>
-            <Icon name="check-circle" size={18} color={colors.status.success} />
+        <View style={ss.metricCard}>
+          <View style={[ss.iconCircleSm, { backgroundColor: '#ECFDF5' }]}>
+            <Icon name="check-circle-outline" size={14} color={colors.status.success} />
           </View>
-          <View>
+          <View style={{ flex: 1 }}>
             <AppText variant="md" weight="bold" color={colors.status.success}>{counts.trong}</AppText>
-            <AppText variant="sm" color="#65676B">Bàn trống</AppText>
+            <AppText variant="sm" color="#64748B">Bàn trống</AppText>
           </View>
         </View>
 
-        <View style={styles.fbMetricCard}>
-          <View style={[styles.fbMetricIcon, { backgroundColor: colors.brand.primaryBg }]}>
-            <Icon name="account-group" size={18} color={colors.brand.primary} />
+        <View style={ss.metricCard}>
+          <View style={[ss.iconCircleSm, { backgroundColor: '#FFF7ED' }]}>
+            <Icon name="account-group-outline" size={14} color={colors.brand.primary} />
           </View>
-          <View>
+          <View style={{ flex: 1 }}>
             <AppText variant="md" weight="bold" color={colors.brand.primary}>{counts.co_khach}</AppText>
-            <AppText variant="sm" color="#65676B">Có khách</AppText>
+            <AppText variant="sm" color="#64748B">Đang phục vụ</AppText>
           </View>
         </View>
       </View>
 
-      {/* Area filter tabs - Facebook Sub-Filter Chips with Icon & Count */}
-      <View style={styles.filterRow}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingHorizontal: 12 }}>
+      {/* Area filter chips */}
+      <View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={{ flexGrow: 0 }}
+          contentContainerStyle={{ alignItems: 'center', flexDirection: 'row', gap: 6 }}
+        >
           {AREA_FILTER_CONFIG.map((item) => {
             const active = selectedArea === item.key;
             const count = getAreaCount(item.key);
@@ -266,109 +297,104 @@ export default function TablesScreen() {
                 key={item.key}
                 onPress={() => setSelectedArea(item.key)}
                 activeOpacity={0.7}
-                style={[styles.areaTab, active && styles.areaTabActive]}
+                style={[
+                  ss.filterChip,
+                  active && ss.filterChipActive,
+                ]}
               >
-                <Icon
-                  name={item.icon as any}
-                  size={15}
-                  color={active ? colors.brand.primary : '#65676B'}
-                />
                 <AppText
                   variant="sm"
-                  color={active ? colors.brand.primary : '#050505'}
-                  weight={active ? 'bold' : 'normal'}
+                  color={active ? colors.brand.primary : '#334155'}
                 >
-                  {item.label}
+                  {item.label} ({count})
                 </AppText>
-                <View style={[styles.countBadge, active && styles.countBadgeActive]}>
-                  <AppText
-                    variant="sm"
-                    color={active ? colors.brand.primary : '#65676B'}
-                    weight="bold"
-                    >                    {count}
-                  </AppText>
-                </View>
               </TouchableOpacity>
             );
           })}
         </ScrollView>
       </View>
+    </View>
+  );
 
+  return (
+    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
       {isWide ? (
-        <View style={{ flex: 1, flexDirection: 'row', padding: 12, gap: 12 }}>
-          <View style={{ flex: 0.55 }}>
-            {loading ? (
-              <TableSkeleton rowCount={5} />
-            ) : (
-              <ScrollView contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', padding: '1%' }}>
-                {filteredTables.map(table => {
-                  const isOccupied = table.status === 'co_khach';
-                  return (
-                    <TouchableOpacity
-                      key={table.id}
-                      onPress={() => openEdit(table)}
-                      activeOpacity={0.8}
-                      style={{
-                        width: '31.3%',
-                        aspectRatio: 1,
-                        margin: '1%',
-                        borderRadius: 16,
-                        backgroundColor: isOccupied ? colors.brand.primaryBg : colors.surface.card,
-                        padding: 12,
-                        justifyContent: 'space-between',
-                      }}
-                    >
-                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <AppText variant="md" weight="bold" color={isOccupied ? colors.brand.primary : '#050505'}>{table.name}</AppText>
-                        {isOccupied && (
-                          <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.brand.primary }} />
-                        )}
-                      </View>
+        <View style={{ flex: 1 }}>
+          {renderHeader()}
+          <View style={{ flex: 1, flexDirection: 'row', padding: 12, gap: 12 }}>
+            <View style={{ flex: 0.55 }}>
+              {loading ? (
+                <TableSkeleton rowCount={5} />
+              ) : (
+                <ScrollView contentContainerStyle={{ flexDirection: 'row', flexWrap: 'wrap', padding: '1%' }}>
+                  {filteredTables.map(table => {
+                    const isOccupied = table.status === 'co_khach';
+                    return (
+                      <TouchableOpacity
+                        key={table.id}
+                        onPress={() => openEdit(table)}
+                        activeOpacity={0.8}
+                        style={{
+                          width: '31.3%',
+                          aspectRatio: 1,
+                          margin: '1%',
+                          borderRadius: 16,
+                          backgroundColor: isOccupied ? colors.brand.primaryBg : colors.surface.card,
+                          padding: 12,
+                          justifyContent: 'space-between',
+                        }}
+                      >
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                          <AppText variant="md" weight="bold" color={isOccupied ? colors.brand.primary : '#050505'}>{table.name}</AppText>
+                          {isOccupied && (
+                            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.brand.primary }} />
+                          )}
+                        </View>
 
-                      <View>
-                        <AppText variant="sm" color={isOccupied ? colors.brand.primary : colors.text.muted}>
-                          {isOccupied ? 'Có khách' : 'Trống'}
-                        </AppText>
-                        <AppText variant="sm" color={colors.text.secondary}>
-                          {table.area || 'Trong nhà'}
-                        </AppText>
-                      </View>
-                    </TouchableOpacity>
-                  );
-                })}
-              </ScrollView>
-            )}
-          </View>
-          <View style={{ flex: 0.45 }}>
-            {showForm ? renderInlineForm() : (
-              <View style={styles.panelBox}>
-                <View style={styles.panelHeader}>
-                  <Icon name="table-furniture" size={18} color={colors.brand.primary} />
-                  <AppText variant="md" weight="bold" color="#050505">Thống kê sơ đồ bàn</AppText>
+                        <View>
+                          <AppText variant="sm" color={isOccupied ? colors.brand.primary : colors.text.muted}>
+                            {isOccupied ? 'Có khách' : 'Trống'}
+                          </AppText>
+                          <AppText variant="sm" color={colors.text.secondary}>
+                            {table.area || 'Trong nhà'}
+                          </AppText>
+                        </View>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </ScrollView>
+              )}
+            </View>
+            <View style={{ flex: 0.45 }}>
+              {showForm ? renderInlineForm() : (
+                <View style={styles.panelBox}>
+                  <View style={styles.panelHeader}>
+                    <AppText variant="md" weight="bold" color="#050505">Thống kê sơ đồ bàn</AppText>
+                  </View>
+                  <View style={{ flexDirection: 'row', gap: 8 }}>
+                    <View style={{ flex: 1, alignItems: 'center' }}>
+                      <AppText variant="md" weight="bold" color="#050505">{tables.length}</AppText>
+                      <AppText variant="sm" color={colors.text.muted}>Tổng số bàn</AppText>
+                    </View>
+                    <View style={styles.barDivider} />
+                    <View style={{ flex: 1, alignItems: 'center' }}>
+                      <AppText variant="md" weight="bold" color={colors.status.success}>{counts.trong}</AppText>
+                      <AppText variant="sm" color={colors.text.muted}>Bàn trống</AppText>
+                    </View>
+                    <View style={styles.barDivider} />
+                    <View style={{ flex: 1, alignItems: 'center' }}>
+                      <AppText variant="md" weight="bold" color={colors.brand.primary}>{counts.co_khach}</AppText>
+                      <AppText variant="sm" color={colors.text.muted}>Có khách</AppText>
+                    </View>
+                  </View>
+                  <View style={styles.panelDivider} />
+                  <TouchableOpacity style={styles.saveBtn} onPress={openAdd}>
+                    <Icon name="plus" size={16} color={colors.text.inverse} />
+                    <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm bàn mới</AppText>
+                  </TouchableOpacity>
                 </View>
-                <View style={{ flexDirection: 'row', gap: 8 }}>
-                  <View style={{ flex: 1, alignItems: 'center' }}>
-                    <AppText variant="md" weight="bold" color="#050505">{tables.length}</AppText>
-                    <AppText variant="sm" color={colors.text.muted}>Tổng số bàn</AppText>
-                  </View>
-                  <View style={styles.barDivider} />
-                  <View style={{ flex: 1, alignItems: 'center' }}>
-                    <AppText variant="md" weight="bold" color={colors.status.success}>{counts.trong}</AppText>
-                    <AppText variant="sm" color={colors.text.muted}>Bàn trống</AppText>
-                  </View>
-                  <View style={styles.barDivider} />
-                  <View style={{ flex: 1, alignItems: 'center' }}>
-                    <AppText variant="md" weight="bold" color={colors.brand.primary}>{counts.co_khach}</AppText>
-                    <AppText variant="sm" color={colors.text.muted}>Có khách</AppText>
-                  </View>
-                </View>
-                <View style={styles.panelDivider} />
-                <TouchableOpacity style={styles.saveBtn} onPress={openAdd}>
-                  <Icon name="plus" size={16} color={colors.text.inverse} />
-                  <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm bàn mới</AppText>
-                </TouchableOpacity>
-              </View>
-            )}
+              )}
+            </View>
           </View>
         </View>
       ) : (
@@ -376,49 +402,96 @@ export default function TablesScreen() {
           {loading ? (
             <TableSkeleton rowCount={5} />
           ) : (
-            <ScrollView contentContainerStyle={{ paddingBottom: 24 }} showsVerticalScrollIndicator={false}>
-              {filteredTables.map(renderMobileCard)}
+            <ScrollView contentContainerStyle={{ paddingHorizontal: 6, paddingTop: 6, gap: 8, paddingBottom: 100 }} showsVerticalScrollIndicator={false}>
+              {renderHeader()}
+
+              <View style={ss.sectionWrap}>
+                <View style={ss.sectionHeader}>
+                  <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1, letterSpacing: 0.5 }}>
+                    DANH SÁCH SƠ ĐỒ BÀN ({filteredTables.length})
+                  </AppText>
+                </View>
+
+                <View style={{ paddingHorizontal: 10, paddingVertical: filteredTables.length ? 4 : 16 }}>
+                  {filteredTables.map(renderMobileCard)}
+                </View>
+              </View>
             </ScrollView>
           )}
         </View>
       )}
 
       {!isWide && (
-        <FormModal
-          visible={showForm}
-          title={editingId ? 'Cập nhật bàn' : 'Thêm bàn mới'}
-          onClose={() => setShowForm(false)}
-          onSave={handleSave}
-          saveLabel={editingId ? 'Cập nhật' : 'Thêm bàn'}
-          saving={saving}
-        >
-          <View style={{ gap: 10, paddingTop: 4 }}>
-            <AppText variant="sm" weight="bold" color={colors.text.primary}>Tên bàn *</AppText>
-            <TextInput
-              style={styles.fieldInput}
-              placeholder="VD: A01, Bàn 1..."
-              placeholderTextColor={colors.text.muted}
-              value={form.name}
-              onChangeText={v => setForm(f => ({ ...f, name: v }))}
-            />
-            <AppText variant="sm" weight="bold" color={colors.text.primary}>Khu vực</AppText>
-            <TextInput
-              style={styles.fieldInput}
-              placeholder="Nhập khu vực..."
-              placeholderTextColor={colors.text.muted}
-              value={form.area}
-              onChangeText={v => setForm(f => ({ ...f, area: v }))}
-            />
-          </View>
-        </FormModal>
+        <>
+          <FormModal
+            visible={showForm}
+            title={editingId ? 'Cập nhật bàn' : 'Thêm bàn mới'}
+            onClose={() => setShowForm(false)}
+            onSave={handleSave}
+            saveLabel={editingId ? 'Cập nhật' : 'Thêm bàn'}
+            saving={saving}
+          >
+            <View style={{ gap: 10, paddingTop: 4 }}>
+              <AppText variant="sm" weight="bold" color={colors.text.primary}>Tên bàn *</AppText>
+              <TextInput
+                style={styles.fieldInput}
+                placeholder="VD: A01, Bàn 1..."
+                placeholderTextColor={colors.text.muted}
+                value={form.name}
+                onChangeText={v => setForm(f => ({ ...f, name: v }))}
+              />
+              <AppText variant="sm" weight="bold" color={colors.text.primary}>Khu vực</AppText>
+              <TextInput
+                style={styles.fieldInput}
+                placeholder="Nhập khu vực..."
+                placeholderTextColor={colors.text.muted}
+                value={form.area}
+                onChangeText={v => setForm(f => ({ ...f, area: v }))}
+              />
+            </View>
+          </FormModal>
+
+          <DetailModal
+            visible={!!selectedTable}
+            title={selectedTable?.name || ''}
+            subtitle={selectedTable ? `Khu vực: ${selectedTable.area || 'Trong nhà'} · Sức chứa: ${selectedTable.capacity || 4} người` : undefined}
+            onClose={() => setSelectedId(null)}
+            onEdit={selectedTable ? () => { const t = selectedTable; setSelectedId(null); openEdit(t); } : undefined}
+          >
+            {selectedTable && (
+              <View style={{ gap: 12 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <AppText variant="sm" color="#64748B">Tên bàn</AppText>
+                  <AppText variant="sm" color="#0F172A">{selectedTable.name}</AppText>
+                </View>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <AppText variant="sm" color="#64748B">Khu vực bài trí</AppText>
+                  <AppText variant="sm" color="#0F172A">{selectedTable.area || 'Trong nhà'}</AppText>
+                </View>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <AppText variant="sm" color="#64748B">Sức chứa tối đa</AppText>
+                  <AppText variant="sm" color="#0F172A">{selectedTable.capacity || 4} người</AppText>
+                </View>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <AppText variant="sm" color="#64748B">Trạng thái hiện tại</AppText>
+                  <View style={{ backgroundColor: selectedTable.status === 'co_khach' ? colors.brand.primaryBg : '#ECFDF5', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 4 }}>
+                    <AppText variant="sm" color={selectedTable.status === 'co_khach' ? colors.brand.primary : colors.status.success}>
+                      {selectedTable.status === 'co_khach' ? 'Có khách' : 'Bàn trống'}
+                    </AppText>
+                  </View>
+                </View>
+              </View>
+            )}
+          </DetailModal>
+        </>
       )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 10, backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light },
-  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 36, borderRadius: 999, backgroundColor: colors.brand.primary },
+  mobileActionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 8, gap: 6, backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#E2E8F0' },
+  addBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, height: 38, borderRadius: 6, backgroundColor: colors.brand.primary },
 
   /* Facebook Story Highlight Metric Cards Container */
   fbMetricContainer: {
@@ -450,20 +523,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
-  filterRow: { marginVertical: 4, marginBottom: 8 },
+  filterRow: { marginBottom: 6 },
   areaTab: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 14,
-    height: 36,
-    borderRadius: 999,
-    backgroundColor: colors.surface.card,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    backgroundColor: '#F8FAFC',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    alignSelf: 'center',
   },
   areaTabActive: {
-    backgroundColor: colors.brand.primaryBg,
-    borderWidth: 1,
-    borderColor: '#FFEDD5',
+    backgroundColor: '#FFF7ED',
+    borderColor: colors.brand.primary,
   },
   countBadge: {
     paddingHorizontal: 6,

@@ -73,22 +73,22 @@ export default React.memo(function TableCard({ table, onPress, selected, isWide,
 
   const cardW = cardWidth || 150;
   
-  // Title can be slightly larger
-  const titleFontSize = cardW >= 160 ? scale(22) : cardW >= 130 ? scale(18) : scale(15);
-  // Price needs to be smaller to fit long numbers like "1.500.000 đ"
-  const priceFontSize = cardW >= 160 ? scale(18) : cardW >= 130 ? scale(15) : scale(13);
+  // Title font size optimized for mobile POS card layout: 18px on iPad, 16px on iPhone
+  const titleFontSize = isWide ? 18 : 16;
+  // Price font size: strict 14px (md) bold across all card sizes
+  const priceFontSize = 14;
   
   const titleToken = {
-    fontFamily: `${'BeVietnamPro'}_600SemiBold`,
+    fontFamily: 'BeVietnamPro_700Bold',
     fontSize: titleFontSize,
-    fontWeight: '600' as const,
+    fontWeight: '700' as const,
     lineHeight: Math.round(titleFontSize * 1.25),
   };
   
   const priceToken = {
-    fontFamily: `${'BeVietnamPro'}_600SemiBold`,
+    fontFamily: 'BeVietnamPro_700Bold',
     fontSize: priceFontSize,
-    fontWeight: '600' as const,
+    fontWeight: '700' as const,
     lineHeight: Math.round(priceFontSize * 1.25),
   };
 
@@ -132,6 +132,7 @@ export default React.memo(function TableCard({ table, onPress, selected, isWide,
           onPressOut={onPressOut}
           onLongPress={handleLongPress}
           delayLongPress={400}
+          delayPressIn={0}
           style={{
             width: '100%',
             aspectRatio: isWide ? 1 : 0.95,

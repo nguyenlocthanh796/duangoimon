@@ -5,32 +5,36 @@ import { font, colors } from '../../theme';
 interface AppTextProps extends TextProps {
   variant?: 'sm' | 'md' | 'lg';
   weight?: 'normal' | 'bold';
+  italic?: boolean;
   color?: string;
   children: React.ReactNode;
 }
 
 /**
- * AppText — 3-size typography system.
- *
- *   sm = 13pt (iPad 16) — labels, badges, timestamps, ghi chú
- *   md = 16pt (iPad 20) — body, buttons, product names, cart items
- *   lg = 24pt (iPad 30) — totals, stat numbers, page titles
- *
- * Triết lý: nhấn mạnh bằng MÀU + NỀN. Không hardcode fontSize.
+ * AppText — Mobile & iPad Native typography system.
+ * Strict 3 Font Sizes Design System:
+ * - sm = 13px (Small: Caption, Hint, Badge)
+ * - md = 16px (Medium: Body, Title, Button, Item Name, Price, Card Titles, KPI Metrics)
+ * - lg = 18px (Large: EXCLUSIVE for Screen Header Title & Modal Title ONLY)
  */
 export default function AppText({
   variant = 'md',
   weight = 'normal',
+  italic = false,
   color = colors.text.primary,
   style,
   children,
+  allowFontScaling = false,
+  maxFontSizeMultiplier = 1.15,
   ...props
 }: AppTextProps) {
   const getFontToken = () => {
     switch (variant) {
       case 'sm':
+        if (italic) return font.captionItalic;
         return weight === 'bold' ? font.smBold : font.sm;
       case 'md':
+        if (italic) return font.mdItalic;
         return weight === 'bold' ? font.mdBold : font.md;
       case 'lg':
         return font.lg;
@@ -40,7 +44,12 @@ export default function AppText({
   };
 
   return (
-    <Text style={[getFontToken(), { color }, style]} {...props}>
+    <Text
+      allowFontScaling={allowFontScaling}
+      maxFontSizeMultiplier={maxFontSizeMultiplier}
+      style={[getFontToken(), { color }, italic ? { fontStyle: 'italic' } : undefined, style]}
+      {...props}
+    >
       {children}
     </Text>
   );

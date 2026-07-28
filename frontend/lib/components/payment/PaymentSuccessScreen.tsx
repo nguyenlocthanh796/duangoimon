@@ -35,6 +35,7 @@ export default function PaymentSuccessScreen({
 
   return (
     <SafeAreaView
+      edges={['top', 'left', 'right']}
       style={{
         flex: 1,
         backgroundColor: 'rgba(0,0,0,0.4)',

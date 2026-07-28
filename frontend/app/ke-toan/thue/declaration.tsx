@@ -7,7 +7,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
+
 import { api } from '../../../lib/api';
 import { colors } from '../../../lib/theme';
 import AppText from '../../../lib/components/ui/AppText';
@@ -64,34 +64,36 @@ export default function DeclarationScreen() {
 
   return (
     <ScrollView
-      style={{ flex: 1, backgroundColor: colors.surface.app }}
-      contentContainerStyle={{ padding: 12, paddingBottom: 60 }}
+      style={{ flex: 1, backgroundColor: '#FFFFFF' }}
+      contentContainerStyle={{ padding: 6, paddingBottom: 60 }}
       showsVerticalScrollIndicator={false}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => load(true)} />}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={() => load(true)}
+          tintColor={colors.brand.primary}
+        />
+      }
     >
       <View style={styles.cardBox}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-          <Icon name="file-document-edit" size={24} color={colors.brand.primary} />
-          <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#050505">Tờ Kê Khai Thuế & Hồ Sơ Điện Tử T-VAN</AppText>
-            <AppText variant="sm" color="#65676B">Chuẩn định dạng XML Tổng cục Thuế năm 2026</AppText>
-          </View>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+          <AppText variant="md" weight="bold" color="#0F172A">Danh Sách Tờ Khai Thuế & Bảng Kê (TT 40/2021)</AppText>
+          <AppText variant="sm" color="#64748B">{declarations.length} kỳ kê khai</AppText>
         </View>
 
-        {declarations.map((item) => (
-          <View key={item.id} style={styles.itemRow}>
+        {declarations.map((item, idx) => (
+          <View key={item.id || idx} style={styles.itemRow}>
             <View style={styles.badgeForm}>
               <AppText variant="sm" weight="bold" color={colors.brand.primary}>{item.form}</AppText>
             </View>
             <View style={{ flex: 1 }}>
-              <AppText variant="md" weight="bold" color="#050505">{item.name || item.form}</AppText>
-              <AppText variant="sm" color="#65676B" style={{ marginTop: 2 }}>
-                Kỳ: {item.period || 'Quý 2/2026'} · Hạn: {item.due_date || '20/07/2026'}
+              <AppText variant="md" weight="bold" color="#0F172A" numberOfLines={1}>{item.name}</AppText>
+              <AppText variant="sm" color="#64748B" style={{ marginTop: 2 }}>
+                Kỳ: {item.period} · Hạn nộp: {item.due_date}
               </AppText>
             </View>
-            <TouchableOpacity style={styles.xmlBtn} onPress={() => handleExportXml(item)}>
-              <Icon name="file-code-outline" size={16} color={colors.brand.primary} />
-              <AppText variant="sm" weight="bold" color={colors.brand.primary}>Xuất XML</AppText>
+            <TouchableOpacity style={styles.xmlBtn} onPress={() => handleExportXml(item)} activeOpacity={0.7}>
+              <AppText variant="sm" weight="bold" color="#F97316">Xuất XML</AppText>
             </TouchableOpacity>
           </View>
         ))}
@@ -102,35 +104,35 @@ export default function DeclarationScreen() {
 
 const styles = StyleSheet.create({
   cardBox: {
-    backgroundColor: colors.surface.card,
-    borderRadius: 16,
-    padding: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: 10,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: '#E5E9F0',
   },
   itemRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    paddingVertical: 12,
+    gap: 8,
+    paddingVertical: 10,
     borderTopWidth: 1,
-    borderTopColor: colors.border.light,
+    borderTopColor: '#F1F5F9',
   },
   badgeForm: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
-    backgroundColor: colors.brand.primaryBg,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    backgroundColor: '#FFF7ED',
   },
   xmlBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 12,
-    height: 36,
-    borderRadius: 999,
-    backgroundColor: colors.brand.primaryBg,
+    gap: 4,
+    paddingHorizontal: 10,
+    height: 32,
+    borderRadius: 6,
+    backgroundColor: '#FFF7ED',
     borderWidth: 1,
-    borderColor: '#FFEDD5',
+    borderColor: '#FED7AA',
   },
 });

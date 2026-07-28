@@ -1,13 +1,5 @@
-import React, { useRef, useState, useCallback } from 'react';
-import {
-  ScrollView,
-  TouchableOpacity,
-  View,
-  Animated,
-  NativeSyntheticEvent,
-  NativeScrollEvent,
-  StyleSheet,
-} from 'react-native';
+import React from 'react';
+import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors } from '../../theme/colors';
 import AppText from '../ui/AppText';
@@ -15,7 +7,8 @@ import AppText from '../ui/AppText';
 export interface ModuleTab {
   id: string;
   name: string;
-  icon: string;
+  icon?: string;
+  count?: number;
 }
 
 interface ModuleTabsProps {
@@ -25,35 +18,11 @@ interface ModuleTabsProps {
 }
 
 export default function ModuleTabs({ tabs, activeTab, onSelectTab }: ModuleTabsProps) {
-  const scrollRef = useRef<ScrollView>(null);
-  const [, setIsScrollable] = useState(false);
-  const [, setAtEnd] = useState(false);
-  const fadeAnim = useRef(new Animated.Value(1)).current;
-
-  const handleScroll = useCallback(
-    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      const { contentOffset, contentSize, layoutMeasurement } = e.nativeEvent;
-      const scrollable = contentSize.width > layoutMeasurement.width;
-      const endReached = contentOffset.x + layoutMeasurement.width >= contentSize.width - 5;
-      setIsScrollable(scrollable);
-      setAtEnd(endReached);
-      Animated.timing(fadeAnim, {
-        toValue: !scrollable || endReached ? 0 : 1,
-        duration: 200,
-        useNativeDriver: true,
-      }).start();
-    },
-    [fadeAnim]
-  );
-
   return (
-    <View style={styles.fbTabNavContainer}>
+    <View style={styles.tabNavWrap}>
       <ScrollView
-        ref={scrollRef}
         horizontal
         showsHorizontalScrollIndicator={false}
-        onScroll={handleScroll}
-        scrollEventThrottle={100}
         contentContainerStyle={styles.scrollContent}
       >
         {tabs.map((tab) => {
@@ -62,26 +31,36 @@ export default function ModuleTabs({ tabs, activeTab, onSelectTab }: ModuleTabsP
             <TouchableOpacity
               key={tab.id}
               onPress={() => onSelectTab(tab.id)}
+              delayPressIn={0}
               activeOpacity={0.7}
-              style={styles.fbTabItem}
+              style={[styles.pillBtn, active && styles.pillBtnActive]}
             >
-              <View style={styles.fbTabInner}>
+              {tab.icon && (
                 <Icon
                   name={tab.icon as any}
-                  size={18}
-                  color={active ? colors.brand.primary : '#65676B'}
+                  size={16}
+                  color={active ? colors.brand.primary : colors.text.secondary}
                 />
-                <AppText
-                  variant="sm"
-                  weight={active ? 'bold' : 'normal'}
-                  color={active ? colors.brand.primary : '#65676B'}
-                >
-                  {tab.name}
-                </AppText>
-              </View>
-
-              {/* Facebook Active Bottom Indicator Line */}
-              {active && <View style={styles.fbActiveIndicator} />}
+              )}
+              <AppText
+                variant="sm"
+                weight={active ? 'bold' : 'normal'}
+                color={active ? colors.brand.primary : colors.text.primary}
+              >
+                {tab.name}
+              </AppText>
+              {tab.count !== undefined && (
+                <View style={[styles.countBadge, active && styles.countBadgeActive]}>
+                  <AppText
+                    variant="sm"
+                    weight="bold"
+                    color={active ? colors.brand.primary : colors.text.secondary}
+                    style={{ fontSize: 11 }}
+                  >
+                    {tab.count}
+                  </AppText>
+                </View>
+              )}
             </TouchableOpacity>
           );
         })}
@@ -91,37 +70,39 @@ export default function ModuleTabs({ tabs, activeTab, onSelectTab }: ModuleTabsP
 }
 
 const styles = StyleSheet.create({
-  fbTabNavContainer: {
-    backgroundColor: colors.surface.card,
-    flexGrow: 0,
-    flexShrink: 0,
+  tabNavWrap: {
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 6,
+    paddingHorizontal: 6,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border.light,
+    borderBottomColor: '#E5E9F0',
   },
   scrollContent: {
-    paddingHorizontal: 8,
+    gap: 6,
     alignItems: 'center',
   },
-  fbTabItem: {
-    position: 'relative',
-    height: 44,
-    paddingHorizontal: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  fbTabInner: {
+  pillBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
+    paddingHorizontal: 10,
+    height: 32,
+    borderRadius: 6,
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1,
+    borderColor: '#E5E9F0',
   },
-  fbActiveIndicator: {
-    position: 'absolute',
-    bottom: 0,
-    left: 8,
-    right: 8,
-    height: 3,
-    backgroundColor: colors.brand.primary,
-    borderTopLeftRadius: 3,
-    borderTopRightRadius: 3,
+  pillBtnActive: {
+    backgroundColor: '#FFF7ED',
+    borderColor: '#F97316',
+  },
+  countBadge: {
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+    borderRadius: 10,
+    backgroundColor: '#E2E8F0',
+  },
+  countBadgeActive: {
+    backgroundColor: '#FFEDD5',
   },
 });

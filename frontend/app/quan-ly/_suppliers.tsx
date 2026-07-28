@@ -6,12 +6,14 @@ import {
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useResponsive } from '../../lib/hooks/useResponsive';
-import { colors, font } from '../../lib/theme';
+import { colors, font, ss } from '../../lib/theme';
 import AppText from '../../lib/components/ui/AppText';
 import SearchBar from '../../lib/components/ui/SearchBar';
 import EmptyState from '../../lib/components/ui/EmptyState';
 import FormModal from '../../lib/components/ui/FormModal';
 import FAB from '../../lib/components/ui/FAB';
+import ScreenHeader from '../../lib/components/ui/ScreenHeader';
+import DetailModal from '../../lib/components/ui/DetailModal';
 import { request } from '../../lib/api/client';
 
 function generateFallbackSuppliers() {
@@ -23,7 +25,7 @@ function generateFallbackSuppliers() {
   ];
 }
 
-export default function SuppliersScreen() {
+export default function SuppliersScreen({ isSearchOpen }: { isSearchOpen?: boolean } = {}) {
   const { isWide } = useResponsive();
   const [suppliers, setSuppliers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -134,38 +136,31 @@ export default function SuppliersScreen() {
     const isSelected = selectedId === item.id;
 
     if (!isWide) {
-      // 📱 Facebook Mobile Feed Card (Full Width)
+      // 📱 Compact 48px POS Row Layout
       return (
-        <View style={s.itemMobile}>
-          <TouchableOpacity style={s.cardHeaderRow} onPress={() => setSelectedId(isSelected ? null : item.id)} activeOpacity={0.8}>
-            <View style={[s.avatarCircle, { backgroundColor: '#EEF2FF' }]}>
-              <Icon name="truck-delivery" size={20} color={colors.brand.primary} />
-            </View>
-            <View style={{ flex: 1 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>{item.name}</AppText>
-                <AppText variant="sm" color="#65676B">({item.code || 'NCC'})</AppText>
-              </View>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2 }}>
-                {item.contact_person ? <AppText variant="sm" color="#65676B">👤 {item.contact_person}</AppText> : null}
-                {item.phone ? <AppText variant="sm" color="#65676B">📱 {item.phone}</AppText> : null}
-              </View>
-              {item.address ? <AppText variant="sm" color="#65676B" numberOfLines={1} style={{ marginTop: 2 }}>📍 {item.address}</AppText> : null}
-            </View>
+        <View style={ss.listRow}>
+          <View style={s.posCodeBadge}>
+            <AppText variant="sm" weight="normal" color="#64748B">
+              {item.code || 'NCC'}
+            </AppText>
+          </View>
+
+          <TouchableOpacity
+            style={{ flex: 1, paddingRight: 8 }}
+            onPress={() => setSelectedId(isSelected ? null : item.id)}
+            activeOpacity={0.7}
+          >
+            <AppText variant="sm" weight="bold" color="#0F172A" numberOfLines={1}>
+              {item.name}
+            </AppText>
+            <AppText variant="sm" color="#64748B" numberOfLines={1}>
+              {item.contact_person ? `👤 ${item.contact_person} · ` : ''}📱 {item.phone || 'Chưa có SĐT'}
+            </AppText>
           </TouchableOpacity>
 
-          <View style={s.cardActionDivider} />
-
-          <View style={{ flexDirection: 'row', gap: 8, paddingHorizontal: 12, paddingTop: 8 }}>
-            <TouchableOpacity style={s.panelBtnSecondary} onPress={() => openEdit(item)}>
-              <Icon name="pencil" size={14} color={colors.brand.primary} />
-              <AppText variant="sm" weight="bold" color={colors.brand.primary}>Chỉnh sửa</AppText>
-            </TouchableOpacity>
-            <TouchableOpacity style={s.panelBtnDanger} onPress={() => deleteSupplier(item.id)}>
-              <Icon name="trash-can-outline" size={14} color={colors.status.danger} />
-              <AppText variant="sm" color={colors.status.danger}>Xóa</AppText>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity style={ss.miniActionBtn} onPress={() => openEdit(item)}>
+            <Icon name="pencil" size={16} color={colors.brand.primary} />
+          </TouchableOpacity>
         </View>
       );
     }
@@ -178,8 +173,10 @@ export default function SuppliersScreen() {
         activeOpacity={0.7}
       >
         <View style={s.cardTop}>
-          <View style={s.cardIcon}>
-            <Icon name="truck-delivery" size={18} color={colors.brand.primary} />
+          <View style={[s.cardIcon, { alignItems: 'center', justifyContent: 'center' }]}>
+            <AppText variant="sm" weight="bold" color={colors.brand.primary} style={{ fontSize: 12 }}>
+              {item.code?.slice(0, 3) || 'NCC'}
+            </AppText>
           </View>
           <View style={{ flex: 1, marginLeft: 10 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -200,19 +197,31 @@ export default function SuppliersScreen() {
   const renderDetailPanel = () => {
     if (!selectedItem) {
       return (
-        <View style={s.detailEmpty}>
-          <Icon name="truck-outline" size={40} color={colors.text.muted} />
-          <AppText variant="sm" color={colors.text.muted} style={{ textAlign: 'center' }}>
-            Chọn một nhà cung cấp từ danh sách để xem chi tiết liên hệ
+        <View style={ss.detailPanelEmpty}>
+          <AppText variant="md" weight="bold" color="#050505">
+            Chi Tiết Nhà Cung Cấp
           </AppText>
+          <AppText variant="sm" color="#65676B" style={{ textAlign: 'center' }}>
+            Chọn một nhà cung cấp từ danh sách bên trái để xem chi tiết liên hệ
+          </AppText>
+          <TouchableOpacity style={ss.panelCta} onPress={openAdd}>
+            <Icon name="plus" size={18} color="#FFF" />
+            <AppText variant="sm" weight="bold" color="#FFF">
+              Thêm nhà cung cấp mới
+            </AppText>
+          </TouchableOpacity>
         </View>
       );
     }
     const item = selectedItem;
     return (
-      <View style={s.detailPanel}>
+      <View style={ss.detailPanel}>
         <View style={s.detailHeader}>
-          <Icon name="truck-delivery" size={24} color={colors.brand.primary} />
+          <View style={[s.cardIcon, { alignItems: 'center', justifyContent: 'center' }]}>
+            <AppText variant="sm" weight="bold" color={colors.brand.primary} style={{ fontSize: 12 }}>
+              {item.code?.slice(0, 3) || 'NCC'}
+            </AppText>
+          </View>
           <View style={{ flex: 1 }}>
             <AppText variant="md" weight="bold" color="#050505">{item.name}</AppText>
             <AppText variant="sm" color={colors.text.secondary}>Mã nhà cung cấp: {item.code || 'N/A'}</AppText>
@@ -233,11 +242,11 @@ export default function SuppliersScreen() {
         </View>
 
         <View style={s.detailActions}>
-          <TouchableOpacity style={s.panelBtnSecondary} onPress={() => openEdit(item)}>
+          <TouchableOpacity style={ss.panelBtnSecondary} onPress={() => openEdit(item)}>
             <Icon name="pencil" size={16} color={colors.brand.primary} />
             <AppText variant="sm" weight="bold" color={colors.brand.primary}>Chỉnh sửa</AppText>
           </TouchableOpacity>
-          <TouchableOpacity style={s.panelBtnDanger} onPress={() => deleteSupplier(item.id)}>
+          <TouchableOpacity style={ss.panelBtnDanger} onPress={() => deleteSupplier(item.id)}>
             <Icon name="trash-can-outline" size={16} color={colors.status.danger} />
             <AppText variant="sm" color={colors.status.danger}>Xóa</AppText>
           </TouchableOpacity>
@@ -248,53 +257,68 @@ export default function SuppliersScreen() {
 
   return (
     <View style={s.container}>
-      {/* Top Mobile Header */}
-      {!isWide && (
-        <View style={s.mobileActionRow}>
-          <AppText variant="md" weight="bold" color="#050505">{suppliers.length} nhà cung cấp</AppText>
-          <TouchableOpacity onPress={openAdd} style={s.addBtn}>
-            <Icon name="plus" size={16} color={colors.text.inverse} />
-            <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm NCC</AppText>
+      {/* Unified Top Action Bar: Search Input + Add Button */}
+      <View style={ss.topActionBar}>
+        <View style={ss.searchInputWrap}>
+          <Icon name="magnify" size={20} color="#64748B" />
+          <TextInput
+            value={search}
+            onChangeText={setSearch}
+            placeholder="Tìm NCC, mã, SĐT..."
+            placeholderTextColor="#94A3B8"
+            style={ss.searchTextInput}
+          />
+          {search.length > 0 && (
+            <TouchableOpacity onPress={() => setSearch('')}>
+              <Icon name="close-circle" size={18} color="#94A3B8" />
+            </TouchableOpacity>
+          )}
+        </View>
+
+        <TouchableOpacity style={ss.addBtn} onPress={openAdd} activeOpacity={0.8}>
+          <Icon name="plus" size={18} color="#FFFFFF" />
+          <AppText variant="sm" weight="bold" color="#FFFFFF">
+            Thêm NCC
+          </AppText>
+        </TouchableOpacity>
+      </View>
+
+      {/* Unified Horizontal Category Chips Filter */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={{ flexGrow: 0, height: 46 }}
+        contentContainerStyle={ss.filterChipsContainer}
+      >
+        <TouchableOpacity
+          onPress={() => setSearch('')}
+          style={[ss.filterChip, !search && ss.filterChipActive]}
+        >
+          <AppText
+            variant="sm"
+            weight="bold"
+            color={!search ? colors.brand.primary : '#334155'}
+          >
+            Tất cả ({suppliers.length})
+          </AppText>
+        </TouchableOpacity>
+
+        {['Thực phẩm tươi', 'Đồ khô & Gia vị', 'Bao bì & Ly tách', 'Thiết bị'].map((groupName) => (
+          <TouchableOpacity
+            key={groupName}
+            onPress={() => setSearch(search === groupName ? '' : groupName)}
+            style={[ss.filterChip, search === groupName && ss.filterChipActive]}
+          >
+            <AppText
+              variant="sm"
+              weight="bold"
+              color={search === groupName ? colors.brand.primary : '#334155'}
+            >
+              {groupName}
+            </AppText>
           </TouchableOpacity>
-        </View>
-      )}
-
-      {/* 📊 Native App Style KPI Widget Cards Strip */}
-      <View style={s.fbMetricContainer}>
-        <View style={s.fbMetricCard}>
-          <View style={[s.fbMetricIcon, { backgroundColor: '#EEF2FF' }]}>
-            <Icon name="truck-delivery" size={20} color={colors.brand.primary} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#050505">{suppliers.length} đối tác</AppText>
-            <AppText variant="sm" color="#65676B">Tổng nhà cung cấp</AppText>
-          </View>
-        </View>
-
-        <View style={s.fbMetricCard}>
-          <View style={[s.fbMetricIcon, { backgroundColor: '#ECFDF5' }]}>
-            <Icon name="check-decagram" size={20} color={colors.status.success} />
-          </View>
-          <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color={colors.status.success}>Đã xác minh</AppText>
-            <AppText variant="sm" color="#65676B">Hợp đồng active</AppText>
-          </View>
-        </View>
-
-        <View style={s.fbMetricCard}>
-          <View style={[s.fbMetricIcon, { backgroundColor: '#FFF7ED' }]}>
-            <Icon name="star" size={20} color="#F97316" />
-          </View>
-          <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#F97316">Đánh giá 5★</AppText>
-            <AppText variant="sm" color="#65676B">Chất lượng hàng</AppText>
-          </View>
-        </View>
-      </View>
-
-      <View style={{ paddingHorizontal: 12, marginBottom: 8 }}>
-        <SearchBar value={search} onChangeText={setSearch} placeholder="Tìm nhà cung cấp theo tên, mã, SĐT..." />
-      </View>
+        ))}
+      </ScrollView>
 
       {isWide ? (
         <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: 12, paddingBottom: 12, gap: 12 }}>
@@ -322,28 +346,58 @@ export default function SuppliersScreen() {
           <View style={{ flex: 0.45 }}>{renderDetailPanel()}</View>
         </View>
       ) : (
-        <FlatList
-          data={filtered}
-          keyExtractor={item => item.id}
-          renderItem={renderCard}
-          contentContainerStyle={{ paddingBottom: 120 }}
-          showsVerticalScrollIndicator={false}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-          ListEmptyComponent={
-            loading ? (
-              <TableSkeleton rowCount={5} />
-            ) : (
-              <EmptyState
-                icon="truck-off"
-                title="Chưa có nhà cung cấp nào"
-                subtitle="Nhấn + Thêm NCC để tiếp nhận đối tác mới"
-              />
-            )
-          }
-        />
+        <View style={{ flex: 1 }}>
+          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 6, paddingTop: 6, gap: 8, paddingBottom: 100 }}>
+            <View style={ss.sectionWrap}>
+              <View style={ss.sectionHeader}>
+                <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1, letterSpacing: 0.5 }}>
+                  DANH SÁCH NHÀ CUNG CẤP ({filtered.length})
+                </AppText>
+              </View>
+
+              <View style={ss.sectionItems}>
+                {filtered.map(item => (
+                  <React.Fragment key={item.id}>
+                    {renderCard({ item })}
+                  </React.Fragment>
+                ))}
+              </View>
+            </View>
+          </ScrollView>
+        </View>
       )}
 
-      {!isWide && <FAB onPress={openAdd} />}
+      {/* Mobile Detail Modal */}
+      {!isWide && (
+        <DetailModal
+          visible={!!selectedItem}
+          title={selectedItem?.name || 'Chi tiết nhà cung cấp'}
+          subtitle={selectedItem ? `SĐT: ${selectedItem.phone || 'N/A'}` : undefined}
+          onClose={() => setSelectedId(null)}
+          onEdit={selectedItem ? () => { const item = selectedItem; openEdit(item); setSelectedId(null); } : undefined}
+          onDelete={selectedItem ? () => {
+            const item = selectedItem;
+            Alert.alert('Xác nhận', `Xóa nhà cung cấp "${item.name}"?`, [
+              { text: 'Hủy', style: 'cancel' },
+              {
+                text: 'Xóa',
+                style: 'destructive',
+                onPress: async () => {
+                  try {
+                    await request(`/api/v1/quan-ly/suppliers/${item.id}`, { method: 'DELETE' });
+                    setSelectedId(null);
+                    loadData();
+                  } catch {
+                    Alert.alert('Lỗi', 'Không thể xóa nhà cung cấp');
+                  }
+                },
+              },
+            ]);
+          } : undefined}
+        >
+          {renderDetailPanel()}
+        </DetailModal>
+      )}
 
       <FormModal
         visible={showForm}
@@ -368,14 +422,14 @@ export default function SuppliersScreen() {
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface.app },
+  container: { flex: 1, backgroundColor: colors.surface.app, position: 'relative' },
 
   mobileActionRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingVertical: 6,
     backgroundColor: colors.surface.card,
     borderBottomWidth: 1,
     borderBottomColor: colors.border.light,
@@ -397,9 +451,6 @@ const s = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     gap: 8,
-    backgroundColor: colors.surface.card,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border.light,
     marginBottom: 8,
     flexWrap: 'wrap',
   },
@@ -452,27 +503,6 @@ const s = StyleSheet.create({
     backgroundColor: colors.border.light,
     marginTop: 10,
   },
-  panelBtnSecondary: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    height: 44,
-    borderRadius: 999,
-    backgroundColor: colors.brand.primaryBg,
-  },
-  panelBtnDanger: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    height: 44,
-    borderRadius: 999,
-    backgroundColor: '#FEE2E2',
-  },
-
   /* 💻 Wide Screen Card */
   cardWide: {
     backgroundColor: colors.surface.card,
@@ -485,35 +515,25 @@ const s = StyleSheet.create({
   cardTop: { flexDirection: 'row', alignItems: 'center' },
   cardIcon: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#EEF2FF', alignItems: 'center', justifyContent: 'center' },
 
-  /* Right Detail Panel */
-  detailPanel: {
-    backgroundColor: colors.surface.card,
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    gap: 12,
-  },
-  detailEmpty: {
-    backgroundColor: colors.surface.card,
-    borderRadius: 16,
-    padding: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 12,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
+  /* Detail-specific */
   detailHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   detailBody: { gap: 8 },
   detailActions: { flexDirection: 'row', gap: 10, marginTop: 10 },
   input: {
     height: 44,
     borderWidth: 1,
-    borderColor: colors.border.default,
+    borderColor: '#CBD5E1',
     borderRadius: 8,
     paddingHorizontal: 12,
     ...font.md,
-    color: colors.text.primary,
+    color: '#0F172A',
+    backgroundColor: '#FFFFFF',
+  },
+  posCodeBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    backgroundColor: colors.brand.primaryBg,
+    marginRight: 10,
   },
 });

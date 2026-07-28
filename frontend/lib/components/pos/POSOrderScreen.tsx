@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../../theme';
 import { useSidebar } from '../../context/SidebarContext';
 import { useTableOrder } from '../../hooks/useTableOrder';
+import { usePOSSettings } from '../../hooks/usePOSSettings';
 import CategoryTabs from './CategoryTabs';
 import ProductGrid from './ProductGrid';
 import CartPanel from './CartPanel';
@@ -19,6 +20,7 @@ interface POSOrderScreenProps {
 
 export default function POSOrderScreen({ tableId, tableName, onClose }: POSOrderScreenProps) {
   const { openSidebar } = useSidebar();
+  const { settings } = usePOSSettings();
   const { width: SCREEN_WIDTH } = useWindowDimensions();
   const isWide = SCREEN_WIDTH > 768;
   const breakpoint =
@@ -58,7 +60,7 @@ export default function POSOrderScreen({ tableId, tableName, onClose }: POSOrder
 
   return (
     <SafeAreaView
-      edges={['left', 'right', 'bottom']}
+      edges={['left', 'right']}
       style={{ flex: 1, backgroundColor: colors.surface.app }}
     >
       <OrderHeader
@@ -96,6 +98,7 @@ export default function POSOrderScreen({ tableId, tableName, onClose }: POSOrder
               onQuickAdd={ord.quickAdd}
               onQuickSubtract={ord.quickSubtract}
               getItemCartCount={ord.getItemCartCount}
+              menuLayoutMode={settings.menuLayoutMode}
             />
           </View>
           <View style={{ flex: 3, backgroundColor: colors.surface.card }}>
@@ -141,6 +144,7 @@ export default function POSOrderScreen({ tableId, tableName, onClose }: POSOrder
             onQuickAdd={ord.quickAdd}
             onQuickSubtract={ord.quickSubtract}
             getItemCartCount={ord.getItemCartCount}
+            menuLayoutMode={settings.menuLayoutMode}
           />
           <MobileCartBar
             itemCount={ord.itemCount}

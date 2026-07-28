@@ -74,6 +74,15 @@ export const shape = {
     headerHeight: 48,
     cellPadding: 8,
   },
+  // Standard Header Tokens - single source of truth across mobile & tablet
+  header: {
+    heightMobile: 44,
+    heightTablet: 52,
+    btnMobile: 36,
+    btnTablet: 40,
+    iconMobile: 18,
+    iconTablet: 20,
+  },
   // Shared control/form tokens – keep touch targets >= 44px on iPad
   control: {
     minTouch: 44,

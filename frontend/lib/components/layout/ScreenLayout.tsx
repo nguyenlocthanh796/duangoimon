@@ -49,7 +49,7 @@ export default function ScreenLayout({
   const content = scrollable ? (
     <ScrollView
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={[{ paddingHorizontal: pad.screen, paddingBottom: 40, gap: pad.gap }, contentContainerStyle]}
+      contentContainerStyle={[{ paddingHorizontal: pad.screen, paddingBottom: 16, gap: pad.gap }, contentContainerStyle]}
       refreshControl={
         onRefresh ? (
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand.primary} />
@@ -59,13 +59,13 @@ export default function ScreenLayout({
       {children}
     </ScrollView>
   ) : (
-    <View style={[{ flex: 1, paddingHorizontal: pad.screen, paddingBottom: 40, gap: pad.gap }, contentContainerStyle]}>
+    <View style={[{ flex: 1, paddingHorizontal: pad.screen, paddingBottom: 16, gap: pad.gap }, contentContainerStyle]}>
       {children}
     </View>
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['left', 'right', 'bottom']}>
+    <SafeAreaView style={styles.container} edges={['left', 'right']}>
       {title && (
         <UnifiedHeader
           icon={icon}

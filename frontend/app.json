@@ -2,6 +2,7 @@
   "expo": {
     "name": "POS Pro",
     "slug": "pos-pro",
+    "owner": "nguyenlocthanh",
     "version": "1.0.0",
     "orientation": "default",
     "icon": "./assets/icon.png",
@@ -12,7 +13,10 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.posa.pospro"
+      "bundleIdentifier": "app.armadillo9591.grizzly1520",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -30,6 +34,12 @@
       "expo-font",
       "expo-splash-screen",
       "expo-image"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "d05814b7-24b5-4b85-99a7-df7017563b4b"
+      }
+    }
   }
 }

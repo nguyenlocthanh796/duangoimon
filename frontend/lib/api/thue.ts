@@ -21,6 +21,8 @@ export interface ProfileStatus {
   tier: 'N1' | 'N2' | 'N3' | 'N4';
   tier_label: string;
   revenue_ytd: number;
+  revenueYtd?: number;
+  nextDeadline?: string | null;
   pct_of_1ty: number;
   threshold_alert_sent: boolean;
   registration_status: string;

@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { api } from '../../lib/api';
 import { logger } from '../../lib/logger';
+import { getApiBaseUrl } from '../../lib/api/serverConfig';
 import { colors, palette, font, formatPrice } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import { useAuth } from '../../lib/context/AuthContext';
@@ -73,6 +74,7 @@ export default function KitchenScreen() {
   const { openSidebar } = useSidebar();
   const { userRole, isInitialized, token } = useAuth();
   const { isWide } = useResponsive();
+  const insets = useSafeAreaInsets();
   const router = useRouter();
 
   const [allOrders, setAllOrders] = useState<TicketOrder[]>([]);
@@ -160,9 +162,10 @@ export default function KitchenScreen() {
       if (!isMounted.current) return;
       setWsStatus('connecting');
       try {
-        const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-        const wsHost = isLocal ? `ws://${window.location.hostname}:8000` : 'wss://pos-quanan-backend.onrender.com';
-        const url = `${wsHost}/ws/kitchen${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+        const httpUrl = getApiBaseUrl();
+        const wsProto = httpUrl.startsWith('https') ? 'wss' : 'ws';
+        const hostAndPort = httpUrl.replace(/^https?:\/\//, '').replace(/\/api\/v1\/?$/, '');
+        const url = `${wsProto}://${hostAndPort}/ws/kitchen${token ? `?token=${encodeURIComponent(token)}` : ''}`;
         const socket = new WebSocket(url);
         socket.onopen = () => {
           if (isMounted.current) setWsStatus('connected');
@@ -259,15 +262,17 @@ export default function KitchenScreen() {
       <UnifiedHeader
         icon="fridge-industrial-outline"
         title="Bếp"
-        subtitle={`Cập nhật lúc ${formatTime(lastUpdate)} · tự động 30s`}
+        subtitle={isWide ? `Cập nhật lúc ${formatTime(lastUpdate)} · tự động 30s` : undefined}
         onMenuPress={openSidebar}
         right={
-          <View style={{ flexDirection: 'row', gap: 16, alignItems: 'center' }}>
+          <View style={{ flexDirection: 'row', gap: isWide ? 12 : 6, alignItems: 'center' }}>
             <TouchableOpacity
               onPress={() => setSoundEnabled((prev) => !prev)}
+              delayPressIn={0}
+              activeOpacity={0.7}
               style={{
-                width: 44,
-                height: 44,
+                width: isWide ? 44 : 36,
+                height: isWide ? 44 : 36,
                 borderRadius: 8,
                 backgroundColor: soundEnabled ? colors.brand.primary : colors.surface.disabled,
                 alignItems: 'center',
@@ -283,13 +288,15 @@ export default function KitchenScreen() {
             <View
               style={{
                 backgroundColor: colors.surface.disabled,
-                paddingHorizontal: 12,
-                height: 44,
+                paddingHorizontal: isWide ? 12 : 8,
+                height: isWide ? 44 : 36,
                 justifyContent: 'center',
                 borderRadius: 8,
               }}
             >
-              <AppText variant="md" weight="bold" color={colors.text.primary}>{allOrders.length} đơn</AppText>
+              <AppText variant="sm" weight="bold" color={colors.text.secondary}>
+                {allOrders.length} đơn
+              </AppText>
             </View>
             <TouchableOpacity
               onPress={fetchOrders}
@@ -313,12 +320,12 @@ export default function KitchenScreen() {
         <View
           style={{
             flexDirection: 'row',
-            paddingHorizontal: 4,
-            paddingVertical: 8,
+            paddingHorizontal: 12,
+            paddingVertical: 10,
             backgroundColor: colors.surface.card,
             borderBottomWidth: 1,
             borderBottomColor: colors.border.default,
-            gap: 8,
+            gap: 6,
           }}
         >
           {COLUMNS.map((col) => {
@@ -396,7 +403,7 @@ export default function KitchenScreen() {
           </View>
         ) : (
           /* Mobile: single column based on activeTab */
-          <View style={{ flex: 1, paddingHorizontal: 4, paddingTop: 4 }}>
+          <View style={{ flex: 1, paddingHorizontal: 4, paddingTop: 4, paddingBottom: Math.max(8, insets.bottom) }}>
             {COLUMNS.filter((col) => col.id === activeTab).map((col) => (
               <KanbanColumn
                 key={col.id}

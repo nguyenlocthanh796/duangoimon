@@ -1,15 +1,12 @@
 'use client';
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { CLOUDFLARE_TUNNEL_BASE } from '../api/serverConfig';
+import { getApiBaseUrl } from '../api/serverConfig';
 
 function getWsUrl(): string {
-  if (typeof window !== 'undefined' && window.location) {
-    const host = window.location.hostname;
-    if (host === 'localhost' || host === '127.0.0.1') {
-      return `ws://${host}:8000/ws/kitchen`;
-    }
-  }
-  return 'wss://pos-quanan-backend.onrender.com/ws/kitchen';
+  const httpUrl = getApiBaseUrl();
+  const wsProto = httpUrl.startsWith('https') ? 'wss' : 'ws';
+  const hostAndPort = httpUrl.replace(/^https?:\/\//, '').replace(/\/api\/v1\/?$/, '');
+  return `${wsProto}://${hostAndPort}/ws/kitchen`;
 }
 
 export type OrderEvent =
