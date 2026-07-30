@@ -8,8 +8,8 @@ import Constants from 'expo-constants';
 const SERVER_URL_KEY = 'pos_custom_server_url_v1';
 let _cachedCustomUrl: string | null = null;
 
-// ── Cloudflare Tunnel Base (single source of truth) ─────────────────────
-export const CLOUDFLARE_TUNNEL_BASE = 'https://established-clouds-flame-tel.trycloudflare.com';
+// ── Production API Base (Render backend for Cloudflare Pages) ──────
+export const CLOUDFLARE_TUNNEL_BASE = 'https://pos-quanan-backend.onrender.com';
 
 // Extract local developer machine IP address from Expo Metro packager
 function getExpoDevServerIp(): string | null {
