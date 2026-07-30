@@ -59,6 +59,13 @@ export const shape = {
       shadowRadius: 12,
       elevation: 8,
     },
+    softElevation: {
+      shadowColor: '#0F172A',
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.05,
+      shadowRadius: 10,
+      elevation: 2,
+    },
   },
   animation: {
     duration: {

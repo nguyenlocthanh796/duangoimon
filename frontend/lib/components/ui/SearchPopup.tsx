@@ -24,7 +24,7 @@ export default function SearchPopup({ visible, value, onChangeText, onClose, pla
           <View style={styles.headerRow}>
             <Icon name="magnify" size={18} color={colors.brand.primary} />
             <View style={styles.headerText}>
-              <AppText variant="md" color={colors.text.primary} weight="bold">Tìm kiếm</AppText>
+              <AppText variant="md" color={colors.text.primary}>Tìm kiếm</AppText>
               <AppText variant="sm" color={colors.text.muted}>Gõ để tìm kiếm, bấm filter để lọc</AppText>
             </View>
           </View>
@@ -41,7 +41,7 @@ export default function SearchPopup({ visible, value, onChangeText, onClose, pla
               autoFocus
             />
             {value.length > 0 && (
-              <TouchableOpacity onPress={() => onChangeText('')} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <TouchableOpacity onPress={() => onChangeText('')} hitSlop={{ top: 13, bottom: 13, left: 13, right: 13 }} style={{ minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' }}>
                 <Icon name="close-circle" size={18} color={colors.text.muted} />
               </TouchableOpacity>
             )}

@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field, field_validator
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.auth import get_current_user, hash_password
+from app.core.auth import get_current_user, hash_password, require_role
 from app.core.database import get_db
 from app.core.pagination import PageParams, paginate
 from app.models.user import User
@@ -54,7 +54,7 @@ class UserUpdate(BaseModel):
 async def list_users(
     page: PageParams = Depends(),
     db: AsyncSession = Depends(get_db),
-    _user: dict = Depends(get_current_user),
+    _user: dict = Depends(require_role("admin", "manager")),
 ):
     query = select(User).order_by(User.full_name)
     page_result = await paginate(db, query, page.page, page.page_size)
@@ -74,7 +74,7 @@ async def list_users(
 
 @router.post("", status_code=201)
 async def create_user(
-    body: UserCreate, db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)
+    body: UserCreate, db: AsyncSession = Depends(get_db), _user: dict = Depends(require_role("admin"))
 ):
     existing = await db.execute(select(User).where(User.username == body.username))
     if existing.scalar_one_or_none():
@@ -97,7 +97,7 @@ async def update_user(
     user_id: str,
     body: UserUpdate,
     db: AsyncSession = Depends(get_db),
-    _user: dict = Depends(get_current_user),
+    _user: dict = Depends(require_role("admin", "manager")),
 ):
     data = body.model_dump(exclude_unset=True)
     result = await db.execute(select(User).where(User.id == parse_uuid(user_id)))

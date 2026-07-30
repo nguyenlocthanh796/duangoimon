@@ -83,3 +83,14 @@ class OrderItem(Base):
     status: Mapped[str] = mapped_column(String(20), default="moi")
     service_type: Mapped[str] = mapped_column(String(20), default="dine_in")
     order_round: Mapped[int] = mapped_column(Integer, default=1)
+
+
+class POSSettingsModel(Base):
+    __tablename__ = "pos_settings"
+    __table_args__ = {"schema": "public"}
+
+    id: Mapped[str] = mapped_column(String(50), primary_key=True, default="default_store")
+    settings_data: Mapped[dict] = mapped_column(JSONB, default=dict)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )

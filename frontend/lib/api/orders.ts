@@ -1,7 +1,8 @@
 import { request } from './client';
 
-export async function getOrders() {
-  const res = await request<any>('/ban-hang/orders');
+export async function getOrders(status: string = 'active') {
+  const queryStr = status ? `?status=${encodeURIComponent(status)}` : '';
+  const res = await request<any>(`/ban-hang/orders/${queryStr}`);
   if (res && typeof res === 'object') {
     if (Array.isArray(res.items)) return res.items;
     if (Array.isArray(res)) return res;
@@ -24,7 +25,7 @@ export function createOrder(data: {
     options?: any;
   }[];
 }) {
-  return request<any>('/ban-hang/orders', { method: 'POST', body: JSON.stringify(data) });
+  return request<any>('/ban-hang/orders/', { method: 'POST', body: JSON.stringify(data) });
 }
 
 export function updateOrder(orderId: string, data: any) {

@@ -237,11 +237,12 @@ async def receive_po(
         if rm_id and rm_id in item_map:
             item_map[rm_id].received_quantity += qty
 
-        # Update stock
-        rm_result = await db.execute(select(RawMaterial).where(RawMaterial.id == parse_uuid(rm_id)))
-        rm = rm_result.scalar_one_or_none()
-        if rm:
-            rm.current_stock += qty
+        # Update stock — only if rm_id is valid
+        if rm_id:
+            rm_result = await db.execute(select(RawMaterial).where(RawMaterial.id == parse_uuid(rm_id)))
+            rm = rm_result.scalar_one_or_none()
+            if rm:
+                rm.current_stock += qty
 
     await db.commit()
     return {"status": "ok", "po_id": po_id}

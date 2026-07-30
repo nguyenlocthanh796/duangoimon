@@ -46,27 +46,5 @@ export default function ThueSubModule({ isSearchOpen }: { isSearchOpen?: boolean
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FFFFFF' },
-  tabBarWrap: {
-    paddingHorizontal: 6,
-    paddingVertical: 6,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E9F0',
-  },
-  pillBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 10,
-    height: 32,
-    borderRadius: 6,
-    backgroundColor: '#F8FAFC',
-    borderWidth: 1,
-    borderColor: '#E5E9F0',
-  },
-  pillBtnActive: {
-    backgroundColor: '#FFF7ED',
-    borderColor: '#F97316',
-  },
   content: { flex: 1 },
 });

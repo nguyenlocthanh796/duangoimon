@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, TouchableOpacity, Modal, ActivityIndicator } from 'react-native';
+import { View, TouchableOpacity, Modal, ActivityIndicator, StyleSheet, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api } from '../../api';
 import { colors, font, shape, formatPrice } from '../../theme';
 import AppText from '../ui/AppText';
 import VisualTablePicker from './VisualTablePicker';
 import type { Table, TableStatus } from './TableCard';
+
+import { haptic } from '../../haptic';
 
 interface MoveTableModalProps {
   visible: boolean;
@@ -24,6 +27,7 @@ export default function MoveTableModal({
   excludeTableId,
   filterOccupied,
 }: MoveTableModalProps) {
+  const insets = useSafeAreaInsets();
   const [tables, setTables] = useState<Table[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedTable, setSelectedTable] = useState<Table | null>(null);
@@ -68,25 +72,32 @@ export default function MoveTableModal({
 
   const handleConfirm = () => {
     if (!selectedTable) return;
+    haptic.impact('medium');
     onSelectTable(selectedTable.id, selectedTable.name);
     onClose();
   };
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 16 }}>
+      <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end', alignItems: 'center' }}>
+        <TouchableOpacity style={StyleSheet.absoluteFill} activeOpacity={1} onPress={onClose} />
         <View
           style={{
             width: '100%',
-            maxWidth: 540,
+            maxWidth: 600,
             backgroundColor: colors.surface.card,
-            borderRadius: shape.radius.lg,
+            borderTopLeftRadius: 16,
+            borderTopRightRadius: 16,
             overflow: 'hidden',
-            padding: 16,
+            paddingHorizontal: 16,
+            paddingTop: 10,
+            paddingBottom: Platform.OS === 'web' ? 16 : Math.max(Math.floor(insets.bottom * 0.5), 16),
             gap: 12,
-            maxHeight: '85%',
+            maxHeight: '88%',
           }}
         >
+          {/* iOS Grabber Bar */}
+          <View style={{ width: 36, height: 5, borderRadius: 3, backgroundColor: '#CBD5E1', alignSelf: 'center', marginBottom: 4 }} />
           {/* Header */}
           <View
             style={{
@@ -94,15 +105,15 @@ export default function MoveTableModal({
               justifyContent: 'space-between',
               alignItems: 'center',
               borderBottomWidth: 1,
-              borderBottomColor: colors.border.default,
+              borderBottomColor: '#E5E9F0',
               paddingBottom: 10,
             }}
           >
             <View>
-              <AppText variant="md" color={colors.text.primary} weight="bold">
+              <AppText variant="md" weight="bold" color="#1E293B">
                 {title}
               </AppText>
-              <AppText variant="sm" color={colors.text.muted}>
+              <AppText variant="sm" color="#64748B" style={{ marginTop: 2 }}>
                 Chọn bàn từ sơ đồ khu vực trực quan bên dưới
               </AppText>
             </View>
@@ -110,15 +121,17 @@ export default function MoveTableModal({
             <TouchableOpacity
               onPress={onClose}
               style={{
-                width: 32,
-                height: 32,
-                borderRadius: shape.radius.md,
-                backgroundColor: colors.surface.disabled,
+                width: 36,
+                height: 36,
                 alignItems: 'center',
                 justifyContent: 'center',
+                borderRadius: 8,
+                backgroundColor: '#F1F5F9',
+                borderWidth: 1,
+                borderColor: '#E5E9F0',
               }}
             >
-              <Icon name="close" size={20} color={colors.icon.default} />
+              <Icon name="close" size={18} color="#64748B" />
             </TouchableOpacity>
           </View>
 
@@ -143,7 +156,7 @@ export default function MoveTableModal({
           <View
             style={{
               borderTopWidth: 1,
-              borderTopColor: colors.border.default,
+              borderTopColor: '#E5E9F0',
               paddingTop: 12,
               gap: 10,
             }}
@@ -152,49 +165,51 @@ export default function MoveTableModal({
               <View
                 style={{
                   padding: 10,
-                  borderRadius: shape.radius.md,
-                  backgroundColor: colors.brand.primaryBg,
+                  borderRadius: 8,
+                  backgroundColor: '#FFF7ED',
                   borderWidth: 1,
-                  borderColor: colors.border.brand,
+                  borderColor: '#FDBA74',
                   flexDirection: 'row',
                   alignItems: 'center',
                   justifyContent: 'space-between',
                 }}
               >
                 <View style={{ gap: 2 }}>
-                  <AppText variant="sm" weight="bold" color={colors.brand.primary}>
+                  <AppText variant="md" weight="bold" color="#F97316">
                     Bàn đã chọn: {selectedTable.name}
                   </AppText>
-                  <AppText variant="sm" color={colors.text.muted}>
+                  <AppText variant="sm" color="#64748B">
                     {selectedTable.area || 'Khu vực chung'} · Trạng thái: {selectedTable.status === 'co_khach' ? 'Đã có khách' : 'Bàn trống'}
                   </AppText>
                 </View>
 
                 {selectedTable.orderTotal ? (
-                  <AppText variant="sm" weight="bold" color={colors.status.danger}>
+                  <AppText variant="md" weight="bold" color={colors.status.danger}>
                     {formatPrice(selectedTable.orderTotal)}
                   </AppText>
                 ) : null}
               </View>
             ) : (
-              <AppText variant="sm" color={colors.text.muted} style={{ textAlign: 'center' }}>
+              <AppText variant="sm" color="#64748B" style={{ textAlign: 'center', paddingVertical: 4 }}>
                 Vui lòng bấm chọn một bàn trên sơ đồ
               </AppText>
             )}
 
-            <View style={{ flexDirection: 'row', gap: 10 }}>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
               <TouchableOpacity
                 onPress={onClose}
                 style={{
                   flex: 1,
-                  height: 44,
-                  borderRadius: shape.radius.md,
-                  backgroundColor: colors.surface.disabled,
+                  height: 48,
+                  borderRadius: 8,
+                  backgroundColor: '#F1F5F9',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  borderWidth: 1,
+                  borderColor: '#E5E9F0',
                 }}
               >
-                <AppText variant="sm" weight="bold" color={colors.text.secondary}>
+                <AppText variant="md" color="#64748B">
                   Huỷ
                 </AppText>
               </TouchableOpacity>
@@ -204,19 +219,21 @@ export default function MoveTableModal({
                 disabled={!selectedTable}
                 style={{
                   flex: 2,
-                  height: 44,
-                  borderRadius: shape.radius.md,
-                  backgroundColor: selectedTable ? colors.brand.primary : colors.surface.disabled,
+                  height: 48,
+                  borderRadius: 8,
+                  backgroundColor: selectedTable ? colors.brand.primary : '#F1F5F9',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  borderWidth: 1,
+                  borderColor: selectedTable ? colors.brand.primary : '#E5E9F0',
                 }}
               >
                 <AppText
-                  variant="sm"
-                  weight="bold"
-                  color={selectedTable ? colors.text.inverse : colors.text.muted}
+                  variant="md"
+                  weight="normal"
+                  color={selectedTable ? colors.text.inverse : '#94A3B8'}
                 >
-                  Xác Nhận Thao Tác
+                  Xác nhận chuyển bàn
                 </AppText>
               </TouchableOpacity>
             </View>

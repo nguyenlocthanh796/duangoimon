@@ -93,10 +93,13 @@ def _calc_food_cost(cost_price: float, product_price: float) -> float:
     return round((cost_price / product_price) * 100, 2)
 
 
-async def _enrich_recipe(r: Recipe, db: AsyncSession) -> dict:
+async def _enrich_recipe(r: Recipe, db: AsyncSession, product_map: dict | None = None) -> dict:
     """Convert Recipe ORM to enriched dict with product info."""
-    prod_result = await db.execute(select(Product).where(Product.id == r.product_id))
-    product = prod_result.scalar_one_or_none()
+    if product_map is not None:
+        product = product_map.get(str(r.product_id))
+    else:
+        prod_result = await db.execute(select(Product).where(Product.id == r.product_id))
+        product = prod_result.scalar_one_or_none()
     product_price = float(product.price) if product else 0
     product_name = product.name if product else ""
 
@@ -138,7 +141,7 @@ async def list_raw_materials(
     db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)
 ):
     result = await db.execute(select(RawMaterial).order_by(RawMaterial.name))
-    return [_rm_to_dict(rm) for rm in result.scalars()]
+    return [_rm_to_dict(rm) for rm in result.scalars().all()]
 
 
 @router.post("/raw-materials", status_code=201)
@@ -173,6 +176,21 @@ async def update_raw_material(
     return _rm_to_dict(rm)
 
 
+@router.delete("/raw-materials/{rm_id}")
+async def delete_raw_material(
+    rm_id: str,
+    db: AsyncSession = Depends(get_db),
+    _user: dict = Depends(get_current_user),
+):
+    result = await db.execute(select(RawMaterial).where(RawMaterial.id == parse_uuid(rm_id)))
+    rm = result.scalar_one_or_none()
+    if not rm:
+        raise HTTPException(status_code=404, detail="Raw material not found")
+    await db.delete(rm)
+    await db.commit()
+    return {"status": "ok", "deleted": rm_id}
+
+
 # ── Recipes CRUD ──
 
 
@@ -184,10 +202,13 @@ async def list_recipes(
 ):
     query = select(Recipe).options(selectinload(Recipe.items)).order_by(Recipe.name)
     page_result = await paginate(db, query, page.page, page.page_size)
-    enriched = []
-    for r in page_result["items"]:
-        enriched.append(await _enrich_recipe(r, db))
-    page_result["items"] = enriched
+    recipes = page_result["items"]
+    prod_ids = list(set(r.product_id for r in recipes if r.product_id))
+    prod_map = {}
+    if prod_ids:
+        p_res = await db.execute(select(Product).where(Product.id.in_(prod_ids)))
+        prod_map = {str(p.id): p for p in p_res.scalars().all()}
+    page_result["items"] = [await _enrich_recipe(r, db, product_map=prod_map) for r in recipes]
     return page_result
 
 
@@ -308,14 +329,11 @@ async def update_recipe(
     await db.refresh(r)
 
     # Save new version
-    version_count = await db.scalar(
-        select(RecipeVersion)
+    from sqlalchemy import func as _func
+    prev_ver = await db.scalar(
+        select(_func.max(RecipeVersion.version_number))
         .where(RecipeVersion.recipe_id == r.id)
-        .order_by(RecipeVersion.version_number.desc())
-    )
-    prev_ver = version_count or 0
-    if isinstance(prev_ver, RecipeVersion):
-        prev_ver = prev_ver.version_number
+    ) or 0
     version = RecipeVersion(
         recipe_id=r.id,
         version_number=prev_ver + 1,

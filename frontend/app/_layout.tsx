@@ -20,8 +20,8 @@ import {
   BeVietnamPro_600SemiBold,
   BeVietnamPro_700Bold,
 } from '@expo-google-fonts/be-vietnam-pro';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import * as SplashScreen from 'expo-splash-screen';
+import { POSSettingsProvider } from '../lib/context/POSSettingsContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -62,8 +62,8 @@ function AppStack() {
 
   return (
     <ErrorBoundary>
-      <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
-        <Stack.Screen name="index" />
+      <Stack screenOptions={{ headerShown: false, gestureEnabled: true, animation: 'slide_from_right', animationDuration: 300 }}>
+        <Stack.Screen name="index" options={{ animation: 'fade' }} />
         <Stack.Screen name="login" options={{ animation: 'none' }} />
         <Stack.Screen name="ban-hang" />
         <Stack.Screen name="quan-ly" />
@@ -100,13 +100,15 @@ export default function RootLayout() {
   if (!fontsLoaded) return null;
 
   const appContent = (
-    <ThemeProvider>
-      <AuthProvider>
-        <SidebarProvider>
-          <AppWithTheme />
-        </SidebarProvider>
-      </AuthProvider>
-    </ThemeProvider>
+    <POSSettingsProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <SidebarProvider>
+            <AppWithTheme />
+          </SidebarProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </POSSettingsProvider>
   );
 
   return (

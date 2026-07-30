@@ -121,4 +121,12 @@ export const api = {
   getTaxReport: thueFns.getTaxReport,
   getTaxLegacyChecklist: thueFns.getLegacyChecklist,
   bulkSubmitDeadlines: thueFns.bulkSubmitDeadlines,
+
+  // ── POS Store Settings (Database-backed) ──
+  getPOSSettings: () => request<{ settings: any | null }>('/pos/settings'),
+  savePOSSettings: (settings: any) =>
+    request<{ status: string; settings: any }>('/pos/settings', {
+      method: 'PUT',
+      body: JSON.stringify({ settings }),
+    }),
 };

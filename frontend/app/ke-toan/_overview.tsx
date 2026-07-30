@@ -16,7 +16,7 @@ import { useResponsive } from '../../lib/hooks/useResponsive';
 import { api } from '../../lib/api';
 import { logger, safeApi } from '../../lib/logger';
 import { DonutChart } from '../../lib/components/ke-toan/ChartComponents';
-import { useKeToanDashboard, useTaxProfileStatus } from '../../lib/hooks/useKeToan';
+
 
 import StatusBadge from '../../lib/components/ui/StatusBadge';
 
@@ -45,18 +45,33 @@ function InvBadge({ status }: { status: string }) {
 export default function KeToanOverviewScreen({ onSelectTab }: { onSelectTab?: (tab: string) => void }) {
   const router = useRouter();
   const { isWide } = useResponsive();
+  const { branchId } = useAuth();
 
-  const { data, isLoading: isDashboardLoading, mutate: mutateDashboard } = useKeToanDashboard();
-  const { taxStatus, isLoading: isTaxLoading, mutate: mutateTax } = useTaxProfileStatus();
-
+  const [data, setData] = useState<any>({ summary: {}, monthly_revenue: [], expense_by_category: [], recent_transactions: [], recent_invoices: [] });
+  const [taxStatus, setTaxStatus] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [chartFilter, setChartFilter] = useState<'month' | 'year'>('year');
 
+  const loadData = useCallback(async ({ quiet }: { quiet?: boolean } = {}) => {
+    if (!quiet) setLoading(true);
+    try {
+      const [d, t] = await Promise.all([
+        api.getKeToanDashboard().catch(() => ({ summary: {}, monthly_revenue: [], expense_by_category: [], recent_transactions: [], recent_invoices: [] })),
+        api.getTaxProfileStatus(branchId || 'default').catch(() => null),
+      ]);
+      setData(d);
+      setTaxStatus(t);
+    } catch {}
+    finally { setLoading(false); setRefreshing(false); }
+  }, []);
+
+  useEffect(() => { loadData(); }, [loadData]);
+
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
-    await Promise.all([mutateDashboard(), mutateTax()]);
-    setRefreshing(false);
-  }, [mutateDashboard, mutateTax]);
+    await loadData({ quiet: true });
+  }, [loadData]);
 
   const open = (path: string, tabKey?: string) => {
     if (tabKey && onSelectTab) {
@@ -93,12 +108,12 @@ export default function KeToanOverviewScreen({ onSelectTab }: { onSelectTab?: (t
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
             <View style={styles.heroBadgeIcon}>
-              <AppText variant="sm" weight="bold" color="#15803D" style={{ fontSize: 11 }}>LN</AppText>
+              <AppText variant="md" color="#15803D" style={{ fontSize: 12}}>LN</AppText>
             </View>
-            <AppText variant="sm" weight="bold" color="#15803D" style={{ letterSpacing: 0.5 }}>LỢI NHUẬN RÒNG</AppText>
+            <AppText variant="md" color="#15803D" style={{ letterSpacing: 0.5 }}>LỢI NHUẬN RÒNG</AppText>
           </View>
           <View style={styles.profitPctBadge}>
-            <AppText variant="sm" weight="bold" color="#15803D">{profitPct >= 0 ? `+${profitPct}%` : `${profitPct}%`}</AppText>
+            <AppText variant="md" color="#15803D">{profitPct >= 0 ? `+${profitPct}%` : `${profitPct}%`}</AppText>
           </View>
         </View>
 
@@ -106,7 +121,7 @@ export default function KeToanOverviewScreen({ onSelectTab }: { onSelectTab?: (t
           <AppText variant="md" weight="bold" color="#16A34A">
             {fmt(profit)}
           </AppText>
-          <AppText variant="sm" color="#475569" style={{ marginTop: 2 }}>
+          <AppText variant="md" color="#475569" style={{ marginTop: 2 }}>
             Cập nhật từ tổng thu & chi thực tế
           </AppText>
         </View>
@@ -116,11 +131,11 @@ export default function KeToanOverviewScreen({ onSelectTab }: { onSelectTab?: (t
       <View style={styles.iosGroupedCard}>
         <TouchableOpacity style={styles.statRow} activeOpacity={0.7} onPress={() => open('/ke-toan/thu-chi', 'thuchi')}>
           <View style={[styles.statIconBadge, { backgroundColor: '#ECFDF5' }]}>
-            <AppText variant="sm" weight="bold" color="#16A34A" style={{ fontSize: 13 }}>+</AppText>
+            <AppText variant="md" color="#16A34A" style={{ fontSize: 14}}>+</AppText>
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="sm" color="#64748B">Tổng thu</AppText>
-            <AppText variant="md" weight="bold" color="#0F172A">{fmt(s.total_thu)}</AppText>
+            <AppText variant="md" color="#64748B">Tổng thu</AppText>
+            <AppText variant="md" color="#0F172A">{fmt(s.total_thu)}</AppText>
           </View>
           <Icon name="chevron-right" size={20} color="#94A3B8" />
         </TouchableOpacity>
@@ -129,11 +144,11 @@ export default function KeToanOverviewScreen({ onSelectTab }: { onSelectTab?: (t
 
         <TouchableOpacity style={styles.statRow} activeOpacity={0.7} onPress={() => open('/ke-toan/thu-chi', 'thuchi')}>
           <View style={[styles.statIconBadge, { backgroundColor: '#FEE2E2' }]}>
-            <AppText variant="sm" weight="bold" color="#DC2626" style={{ fontSize: 13 }}>-</AppText>
+            <AppText variant="md" color="#DC2626" style={{ fontSize: 14}}>-</AppText>
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="sm" color="#64748B">Tổng chi</AppText>
-            <AppText variant="md" weight="bold" color="#0F172A">{fmt(s.total_chi)}</AppText>
+            <AppText variant="md" color="#64748B">Tổng chi</AppText>
+            <AppText variant="md" color="#0F172A">{fmt(s.total_chi)}</AppText>
           </View>
           <Icon name="chevron-right" size={20} color="#94A3B8" />
         </TouchableOpacity>
@@ -142,11 +157,11 @@ export default function KeToanOverviewScreen({ onSelectTab }: { onSelectTab?: (t
 
         <TouchableOpacity style={styles.statRow} activeOpacity={0.7} onPress={() => open('/ke-toan/invoices', 'invoices')}>
           <View style={[styles.statIconBadge, { backgroundColor: '#FFF7ED' }]}>
-            <AppText variant="sm" weight="bold" color="#F97316" style={{ fontSize: 11 }}>HĐ</AppText>
+            <AppText variant="md" color="#F97316" style={{ fontSize: 12}}>HĐ</AppText>
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="sm" color="#64748B">Hóa đơn VAT đã phát hành</AppText>
-            <AppText variant="md" weight="bold" color="#0F172A">{s.invoice_count ?? 100} hóa đơn</AppText>
+            <AppText variant="md" color="#64748B">Hóa đơn VAT đã phát hành</AppText>
+            <AppText variant="md" color="#0F172A">{s.invoice_count ?? 100} hóa đơn</AppText>
           </View>
           <Icon name="chevron-right" size={20} color="#94A3B8" />
         </TouchableOpacity>
@@ -155,7 +170,7 @@ export default function KeToanOverviewScreen({ onSelectTab }: { onSelectTab?: (t
       {/* 📈 CHARTS SECTION */}
       <View style={styles.iosGroupedCard}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-          <AppText variant="md" weight="bold" color="#0F172A">Biểu đồ doanh thu</AppText>
+          <AppText variant="md" color="#0F172A">Biểu đồ doanh thu</AppText>
 
           {/* iOS Segmented Control */}
           <View style={styles.segmentedControl}>
@@ -163,13 +178,13 @@ export default function KeToanOverviewScreen({ onSelectTab }: { onSelectTab?: (t
               onPress={() => setChartFilter('month')}
               style={[styles.segmentBtn, chartFilter === 'month' && styles.segmentBtnActive]}
             >
-              <AppText variant="sm" weight={chartFilter === 'month' ? 'bold' : 'normal'} color={chartFilter === 'month' ? '#0F172A' : '#64748B'}>Tháng</AppText>
+              <AppText variant="md" weight={chartFilter === 'month' ? 'bold' : 'normal'} color={chartFilter === 'month' ? '#0F172A' : '#64748B'}>Tháng</AppText>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => setChartFilter('year')}
               style={[styles.segmentBtn, chartFilter === 'year' && styles.segmentBtnActive]}
             >
-              <AppText variant="sm" weight={chartFilter === 'year' ? 'bold' : 'normal'} color={chartFilter === 'year' ? '#0F172A' : '#64748B'}>Năm</AppText>
+              <AppText variant="md" weight={chartFilter === 'year' ? 'bold' : 'normal'} color={chartFilter === 'year' ? '#0F172A' : '#64748B'}>Năm</AppText>
             </TouchableOpacity>
           </View>
         </View>
@@ -183,7 +198,7 @@ export default function KeToanOverviewScreen({ onSelectTab }: { onSelectTab?: (t
                 return (
                   <View key={i} style={{ flex: 1, alignItems: 'center', gap: 4 }}>
                     <View style={{ width: '80%', height: Math.max(h, 3), borderRadius: 4, backgroundColor: m.current ? '#F97316' : '#E2E8F0' }} />
-                    <AppText variant="sm" color="#64748B" style={{ fontSize: 10, textAlign: 'center' }}>{m.label}</AppText>
+                    <AppText variant="md" color="#64748B" style={{ fontSize: 12, textAlign: 'center' }}>{m.label}</AppText>
                   </View>
                 );
               })}
@@ -192,7 +207,7 @@ export default function KeToanOverviewScreen({ onSelectTab }: { onSelectTab?: (t
 
           {isWide && data.expense_by_category.length > 0 && (
             <View style={{ flex: 2, paddingLeft: 12, borderLeftWidth: 1, borderLeftColor: '#F1F5F9' }}>
-              <AppText variant="sm" color="#64748B" style={{ textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
+              <AppText variant="md" color="#64748B" style={{ textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 12 }}>
                 Chi phí theo nhóm
               </AppText>
               <View style={{ alignItems: 'center', marginVertical: 8 }}>
@@ -206,9 +221,9 @@ export default function KeToanOverviewScreen({ onSelectTab }: { onSelectTab?: (t
       {/* 📄 TAX STATUS PROFILE (GROUPED CARD) */}
       <View style={styles.iosGroupedCard}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 10 }}>
-          <AppText variant="md" weight="bold" color="#0F172A">Trạng thái thuế HKD</AppText>
+          <AppText variant="md" color="#0F172A">Trạng thái thuế HKD</AppText>
           <View style={styles.tierPill}>
-            <AppText variant="sm" weight="bold" color="#F97316">{taxStatus?.tier ?? 'Hộ HKD Nhóm 2'}</AppText>
+            <AppText variant="md" color="#F97316">{taxStatus?.tier ?? 'Hộ HKD Nhóm 2'}</AppText>
           </View>
         </View>
 
@@ -216,15 +231,15 @@ export default function KeToanOverviewScreen({ onSelectTab }: { onSelectTab?: (t
 
         <View style={{ flexDirection: 'row', paddingTop: 10, gap: 12 }}>
           <View style={{ flex: 1 }}>
-            <AppText variant="sm" color="#64748B">Doanh số YTD</AppText>
-            <AppText variant="md" weight="bold" color="#16A34A" style={{ marginTop: 2 }}>
+            <AppText variant="md" color="#64748B">Doanh số YTD</AppText>
+            <AppText variant="md" color="#16A34A" style={{ marginTop: 2 }}>
               {fmt(taxStatus?.revenueYtd || taxStatus?.revenue_ytd || 917198904)}
             </AppText>
           </View>
           <View style={{ width: 1, backgroundColor: '#F1F5F9' }} />
           <View style={{ flex: 1 }}>
-            <AppText variant="sm" color="#64748B">Hạn nộp tiếp theo</AppText>
-            <AppText variant="md" weight="bold" color="#D97706" style={{ marginTop: 2 }}>
+            <AppText variant="md" color="#64748B">Hạn nộp tiếp theo</AppText>
+            <AppText variant="md" color="#D97706" style={{ marginTop: 2 }}>
               {taxStatus?.nextDeadline ?? '20/08/2026 (Còn 26 ngày)'}
             </AppText>
           </View>
@@ -238,9 +253,9 @@ export default function KeToanOverviewScreen({ onSelectTab }: { onSelectTab?: (t
           onPress={() => open('/ke-toan/thu-chi', 'thuchi')}
           activeOpacity={0.7}
         >
-          <AppText variant="md" weight="bold" color="#0F172A">Giao dịch gần đây</AppText>
+          <AppText variant="md" color="#0F172A">Giao dịch gần đây</AppText>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-            <AppText variant="sm" color="#F97316" weight="bold">Tất cả</AppText>
+            <AppText variant="md" color="#F97316" >Tất cả</AppText>
             <Icon name="chevron-right" size={18} color="#F97316" />
           </View>
         </TouchableOpacity>
@@ -254,16 +269,16 @@ export default function KeToanOverviewScreen({ onSelectTab }: { onSelectTab?: (t
               onPress={() => open('/ke-toan/thu-chi', 'thuchi')}
             >
               <View style={[styles.listIconBadge, { backgroundColor: t.type === 'thu' ? '#ECFDF5' : '#FEE2E2' }]}>
-                <AppText variant="sm" weight="bold" color={t.type === 'thu' ? '#16A34A' : '#DC2626'} style={{ fontSize: 13 }}>
+                <AppText variant="md" color={t.type === 'thu' ? '#16A34A' : '#DC2626'} style={{ fontSize: 14}}>
                   {t.type === 'thu' ? '+' : '-'}
                 </AppText>
               </View>
               <View style={{ flex: 1 }}>
-                <AppText variant="md" weight="bold" color="#0F172A" numberOfLines={1}>{t.note || 'Giao dịch thu chi'}</AppText>
-                <AppText variant="sm" color="#64748B">{t.created_at ? t.created_at.slice(0, 10) : 'Giao dịch hôm nay'}</AppText>
+                <AppText variant="md" color="#0F172A" numberOfLines={1}>{t.note || 'Giao dịch thu chi'}</AppText>
+                <AppText variant="md" color="#64748B">{t.created_at ? t.created_at.slice(0, 10) : 'Giao dịch hôm nay'}</AppText>
               </View>
               <View style={{ alignItems: 'flex-end', gap: 2 }}>
-                <AppText variant="md" weight="bold" color={t.type === 'thu' ? '#16A34A' : '#DC2626'}>
+                <AppText variant="md" color={t.type === 'thu' ? '#16A34A' : '#DC2626'}>
                   {t.type === 'thu' ? `+${fmt(t.amount)}` : `-${fmt(t.amount)}`}
                 </AppText>
                 <TxBadge type={t.type} />
@@ -281,9 +296,9 @@ export default function KeToanOverviewScreen({ onSelectTab }: { onSelectTab?: (t
           onPress={() => open('/ke-toan/invoices', 'invoices')}
           activeOpacity={0.7}
         >
-          <AppText variant="md" weight="bold" color="#0F172A">Hóa đơn VAT gần đây</AppText>
+          <AppText variant="md" color="#0F172A">Hóa đơn VAT gần đây</AppText>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}>
-            <AppText variant="sm" color="#F97316" weight="bold">Tất cả</AppText>
+            <AppText variant="md" color="#F97316" >Tất cả</AppText>
             <Icon name="chevron-right" size={18} color="#F97316" />
           </View>
         </TouchableOpacity>
@@ -297,14 +312,14 @@ export default function KeToanOverviewScreen({ onSelectTab }: { onSelectTab?: (t
               onPress={() => open('/ke-toan/invoices', 'invoices')}
             >
               <View style={[styles.listIconBadge, { backgroundColor: '#EFF6FF' }]}>
-                <AppText variant="sm" weight="bold" color="#2563EB" style={{ fontSize: 10 }}>HĐ</AppText>
+                <AppText variant="md" color="#2563EB" style={{ fontSize: 12}}>HĐ</AppText>
               </View>
               <View style={{ flex: 1 }}>
-                <AppText variant="md" weight="bold" color="#0F172A" numberOfLines={1}>HĐ #{inv.invoice_number || '001'}</AppText>
-                <AppText variant="sm" color="#64748B" numberOfLines={1}>{inv.buyer_name || 'Khách hàng lẻ'}</AppText>
+                <AppText variant="md" color="#0F172A" numberOfLines={1}>HĐ #{inv.invoice_number || '001'}</AppText>
+                <AppText variant="md" color="#64748B" numberOfLines={1}>{inv.buyer_name || 'Khách hàng lẻ'}</AppText>
               </View>
               <View style={{ alignItems: 'flex-end', gap: 2 }}>
-                <AppText variant="md" weight="bold" color="#0F172A">{fmt(inv.total_amount)}</AppText>
+                <AppText variant="md" color="#0F172A">{fmt(inv.total_amount)}</AppText>
                 <InvBadge status={inv.status} />
               </View>
               <Icon name="chevron-right" size={18} color="#CBD5E1" style={{ marginLeft: 4 }} />
@@ -315,7 +330,7 @@ export default function KeToanOverviewScreen({ onSelectTab }: { onSelectTab?: (t
 
       {/* 🧰 iOS GRID - MÔ-ĐUN NGHIỆP VỤ */}
       <View style={{ marginTop: 4 }}>
-        <AppText variant="md" weight="bold" color="#0F172A" style={{ marginBottom: 8, paddingLeft: 4 }}>
+        <AppText variant="md" color="#0F172A" style={{ marginBottom: 8, paddingLeft: 4 }}>
           Mô-đun nghiệp vụ kế toán
         </AppText>
         <View style={styles.moduleGrid}>
@@ -330,8 +345,8 @@ export default function KeToanOverviewScreen({ onSelectTab }: { onSelectTab?: (t
                 <Icon name={m.icon as any} size={20} color={m.color} />
               </View>
               <View style={{ flex: 1 }}>
-                <AppText variant="sm" weight="bold" color="#0F172A" numberOfLines={1}>{m.title}</AppText>
-                <AppText variant="sm" color="#64748B" numberOfLines={1} style={{ fontSize: 11 }}>{m.desc}</AppText>
+                <AppText variant="md" color="#0F172A" numberOfLines={1}>{m.title}</AppText>
+                <AppText variant="md" color="#64748B" numberOfLines={1} style={{ fontSize: 12}}>{m.desc}</AppText>
               </View>
               <Icon name="chevron-right" size={16} color="#CBD5E1" />
             </TouchableOpacity>

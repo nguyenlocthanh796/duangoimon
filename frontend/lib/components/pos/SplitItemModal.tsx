@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Modal, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Modal, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font, shape, formatPrice } from '../../theme';
 import AppText from '../ui/AppText';
 import { CartItem } from './types';
+import { haptic } from '../../haptic';
 
 interface SplitItemModalProps {
   visible: boolean;
@@ -32,6 +33,7 @@ export default function SplitItemModal({
   const activeItems = cart.filter((i) => !i.cancelReason);
 
   const handleSetSplitQty = (cartItemId: string, maxQty: number, delta: number) => {
+    haptic.impact('light');
     setSplitQtyMap((prev) => {
       const current = prev[cartItemId] || 0;
       const next = Math.max(0, Math.min(maxQty, current + delta));
@@ -45,6 +47,7 @@ export default function SplitItemModal({
   };
 
   const handleToggleSelectAll = () => {
+    haptic.impact('light');
     if (Object.keys(splitQtyMap).length === activeItems.length) {
       setSplitQtyMap({});
     } else {
@@ -68,31 +71,37 @@ export default function SplitItemModal({
       .map(([cartItemId, splitQty]) => ({ cartItemId, splitQty }));
 
     if (itemsToSplit.length === 0) return;
+    haptic.impact('medium');
     onConfirmSplit(itemsToSplit);
   };
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <View
         style={{
           flex: 1,
           backgroundColor: 'rgba(0,0,0,0.5)',
-          justifyContent: 'center',
+          justifyContent: 'flex-end',
           alignItems: 'center',
-          padding: 16,
         }}
       >
+        <TouchableOpacity style={StyleSheet.absoluteFill} activeOpacity={1} onPress={onClose} />
         <View
           style={{
             width: '100%',
-            maxWidth: 500,
-            maxHeight: '85%',
+            maxWidth: 560,
+            maxHeight: '88%',
             backgroundColor: colors.surface.card,
-            borderRadius: shape.radius.lg,
+            borderTopLeftRadius: 16,
+            borderTopRightRadius: 16,
             overflow: 'hidden',
             elevation: 5,
+            paddingTop: 10,
+            paddingBottom: 16,
           }}
         >
+          {/* iOS Grabber Bar */}
+          <View style={{ width: 36, height: 5, borderRadius: 3, backgroundColor: '#CBD5E1', alignSelf: 'center', marginBottom: 4 }} />
           {/* Header */}
           <View
             style={{
@@ -105,10 +114,10 @@ export default function SplitItemModal({
             }}
           >
             <View>
-              <AppText variant="md" weight="bold" color={colors.text.primary}>
+              <AppText variant="md" color={colors.text.primary}>
                 Tách Món Từ {tableName}
               </AppText>
-              <AppText variant="sm" color={colors.text.muted}>
+              <AppText variant="md" color={colors.text.muted}>
                 Chọn món và số lượng linh hoạt để tách sang bàn mới
               </AppText>
             </View>
@@ -132,13 +141,13 @@ export default function SplitItemModal({
             }}
           >
             <TouchableOpacity onPress={handleToggleSelectAll}>
-              <AppText variant="sm" weight="bold" color={colors.brand.primary}>
+              <AppText variant="md" color={colors.brand.primary}>
                 {Object.keys(splitQtyMap).length === activeItems.length ? 'Bỏ chọn tất cả' : 'Chọn tất cả món'}
               </AppText>
             </TouchableOpacity>
 
-            <AppText variant="sm" color={colors.text.muted}>
-              Đã chọn: <AppText variant="sm" weight="bold" color={colors.brand.primary}>{selectedCount}</AppText> món
+            <AppText variant="md" color={colors.text.muted}>
+              Đã chọn: <AppText variant="md" color={colors.brand.primary}>{selectedCount}</AppText> món
             </AppText>
           </View>
 
@@ -165,15 +174,15 @@ export default function SplitItemModal({
                 >
                   {/* Left: Info */}
                   <View style={{ flex: 1, paddingRight: 8 }}>
-                    <AppText variant="md" weight="bold" color={colors.text.primary} numberOfLines={1}>
+                    <AppText variant="md" color={colors.text.primary} numberOfLines={1}>
                       {item.name}
                     </AppText>
                     {mods ? (
-                      <AppText variant="sm" color={colors.text.muted} numberOfLines={1}>
+                      <AppText variant="md" color={colors.text.muted} numberOfLines={1}>
                         {mods}
                       </AppText>
                     ) : null}
-                    <AppText variant="sm" color={colors.brand.primary} style={{ marginTop: 2 }}>
+                    <AppText variant="md" color={colors.brand.primary} style={{ marginTop: 2 }}>
                       {formatPrice(item.unitPrice)}
                     </AppText>
                   </View>
@@ -210,7 +219,7 @@ export default function SplitItemModal({
                     </TouchableOpacity>
 
                     <View style={{ width: 48, alignItems: 'center' }}>
-                      <AppText variant="sm" weight="bold" color={isSelected ? colors.brand.primary : colors.text.primary}>
+                      <AppText variant="md" color={isSelected ? colors.brand.primary : colors.text.primary}>
                         {splitQty} / {item.qty}
                       </AppText>
                     </View>
@@ -250,10 +259,10 @@ export default function SplitItemModal({
             }}
           >
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <AppText variant="sm" color={colors.text.secondary}>
+              <AppText variant="md" color={colors.text.secondary}>
                 Tổng tiền món được tách:
               </AppText>
-              <AppText variant="md" weight="bold" color={colors.brand.primary}>
+              <AppText variant="md" color={colors.brand.primary}>
                 {formatPrice(totalSplitPrice)}
               </AppText>
             </View>
@@ -270,7 +279,7 @@ export default function SplitItemModal({
                   justifyContent: 'center',
                 }}
               >
-                <AppText variant="sm" weight="bold" color={colors.text.secondary}>
+                <AppText variant="md" color={colors.text.secondary}>
                   Huỷ
                 </AppText>
               </TouchableOpacity>
@@ -288,8 +297,8 @@ export default function SplitItemModal({
                 }}
               >
                 <AppText
-                  variant="sm"
-                  weight="bold"
+                  variant="md"
+                 
                   color={selectedCount > 0 ? colors.text.inverse : colors.text.muted}
                 >
                   Chọn Bàn Đích ({selectedCount} món)

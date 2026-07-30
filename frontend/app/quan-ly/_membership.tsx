@@ -1,565 +1,168 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, StyleSheet, TextInput, Alert, TouchableOpacity, ScrollView, FlatList } from 'react-native';
+import { View, StyleSheet, TextInput, Alert, TouchableOpacity, ScrollView } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import { colors, font, formatVND, ss } from '../../lib/theme';
-import { shape } from '../../lib/theme/shape';
 import { request } from '../../lib/api/client';
-import DataTable, { type Column } from '../../lib/components/ui/DataTable';
-import FormModal from '../../lib/components/ui/FormModal';
-import FAB from '../../lib/components/ui/FAB';
 import AppText from '../../lib/components/ui/AppText';
-import { TableSkeleton } from '../../lib/components/ui/Skeleton';
-import EmptyState from '../../lib/components/ui/EmptyState';
+import FormModal from '../../lib/components/ui/FormModal';
 import DetailModal from '../../lib/components/ui/DetailModal';
-
-import ScreenHeader from '../../lib/components/ui/ScreenHeader';
-import { useSidebar } from '../../lib/context/SidebarContext';
+import { useCrud } from '../../lib/hooks/useCrud';
 
 const API = '/api/v1/quan-ly';
 
-export interface MembershipTier {
-  id: string;
-  name: string;
-  min_spend: number;
-  discount_pct: number;
-  color?: string;
-  icon?: string;
-}
+interface Tier { id: string; name: string; min_spend: number; discount_pct: number; }
+type FormState = { name: string; min_spend: string; discount_pct: string; };
 
-function generateFallbackTiers(): MembershipTier[] {
+function fallbackTiers(): Tier[] {
   return [
-    { id: 't1', name: 'Thành Viên Bạc (Silver)', min_spend: 1000000, discount_pct: 5, color: '#64748B', icon: 'medal-outline' },
-    { id: 't2', name: 'Thành Viên Vàng (Gold)', min_spend: 3000000, discount_pct: 10, color: '#D97706', icon: 'medal' },
-    { id: 't3', name: 'Thành Viên Bạch Kim (Platinum)', min_spend: 5000000, discount_pct: 15, color: '#2563EB', icon: 'crown-outline' },
-    { id: 't4', name: 'Thành Viên VIP Kim Cương (Diamond)', min_spend: 10000000, discount_pct: 20, color: '#9333EA', icon: 'crown' },
+    { id: 't1', name: 'Bạc', min_spend: 0, discount_pct: 0 },
+    { id: 't2', name: 'Vàng', min_spend: 1000000, discount_pct: 5 },
+    { id: 't3', name: 'Bạch Kim', min_spend: 5000000, discount_pct: 10 },
+    { id: 't4', name: 'Kim Cương', min_spend: 20000000, discount_pct: 15 },
   ];
 }
 
-export default function MembershipScreen({ isSearchOpen }: { isSearchOpen?: boolean } = {}) {
+const TIER_COLORS = ['#64748B', '#F59E0B', '#1EA1F1', '#8B5CF6'];
+
+export default function MembershipScreen(_props?: { isSearchOpen?: boolean }) {
   const { isWide } = useResponsive();
-  const { openSidebar } = useSidebar();
-  const [tiers, setTiers] = useState<MembershipTier[]>([]);
-  const [search, setSearch] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [editingTier, setEditingTier] = useState<MembershipTier | null>(null);
-  const [form, setForm] = useState({ name: '', min_spend: '', discount_pct: '' });
 
-  const filteredTiers = useMemo(() => {
-    if (!search.trim()) return tiers;
-    const q = search.toLowerCase().trim();
-    return tiers.filter(t => t.name.toLowerCase().includes(q));
-  }, [tiers, search]);
+  const { data: tiers, loading, showForm, setShowForm, editingId, form, setForm,
+    selectedItem: selected, setSelectedId: setSelected,
+    loadData, handleSave, handleDelete, openAdd, openEdit } = useCrud<Tier, FormState>({
+    fetchFn: () => request(`${API}/membership-tiers`).then((d: any) => Array.isArray(d) ? d : (d?.items || [])),
+    createFn: (p) => request(`${API}/membership-tiers`, { method: 'POST', body: JSON.stringify(p) }),
+    updateFn: (id, p) => request(`${API}/membership-tiers/${id}`, { method: 'PUT', body: JSON.stringify(p) }),
+    deleteFn: (id) => request(`${API}/membership-tiers/${id}`, { method: 'DELETE' }),
+    fallbackData: fallbackTiers(),
+    formState: { name: '', min_spend: '', discount_pct: '' },
+    formFromItem: (t: Tier) => ({ name: t.name, min_spend: String(t.min_spend || ''), discount_pct: String(t.discount_pct || '') }),
+    buildPayload: (f) => ({ name: f.name, min_spend: parseFloat(f.min_spend) || 0, discount_pct: parseFloat(f.discount_pct) || 0 }),
+    nameLabel: 'thẻ hạng',
+  });
 
-  const load = useCallback(async () => {
-    try {
-      setLoading(true);
-      const data: any = await request(`${API}/membership-tiers`);
-      const list = Array.isArray(data) ? data : (data?.items || []);
-      if (list && list.length > 0) {
-        setTiers(list);
-      } else {
-        setTiers(generateFallbackTiers());
-      }
-    } catch {
-      setTiers(generateFallbackTiers());
-    } finally {
-      setLoading(false);
+  const sorted = useMemo(() => [...tiers].sort((a, b) => a.min_spend - b.min_spend), [tiers]);
+
+  const renderDetailPanel = () => {
+    if (!selected) {
+      return (
+        <View style={ss.detailPanelEmpty}>
+          <AppText variant="md" color="#050505">Chi Tiết Thẻ Hạng</AppText>
+          <AppText variant="md" color="#65676B" style={{ textAlign: 'center' }}>Chọn thẻ để xem chi tiết</AppText>
+          <TouchableOpacity style={ss.panelCta} onPress={openAdd}><Icon name="plus" size={18} color="#FFF" /><AppText variant="md" color="#FFF">Thêm thẻ mới</AppText></TouchableOpacity>
+        </View>
+      );
     }
-  }, []);
-
-  useEffect(() => { load(); }, [load]);
-
-  const openAdd = () => { setEditingTier(null); setForm({ name: '', min_spend: '', discount_pct: '' }); setShowForm(true); };
-  const openEdit = (t: MembershipTier) => {
-    setEditingTier(t);
-    setForm({ name: t.name, min_spend: String(t.min_spend || 0), discount_pct: String(t.discount_pct || 0) });
-    setShowForm(true);
-  };
-
-  const handleSave = async () => {
-    if (!form.name || !form.discount_pct) { Alert.alert('Lỗi', 'Tên và % giảm giá là bắt buộc'); return; }
-    try {
-      const payload = {
-        name: form.name,
-        min_spend: parseFloat(form.min_spend) || 0,
-        discount_pct: parseFloat(form.discount_pct) || 0,
-      };
-      if (editingTier) {
-        await request(`${API}/membership-tiers/${editingTier.id}`, { method: 'PUT', body: JSON.stringify(payload) });
-      } else {
-        await request(`${API}/membership-tiers`, { method: 'POST', body: JSON.stringify(payload) });
-      }
-      setShowForm(false); load();
-    } catch { Alert.alert('Lỗi', 'Không thể lưu hạng thành viên'); }
-  };
-
-  const handleDelete = (id: string, name: string) => {
-    Alert.alert('Xác nhận xóa', `Xóa hạng thành viên "${name}"?`, [
-      { text: 'Hủy', style: 'cancel' },
-      { text: 'Xóa', style: 'destructive', onPress: async () => {
-        try { await request(`${API}/membership-tiers/${id}`, { method: 'DELETE' }); load(); }
-        catch { Alert.alert('Lỗi', 'Không thể xóa hạng thành viên'); }
-      }},
-    ]);
-  };
-
-  const columns: Column<MembershipTier>[] = [
-    {
-      key: 'name',
-      title: 'Hạng thành viên',
-      flex: 1,
-      render: (t) => (
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-          <View style={[styles.avatarCircle, { backgroundColor: '#FEF3C7', width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' }]}>
-            <AppText variant="sm" weight="bold" color={t.color || colors.brand.primary} style={{ fontSize: 11 }}>
-              {t.name?.slice(0, 2).toUpperCase() || 'VIP'}
-            </AppText>
+    const idx = sorted.findIndex(t => t.id === selected.id);
+    const color = TIER_COLORS[idx % TIER_COLORS.length] || '#64748B';
+    return (
+      <ScrollView style={ss.detailPanel} showsVerticalScrollIndicator={false}>
+        <View style={{ gap: 12, alignItems: 'center' }}>
+          <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: color, alignItems: 'center', justifyContent: 'center' }}>
+            <Icon name="crown" size={32} color="#FFF" />
           </View>
-          <AppText variant="sm" weight="bold" color="#050505" numberOfLines={1}>{t.name}</AppText>
-        </View>
-      ),
-    },
-    {
-      key: 'min_spend',
-      title: 'Mức chi tiêu tối thiểu',
-      width: 160,
-      align: 'right',
-      sortable: true,
-      sortValue: (t) => t.min_spend || 0,
-      render: (t) => <AppText variant="sm" color="#050505">{formatVND(t.min_spend || 0)}</AppText>,
-    },
-    {
-      key: 'discount_pct',
-      title: 'Ưu đãi giảm giá',
-      width: 130,
-      align: 'right',
-      sortable: true,
-      sortValue: (t) => t.discount_pct || 0,
-      render: (t) => (
-        <View style={{ backgroundColor: '#ECFDF5', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999, alignSelf: 'flex-end' }}>
-          <AppText variant="sm" weight="bold" color={colors.status.success}>Giảm {t.discount_pct}%</AppText>
-        </View>
-      ),
-    },
-  ];
-
-  const maxDiscount = useMemo(() => {
-    return Math.max(0, ...tiers.map(t => t.discount_pct || 0));
-  }, [tiers]);
-
-  const renderPanel = () => (
-    <View style={styles.panelBox}>
-      <View style={styles.panelHeader}>
-        <AppText variant="md" weight="bold" color="#050505">Quy Tắc Tích Điểm & Hạng VIP</AppText>
-      </View>
-
-      <View style={{ gap: 10, paddingTop: 4 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: colors.brand.primaryBg, padding: 12, borderRadius: 12 }}>
-          <AppText variant="sm" color="#65676B">Tổng số hạng hội viên</AppText>
-          <AppText variant="md" weight="bold" color={colors.brand.primary}>{tiers.length} hạng</AppText>
-        </View>
-
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#ECFDF5', padding: 12, borderRadius: 12 }}>
-          <AppText variant="sm" color="#65676B">Mức giảm giá tối đa</AppText>
-          <AppText variant="md" weight="bold" color={colors.status.success}>Giảm {maxDiscount}%</AppText>
-        </View>
-      </View>
-
-      <View style={styles.panelDivider} />
-
-      <AppText variant="sm" weight="bold" color="#050505">Danh Sách Quyền Lợi Hạng VIP</AppText>
-      <ScrollView style={{ maxHeight: 220 }} showsVerticalScrollIndicator={false}>
-        {tiers.map((t, i) => (
-          <View key={t.id} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: t.color || colors.brand.primary }} />
-              <AppText variant="sm" weight="bold" color="#050505">{t.name}</AppText>
-            </View>
-            <AppText variant="sm" weight="bold" color={colors.status.success}>Giảm {t.discount_pct}%</AppText>
+          <AppText variant="md" color="#050505">{selected.name}</AppText>
+          <View style={{ width: '100%', backgroundColor: colors.surface.app, borderRadius: 12, padding: 12, gap: 8 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}><AppText variant="md" color="#64748B">Hạng</AppText><AppText variant="md" color="#050505">#{idx + 1}</AppText></View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}><AppText variant="md" color="#64748B">Chi tiêu tối thiểu</AppText><AppText variant="md" color={colors.brand.primary}>{formatVND(selected.min_spend)}</AppText></View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}><AppText variant="md" color="#64748B">Giảm giá</AppText><AppText variant="md" color={colors.status.success}>{selected.discount_pct}%</AppText></View>
           </View>
-        ))}
+          <TouchableOpacity style={ss.panelCta} onPress={() => openEdit(selected)}><Icon name="pencil" size={16} color={colors.text.inverse} /><AppText variant="md" color={colors.text.inverse}>Chỉnh sửa</AppText></TouchableOpacity>
+        </View>
       </ScrollView>
-
-      <TouchableOpacity style={styles.panelCta} onPress={openAdd}>
-        <Icon name="plus" size={16} color={colors.text.inverse} />
-        <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm hạng thành viên</AppText>
-      </TouchableOpacity>
-    </View>
-  );
-
-  const [selectedTier, setSelectedTier] = useState<MembershipTier | null>(null);
-
-  const renderMobileTierCard = ({ item: t }: { item: MembershipTier }) => (
-    <TouchableOpacity
-      style={ss.listRow}
-      onPress={() => setSelectedTier(t)}
-      activeOpacity={0.7}
-    >
-      <View style={[ss.iconCircleSm, { backgroundColor: '#FEF3C7' }]}>
-        <Icon name={(t.icon as any) || 'crown'} size={16} color={t.color || colors.brand.primary} />
-      </View>
-      <View style={{ flex: 1, paddingLeft: 10, justifyContent: 'center' }}>
-        <AppText variant="sm" weight="bold" color="#0F172A" numberOfLines={1}>{t.name}</AppText>
-        <AppText variant="sm" color="#64748B" numberOfLines={1} style={{ marginTop: 2, fontSize: 11 }}>
-          Tối thiểu: {formatVND(t.min_spend || 0)}
-        </AppText>
-      </View>
-      <View style={{ backgroundColor: '#ECFDF5', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999 }}>
-        <AppText variant="sm" weight="bold" color={colors.status.success} style={{ fontSize: 11 }}>Giảm {t.discount_pct}%</AppText>
-      </View>
-    </TouchableOpacity>
-  );
+    );
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.surface.app, position: 'relative' }}>
-      {/* Top Mobile Header */}
-      {!isWide && (
-        isSearchOpen || search.length > 0 ? (
-          <View style={ss.topActionBar}>
-            <View style={ss.searchInputWrap}>
-              <Icon name="magnify" size={20} color="#64748B" />
-              <TextInput
-                value={search}
-                onChangeText={setSearch}
-                placeholder="Tìm hạng thành viên..."
-                placeholderTextColor="#94A3B8"
-                style={ss.searchTextInput}
-                autoFocus
-              />
-              {search.length > 0 && (
-                <TouchableOpacity onPress={() => setSearch('')}>
-                  <Icon name="close-circle" size={18} color="#94A3B8" />
-                </TouchableOpacity>
-              )}
-            </View>
-            <TouchableOpacity onPress={openAdd} style={ss.addBtn}>
-              <Icon name="plus" size={16} color={colors.text.inverse} />
-              <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm hạng</AppText>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View style={ss.mobileActionRow}>
-            <AppText variant="md" weight="bold" color="#050505">{filteredTiers.length} hạng thành viên</AppText>
-            <TouchableOpacity onPress={openAdd} style={ss.addBtn}>
-              <Icon name="plus" size={16} color={colors.text.inverse} />
-              <AppText variant="sm" weight="bold" color={colors.text.inverse}>Thêm hạng</AppText>
-            </TouchableOpacity>
-          </View>
-        )
-      )}
+      <View style={ss.topActionBar}>
+        <View style={{ flex: 1 }} />
+        <TouchableOpacity style={ss.addBtn} onPress={openAdd}><Icon name="plus" size={18} color="#FFF" /><AppText variant="md" color="#FFF">Thêm thẻ</AppText></TouchableOpacity>
+      </View>
 
-      {/* 📊 Executive KPI Strip (Desktop only) */}
       {isWide && (
         <View style={ss.metricContainer}>
-          <View style={ss.metricCard}>
-            <View style={[ss.metricIcon, { backgroundColor: '#FEF3C7' }]}>
-              <AppText variant="sm" weight="bold" color="#D97706" style={{ fontSize: 11 }}>VIP</AppText>
-            </View>
-            <View style={{ flex: 1 }}>
-              <AppText variant="md" weight="bold" color="#050505">{tiers.length} hạng thành viên</AppText>
-              <AppText variant="sm" color="#65676B">Tổng số hạng VIP</AppText>
-            </View>
-          </View>
-
-          <View style={ss.metricCard}>
-            <View style={[ss.metricIcon, { backgroundColor: '#ECFDF5' }]}>
-              <AppText variant="sm" weight="bold" color={colors.status.success} style={{ fontSize: 12 }}>%</AppText>
-            </View>
-            <View style={{ flex: 1 }}>
-              <AppText variant="md" weight="bold" color={colors.status.success}>Giảm {maxDiscount}%</AppText>
-              <AppText variant="sm" color="#65676B">Ưu đãi tối đa</AppText>
-            </View>
-          </View>
-
-          <View style={ss.metricCard}>
-            <View style={[ss.metricIcon, { backgroundColor: '#EEF2FF' }]}>
-              <AppText variant="sm" weight="bold" color="#2563EB" style={{ fontSize: 11 }}>TĐ</AppText>
-            </View>
-            <View style={{ flex: 1 }}>
-              <AppText variant="md" weight="bold" color="#2563EB">Tự động tích điểm</AppText>
-              <AppText variant="sm" color="#65676B">Phân hạng hệ thống</AppText>
-            </View>
-          </View>
+          <View style={ss.metricCard}><View style={[ss.metricIcon, { backgroundColor: '#FEF3C7' }]}><Icon name="crown" size={16} color="#D97706" /></View><View><AppText variant="md" color="#050505">{sorted.length} hạng</AppText><AppText variant="md" color="#64748B">Thẻ hạng</AppText></View></View>
+          <View style={ss.metricCard}><View style={[ss.metricIcon, { backgroundColor: '#ECFDF5' }]}><Icon name="percent" size={16} color={colors.status.success} /></View><View><AppText variant="md" color={colors.status.success}>{Math.max(...sorted.map(t => t.discount_pct), 0)}%</AppText><AppText variant="md" color="#64748B">Giảm tối đa</AppText></View></View>
         </View>
       )}
 
-      {!isWide && (
-        <DetailModal
-          visible={!!selectedTier}
-          title={selectedTier?.name || 'Chi tiết hạng thành viên'}
-          subtitle={selectedTier ? `Giảm ${selectedTier.discount_pct}% · Chi tiêu từ ${formatVND(selectedTier.min_spend || 0)}` : undefined}
-          onClose={() => setSelectedTier(null)}
-        >
-          {renderPanel()}
-        </DetailModal>
-      )}
       {isWide ? (
-        <View style={{ flex: 1, flexDirection: 'row', padding: 12, gap: 12 }}>
+        <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: 12, paddingBottom: 12, gap: 12 }}>
           <View style={{ flex: 0.55 }}>
-            <DataTable<MembershipTier>
-              columns={columns}
-              data={filteredTiers}
-              getRowId={(t) => t.id}
-              loading={loading}
-              onRefresh={load}
-              compact
-              emptyIcon="crown-outline"
-              emptyTitle="Chưa có hạng thành viên"
-              emptySubtitle="Nhấn + để tạo hạng thành viên đầu tiên"
-            />
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 10, paddingBottom: 24 }}>
+              {sorted.map((tier, idx) => {
+                const color = TIER_COLORS[idx % TIER_COLORS.length] || '#64748B';
+                const isSel = selected?.id === tier.id;
+                return (
+                  <TouchableOpacity key={tier.id} onPress={() => setSelected(isSel ? null : tier.id)}
+                    style={{ backgroundColor: '#FFF', borderRadius: 14, borderWidth: 1, borderColor: isSel ? color : '#E2E8F0', padding: 12 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                      <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: color, alignItems: 'center', justifyContent: 'center' }}>
+                        <Icon name="crown" size={22} color="#FFF" />
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <AppText variant="md" color="#050505">Hạng {tier.name}</AppText>
+                        <AppText variant="md" color="#64748B">Giảm {tier.discount_pct}% · Chi tiêu từ {formatVND(tier.min_spend)}</AppText>
+                      </View>
+                      <View style={{ backgroundColor: '#F1F5F9', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999 }}>
+                        <AppText variant="md" color="#0F172A">#{idx + 1}</AppText>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
           </View>
-          <View style={{ flex: 0.45 }}>{renderPanel()}</View>
+          <View style={{ flex: 0.45 }}>{renderDetailPanel()}</View>
         </View>
       ) : (
-        <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 6, paddingTop: 6, gap: 8, paddingBottom: 100 }}>
+        <ScrollView contentContainerStyle={{ paddingHorizontal: 6, paddingTop: 6, gap: 8, paddingBottom: 100 }}>
           <View style={ss.sectionWrap}>
-            <View style={ss.sectionHeader}>
-              <View style={[ss.iconCircleSm, { backgroundColor: '#FEF3C7' }]}>
-                <Icon name="crown" size={14} color="#D97706" />
-              </View>
-              <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1 }}>
-                DANH SÁCH HẠNG THÀNH VIÊN ({filteredTiers.length})
-              </AppText>
-            </View>
-
-            <View style={styles.sectionItems}>
-              {filteredTiers.map((t) => (
-                <React.Fragment key={t.id}>
-                  {renderMobileTierCard({ item: t })}
-                </React.Fragment>
-              ))}
+            <View style={ss.sectionHeader}><AppText variant="md" color="#1E293B" style={{ flex: 1, letterSpacing: 0.5 }}>THẺ HẠNG ({sorted.length})</AppText></View>
+            <View style={ss.sectionItems}>
+              {sorted.map((tier, idx) => {
+                const color = TIER_COLORS[idx % TIER_COLORS.length] || '#64748B';
+                return (
+                  <View key={tier.id} style={ss.listRow}>
+                    <View style={[ss.iconCircleSm, { backgroundColor: color }]}><Icon name="crown" size={16} color="#FFF" /></View>
+                    <View style={{ flex: 1, paddingLeft: 10 }}>
+                      <AppText variant="md" color="#0F172A">{tier.name}</AppText>
+                      <AppText variant="md" color="#64748B">Giảm {tier.discount_pct}% · từ {formatVND(tier.min_spend)}</AppText>
+                    </View>
+                    <TouchableOpacity style={ss.miniActionBtn} onPress={() => { setSelected(tier.id); }}><Icon name="eye-outline" size={16} color={colors.brand.primary} /></TouchableOpacity>
+                  </View>
+                );
+              })}
             </View>
           </View>
         </ScrollView>
       )}
 
-      <FormModal
-        visible={showForm}
-        title={editingTier ? 'Sửa hạng thành viên' : 'Thêm hạng thành viên'}
+      <FormModal visible={showForm} title={editingId ? 'Sửa thẻ hạng' : 'Thêm thẻ hạng'}
         onClose={() => setShowForm(false)}
-        onSave={handleSave}
-      >
+        onSave={() => handleSave(() => !form.name ? 'Tên thẻ bắt buộc' : null)}>
         <View style={{ gap: 12 }}>
-          <TextInput style={styles.input} placeholder="Tên hạng (VD: VIP Vàng) (*)" value={form.name} onChangeText={(v) => setForm(f => ({ ...f, name: v }))} />
-          <TextInput style={styles.input} placeholder="Mức chi tiêu tối thiểu (VNĐ)" keyboardType="numeric" value={form.min_spend} onChangeText={(v) => setForm(f => ({ ...f, min_spend: v }))} />
-          <TextInput style={styles.input} placeholder="Tỷ lệ giảm giá (%) (*)" keyboardType="numeric" value={form.discount_pct} onChangeText={(v) => setForm(f => ({ ...f, discount_pct: v }))} />
+          <TextInput style={s.input} placeholder="Tên thẻ (*)" value={form.name} onChangeText={(v) => setForm((f: any) => ({ ...f, name: v }))} />
+          <TextInput style={s.input} placeholder="Chi tiêu tối thiểu (VNĐ)" keyboardType="numeric" value={form.min_spend} onChangeText={(v) => setForm((f: any) => ({ ...f, min_spend: v }))} />
+          <TextInput style={s.input} placeholder="Giảm giá (%)" keyboardType="numeric" value={form.discount_pct} onChangeText={(v) => setForm((f: any) => ({ ...f, discount_pct: v }))} />
         </View>
       </FormModal>
+
+      {!isWide && (
+        <DetailModal visible={!!selected} title={selected?.name || 'Chi tiết'}
+          subtitle={selected ? `Hạng thẻ thành viên` : undefined}
+          onClose={() => setSelected(null)}
+          onEdit={selected ? () => { openEdit(selected); setSelected(null); } : undefined}
+          onDelete={selected ? () => { handleDelete(selected.id, selected.name); } : undefined}>
+          {renderDetailPanel()}
+        </DetailModal>
+      )}
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  mobileActionRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: colors.surface.card,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border.light,
-  },
-  addBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 14,
-    height: 40,
-    borderRadius: 999,
-    backgroundColor: colors.brand.primary,
-  },
-
-  /* Facebook Story Highlight Metric Cards Container */
-  fbMetricContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    gap: 8,
-    backgroundColor: colors.surface.card,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border.light,
-    marginBottom: 8,
-    flexWrap: 'wrap',
-  },
-  fbMetricCard: {
-    flex: 1,
-    minWidth: 140,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    backgroundColor: colors.surface.card,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  fbMetricIcon: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  /* 📱 Mobile Full-Width Facebook Feed Card Block */
-  itemMobile: {
-    backgroundColor: colors.surface.card,
-    width: '100%',
-    marginBottom: 8,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: colors.border.light,
-    paddingVertical: 12,
-  },
-  cardHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    paddingHorizontal: 12,
-  },
-  avatarCircle: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cardActionDivider: {
-    height: 1,
-    backgroundColor: colors.border.light,
-    marginTop: 10,
-  },
-  panelBtnSecondary: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    height: 44,
-    borderRadius: 999,
-    backgroundColor: colors.brand.primaryBg,
-  },
-  panelBtnDanger: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    height: 44,
-    borderRadius: 999,
-    backgroundColor: '#FEE2E2',
-  },
-
-  panelBox: {
-    backgroundColor: colors.surface.card,
-    borderRadius: 16,
-    padding: 16,
-    gap: 12,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  panelHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border.light,
-  },
-  panelDivider: { height: 1, backgroundColor: colors.border.light },
-  panelCta: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, backgroundColor: colors.brand.primary, borderRadius: 999, height: 44, marginTop: 4 },
-  topActionBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: colors.surface.card,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border.light,
-  },
-  searchInputWrap: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    backgroundColor: '#F1F5F9',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    height: 38,
-  },
-  searchTextInput: {
-    flex: 1,
-    fontSize: 14,
-    color: '#0F172A',
-  },
-  listRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    height: 48,
-    backgroundColor: colors.surface.card,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
-  },
-  sectionWrap: {
-    backgroundColor: colors.surface.card,
-    marginTop: 8,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: '#F8FAFC',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
-  },
-  sectionItems: {
-    backgroundColor: colors.surface.card,
-  },
-  metricContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    gap: 8,
-    backgroundColor: colors.surface.card,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border.light,
-    marginBottom: 8,
-    flexWrap: 'wrap',
-  },
-  metricCard: {
-    flex: 1,
-    minWidth: 140,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    backgroundColor: colors.surface.card,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  metricIcon: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  input: {
-    height: 44,
-    borderWidth: 1,
-    borderColor: colors.border.default,
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    ...font.md,
-    color: colors.text.primary,
-  },
+const s = StyleSheet.create({
+  input: { height: 44, borderWidth: 1, borderColor: colors.border.default, borderRadius: 8, paddingHorizontal: 12, color: colors.text.primary },
 });

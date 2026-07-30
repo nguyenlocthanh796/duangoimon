@@ -28,10 +28,13 @@ async def list_transactions(
     type_filter: str | None = Query(None, alias="type"),
     category: str | None = None,
     branch_id: str | None = Query(None),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(50, ge=1, le=200),
     db: AsyncSession = Depends(get_db),
     _user: dict = Depends(get_current_user),
 ):
     """Return transactions list + computed totals (thu, chi, balance)."""
+    from sqlalchemy import func as _func
     base = select(Transaction)
     if type_filter:
         base = base.where(Transaction.type == type_filter)
@@ -44,7 +47,9 @@ async def list_transactions(
         except ValueError:
             pass
 
-    result = await db.execute(base.order_by(Transaction.created_at.desc()).limit(100))
+    total_count = await db.scalar(select(_func.count()).select_from(base.subquery()))
+    offset = (page - 1) * page_size
+    result = await db.execute(base.order_by(Transaction.created_at.desc()).offset(offset).limit(page_size))
     rows = result.scalars().all()
 
     total_thu = sum(t.amount for t in rows if t.type == "thu")
@@ -63,7 +68,9 @@ async def list_transactions(
             }
             for t in rows
         ],
-        "total": len(rows),
+        "total": total_count or 0,
+        "page": page,
+        "page_size": page_size,
         "total_thu": float(total_thu),
         "total_chi": float(total_chi),
     }
@@ -81,7 +88,7 @@ async def update_transaction(
     tx_id: str,
     body: TransactionUpdate,
     db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(require_role("admin", "ke_toan")),
+    current_user: dict = Depends(require_role("admin", "accountant")),
 ):
     try:
         uuid_val = parse_uuid(tx_id)
@@ -122,7 +129,7 @@ class TransactionBulkDelete(BaseModel):
 async def bulk_delete_transactions(
     body: TransactionBulkDelete,
     db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(require_role("admin", "ke_toan")),
+    current_user: dict = Depends(require_role("admin", "accountant")),
 ):
     try:
         uuids = [parse_uuid(i) for i in body.ids]
@@ -137,7 +144,7 @@ async def bulk_delete_transactions(
 async def create_transaction(
     body: TransactionCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: dict = Depends(require_role("admin", "ke_toan")),
+    current_user: dict = Depends(require_role("admin", "accountant")),
 ):
     tx = Transaction(
         type=body.type,

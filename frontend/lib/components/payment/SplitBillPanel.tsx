@@ -58,7 +58,7 @@ export default function SplitBillPanel({
     >
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
         <Text style={{ ...font.lg, color: colors.text.primary }}>Chia hóa đơn</Text>
-        <TouchableOpacity onPress={onCancel}>
+        <TouchableOpacity onPress={onCancel} hitSlop={12} style={{ minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' }}>
           <Icon name="close" size={20} color={colors.icon.muted} />
         </TouchableOpacity>
       </View>

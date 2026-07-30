@@ -45,9 +45,14 @@ CREATE TABLE IF NOT EXISTS public.audit_logs (
     resource VARCHAR(50),
     resource_id UUID,
     old_value JSONB,
-    new_value JSONB,
-    ip_address VARCHAR(45),
     created_at TIMESTAMPTZ DEFAULT now()
+);
+
+-- POS Settings
+CREATE TABLE IF NOT EXISTS public.pos_settings (
+    id VARCHAR(50) PRIMARY KEY DEFAULT 'default_store',
+    settings_data JSONB NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT now()
 );
 
 -- ============================================================

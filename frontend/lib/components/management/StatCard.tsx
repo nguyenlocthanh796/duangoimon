@@ -1,10 +1,8 @@
 import React from 'react';
-import { View, StyleSheet, useWindowDimensions } from 'react-native';
+import { View, StyleSheet, useWindowDimensions, Text } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { colors, font } from '../../theme';
-import { shape } from '../../theme/shape';
+import { colors } from '../../theme';
 import SkeletonBox from '../ui/SkeletonBox';
-import AppText from '../ui/AppText';
 
 interface StatCardProps {
   label: string;
@@ -34,96 +32,107 @@ export default function StatCard({
   const showTrend = !hideTrend && growth !== undefined;
 
   return (
-    <View style={[styles.card, { padding: isWide ? 16 : 12 }, style]}>
-      {/* Trend Badge */}
-      {showTrend && (
-        <View style={styles.trendBadge}>
-          <Icon
-            name={growth! >= 0 ? 'arrow-top-right' : 'arrow-bottom-right'}
-            size={12}
-            color={growth! >= 0 ? colors.status.success : colors.status.danger}
-          />
-          <AppText variant="sm" weight="bold" color={growth! >= 0 ? colors.status.success : colors.status.danger}>
-            {growth! >= 0 ? '+' : ''}
-            {growth}%
-          </AppText>
-        </View>
-      )}
-
-      {/* Row 1: Icon + Value */}
-      <View style={styles.row1}>
+    <View style={[styles.card, { padding: isWide ? 14 : 12 }, style]}>
+      {/* Header Row: Icon + Trend Badge */}
+      <View style={styles.headerRow}>
         <View style={[styles.iconBg, { backgroundColor: bgColor }]}>
           <Icon name={icon as any} size={18} color={color} />
         </View>
-        {loading ? (
-          <SkeletonBox w={'60%'} h={24} />
-        ) : (
-          <AppText
-            variant="md"
-            weight="bold"
-            color={colors.text.primary}
-            numberOfLines={1}
-            adjustsFontSizeToFit
-            minimumFontScale={0.75}
-            style={styles.valueText}
+
+        {showTrend && (
+          <View
+            style={[
+              styles.trendBadge,
+              {
+                backgroundColor: growth! >= 0 ? '#ECFDF5' : '#FEE2E2',
+                borderColor: growth! >= 0 ? '#A7F3D0' : '#FECACA',
+              },
+            ]}
           >
-            {value}
-          </AppText>
+            <Icon
+              name={growth! >= 0 ? 'arrow-top-right' : 'arrow-bottom-right'}
+              size={12}
+              color={growth! >= 0 ? '#059669' : '#DC2626'}
+            />
+            <Text
+              style={[
+                styles.trendText,
+                { color: growth! >= 0 ? '#059669' : '#DC2626' },
+              ]}
+            >
+              {growth! >= 0 ? '+' : ''}
+              {growth}%
+            </Text>
+          </View>
         )}
       </View>
 
-      {/* Row 2: Label — Item Content size (17px) with center text alignment */}
-      <AppText
-        variant="md"
-        color={colors.text.secondary}
-        numberOfLines={1}
-        style={styles.labelText}
-      >
+      {/* Main Metric Value (Bold 18px) */}
+      <View style={styles.valueRow}>
+        {loading ? (
+          <SkeletonBox w={'70%'} h={24} style={{ marginTop: 8 }} />
+        ) : (
+          <Text style={styles.valueText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
+            {value}
+          </Text>
+        )}
+      </View>
+
+      {/* Subtitle Label (Regular 13px #64748B) */}
+      <Text style={styles.labelText} numberOfLines={1}>
         {label}
-      </AppText>
+      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.lg,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.border.light,
+    borderColor: '#E5E9F0',
+    justifyContent: 'space-between',
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  iconBg: {
+    width: 34,
+    height: 34,
+    borderRadius: 8,
+    alignItems: 'center',
     justifyContent: 'center',
   },
   trendBadge: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 2,
     paddingHorizontal: 6,
     paddingVertical: 2,
-    borderRadius: shape.radius.sm,
-    backgroundColor: colors.surface.app,
+    borderRadius: 6,
+    borderWidth: 1,
   },
-  row1: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  iconBg: {
-    width: 36,
-    height: 36,
-    borderRadius: shape.radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
+  trendText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  valueRow: {
+    marginTop: 8,
   },
   valueText: {
-    fontSize: 16,
-    fontFamily: 'BeVietnamPro_700Bold',
+    fontSize: 18,
     fontWeight: '700',
-    color: colors.text.primary,
-    letterSpacing: -0.2,
-    flex: 1,
-    flexShrink: 1,
+    color: '#0F172A',
+    letterSpacing: -0.3,
   },
   labelText: {
-    marginTop: 6,
-    textAlign: 'center',
+    fontSize: 13,
+    fontWeight: '400',
+    color: '#64748B',
+    marginTop: 2,
   },
 });
+

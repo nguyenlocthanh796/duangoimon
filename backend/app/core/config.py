@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     hardcoded_user: str = "admin"
     hardcoded_pass: str  # MUST be set via env HARDCODED_PASS — no default
 
-    model_config = {"env_file": ".env", "env_file_encoding": "utf-8", "extra": "ignore"}
+    model_config = {"env_file": "../.env", "env_file_encoding": "utf-8", "extra": "ignore"}
 
     def __init__(self, **data):
         super().__init__(**data)

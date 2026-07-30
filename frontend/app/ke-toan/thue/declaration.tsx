@@ -77,23 +77,23 @@ export default function DeclarationScreen() {
     >
       <View style={styles.cardBox}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-          <AppText variant="md" weight="bold" color="#0F172A">Danh Sách Tờ Khai Thuế & Bảng Kê (TT 40/2021)</AppText>
+          <AppText variant="md" color="#0F172A">Danh Sách Tờ Khai Thuế & Bảng Kê (TT 40/2021)</AppText>
           <AppText variant="sm" color="#64748B">{declarations.length} kỳ kê khai</AppText>
         </View>
 
         {declarations.map((item, idx) => (
           <View key={item.id || idx} style={styles.itemRow}>
             <View style={styles.badgeForm}>
-              <AppText variant="sm" weight="bold" color={colors.brand.primary}>{item.form}</AppText>
+              <AppText variant="sm" color={colors.brand.primary}>{item.form}</AppText>
             </View>
             <View style={{ flex: 1 }}>
-              <AppText variant="md" weight="bold" color="#0F172A" numberOfLines={1}>{item.name}</AppText>
+              <AppText variant="md" color="#0F172A" numberOfLines={1}>{item.name}</AppText>
               <AppText variant="sm" color="#64748B" style={{ marginTop: 2 }}>
                 Kỳ: {item.period} · Hạn nộp: {item.due_date}
               </AppText>
             </View>
             <TouchableOpacity style={styles.xmlBtn} onPress={() => handleExportXml(item)} activeOpacity={0.7}>
-              <AppText variant="sm" weight="bold" color="#F97316">Xuất XML</AppText>
+              <AppText variant="sm" color="#F97316">Xuất XML</AppText>
             </TouchableOpacity>
           </View>
         ))}

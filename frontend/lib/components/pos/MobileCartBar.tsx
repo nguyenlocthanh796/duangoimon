@@ -1,187 +1,237 @@
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, TouchableOpacity, ActivityIndicator, Platform, Animated } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
-import { colors, font, formatPrice } from '../../theme';
-import { shape } from '../../theme/shape';
+import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
+import { formatPrice } from '../../theme';
+import AppText from '../../components/ui/AppText';
+import { haptic } from '../../haptic';
 
 interface MobileCartBarProps {
   itemCount: number;
   total: number;
   onPress: () => void;
-  onSendToKitchen: () => void;
   onSave: () => void;
   onPay: () => void;
   submitting: boolean;
-  hasUnsentItems?: boolean;
 }
 
 export default function MobileCartBar({
   itemCount,
   total,
   onPress,
-  onSendToKitchen,
   onSave,
   onPay,
   submitting,
-  hasUnsentItems = false,
 }: MobileCartBarProps) {
   const insets = useSafeAreaInsets();
   const hasItems = itemCount > 0;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const prevCount = useRef(itemCount);
+
+  useEffect(() => {
+    if (itemCount > prevCount.current) {
+      Animated.spring(scaleAnim, {
+        toValue: 1.05,
+        useNativeDriver: true,
+        speed: 50,
+        bounciness: 12,
+      }).start(() => {
+        Animated.spring(scaleAnim, {
+          toValue: 1,
+          useNativeDriver: true,
+          speed: 20,
+          bounciness: 4,
+        }).start();
+      });
+    }
+    prevCount.current = itemCount;
+  }, [itemCount, scaleAnim]);
 
   return (
-    <View
+    <Animated.View
       style={{
+        transform: [{ scale: scaleAnim }],
         position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: colors.surface.card,
-        paddingBottom: 6,
-        ...shape.shadow.top,
-        zIndex: 100,
+        bottom: Platform.OS === 'web' ? 10 : Math.max(Math.floor(insets.bottom * 0.5), 6) + 6,
+        left: 12,
+        right: 12,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: '#E2E8F0',
+        paddingVertical: 4,
+        paddingHorizontal: 4,
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 10,
+        elevation: 10,
+        zIndex: 9999,
       }}
     >
-      {/* ROW 1: Mini-cart info bar — luôn hiển thị */}
-      <TouchableOpacity
-        onPress={onPress}
-        activeOpacity={0.7}
-        disabled={!hasItems}
-        style={{
-          height: 34,
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingHorizontal: 12,
-          backgroundColor: colors.surface.miniCartBg,
-          borderTopWidth: 1,
-          borderTopColor: colors.border.default,
-        }}
-      >
-        <MaterialCommunityIcons
-          name="shopping"
-          size={16}
-          color={hasItems ? colors.text.primary : colors.text.placeholder}
-          style={{ marginRight: 6 }}
-        />
-        <Text
-          style={{
-            flex: 1,
-            ...font.sm,
-            color: hasItems ? colors.text.primary : colors.text.placeholder,
-          }}
-        >
-          {hasItems ? `${itemCount} món đã chọn` : 'Chưa có món nào'}
-        </Text>
-        {hasItems && (
-          <Text
-            style={{
-              ...font.mdBold,
-              color: colors.brand.primary,
-            }}
-          >
-            {formatPrice(total)}
-          </Text>
-        )}
-      </TouchableOpacity>
-
-      {/* ROW 2: Action buttons */}
       <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          paddingHorizontal: 12,
-          paddingVertical: 8,
-          gap: 8,
-          backgroundColor: colors.surface.card,
-          borderTopWidth: 1,
-          borderTopColor: colors.border.default,
+          height: 56,
+          paddingHorizontal: 8,
+          gap: 6,
         }}
       >
-        {/* Gửi Bếp */}
+        {/* Left Block: Cart Summary (Tap to expand full Cart Sheet) */}
         <TouchableOpacity
-          onPress={onSendToKitchen}
-          delayPressIn={0}
+          onPress={() => {
+            haptic.impact('light');
+            onPress();
+          }}
           activeOpacity={0.7}
-          disabled={!hasUnsentItems || submitting}
+          disabled={!hasItems}
+          hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
           style={{
-            flex: 1,
-            height: 50,
-            borderRadius: shape.radius.md,
-            backgroundColor: hasUnsentItems ? colors.brand.primaryBg : colors.surface.disabled,
-            borderWidth: 1.5,
-            borderColor: hasUnsentItems ? colors.border.brand : colors.border.default,
+            flexDirection: 'row',
             alignItems: 'center',
-            justifyContent: 'center',
+            flex: 1,
+            minWidth: 0,
+            backgroundColor: hasItems ? '#FFF7ED' : '#F8FAFC',
+            borderRadius: 8,
+            paddingHorizontal: 8,
+            paddingVertical: 6,
+            borderWidth: 1,
+            borderColor: hasItems ? '#FDBA74' : '#E2E8F0',
           }}
         >
-          <Text
+          <View
             style={{
-              ...font.mdBold,
-              color: hasUnsentItems ? colors.text.brand : colors.text.muted,
-              fontSize: 14,
+              minWidth: 18,
+              height: 18,
+              borderRadius: 9,
+              paddingHorizontal: 4,
+              backgroundColor: hasItems ? '#F97316' : '#94A3B8',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginRight: 6,
             }}
           >
-            GỬI BẾP
-          </Text>
+            <AppText
+              variant="xs"
+              weight="bold"
+              color="#FFFFFF"
+            >
+              {itemCount}
+            </AppText>
+          </View>
+          <View style={{ flex: 1, minWidth: 0 }}>
+            {hasItems ? (
+              <>
+                <AppText
+                  variant="md"
+                  weight="bold"
+                  color="#0F172A"
+                  numberOfLines={1}
+                >
+                  {formatPrice(total)}
+                </AppText>
+                <AppText
+                  variant="xs"
+                  color="#EA580C"
+                  numberOfLines={1}
+                  style={{ letterSpacing: -0.2 }}
+                >
+                  Xem giỏ hàng ▲
+                </AppText>
+              </>
+            ) : (
+              <AppText
+                variant="sm"
+                color="#94A3B8"
+                numberOfLines={1}
+              >
+                Chưa có món
+              </AppText>
+            )}
+          </View>
         </TouchableOpacity>
 
-        {/* Lưu HĐ */}
+        {/* Middle Block: Save Order & Return to Table List */}
         <TouchableOpacity
-          onPress={onSave}
-          delayPressIn={0}
-          activeOpacity={0.7}
-          disabled={submitting}
-          style={{
-            flex: 1,
-            height: 50,
-            borderRadius: shape.radius.md,
-            backgroundColor: colors.brand.primaryBg,
-            borderWidth: 1.5,
-            borderColor: colors.border.brand,
-            alignItems: 'center',
-            justifyContent: 'center',
+          onPress={() => {
+            haptic.impact('medium');
+            onSave();
           }}
-        >
-          <Text
-            style={{
-              ...font.mdBold,
-              color: colors.text.brand,
-              fontSize: 14,
-            }}
-          >
-            LƯU HĐ
-          </Text>
-        </TouchableOpacity>
-
-        {/* THANH TOÁN */}
-        <TouchableOpacity
-          onPress={onPay}
-          delayPressIn={0}
-          activeOpacity={0.85}
-          disabled={submitting}
+          activeOpacity={0.7}
+          disabled={!hasItems || submitting}
+          hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
           style={{
-            flex: 1.5,
-            height: 50,
-            borderRadius: shape.radius.md,
-            backgroundColor: colors.brand.primary,
+            height: 44,
+            paddingHorizontal: 8,
+            borderRadius: 8,
+            backgroundColor: !hasItems ? '#F8FAFC' : '#FFF7ED',
+            borderWidth: 1,
+            borderColor: !hasItems ? '#E2E8F0' : '#FDBA74',
             alignItems: 'center',
             justifyContent: 'center',
             flexDirection: 'row',
             gap: 4,
+            flexShrink: 0,
           }}
         >
-          <Text
-            style={{
-              color: colors.text.inverse,
-              ...font.mdBold,
-              fontSize: 14,
-            }}
+          <Icon
+            name="content-save-outline"
+            size={15}
+            color={!hasItems ? '#94A3B8' : '#EA580C'}
+          />
+          <AppText
+            variant="md"
+            weight="bold"
+            color={!hasItems ? '#94A3B8' : '#EA580C'}
+            numberOfLines={1}
           >
-            THANH TOÁN
-          </Text>
+            Lưu HĐ
+          </AppText>
+        </TouchableOpacity>
+
+        {/* Right Block: Fast Pay Primary CTA */}
+        <TouchableOpacity
+          onPress={() => {
+            haptic.impact('heavy');
+            onPay();
+          }}
+          activeOpacity={0.85}
+          disabled={!hasItems || submitting}
+          hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+          style={{
+            height: 44,
+            paddingHorizontal: 10,
+            borderRadius: 8,
+            backgroundColor: !hasItems ? '#E2E8F0' : '#F97316',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexDirection: 'row',
+            gap: 4,
+            flexShrink: 0,
+          }}
+        >
+          {submitting ? (
+            <ActivityIndicator size="small" color="#FFFFFF" />
+          ) : (
+            <>
+              <Icon
+                name="credit-card-outline"
+                size={16}
+                color={!hasItems ? '#94A3B8' : '#FFFFFF'}
+              />
+              <AppText
+                variant="md"
+                weight="bold"
+                color={!hasItems ? '#94A3B8' : '#FFFFFF'}
+                numberOfLines={1}
+              >
+                Thanh toán
+              </AppText>
+            </>
+          )}
         </TouchableOpacity>
       </View>
-    </View>
+    </Animated.View>
   );
 }

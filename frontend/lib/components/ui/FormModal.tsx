@@ -14,6 +14,7 @@ import { useResponsive } from '../../hooks/useResponsive';
 import { useSidebar } from '../../context/SidebarContext';
 import { colors, font, ss } from '../../theme';
 import ScreenHeader from './ScreenHeader';
+import { haptic } from '../../haptic';
 
 interface FormModalProps {
   visible: boolean;

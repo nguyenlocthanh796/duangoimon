@@ -32,11 +32,11 @@ export default function ModuleCard({ icon, title, description, badge, onPress }:
           </View>
           {badge && (
             <View style={[styles.badge, { backgroundColor: badge.bg }]}>
-              <AppText variant="sm" weight="bold" color={badge.color}>{badge.text}</AppText>
+              <AppText variant="sm" color={badge.color}>{badge.text}</AppText>
             </View>
           )}
         </View>
-        <AppText variant="md" weight="bold" numberOfLines={2}>
+        <AppText variant="md" numberOfLines={2}>
           {title}
         </AppText>
         {description && (
@@ -45,7 +45,7 @@ export default function ModuleCard({ icon, title, description, badge, onPress }:
           </AppText>
         )}
         <View style={styles.cta}>
-          <AppText variant="sm" weight="bold" color={colors.brand.primary}>MỞ</AppText>
+          <AppText variant="sm" color={colors.brand.primary}>MỞ</AppText>
           <Icon name="chevron-right" size={16} color={colors.brand.primary} />
         </View>
       </FlatCard>

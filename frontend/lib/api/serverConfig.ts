@@ -52,6 +52,8 @@ export function setCustomServerUrl(url: string) {
   }
 }
 
+import { Platform } from 'react-native';
+
 /**
  * Resolve active API Base URL dynamically across Web & Native
  */
@@ -61,7 +63,7 @@ export function getApiBaseUrl(): string {
     return custom.endsWith('/api/v1') ? custom : `${custom}/api/v1`;
   }
 
-  if (typeof window !== 'undefined' && window.location) {
+  if (Platform.OS === 'web' && typeof window !== 'undefined' && window.location && window.location.hostname) {
     const host = window.location.hostname;
     if (host.endsWith('.pages.dev') || host.endsWith('.cloudflare.com')) {
       return `${CLOUDFLARE_TUNNEL_BASE}/api/v1`;

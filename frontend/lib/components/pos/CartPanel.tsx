@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, ScrollView, TouchableOpacity, Modal, Alert } from 'react-native';
+import { View, ScrollView, TouchableOpacity, Modal, Alert, Platform } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons as Icon, MaterialCommunityIcons } from '@expo/vector-icons';
 import { colors, font, formatPrice } from '../../theme';
 import { shape } from '../../theme/shape';
 import { CartItem } from './types';
@@ -94,6 +94,10 @@ export default function CartPanel({
   >(null);
   const [moveItemCartId, setMoveItemCartId] = React.useState<string | null>(null);
 
+  // Stable ref for callbacks — lets CartItemRow memo work
+  const cbRef = React.useRef<Record<string, any>>({});
+
+
   const openNoteEditor = React.useCallback((cartItemId: string) => {
     const item = cart.find((i) => i.cartItemId === cartItemId);
     if (!item) return;
@@ -158,6 +162,11 @@ export default function CartPanel({
     return groups;
   }, [cart]);
 
+  const handleRequestMoveItem = React.useCallback((id: string) => {
+    setMoveItemCartId(id);
+    setMoveAction('move_item');
+  }, []);
+
   const handleSplit = () => {
     if (selectedItems.size < 1) return;
     onSplitBill?.(Array.from(selectedItems));
@@ -165,35 +174,44 @@ export default function CartPanel({
     setSelectedItems(new Set());
   };
 
+  const swipeDelete = React.useCallback((cartItemId: string) => (
+    <TouchableOpacity
+      onPress={() => onRemoveItem(cartItemId)}
+      style={{ backgroundColor: '#FEE2E2', justifyContent: 'center', alignItems: 'center', width: 72, borderTopLeftRadius: 8, borderBottomLeftRadius: 8, marginVertical: 2 }}
+    >
+      <Icon name="delete-outline" size={22} color="#DC2626" />
+    </TouchableOpacity>
+  ), [onRemoveItem]);
+
   const itemRowProps = (item: CartItem) => ({
     item,
-    onUpdateQty,
-    onSetQty,
-    onRemoveItem,
-    onCancelItem,
-    onMoveItem,
-    onOpenModifier,
-    onToggleServiceType,
-    onEditNote: openNoteEditor,
+    onUpdateQty: cbRef.current.onUpdateQty,
+    onSetQty: cbRef.current.onSetQty,
+    onRemoveItem: cbRef.current.onRemoveItem,
+    onCancelItem: cbRef.current.onCancelItem,
+    onMoveItem: cbRef.current.onMoveItem,
+    onOpenModifier: cbRef.current.onOpenModifier,
+    onToggleServiceType: cbRef.current.onToggleServiceType,
+    onEditNote: cbRef.current.openNoteEditor,
     qtyEditId,
-    setQtyEditId,
+    setQtyEditId: cbRef.current.setQtyEditId,
     splitMode,
-    onToggleSelect: toggleSelectItem,
+    onToggleSelect: cbRef.current.toggleSelectItem,
     isSelected: selectedItems.has(item.cartItemId),
-    onRequestMoveItem: (id: string) => {
-      setMoveItemCartId(id);
-      setMoveAction('move_item');
-    },
+    onRequestMoveItem: cbRef.current.handleRequestMoveItem,
+    rightActions: swipeDelete(item.cartItemId),
   });
 
-  const toggleSelectItem = (id: string) => {
+  const toggleSelectItem = React.useCallback((id: string) => {
     setSelectedItems((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
       return next;
     });
-  };
+  }, []);
+
+  cbRef.current = { onUpdateQty, onSetQty, onRemoveItem, onCancelItem, onMoveItem, onOpenModifier, onToggleServiceType, openNoteEditor, toggleSelectItem, handleRequestMoveItem, setQtyEditId };
 
   const renderCartItems = () => {
     if (cart.length === 0) {
@@ -233,7 +251,7 @@ export default function CartPanel({
       return (
         <>
           <View style={{ paddingHorizontal: 16, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: colors.border.light }}>
-            <AppText variant={'md'} weight="bold" color={colors.text.primary}>
+            <AppText variant={'md'} color={colors.text.primary}>
               Món ({itemCount})
             </AppText>
           </View>
@@ -255,8 +273,8 @@ export default function CartPanel({
 
       return (
         <View key={group.category} style={{ marginBottom: 12 }}>
-          <View style={{ paddingHorizontal: 4, paddingVertical: 8, backgroundColor: colors.surface.app, borderRadius: shape.radius.sm, marginBottom: 4 }}>
-            <AppText variant="md" weight="bold" color={colors.text.primary}>
+          <View style={{ paddingHorizontal: 10, paddingVertical: 8, backgroundColor: '#F8FAFC', borderRadius: 6, borderWidth: 1, borderColor: '#E5E9F0', marginBottom: 6 }}>
+            <AppText variant="md" weight="bold" color="#1E293B">
               {group.label}
             </AppText>
           </View>
@@ -331,7 +349,7 @@ export default function CartPanel({
       style={{
         paddingHorizontal: 8,
         paddingTop: 8,
-        paddingBottom: 8,
+        paddingBottom: isWide ? 8 : (Platform.OS === 'web' ? 6 : Math.max(Math.floor(insets.bottom * 0.5), 6)),
         gap: 8,
         borderTopWidth: 1,
         borderTopColor: colors.border.default,
@@ -371,6 +389,7 @@ export default function CartPanel({
           onPrintTemporary={onPrintTemporary}
           onBulkToggle={handleBulkToggle}
           bulkToggleLabel={allTakeaway ? 'Chuyển tất cả về bàn' : 'Chuyển tất cả mang về'}
+          total={total}
         />
       )}
 
@@ -459,19 +478,21 @@ export default function CartPanel({
 
   const titleComponent = (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-      <AppText variant={'md'} color={colors.text.primary} weight="bold">
+      <AppText variant="lg" weight="bold" color="#1E293B">
         Giỏ hàng
       </AppText>
       {itemCount > 0 && (
         <View
           style={{
-            backgroundColor: colors.brand.primary + '40',
+            backgroundColor: '#FFF7ED',
             paddingHorizontal: 8,
-            paddingVertical: 3,
-            borderRadius: shape.radius.xs,
+            paddingVertical: 2,
+            borderRadius: 6,
+            borderWidth: 1,
+            borderColor: '#FDBA74',
           }}
         >
-          <AppText variant={'sm'} color={colors.brand.primary} weight="bold">
+          <AppText variant="xs" weight="bold" color="#EA580C">
             {itemCount} món
           </AppText>
         </View>
@@ -502,6 +523,7 @@ export default function CartPanel({
         onBackPress={!isWide ? () => setCartSheet(false) : undefined}
         backIcon="close"
         right={rightActions}
+        noTopInset={!isWide}
       />
 
       {/* Cart items */}
@@ -580,10 +602,15 @@ export default function CartPanel({
   }
 
   return (
-    <Modal visible={cartSheet} animationType="slide" presentationStyle="fullScreen">
+    <Modal
+      visible={cartSheet}
+      animationType="slide"
+      presentationStyle={Platform.OS === 'ios' ? 'pageSheet' : 'overFullScreen'}
+      onRequestClose={() => setCartSheet(false)}
+    >
       <SafeAreaView
         style={{ flex: 1, backgroundColor: colors.surface.card }}
-        edges={['top', 'left', 'right']}
+        edges={[]}
       >
         {content}
       </SafeAreaView>

@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,12 +7,15 @@ import {
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
+  Animated,
+  Dimensions,
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useResponsive } from '../../hooks/useResponsive';
 import { colors, font, ss } from '../../theme';
 import ScreenHeader from './ScreenHeader';
 import { useSidebar } from '../../context/SidebarContext';
+import { haptic } from '../../haptic';
 
 export interface DetailAction {
   label: string;
@@ -44,6 +47,19 @@ export default function DetailModal({
 }: DetailModalProps) {
   const { isWide } = useResponsive();
   const { openSidebar } = useSidebar();
+  const screenWidth = Dimensions.get('window').width;
+  const slideAnim = useRef(new Animated.Value(screenWidth)).current;
+  const opacityAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (!visible) return;
+    slideAnim.setValue(screenWidth);
+    opacityAnim.setValue(0);
+    Animated.parallel([
+      Animated.timing(slideAnim, { toValue: 0, duration: 280, useNativeDriver: true }),
+      Animated.timing(opacityAnim, { toValue: 1, duration: 280, useNativeDriver: true }),
+    ]).start();
+  }, [visible, screenWidth]);
 
   if (!visible) return null;
 
@@ -66,54 +82,80 @@ export default function DetailModal({
   }
 
   return (
-    <View style={[StyleSheet.absoluteFill, { top: isWide ? 0 : -45, zIndex: 9999, backgroundColor: colors.surface.app || '#F8FAFC' }]}>
-      <ScreenHeader
-        title={title}
-        subtitle={subtitle}
-        showBack
-        onBackPress={onClose}
-        onMenuPress={openSidebar}
-        compact
-        right={
-          combinedActions.length > 0 ? (
-            <View style={styles.headerActionRow}>
-              {combinedActions.map((act, idx) => {
-                const isPrimary = act.variant === 'primary';
-                const isDanger = act.variant === 'danger';
-                return (
-                  <TouchableOpacity
-                    key={idx}
-                    onPress={act.onPress}
-                    activeOpacity={0.75}
+    <Animated.View
+      style={[StyleSheet.absoluteFill, {
+        top: 0,
+        zIndex: 9999,
+        backgroundColor: colors.surface.app || '#F8FAFC',
+        transform: [{ translateX: slideAnim }],
+        opacity: opacityAnim,
+      }]}
+    >
+      <View style={styles.fullScreenHeader}>
+        <TouchableOpacity
+          onPress={() => {
+            haptic.impact('light');
+            onClose();
+          }}
+          activeOpacity={0.7}
+          style={styles.backBtn}
+          accessibilityLabel="Quay lại"
+          hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
+        >
+          <Icon name="arrow-left" size={20} color={colors.brand.primary} />
+        </TouchableOpacity>
+        <View style={styles.titleWrap}>
+          <Text style={styles.headerTitle} numberOfLines={1}>
+            {title}
+          </Text>
+          {subtitle && (
+            <Text style={styles.headerSubtitle} numberOfLines={1}>
+              {subtitle}
+            </Text>
+          )}
+        </View>
+        {combinedActions.length > 0 && (
+          <View style={styles.headerActionRow}>
+            {combinedActions.map((act, idx) => {
+              const isPrimary = act.variant === 'primary';
+              const isDanger = act.variant === 'danger';
+              return (
+                <TouchableOpacity
+                  key={idx}
+                  onPress={() => {
+                    haptic.impact(isDanger ? 'medium' : 'light');
+                    act.onPress();
+                  }}
+                  activeOpacity={0.75}
+                  style={[
+                    styles.actionBtn,
+                    isPrimary && styles.actionBtnPrimary,
+                    isDanger && styles.actionBtnDanger,
+                  ]}
+                  hitSlop={{ top: 6, bottom: 6, left: 4, right: 4 }}
+                >
+                  {act.icon && (
+                    <Icon
+                      name={act.icon as any}
+                      size={15}
+                      color={isPrimary || isDanger ? '#FFF' : colors.brand.primary}
+                    />
+                  )}
+                  <Text
                     style={[
-                      styles.actionBtn,
-                      isPrimary && styles.actionBtnPrimary,
-                      isDanger && styles.actionBtnDanger,
+                      styles.actionText,
+                      isPrimary && styles.actionTextPrimary,
+                      isDanger && styles.actionTextDanger,
                     ]}
                   >
-                    {act.icon && (
-                      <Icon
-                        name={act.icon as any}
-                        size={15}
-                        color={isPrimary || isDanger ? '#FFF' : colors.brand.primary}
-                      />
-                    )}
-                    <Text
-                      style={[
-                        styles.actionText,
-                        isPrimary && styles.actionTextPrimary,
-                        isDanger && styles.actionTextDanger,
-                      ]}
-                    >
-                      {act.label}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          ) : undefined
-        }
-      />
+                    {act.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        )}
+      </View>
       <ScrollView
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
@@ -131,7 +173,7 @@ export default function DetailModal({
           </View>
         </View>
       </ScrollView>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -160,8 +202,8 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   backBtn: {
-    width: 36,
-    height: 36,
+    width: 44,
+    height: 44,
     borderRadius: 8,
     backgroundColor: '#F1F5F9',
     alignItems: 'center',
@@ -172,14 +214,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerTitle: {
-    ...font.mdBold,
-    fontSize: 16,
-    fontWeight: '700',
+    ...font.headerTitle,
     color: '#1E293B',
   },
   headerSubtitle: {
     ...font.sm,
-    fontSize: 12,
     color: colors.text.muted || '#64748B',
     marginTop: 1,
   },
@@ -193,8 +232,8 @@ const styles = StyleSheet.create({
   actionBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 34,
-    paddingHorizontal: 10,
+    height: 36,
+    paddingHorizontal: 12,
     borderRadius: 6,
     backgroundColor: '#F1F5F9',
     gap: 4,
@@ -210,9 +249,7 @@ const styles = StyleSheet.create({
     borderColor: colors.status.danger || '#EF4444',
   },
   actionText: {
-    ...font.sm,
-    fontWeight: '600',
-    fontSize: 13,
+    ...font.md,
     color: colors.brand.primary || '#F97316',
   },
   actionTextPrimary: {

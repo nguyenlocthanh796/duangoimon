@@ -1,8 +1,7 @@
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
-import { colors, font } from '../../theme';
-import { shape } from '../../theme/shape';
 import { NUMPAD_KEYS } from '../../hooks/usePayment';
+import AppText from '../ui/AppText';
 
 interface NumpadProps {
   method: string;
@@ -24,6 +23,22 @@ export default function Numpad({ method, onKey }: NumpadProps) {
       {NUMPAD_KEYS.map((key, i) => {
         const isClear = key.type === 'clear';
         const isBack = key.type === 'back';
+        
+        // iOS-style flat color palette
+        const bg = isClear 
+          ? '#FEF2F2' 
+          : isBack 
+            ? '#E2E8F0' 
+            : '#F1F5F9';
+        const border = isClear 
+          ? '#FECACA' 
+          : isBack 
+            ? '#CBD5E1' 
+            : '#E2E8F0';
+        const textColor = isClear 
+          ? '#DC2626' 
+          : '#0F172A';
+
         return (
           <TouchableOpacity
             key={i}
@@ -33,30 +48,25 @@ export default function Numpad({ method, onKey }: NumpadProps) {
             activeOpacity={0.65}
             style={{
               width: '30%',
-              height: 44,
-              borderRadius: shape.radius.md,
+              height: 46, // iOS guideline optimized touch height
+              borderRadius: 8, // Fixed 8px border radius
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: isClear
-                ? colors.surface.danger
-                : isBack
-                  ? colors.surface.disabled
-                  : colors.surface.numpadKey,
+              backgroundColor: bg,
               borderWidth: 1,
-              borderColor: isClear ? colors.border.danger : colors.border.default,
+              borderColor: border,
             }}
           >
             {isBack ? (
-              <Icon name="backspace-outline" size={20} color={colors.text.secondary} />
+              <Icon name="backspace-outline" size={20} color="#0F172A" />
             ) : (
-              <Text
-                style={{
-                  ...font.mdBold,
-                  color: isClear ? colors.status.danger : colors.text.primary,
-                }}
+              <AppText
+                variant="md"
+                weight="normal"
+                color={textColor}
               >
                 {key.label}
-              </Text>
+              </AppText>
             )}
           </TouchableOpacity>
         );

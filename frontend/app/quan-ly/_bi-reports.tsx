@@ -44,7 +44,7 @@ export default function BIReportsScreen({ isSearchOpen }: { isSearchOpen?: boole
           <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: '#ECFDF5', alignItems: 'center', justifyContent: 'center' }}>
             <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.status.success }} />
           </View>
-          <AppText variant="sm" weight="bold" color="#050505">{row.date || '-'}</AppText>
+          <AppText variant="md" color="#050505">{row.date || '-'}</AppText>
         </View>
       ),
     },
@@ -55,7 +55,7 @@ export default function BIReportsScreen({ isSearchOpen }: { isSearchOpen?: boole
       align: 'right',
       sortable: true,
       sortValue: (row: any) => row.orders || 0,
-      render: (row: any) => <AppText variant="sm" color="#050505">{row.orders} đơn</AppText>,
+      render: (row: any) => <AppText variant="md" color="#050505">{row.orders} đơn</AppText>,
     },
     {
       key: 'revenue',
@@ -64,7 +64,7 @@ export default function BIReportsScreen({ isSearchOpen }: { isSearchOpen?: boole
       align: 'right',
       sortable: true,
       sortValue: (row: any) => row.revenue || 0,
-      render: (row: any) => <AppText variant="sm" weight="bold" color={colors.brand.primary}>{formatVND(row.revenue || 0)}</AppText>,
+      render: (row: any) => <AppText variant="md" color={colors.brand.primary}>{formatVND(row.revenue || 0)}</AppText>,
     },
   ];
 
@@ -80,7 +80,7 @@ export default function BIReportsScreen({ isSearchOpen }: { isSearchOpen?: boole
           <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: '#FEE2E2', alignItems: 'center', justifyContent: 'center' }}>
             <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.status.danger }} />
           </View>
-          <AppText variant="sm" weight="bold" color="#050505" numberOfLines={1}>{row.name || row.date || '-'}</AppText>
+          <AppText variant="md" color="#050505" numberOfLines={1}>{row.name || row.date || '-'}</AppText>
         </View>
       ),
     },
@@ -91,7 +91,7 @@ export default function BIReportsScreen({ isSearchOpen }: { isSearchOpen?: boole
       align: 'right',
       sortable: true,
       sortValue: (row: any) => row.food_cost || 0,
-      render: (row: any) => <AppText variant="sm" color="#050505">{formatVND(row.food_cost || 0)}</AppText>,
+      render: (row: any) => <AppText variant="md" color="#050505">{formatVND(row.food_cost || 0)}</AppText>,
     },
     {
       key: 'pct',
@@ -102,7 +102,7 @@ export default function BIReportsScreen({ isSearchOpen }: { isSearchOpen?: boole
       sortValue: (row: any) => row.pct || 0,
       render: (row: any) => {
         const pct = row.pct || 0;
-        return <AppText variant="sm" weight="bold" color={pct > 40 ? colors.status.danger : colors.status.success}>{pct}%</AppText>;
+        return <AppText variant="md" color={pct > 40 ? colors.status.danger : colors.status.success}>{pct}%</AppText>;
       },
     },
   ];
@@ -122,16 +122,16 @@ export default function BIReportsScreen({ isSearchOpen }: { isSearchOpen?: boole
             <View style={[ss.iconCircleSm, { backgroundColor: '#FEE2E2' }]}>
               <Icon name="food-variant" size={14} color={colors.status.danger} />
             </View>
-            <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1 }}>Top Food Cost cao nhất</AppText>
+            <AppText variant="md" color="#1E293B" style={{ flex: 1 }}>Top Food Cost cao nhất</AppText>
           </View>
           <View style={{ padding: 10, gap: 8 }}>
             {top.map((item: any, i: number) => (
               <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 4 }}>
-                <AppText variant="sm" color="#0F172A" style={{ width: 90 }} numberOfLines={1}>{item.name || item.date}</AppText>
+                <AppText variant="md" color="#0F172A" style={{ width: 90 }} numberOfLines={1}>{item.name || item.date}</AppText>
                 <View style={{ flex: 1, height: 8, backgroundColor: '#F1F5F9', borderRadius: 4, overflow: 'hidden' }}>
                   <View style={{ width: `${Math.max(8, ((item.pct || 0) / maxPct) * 100)}%`, height: 8, backgroundColor: (item.pct || 0) > 40 ? colors.status.danger : colors.brand.primary, borderRadius: 4 }} />
                 </View>
-                <AppText variant="sm" weight="bold" color={(item.pct || 0) > 40 ? colors.status.danger : "#0F172A"} style={{ width: 45, textAlign: 'right' }}>{item.pct}%</AppText>
+                <AppText variant="md" color={(item.pct || 0) > 40 ? colors.status.danger : "#0F172A"} style={{ width: 45, textAlign: 'right' }}>{item.pct}%</AppText>
               </View>
             ))}
           </View>
@@ -148,16 +148,16 @@ export default function BIReportsScreen({ isSearchOpen }: { isSearchOpen?: boole
             <View style={[ss.iconCircleSm, { backgroundColor: '#EFF6FF' }]}>
               <Icon name="chart-bar" size={14} color={colors.brand.primary} />
             </View>
-            <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1 }}>Top Doanh thu ngày cao nhất</AppText>
+            <AppText variant="md" color="#1E293B" style={{ flex: 1 }}>Top Doanh thu ngày cao nhất</AppText>
           </View>
           <View style={{ padding: 10, gap: 8 }}>
             {top.map((item: any, i: number) => (
               <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 4 }}>
-                <AppText variant="sm" color="#0F172A" style={{ width: 90 }} numberOfLines={1}>{item.date || item.name}</AppText>
+                <AppText variant="md" color="#0F172A" style={{ width: 90 }} numberOfLines={1}>{item.date || item.name}</AppText>
                 <View style={{ flex: 1, height: 8, backgroundColor: '#F1F5F9', borderRadius: 4, overflow: 'hidden' }}>
                   <View style={{ width: `${Math.max(8, ((item.revenue || 0) / maxRev) * 100)}%`, height: 8, backgroundColor: colors.brand.primary, borderRadius: 4 }} />
                 </View>
-                <AppText variant="sm" weight="bold" color={colors.brand.primary} style={{ width: 85, textAlign: 'right' }}>{formatVND(item.revenue || 0)}</AppText>
+                <AppText variant="md" color={colors.brand.primary} style={{ width: 85, textAlign: 'right' }}>{formatVND(item.revenue || 0)}</AppText>
               </View>
             ))}
           </View>
@@ -199,36 +199,36 @@ function getDayLabel(dateStr: string): string {
         ]}
       >
         <View style={{ width: 34, height: 28, borderRadius: 6, backgroundColor: '#F1F5F9', alignItems: 'center', justifyContent: 'center', marginRight: 8 }}>
-          <AppText variant="sm" weight="bold" color="#334155" style={{ fontSize: 12 }}>
+          <AppText variant="md" color="#334155">
             {dayLabel || 'NG'}
           </AppText>
         </View>
         <View style={{ flex: 1, paddingRight: 8 }}>
-          <AppText variant="sm" color="#0F172A" numberOfLines={1}>
+          <AppText variant="md" color="#0F172A" numberOfLines={1}>
             {row.name || row.date || 'Chi tiết BI'}
           </AppText>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 1 }}>
             {tab === 'revenue' ? (
               <>
-                <AppText variant="sm" color="#64748B">Số đơn: {row.orders || 0}</AppText>
+                <AppText variant="md" color="#64748B">Số đơn: {row.orders || 0}</AppText>
                 {aov > 0 && (
                   <View style={{ backgroundColor: '#F8FAFC', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 4, paddingHorizontal: 4 }}>
-                    <AppText variant="sm" color="#475569" style={{ fontSize: 11 }}>AOV: {formatVND(aov)}</AppText>
+                    <AppText variant="md" color="#475569">AOV: {formatVND(aov)}</AppText>
                   </View>
                 )}
               </>
             ) : (
-              <AppText variant="sm" color="#64748B">Chi phí: {formatVND(row.food_cost || 0)}</AppText>
+              <AppText variant="md" color="#64748B">Chi phí: {formatVND(row.food_cost || 0)}</AppText>
             )}
           </View>
         </View>
         <View style={{ alignItems: 'flex-end' }}>
           {tab === 'revenue' ? (
-            <AppText variant="sm" weight="bold" color={colors.brand.primary}>{formatVND(row.revenue || 0)}</AppText>
+            <AppText variant="md" color={colors.brand.primary}>{formatVND(row.revenue || 0)}</AppText>
           ) : (
-            <AppText variant="sm" weight="bold" color={(row.pct || 0) > 40 ? colors.status.danger : colors.status.success}>{row.pct || 0}%</AppText>
+            <AppText variant="md" color={(row.pct || 0) > 40 ? colors.status.danger : colors.status.success}>{row.pct || 0}%</AppText>
           )}
-          <AppText variant="sm" color="#64748B">{tab === 'revenue' ? 'Doanh thu' : 'Tỷ lệ FC'}</AppText>
+          <AppText variant="md" color="#64748B">{tab === 'revenue' ? 'Doanh thu' : 'Tỷ lệ FC'}</AppText>
         </View>
       </View>
     );
@@ -239,29 +239,29 @@ function getDayLabel(dateStr: string): string {
       <View style={ss.metricContainer}>
         <View style={ss.metricCard}>
           <View style={[ss.metricIcon, { backgroundColor: '#ECFDF5' }]}>
-            <AppText variant="sm" weight="bold" color={colors.status.success} style={{ fontSize: 11 }}>đ</AppText>
+            <AppText variant="md" color={colors.status.success}>đ</AppText>
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color={colors.status.success}>{formatVND(revStat?.total_revenue || 0)}</AppText>
-            <AppText variant="sm" color="#64748B">Doanh thu</AppText>
+            <AppText variant="md" color={colors.status.success}>{formatVND(revStat?.total_revenue || 0)}</AppText>
+            <AppText variant="md" color="#64748B">Doanh thu</AppText>
           </View>
         </View>
         <View style={ss.metricCard}>
           <View style={[ss.metricIcon, { backgroundColor: '#FEE2E2' }]}>
-            <AppText variant="sm" weight="bold" color={colors.status.danger} style={{ fontSize: 11 }}>FC</AppText>
+            <AppText variant="md" color={colors.status.danger}>FC</AppText>
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color={colors.status.danger}>{formatVND(fcStat?.total_food_cost || 0)}</AppText>
-            <AppText variant="sm" color="#64748B">Food cost</AppText>
+            <AppText variant="md" color={colors.status.danger}>{formatVND(fcStat?.total_food_cost || 0)}</AppText>
+            <AppText variant="md" color="#64748B">Food cost</AppText>
           </View>
         </View>
         <View style={ss.metricCard}>
           <View style={[ss.metricIcon, { backgroundColor: '#EEF2FF' }]}>
-            <AppText variant="sm" weight="bold" color="#2563EB" style={{ fontSize: 11 }}>đơn</AppText>
+            <AppText variant="md" color="#2563EB">đơn</AppText>
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#2563EB">{revStat?.total_orders || 0} đơn</AppText>
-            <AppText variant="sm" color="#64748B">Đơn hàng</AppText>
+            <AppText variant="md" color="#2563EB">{revStat?.total_orders || 0} đơn</AppText>
+            <AppText variant="md" color="#64748B">Đơn hàng</AppText>
           </View>
         </View>
       </View>
@@ -276,7 +276,7 @@ function getDayLabel(dateStr: string): string {
             const active = tab === t;
             return (
               <TouchableOpacity key={t} onPress={() => setTab(t)} style={[ss.filterChip, active && ss.filterChipActive]}>
-                <AppText variant="sm" weight="bold" color={active ? colors.brand.primary : "#334155"}>
+                <AppText variant="md" color={active ? colors.brand.primary : "#334155"}>
                   {t === 'revenue' ? 'Doanh thu' : 'Food Cost'}
                 </AppText>
               </TouchableOpacity>
@@ -286,7 +286,7 @@ function getDayLabel(dateStr: string): string {
             const active = days === d;
             return (
               <TouchableOpacity key={d} onPress={() => setDays(d)} style={[ss.filterChip, active && ss.filterChipActive]}>
-                <AppText variant="sm" weight="bold" color={active ? colors.brand.primary : "#334155"}>
+                <AppText variant="md" color={active ? colors.brand.primary : "#334155"}>
                   {d}D
                 </AppText>
               </TouchableOpacity>
@@ -328,7 +328,7 @@ function getDayLabel(dateStr: string): string {
           {renderPanel()}
           <View style={ss.sectionWrap}>
             <View style={ss.sectionHeader}>
-              <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1, letterSpacing: 0.5 }}>
+              <AppText variant="md" color="#1E293B" style={{ flex: 1, letterSpacing: 0.5 }}>
                 {tab === 'revenue' ? `BÁO CÁO DOANH THU THEO NGÀY (${dataRows.length})` : `BÁO CÁO FOOD COST (${dataRows.length})`}
               </AppText>
             </View>

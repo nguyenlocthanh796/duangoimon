@@ -147,9 +147,9 @@ const styles = StyleSheet.create({
   },
   segBtnActiveThu: { backgroundColor: colors.status.success, borderColor: colors.status.success },
   segBtnActiveChi: { backgroundColor: colors.status.danger, borderColor: colors.status.danger },
-  segText: { ...font.md, fontWeight: '600', color: colors.text.primary },
+  segText: { ...font.md, color: colors.text.primary },
   segTextActive: { color: '#fff' },
-  label: { ...font.smBold, color: '#0F172A', marginBottom: 8, marginTop: 6 },
+  label: { ...font.md, color: '#0F172A', marginBottom: 8, marginTop: 6 },
   inputWrap: {
     backgroundColor: '#FFFFFF',
     borderRadius: shape.radius.md,

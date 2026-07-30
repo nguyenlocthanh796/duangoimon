@@ -59,14 +59,24 @@ def _inv_dict(inv: Invoice) -> dict:
 
 @router.get("")
 async def list_invoices(
-    db: AsyncSession = Depends(get_db), _user: dict = Depends(get_current_user)
+    page: int = 1,
+    page_size: int = 50,
+    db: AsyncSession = Depends(get_db),
+    _user: dict = Depends(get_current_user),
 ):
-    result = await db.execute(select(Invoice).order_by(Invoice.created_at.desc()).limit(50))
+    from sqlalchemy import func as _func
+    offset = (page - 1) * page_size
+    total_count = await db.scalar(select(_func.count(Invoice.id)))
+    result = await db.execute(
+        select(Invoice).order_by(Invoice.created_at.desc()).offset(offset).limit(page_size)
+    )
     rows = result.scalars().all()
     exported = sum(1 for inv in rows if inv.status == "da_xuat")
     return {
         "items": [_inv_dict(inv) for inv in rows],
-        "total": len(rows),
+        "total": total_count or 0,
+        "page": page,
+        "page_size": page_size,
         "exported_count": exported,
     }
 
@@ -75,7 +85,7 @@ async def list_invoices(
 async def create_invoice(
     body: InvoiceCreate,
     db: AsyncSession = Depends(get_db),
-    _user: dict = Depends(require_role("admin", "ke_toan")),
+    _user: dict = Depends(require_role("admin", "accountant")),
 ):
     # Verify order exists
     result = await db.execute(select(Order).where(Order.id == parse_uuid(body.order_id)))
@@ -132,7 +142,7 @@ class InvoiceBulkExport(BaseModel):
 async def bulk_export_invoices(
     body: InvoiceBulkExport,
     db: AsyncSession = Depends(get_db),
-    _user: dict = Depends(require_role("admin", "ke_toan")),
+    _user: dict = Depends(require_role("admin", "accountant")),
 ):
     try:
         uuids = [parse_uuid(i) for i in body.ids]
@@ -159,7 +169,7 @@ async def bulk_export_invoices(
 async def export_invoice(
     invoice_id: str,
     db: AsyncSession = Depends(get_db),
-    _user: dict = Depends(require_role("admin", "ke_toan")),
+    _user: dict = Depends(require_role("admin", "accountant")),
 ):
     result = await db.execute(select(Invoice).where(Invoice.id == parse_uuid(invoice_id)))
     inv = result.scalar_one_or_none()
@@ -178,7 +188,7 @@ async def export_invoice(
 async def delete_invoice(
     invoice_id: str,
     db: AsyncSession = Depends(get_db),
-    _user: dict = Depends(require_role("admin", "ke_toan")),
+    _user: dict = Depends(require_role("admin", "accountant")),
 ):
     result = await db.execute(select(Invoice).where(Invoice.id == parse_uuid(invoice_id)))
     inv = result.scalar_one_or_none()

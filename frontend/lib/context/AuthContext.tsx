@@ -85,14 +85,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const uName = res.user?.username || userNm;
       const bId = decoded?.branch_id || (res.user as any)?.branch_id || null;
 
+      await setSecureToken(res.access_token);
+      if (res.user) {
+        await setSecureUser(res.user);
+      }
+      try {
+        const { setToken: setClientToken } = require('../api/client');
+        await setClientToken(res.access_token);
+      } catch {}
+
       setTokenState(res.access_token);
       setUsername(uName);
       setUserRole(role);
       setBranchId(bId);
-
-      if (res.user) {
-        await setSecureUser(res.user);
-      }
     }
   };
 

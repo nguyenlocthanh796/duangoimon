@@ -27,16 +27,20 @@ export function useOrder() {
       status: i.status || 'moi',
     }));
 
+    // Only pass table_id if it's a valid UUID string (not 'TAKEAWAY')
+    const isValidUuid = Boolean(tableId && tableId !== 'TAKEAWAY' && tableId.includes('-'));
+    const tableParam = isValidUuid ? { table_id: tableId } : {};
+
     if (activeOrderId) {
       try {
         return await api.updateOrder(activeOrderId, { items });
       } catch (e) {
-        // Fallback: If activeOrderId was closed/deleted from another device (404), create a fresh order
-        const params: any = { items, table_id: tableId };
+        // Fallback: If activeOrderId was closed/deleted from another device, create a fresh order
+        const params: any = { items, ...tableParam };
         return await api.createOrder(params);
       }
     } else {
-      const params: any = { items, table_id: tableId };
+      const params: any = { items, ...tableParam };
       const res = await api.createOrder(params);
       return res;
     }
@@ -52,11 +56,14 @@ export function useOrder() {
     try {
       const res = await submitOrder(cart, tableId, activeOrderId);
       const orderId = activeOrderId || res.id;
-      await api.updateOrderStatus(orderId, 'da_gui_bep');
+      // Double-send guard: skip if already sent to kitchen
+      if (res.status !== 'gui_bep') {
+        await api.updateOrderStatus(orderId, 'gui_bep');
+      }
       Alert.alert('Đã gửi bếp', 'Món ăn đã được gửi đến bếp.');
       return res.id;
-    } catch (e) {
-      Alert.alert('Lỗi', 'Không thể gửi bếp.');
+    } catch (e: any) {
+      Alert.alert('Lỗi Gửi Bếp', e?.message || 'Không thể gửi bếp.');
       return null;
     } finally {
       setSubmitting(false);
@@ -73,8 +80,8 @@ export function useOrder() {
     try {
       await submitOrder(cart, tableId, activeOrderId);
       return true;
-    } catch (e) {
-      Alert.alert('Lỗi', 'Không thể lưu hóa đơn.');
+    } catch (e: any) {
+      Alert.alert('Lỗi Lưu Hóa Đơn', e?.message || 'Không thể lưu hóa đơn.');
       return false;
     } finally {
       setSubmitting(false);
@@ -97,7 +104,7 @@ export function useOrder() {
             `&total=${res.total_amount || total}&orderId=${res.id}`
         );
       })
-      .catch(() => Alert.alert('Lỗi', 'Không thể tạo đơn hàng.'))
+      .catch((err: any) => Alert.alert('Lỗi Tạo Đơn Hàng', err?.message || 'Không thể tạo đơn hàng.'))
       .finally(() => setSubmitting(false));
   };
 

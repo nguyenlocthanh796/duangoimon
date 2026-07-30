@@ -149,13 +149,13 @@ export default function BillDetailModal({ visible, orderId, onClose }: BillDetai
             </View>
           ) : null}
           <View style={[styles.summaryRow, { marginTop: 4 }]}>
-            <Text style={[styles.summaryLabel, { fontSize: 16, fontWeight: '600' }]}>
+            <Text style={[styles.summaryLabel, { fontSize: 16 }]}>
               TỔNG CỘNG:
             </Text>
             <Text
               style={[
                 styles.summaryVal,
-                { fontSize: 16, fontWeight: '600', color: colors.brand.primary },
+                { fontSize: 16, color: colors.brand.primary },
               ]}
             >
               {formatPrice(order.total_amount)}
@@ -238,8 +238,8 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
   },
   closeBtn: {
-    width: 32,
-    height: 32,
+    width: 44,
+    height: 44,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: shape.radius.md,

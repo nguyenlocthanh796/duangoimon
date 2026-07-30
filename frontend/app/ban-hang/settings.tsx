@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, ScrollView, TextInput, Switch, TouchableOpacity, useWindowDimensions, Modal, Alert, DimensionValue } from 'react-native';
+import { View, ScrollView, TextInput, Switch, TouchableOpacity, useWindowDimensions, Modal, Alert, DimensionValue, Platform } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
@@ -57,8 +57,8 @@ export default function POSSettingsScreen() {
     }, 1200);
   };
 
-  const updateLocal = (key: keyof POSSettings, val: any) => {
-    setLocalSettings((prev) => ({ ...prev, [key]: val }));
+  const updateLocal = <K extends keyof POSSettings>(key: K, val: POSSettings[K]) => {
+    setLocalSettings((prev: POSSettings) => ({ ...prev, [key]: val }));
   };
 
   // 🔊 Speaker Voice Simulation
@@ -109,7 +109,7 @@ export default function POSSettingsScreen() {
   };
 
   const deleteBankItem = (id: string) => {
-    const updated = (localSettings.bankAccounts || []).filter((b) => b.id !== id);
+    const updated = (localSettings.bankAccounts || []).filter((b: BankAccountItem) => b.id !== id);
     updateLocal('bankAccounts', updated);
   };
 
@@ -154,12 +154,12 @@ export default function POSSettingsScreen() {
   const renderSampleBill = (type: PreviewTab) => {
     const s = localSettings;
     const isK57 = s.paperSize === 'K57';
-    const primaryBank = s.bankAccounts?.find((b) => b.isPrimary) || s.bankAccounts?.[0];
+    const primaryBank = s.bankAccounts?.find((b: BankAccountItem) => b.isPrimary) || s.bankAccounts?.[0];
 
     if (type === 'kitchen') {
       return (
         <View style={styles.paperSheet}>
-          <AppText variant="md" weight="bold" color="#050505" style={{ textAlign: 'center' }}>
+          <AppText variant="md" color="#050505" style={{ textAlign: 'center' }}>
             *** PHIẾU BÁO BẾP / BAR ***
           </AppText>
           <AppText variant="sm" color="#64748B" style={{ textAlign: 'center' }}>
@@ -170,11 +170,11 @@ export default function POSSettingsScreen() {
 
           <View style={{ gap: 6, marginVertical: 4 }}>
             <View>
-              <AppText variant="md" weight="bold" color="#050505">1x Cà Phê Sữa Đá</AppText>
+              <AppText variant="md" color="#050505">1x Cà Phê Sữa Đá</AppText>
               <AppText variant="sm" color="#E11D48">  ↳ Ghi chú: Ít đường, nhiều đá</AppText>
             </View>
             <View>
-              <AppText variant="md" weight="bold" color="#050505">2x Trà Đào Cam Sả (Size L)</AppText>
+              <AppText variant="md" color="#050505">2x Trà Đào Cam Sả (Size L)</AppText>
               <AppText variant="sm" color="#475569">  ↳ Topping: Thạch Đào (+10k)</AppText>
             </View>
           </View>
@@ -190,11 +190,11 @@ export default function POSSettingsScreen() {
     if (type === 'sticker') {
       return (
         <View style={[styles.paperSheet, { width: 220, borderStyle: 'dashed' }]}>
-          <AppText variant="sm" weight="bold" color="#050505" style={{ textAlign: 'center' }}>
+          <AppText variant="sm" color="#050505" style={{ textAlign: 'center' }}>
             🏷 TEM DÁN LY TRÀ SỮA (50x30mm)
           </AppText>
           <View style={styles.dashedLine} />
-          <AppText variant="md" weight="bold" color="#050505">Trà Đào Cam Sả (Size L)</AppText>
+          <AppText variant="md" color="#050505">Trà Đào Cam Sả (Size L)</AppText>
           <AppText variant="sm" color="#050505">Đường: 50% · Đá: 70%</AppText>
           <AppText variant="sm" color="#475569">Topping: Thạch Đào</AppText>
           <AppText variant="sm" color="#64748B" style={{ marginTop: 4 }}>
@@ -207,7 +207,7 @@ export default function POSSettingsScreen() {
     // Customer Receipt (Default)
     return (
       <View style={styles.paperSheet}>
-        <AppText variant="md" weight="bold" color="#050505" style={{ textAlign: 'center' }}>
+        <AppText variant="md" color="#050505" style={{ textAlign: 'center' }}>
           {s.receiptHeaderTitle || 'NHÀ HÀNG POS F&B'}
         </AppText>
         
@@ -231,7 +231,7 @@ export default function POSSettingsScreen() {
 
         <View style={styles.dashedLine} />
 
-        <AppText variant="md" weight="bold" color="#050505" style={{ textAlign: 'center', marginVertical: 2 }}>
+        <AppText variant="md" color="#050505" style={{ textAlign: 'center', marginVertical: 2 }}>
           HÓA ĐƠN THANH TOÁN
         </AppText>
         <AppText variant="sm" color="#64748B" style={{ textAlign: 'center' }}>
@@ -242,11 +242,11 @@ export default function POSSettingsScreen() {
 
         <View style={{ gap: 4, marginVertical: 4 }}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <AppText variant="sm" weight="bold" color="#050505">1x Cà Phê Sữa Đá</AppText>
+            <AppText variant="sm" color="#050505">1x Cà Phê Sữa Đá</AppText>
             <AppText variant="sm" color="#050505">35.000đ</AppText>
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <AppText variant="sm" weight="bold" color="#050505">2x Trà Đào Cam Sả (L)</AppText>
+            <AppText variant="sm" color="#050505">2x Trà Đào Cam Sả (L)</AppText>
             <AppText variant="sm" color="#050505">90.000đ</AppText>
           </View>
         </View>
@@ -263,8 +263,8 @@ export default function POSSettingsScreen() {
             <AppText variant="sm" color="#475569">{formatVND(125000 * (s.defaultVatRate / 100))}</AppText>
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
-            <AppText variant="md" weight="bold" color="#050505">TỔNG TIỀN:</AppText>
-            <AppText variant="md" weight="bold" color="#050505">
+            <AppText variant="md" color="#050505">TỔNG TIỀN:</AppText>
+            <AppText variant="md" color="#050505">
               {formatVND(125000 * (1 + s.defaultVatRate / 100))}
             </AppText>
           </View>
@@ -278,7 +278,7 @@ export default function POSSettingsScreen() {
             <View style={styles.qrPlaceholder}>
               <Icon name="qrcode-scan" size={38} color="#050505" />
             </View>
-            <AppText variant="sm" weight="bold" color="#050505">
+            <AppText variant="sm" color="#050505">
               Quét VietQR chuyển khoản ({primaryBank.bankName})
             </AppText>
             <AppText variant="sm" color="#64748B">
@@ -297,7 +297,7 @@ export default function POSSettingsScreen() {
   };
 
   return (
-    <SafeAreaView edges={['left', 'right']} style={{ flex: 1, backgroundColor: colors.surface.app }}>
+    <SafeAreaView edges={isDesktop ? ['top', 'left', 'right', 'bottom'] : []} style={{ flex: 1, backgroundColor: colors.surface.app }}>
       <UnifiedHeader
         title={isDesktop ? "Cài Đặt Bán Hàng (POS Settings)" : "Cài Đặt"}
         subtitle={isDesktop ? "Cấu hình đa tài khoản VietQR, loa báo có, mẫu bill in & bếp KDS" : undefined}
@@ -310,33 +310,14 @@ export default function POSSettingsScreen() {
             activeOpacity={0.7}
           >
             <Icon name="file-document-outline" size={16} color={colors.brand.primary} />
-            <AppText variant="sm" weight="bold" color={colors.brand.primary}>
+            <AppText variant="sm" color={colors.brand.primary}>
               {isDesktop ? '👁 Xem 3 Mẫu In' : '👁 Mẫu In'}
             </AppText>
           </TouchableOpacity>
         }
       />
 
-      {/* Preset Bar Quick Actions */}
-      <View style={styles.presetBar}>
-        <AppText variant="sm" weight="bold" color={colors.text.primary} style={{ flexShrink: 0 }}>
-          {isDesktop ? '⚡ Cấu hình nhanh theo mô hình:' : '⚡ Mô hình:'}
-        </AppText>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
-          <TouchableOpacity onPress={() => applyPreset('cafe')} style={styles.presetBtn}>
-            <Icon name="coffee-to-go" size={15} color="#D97706" />
-            <AppText variant="sm" color="#D97706">☕ Cafe & Trà Sữa</AppText>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => applyPreset('restaurant')} style={styles.presetBtn}>
-            <Icon name="silverware-fork-knife" size={15} color="#2563EB" />
-            <AppText variant="sm" color="#2563EB">🍲 Nhà Hàng F&B</AppText>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => applyPreset('retail')} style={styles.presetBtn}>
-            <Icon name="storefront-outline" size={15} color="#059669" />
-            <AppText variant="sm" color="#059669">🛒 Bán Lẻ</AppText>
-          </TouchableOpacity>
-        </ScrollView>
-      </View>
+
 
       {/* Main Container: Column on Mobile (< 768px), Row on Desktop (>= 768px) */}
       <View style={{ flex: 1, flexDirection: isDesktop ? 'row' : 'column' }}>
@@ -379,9 +360,9 @@ export default function POSSettingsScreen() {
             </ScrollView>
           </View>
         ) : (
-          /* Mobile Horizontal Facebook App Style Top Tab Bar */
-          <View style={{ backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.light }}>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 12, paddingVertical: 10, gap: 8 }}>
+          /* Mobile Horizontal Flat Skills UI Top Tab Bar */
+          <View style={{ backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#E5E9F0' }}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 6, paddingVertical: 8, gap: 6 }}>
               {TABS.map((t) => {
                 const active = activeTab === t.id;
                 return (
@@ -392,19 +373,19 @@ export default function POSSettingsScreen() {
                       flexDirection: 'row',
                       alignItems: 'center',
                       gap: 6,
-                      paddingHorizontal: 14,
-                      paddingVertical: 8,
-                      borderRadius: 999,
-                      backgroundColor: active ? colors.brand.primaryBg : colors.surface.app,
+                      paddingHorizontal: 10,
+                      height: 32,
+                      borderRadius: 6,
+                      backgroundColor: active ? '#EFF6FF' : '#F8FAFC',
                       borderWidth: 1,
-                      borderColor: active ? colors.brand.primary : colors.border.light,
+                      borderColor: active ? '#2563EB' : '#E2E8F0',
                     }}
                   >
-                    <Icon name={t.icon as any} size={16} color={active ? colors.brand.primary : colors.icon.muted} />
+                    <Icon name={t.icon as any} size={15} color={active ? '#2563EB' : '#64748B'} />
                     <AppText
                       variant="sm"
                       weight={active ? 'bold' : 'normal'}
-                      color={active ? colors.brand.primary : colors.text.secondary}
+                      color={active ? '#2563EB' : '#475569'}
                     >
                       {t.label}
                     </AppText>
@@ -417,13 +398,13 @@ export default function POSSettingsScreen() {
 
         {/* Center Main Form */}
         <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
-          <ScrollView contentContainerStyle={{ padding: isDesktop ? 20 : 12, paddingBottom: 100 + insets.bottom, gap: 16 }}>
+          <ScrollView contentContainerStyle={{ paddingHorizontal: isDesktop ? 16 : 6, paddingTop: 6, gap: 8, paddingBottom: 100 + insets.bottom }}>
             
             {/* 🖨 TAB 1: IN ẤN & MẪU HÓA ĐƠN */}
             {activeTab === 'in_an' && (
               <View style={{ gap: 16 }}>
                 <View style={{ paddingBottom: 4 }}>
-                  <AppText variant="md" weight="bold" color={colors.text.primary}>
+                  <AppText variant="md" color={colors.text.primary}>
                     Cấu Hình In Ấn & Mẫu Bill Hóa Đơn
                   </AppText>
                   <AppText variant="sm" color={colors.text.muted}>
@@ -433,7 +414,7 @@ export default function POSSettingsScreen() {
 
                 {/* 1. Tiêu đề & Thông tin nhà hàng */}
                 <View style={{ backgroundColor: colors.surface.card, padding: isDesktop ? 16 : 12, borderRadius: shape.radius.lg, gap: 14 }}>
-                  <AppText variant="md" weight="bold" color={colors.text.primary}>1. Thông tin cửa hàng trên Hóa đơn:</AppText>
+                  <AppText variant="md" color={colors.text.primary}>1. Thông tin cửa hàng trên Hóa đơn:</AppText>
 
                   <View style={{ flexDirection: isDesktop ? 'row' : 'column', gap: 12 }}>
                     <View style={{ flex: 1 }}>
@@ -454,12 +435,13 @@ export default function POSSettingsScreen() {
                     </View>
                   </View>
 
-                  <View>
+                  <View style={{ width: '100%' }}>
                     <AppText variant="sm" color={colors.text.secondary} style={{ marginBottom: 6 }}>Địa chỉ cửa hàng:</AppText>
                     <TextInput
                       value={localSettings.receiptHeaderAddress}
                       onChangeText={(val) => updateLocal('receiptHeaderAddress', val)}
-                      style={styles.input}
+                      multiline={true}
+                      style={[styles.input, { height: 'auto', minHeight: 48, paddingTop: 8, paddingBottom: 8 }]}
                     />
                   </View>
 
@@ -493,6 +475,21 @@ export default function POSSettingsScreen() {
                     </View>
                   </View>
 
+                  <View style={{ marginTop: 6, paddingTop: 10, borderTopWidth: 1, borderTopColor: colors.border.light, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <View style={{ flex: 1, paddingRight: 12 }}>
+                      <AppText variant="md" weight="bold" color="#1E293B">Bật / Tắt Gửi Bếp (Module Bếp KDS)</AppText>
+                      <AppText variant="sm" color="#64748B">Tắt nếu cửa hàng bán lẻ/café takeaway không dùng bộ phận bếp</AppText>
+                    </View>
+                    <Switch
+                      value={localSettings.enableKitchenModule}
+                      onValueChange={(val) => {
+                        updateLocal('enableKitchenModule', val);
+                        setKitchenModuleEnabled(val);
+                      }}
+                      trackColor={{ false: colors.surface.app, true: colors.brand.primary }}
+                    />
+                  </View>
+
                   <View>
                     <AppText variant="sm" color={colors.text.secondary} style={{ marginBottom: 6 }}>Lời chúc & Wi-Fi chân bill (Footer):</AppText>
                     <TextInput
@@ -506,7 +503,7 @@ export default function POSSettingsScreen() {
 
                 {/* 2. Khổ giấy & Tùy chọn hiển thị */}
                 <View style={{ backgroundColor: colors.surface.card, padding: isDesktop ? 16 : 12, borderRadius: shape.radius.lg, gap: 14 }}>
-                  <AppText variant="md" weight="bold" color={colors.text.primary}>2. Khổ giấy & Tùy chọn mẫu bill:</AppText>
+                  <AppText variant="md" color={colors.text.primary}>2. Khổ giấy & Tùy chọn mẫu bill:</AppText>
 
                   <View style={{ flexDirection: isDesktop ? 'row' : 'column', gap: 12 }}>
                     <View style={{ flex: 1 }}>
@@ -540,7 +537,7 @@ export default function POSSettingsScreen() {
                           return (
                             <TouchableOpacity
                               key={sz.id}
-                              onPress={() => updateLocal('receiptFontSize', sz.id)}
+                              onPress={() => updateLocal('receiptFontSize', sz.id as 'normal' | 'large')}
                               style={[styles.pillBtn, sel && styles.pillBtnActive]}
                             >
                               <AppText variant="sm" weight={sel ? 'bold' : 'normal'} color={sel ? colors.brand.primary : colors.text.secondary}>
@@ -584,7 +581,7 @@ export default function POSSettingsScreen() {
 
                 {/* 3. Cấu hình Máy In LAN / IP */}
                 <View style={{ backgroundColor: colors.surface.card, padding: isDesktop ? 16 : 12, borderRadius: shape.radius.lg, gap: 14 }}>
-                  <AppText variant="md" weight="bold" color={colors.text.primary}>3. Cấu hình kết nối Máy In chuyên nghiệp:</AppText>
+                  <AppText variant="md" color={colors.text.primary}>3. Cấu hình kết nối Máy In chuyên nghiệp:</AppText>
                   
                   <View style={{ flexDirection: isDesktop ? 'row' : 'column', gap: 12 }}>
                     <View style={{ flex: 1 }}>
@@ -615,7 +612,7 @@ export default function POSSettingsScreen() {
               <View style={{ gap: 16 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                   <View style={{ flex: 1, paddingRight: 8 }}>
-                    <AppText variant="md" weight="bold" color={colors.text.primary}>
+                    <AppText variant="md" color={colors.text.primary}>
                       Quản Lý Đa Tài Khoản Ngân Hàng & Loa Báo Có
                     </AppText>
                     <AppText variant="sm" color={colors.text.muted}>
@@ -631,13 +628,13 @@ export default function POSSettingsScreen() {
                     activeOpacity={0.7}
                   >
                     <Icon name="plus" size={16} color={colors.text.inverse} />
-                    <AppText variant="sm" weight="bold" color={colors.text.inverse}>+ Thêm TK</AppText>
+                    <AppText variant="sm" color={colors.text.inverse}>+ Thêm TK</AppText>
                   </TouchableOpacity>
                 </View>
 
                 {/* Bank Account List */}
                 <View style={{ gap: 10 }}>
-                  {(localSettings.bankAccounts || []).map((bank) => (
+                  {(localSettings.bankAccounts || []).map((bank: BankAccountItem) => (
                     <View key={bank.id} style={styles.bankCard}>
                       <View style={{ flexDirection: isDesktop ? 'row' : 'column', justifyContent: 'space-between', alignItems: isDesktop ? 'center' : 'flex-start', gap: 10 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
@@ -646,20 +643,20 @@ export default function POSSettingsScreen() {
                           </View>
                           <View>
                             <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
-                              <AppText variant="md" weight="bold" color="#050505">{bank.bankName}</AppText>
+                              <AppText variant="md" color="#050505">{bank.bankName}</AppText>
                               {bank.isPrimary && (
                                 <View style={styles.primaryPill}>
-                                  <AppText variant="sm" weight="bold" color="#059669">Tài khoản chính</AppText>
+                                  <AppText variant="sm" color="#059669">Tài khoản chính</AppText>
                                 </View>
                               )}
                               {bank.isSpeakerEnabled && (
                                 <View style={styles.speakerPill}>
-                                  <AppText variant="sm" weight="bold" color="#2563EB">🔊 Loa Báo Có</AppText>
+                                  <AppText variant="sm" color="#2563EB">🔊 Loa Báo Có</AppText>
                                 </View>
                               )}
                             </View>
                             <AppText variant="sm" color="#64748B" style={{ marginTop: 2 }}>
-                              STK: <AppText variant="sm" weight="bold" color="#050505">{bank.bankAccountNo}</AppText> · {bank.bankAccountName}
+                              STK: <AppText variant="sm" color="#050505">{bank.bankAccountNo}</AppText> · {bank.bankAccountName}
                             </AppText>
                           </View>
                         </View>
@@ -705,7 +702,7 @@ export default function POSSettingsScreen() {
                 <View style={{ backgroundColor: colors.surface.card, padding: isDesktop ? 16 : 12, borderRadius: shape.radius.lg, gap: 16 }}>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                     <View style={{ flex: 1, paddingRight: 12 }}>
-                      <AppText variant="md" weight="bold" color={colors.text.primary}>Bật VietQR Động theo chính xác số tiền đơn hàng</AppText>
+                      <AppText variant="md" color={colors.text.primary}>Bật VietQR Động theo chính xác số tiền đơn hàng</AppText>
                       <AppText variant="sm" color={colors.text.muted}>
                         Tự động sinh mã VietQR có đính kèm đúng số tiền cần thanh toán của hóa đơn, giúp khách chuyển khoản nhanh không cần nhập tay.
                       </AppText>
@@ -724,7 +721,7 @@ export default function POSSettingsScreen() {
             {activeTab === 'van_hanh' && (
               <View style={{ gap: 16 }}>
                 <View style={{ paddingBottom: 4 }}>
-                  <AppText variant="md" weight="bold" color={colors.text.primary}>
+                  <AppText variant="md" color={colors.text.primary}>
                     Cài Đặt Gọi Món, Thuế VAT & Quy Tắc Vận Hành
                   </AppText>
                   <AppText variant="sm" color={colors.text.muted}>
@@ -736,7 +733,7 @@ export default function POSSettingsScreen() {
                 <View style={{ backgroundColor: colors.surface.card, padding: isDesktop ? 16 : 12, borderRadius: shape.radius.lg, gap: 16 }}>
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                     <View style={{ flex: 1, paddingRight: 12 }}>
-                      <AppText variant="md" weight="bold" color={colors.text.primary}>Bật Phân Hệ Nhà Bếp & Bar (KDS)</AppText>
+                      <AppText variant="md" color={colors.text.primary}>Bật Phân Hệ Nhà Bếp & Bar (KDS)</AppText>
                       <AppText variant="sm" color={colors.text.muted}>
                         Hiển thị phân hệ bếp KDS cho nhà hàng/quán cafe. Tắt switch này nếu cửa hàng bán lẻ/takeaway không có bếp.
                       </AppText>
@@ -754,7 +751,7 @@ export default function POSSettingsScreen() {
 
                 {/* Thuế VAT */}
                 <View style={{ backgroundColor: colors.surface.card, padding: isDesktop ? 16 : 12, borderRadius: shape.radius.lg, gap: 14 }}>
-                  <AppText variant="md" weight="bold" color={colors.text.primary}>1. Cấu hình Thuế GTGT (VAT):</AppText>
+                  <AppText variant="md" color={colors.text.primary}>1. Cấu hình Thuế GTGT (VAT):</AppText>
                   
                   <View style={{ flexDirection: isDesktop ? 'row' : 'column', gap: 12 }}>
                     <View style={{ flex: 1 }}>
@@ -804,7 +801,7 @@ export default function POSSettingsScreen() {
 
                 {/* Phục vụ & Giảm giá */}
                 <View style={{ backgroundColor: colors.surface.card, padding: isDesktop ? 16 : 12, borderRadius: shape.radius.lg, gap: 14 }}>
-                  <AppText variant="md" weight="bold" color={colors.text.primary}>2. Hình thức phục vụ & Sửa giá:</AppText>
+                  <AppText variant="md" color={colors.text.primary}>2. Hình thức phục vụ & Sửa giá:</AppText>
 
                   <View style={{ flexDirection: 'row', gap: 12 }}>
                     {[
@@ -815,7 +812,7 @@ export default function POSSettingsScreen() {
                       return (
                         <TouchableOpacity
                           key={st.id}
-                          onPress={() => updateLocal('defaultServiceType', st.id)}
+                          onPress={() => updateLocal('defaultServiceType', st.id as 'dine_in' | 'takeaway')}
                           style={[styles.pillBtn, sel && styles.pillBtnActive]}
                         >
                           <AppText variant="sm" weight={sel ? 'bold' : 'normal'} color={sel ? colors.brand.primary : colors.text.secondary}>
@@ -847,7 +844,7 @@ export default function POSSettingsScreen() {
             {activeTab === 'tinh_nang' && (
               <View style={{ gap: 16 }}>
                 <View style={{ paddingBottom: 4 }}>
-                  <AppText variant="md" weight="bold" color={colors.text.primary}>
+                  <AppText variant="md" color={colors.text.primary}>
                     Tùy Chỉnh Bật / Tắt Các Phân Hệ & Tính Năng POS
                   </AppText>
                   <AppText variant="sm" color={colors.text.muted}>
@@ -855,9 +852,96 @@ export default function POSSettingsScreen() {
                   </AppText>
                 </View>
 
+                {/* 0. Cấu Hình Nhanh Theo Mô Hình (Presets) */}
+                <View
+                  style={{
+                    backgroundColor: '#FFFFFF',
+                    borderRadius: 8,
+                    borderWidth: 1,
+                    borderColor: '#E5E9F0',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <View
+                    style={{
+                      backgroundColor: '#F8FAFC',
+                      paddingHorizontal: 12,
+                      paddingVertical: 8,
+                      borderBottomWidth: 1,
+                      borderColor: '#E5E9F0',
+                    }}
+                  >
+                    <AppText variant="md" weight="bold" color="#1E293B">
+                      ⚡ CẤU HÌNH NHANH MÔ HÌNH KINH DOANH (PRESETS)
+                    </AppText>
+                  </View>
+
+                  <View style={{ padding: 10, gap: 8 }}>
+                    <TouchableOpacity
+                      onPress={() => applyPreset('cafe')}
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 10,
+                        padding: 10,
+                        borderRadius: 6,
+                        backgroundColor: '#FFF7ED',
+                        borderWidth: 1,
+                        borderColor: '#FFEDD5',
+                      }}
+                    >
+                      <Icon name="coffee-to-go" size={20} color="#D97706" />
+                      <View style={{ flex: 1 }}>
+                        <AppText variant="md" weight="bold" color="#D97706">☕ Quán Cafe & Trà Sữa Takeaway</AppText>
+                        <AppText variant="xs" color="#B45309">Bật sơ đồ bàn, máy in K80, mặc định dịch vụ Mang Về, VAT 8%</AppText>
+                      </View>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={() => applyPreset('restaurant')}
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 10,
+                        padding: 10,
+                        borderRadius: 6,
+                        backgroundColor: '#EFF6FF',
+                        borderWidth: 1,
+                        borderColor: '#DBEAFE',
+                      }}
+                    >
+                      <Icon name="silverware-fork-knife" size={20} color="#2563EB" />
+                      <View style={{ flex: 1 }}>
+                        <AppText variant="md" weight="bold" color="#2563EB">🍲 Nhà Hàng Bàn Ăn F&B</AppText>
+                        <AppText variant="xs" color="#1D4ED8">Bật bếp KDS, sơ đồ bàn ăn, máy in K80, 2 liên báo bếp, VAT 10%</AppText>
+                      </View>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={() => applyPreset('retail')}
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: 10,
+                        padding: 10,
+                        borderRadius: 6,
+                        backgroundColor: '#ECFDF5',
+                        borderWidth: 1,
+                        borderColor: '#A7F3D0',
+                      }}
+                    >
+                      <Icon name="storefront-outline" size={20} color="#059669" />
+                      <View style={{ flex: 1 }}>
+                        <AppText variant="md" weight="bold" color="#050505">🛒 Cửa Hàng Bán Lẻ / Tạp Hóa</AppText>
+                        <AppText variant="xs" color="#047857">Tắt báo bếp, tắt sơ đồ bàn, máy in K57, VAT 0%</AppText>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
                 {/* 1. Phân Hệ Bàn & Phòng */}
                 <View style={{ backgroundColor: colors.surface.card, padding: isDesktop ? 16 : 12, borderRadius: shape.radius.lg, gap: 16 }}>
-                  <AppText variant="md" weight="bold" color={colors.text.primary}>1. Phân Hệ Sơ Đồ Bàn & Phòng:</AppText>
+                  <AppText variant="md" color={colors.text.primary}>1. Phân Hệ Sơ Đồ Bàn & Phòng:</AppText>
 
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                     <View style={{ flex: 1, paddingRight: 12 }}>
@@ -927,7 +1011,7 @@ export default function POSSettingsScreen() {
 
                 {/* 2. Phân Hệ Đơn Hàng & Thu Ngân */}
                 <View style={{ backgroundColor: colors.surface.card, padding: isDesktop ? 16 : 12, borderRadius: shape.radius.lg, gap: 16 }}>
-                  <AppText variant="md" weight="bold" color={colors.text.primary}>2. Phân Hệ Đơn Hàng & Thu Ngân:</AppText>
+                  <AppText variant="md" color={colors.text.primary}>2. Phân Hệ Đơn Hàng & Thu Ngân:</AppText>
 
                   <View style={{ gap: 8 }}>
                     <AppText variant="md" color={colors.text.primary}>Kiểu hiển thị Danh Sách Món Ăn (Menu):</AppText>
@@ -981,9 +1065,31 @@ export default function POSSettingsScreen() {
                   </View>
                 </View>
 
+                {/* 3. Phân Hệ Báo Bếp & Màn Hình KDS (Gửi Bếp) */}
+                <View style={{ backgroundColor: colors.surface.card, padding: isDesktop ? 16 : 12, borderRadius: shape.radius.lg, gap: 16 }}>
+                  <AppText variant="md" color={colors.text.primary}>3. Phân Hệ Báo Bếp & Màn Hình KDS (Gửi Bếp):</AppText>
+
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <View style={{ flex: 1, paddingRight: 12 }}>
+                      <AppText variant="md" color={colors.text.primary}>Bật Phân Hệ Báo Bếp / Gửi Bếp KDS</AppText>
+                      <AppText variant="sm" color={colors.text.muted}>
+                        Cho phép truyền đơn xuống Bếp/Bar và mở màn hình KDS Chế biến. Tắt nếu cửa hàng thanh toán bán lẻ/takeaway không có bộ phận bếp.
+                      </AppText>
+                    </View>
+                    <Switch
+                      value={localSettings.enableKitchenModule}
+                      onValueChange={(val) => {
+                        updateLocal('enableKitchenModule', val);
+                        setKitchenModuleEnabled(val);
+                      }}
+                      trackColor={{ false: colors.surface.app, true: colors.brand.primary }}
+                    />
+                  </View>
+                </View>
+
                 {/* 3. Phân Hệ Khách Hàng CRM & Hóa Đơn VAT */}
                 <View style={{ backgroundColor: colors.surface.card, padding: isDesktop ? 16 : 12, borderRadius: shape.radius.lg, gap: 16 }}>
-                  <AppText variant="md" weight="bold" color={colors.text.primary}>3. Phân Hệ CRM & Hóa Đơn Điện Tử:</AppText>
+                  <AppText variant="md" color={colors.text.primary}>3. Phân Hệ CRM & Hóa Đơn Điện Tử:</AppText>
 
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                     <View style={{ flex: 1, paddingRight: 12 }}>
@@ -1018,7 +1124,7 @@ export default function POSSettingsScreen() {
             {activeTab === 'enterprise' && (
               <View style={{ gap: 16 }}>
                 <View style={{ paddingBottom: 4 }}>
-                  <AppText variant="md" weight="bold" color={colors.text.primary}>
+                  <AppText variant="md" color={colors.text.primary}>
                     Cấu Hình Vận Hành Kho, Bảo Mật PIN Quản Lý & Két Tiền Enterprise
                   </AppText>
                   <AppText variant="sm" color={colors.text.muted}>
@@ -1028,7 +1134,7 @@ export default function POSSettingsScreen() {
 
                 {/* 1. Trừ kho nguyên liệu tự động */}
                 <View style={{ backgroundColor: colors.surface.card, padding: isDesktop ? 16 : 12, borderRadius: shape.radius.lg, gap: 16 }}>
-                  <AppText variant="md" weight="bold" color={colors.text.primary}>1. Quản Lý Tồn Kho Nguyên Liệu (Inventory Engine):</AppText>
+                  <AppText variant="md" color={colors.text.primary}>1. Quản Lý Tồn Kho Nguyên Liệu (Inventory Engine):</AppText>
 
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                     <View style={{ flex: 1, paddingRight: 12 }}>
@@ -1059,7 +1165,7 @@ export default function POSSettingsScreen() {
 
                 {/* 2. Bảo mật & Chống gian lận */}
                 <View style={{ backgroundColor: colors.surface.card, padding: isDesktop ? 16 : 12, borderRadius: shape.radius.lg, gap: 16 }}>
-                  <AppText variant="md" weight="bold" color={colors.text.primary}>2. Phân Quyền Bảo Mật & Chống Gian Lận Thu Ngân:</AppText>
+                  <AppText variant="md" color={colors.text.primary}>2. Phân Quyền Bảo Mật & Chống Gian Lận Thu Ngân:</AppText>
 
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                     <View style={{ flex: 1, paddingRight: 12 }}>
@@ -1104,7 +1210,7 @@ export default function POSSettingsScreen() {
 
                 {/* 3. Phụ thu ngày lễ & Làm tròn tiền */}
                 <View style={{ backgroundColor: colors.surface.card, padding: isDesktop ? 16 : 12, borderRadius: shape.radius.lg, gap: 14 }}>
-                  <AppText variant="md" weight="bold" color={colors.text.primary}>3. Phụ Thu Ngày Lễ & Quy Tắc Làm Tròn Tiền Mặt:</AppText>
+                  <AppText variant="md" color={colors.text.primary}>3. Phụ Thu Ngày Lễ & Quy Tắc Làm Tròn Tiền Mặt:</AppText>
 
                   <View style={{ flexDirection: isDesktop ? 'row' : 'column', gap: 12 }}>
                     <View style={{ flex: 1 }}>
@@ -1158,7 +1264,7 @@ export default function POSSettingsScreen() {
             {activeTab === 'giao_dien' && (
               <View style={{ gap: 16 }}>
                 <View style={{ paddingBottom: 4 }}>
-                  <AppText variant="md" weight="bold" color={colors.text.primary}>
+                  <AppText variant="md" color={colors.text.primary}>
                     Cài Đặt Giao Diện & Hiệu Ứng Phản Hồi
                   </AppText>
                   <AppText variant="sm" color={colors.text.muted}>
@@ -1207,7 +1313,7 @@ export default function POSSettingsScreen() {
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               <View style={styles.modalHeader}>
-                <AppText variant="md" weight="bold" color="#050505">Xem Trực Quan Mẫu Bill In</AppText>
+                <AppText variant="md" color="#050505">Xem Trực Quan Mẫu Bill In</AppText>
                 <TouchableOpacity onPress={() => setShowPreviewModal(false)}>
                   <Icon name="close" size={22} color="#050505" />
                 </TouchableOpacity>
@@ -1248,7 +1354,7 @@ export default function POSSettingsScreen() {
           <View style={styles.modalOverlay}>
             <View style={[styles.modalContent, { width: (isDesktop ? 440 : '100%') as DimensionValue }]}>
               <View style={styles.modalHeader}>
-                <AppText variant="md" weight="bold" color="#050505">
+                <AppText variant="md" color="#050505">
                   {editingBank.id ? 'Sửa Tài Khoản Ngân Hàng' : 'Thêm Tài Khoản Ngân Hàng'}
                 </AppText>
                 <TouchableOpacity onPress={() => setShowBankModal(false)}>
@@ -1323,7 +1429,7 @@ export default function POSSettingsScreen() {
                   <AppText variant="sm" color={colors.text.secondary}>Hủy</AppText>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={handleSaveBankItem} style={styles.saveBtn}>
-                  <AppText variant="sm" weight="bold" color={colors.text.inverse}>Lưu tài khoản</AppText>
+                  <AppText variant="sm" color={colors.text.inverse}>Lưu tài khoản</AppText>
                 </TouchableOpacity>
               </View>
             </View>
@@ -1332,9 +1438,9 @@ export default function POSSettingsScreen() {
       )}
 
       {/* Borderless Action Footer */}
-      <View style={[styles.footerBar, { paddingBottom: Math.max(10, insets.bottom) }]}>
+      <View style={[styles.footerBar, { paddingBottom: Platform.OS === 'web' ? 6 : Math.max(Math.floor(insets.bottom * 0.5), 6) }]}>
         <TouchableOpacity onPress={resetToDefaults} style={styles.resetBtn}>
-          <AppText variant="sm" weight="bold" color={colors.status.danger}>
+          <AppText variant="sm" color={colors.status.danger}>
             {isDesktop ? 'Khôi phục mặc định' : 'Mặc định'}
           </AppText>
         </TouchableOpacity>
@@ -1345,7 +1451,7 @@ export default function POSSettingsScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity onPress={handleSave} style={styles.submitBtn}>
-            <AppText variant="sm" weight="bold" color={colors.text.inverse}>
+            <AppText variant="sm" color={colors.text.inverse}>
               {savedToast ? 'Đã Lưu ✓' : 'Lưu Cài Đặt'}
             </AppText>
           </TouchableOpacity>
@@ -1360,12 +1466,12 @@ const styles = {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
     gap: 6,
-    paddingHorizontal: 12,
-    height: 36,
-    borderRadius: shape.radius.md,
-    backgroundColor: colors.brand.primaryBg,
+    paddingHorizontal: 10,
+    height: 32,
+    borderRadius: 6,
+    backgroundColor: '#FFF7ED',
     borderWidth: 1,
-    borderColor: colors.border.brand,
+    borderColor: '#FDBA74',
   },
   presetBar: {
     flexDirection: 'row' as const,
@@ -1389,14 +1495,16 @@ const styles = {
     borderColor: '#E2E8F0',
   },
   input: {
-    backgroundColor: colors.surface.app,
-    borderRadius: shape.radius.md,
-    paddingHorizontal: 14,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 6,
+    paddingHorizontal: 12,
     height: 42,
     ...font.md,
     color: colors.text.primary,
     borderWidth: 1,
     borderColor: '#E2E8F0',
+    width: '100%' as DimensionValue,
+    maxWidth: '100%' as DimensionValue,
   },
   pillBtn: {
     flex: 1,
@@ -1529,37 +1637,41 @@ const styles = {
     justifyContent: 'center' as const,
   },
   footerBar: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     paddingVertical: 10,
-    backgroundColor: colors.surface.card,
+    backgroundColor: '#FFFFFF',
     flexDirection: 'row' as const,
     justifyContent: 'space-between' as const,
     alignItems: 'center' as const,
     gap: 8,
     borderTopWidth: 1,
-    borderTopColor: colors.border.light,
+    borderTopColor: '#E5E9F0',
   },
   resetBtn: {
     height: 44,
     paddingHorizontal: 14,
-    borderRadius: shape.radius.md,
-    backgroundColor: colors.status.dangerBg,
+    borderRadius: 6,
+    backgroundColor: '#FEF2F2',
+    borderWidth: 1,
+    borderColor: '#FCA5A5',
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
   },
   exitBtn: {
     height: 44,
     paddingHorizontal: 16,
-    borderRadius: shape.radius.md,
-    backgroundColor: colors.surface.app,
+    borderRadius: 6,
+    backgroundColor: '#F1F5F9',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
   },
   submitBtn: {
     height: 44,
     paddingHorizontal: 20,
-    borderRadius: shape.radius.md,
-    backgroundColor: colors.brand.primary,
+    borderRadius: 6,
+    backgroundColor: '#F97316',
     alignItems: 'center' as const,
     justifyContent: 'center' as const,
   },

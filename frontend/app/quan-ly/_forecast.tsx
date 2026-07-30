@@ -75,7 +75,7 @@ export default function ForecastScreen() {
           <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: '#EFF6FF', alignItems: 'center', justifyContent: 'center' }}>
             <Icon name="brain" size={14} color={colors.brand.primary} />
           </View>
-          <AppText variant="sm" weight="bold" color="#050505">{r.date || '-'}</AppText>
+          <AppText variant="md" color="#050505">{r.date || '-'}</AppText>
         </View>
       ),
     },
@@ -86,7 +86,7 @@ export default function ForecastScreen() {
       align: 'right',
       sortable: true,
       sortValue: (r: any) => r.predicted_orders || 0,
-      render: (r: any) => <AppText variant="sm" color={colors.brand.primary}>{r.predicted_orders || 0} đơn</AppText>,
+      render: (r: any) => <AppText variant="md" color={colors.brand.primary}>{r.predicted_orders || 0} đơn</AppText>,
     },
     {
       key: 'confidence',
@@ -96,7 +96,7 @@ export default function ForecastScreen() {
       render: (r: any) => (
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, justifyContent: 'flex-end' }}>
           <Icon name="shield-check" size={14} color={colors.status.success} />
-          <AppText variant="sm" weight="bold" color={colors.status.success}>{r.confidence || 90}%</AppText>
+          <AppText variant="md" color={colors.status.success}>{r.confidence || 90}%</AppText>
         </View>
       ),
     },
@@ -113,34 +113,34 @@ export default function ForecastScreen() {
           <View style={[ss.iconCircleSm, { backgroundColor: '#EEF2FF' }]}>
             <Icon name="brain" size={14} color={colors.brand.primary} />
           </View>
-          <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1 }}>Mô phỏng nhu cầu AI ({days} ngày)</AppText>
+          <AppText variant="md" color="#1E293B" style={{ flex: 1 }}>Mô phỏng nhu cầu AI ({days} ngày)</AppText>
         </View>
 
         <View style={{ padding: 10, gap: 10 }}>
           <View style={{ gap: 6 }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <AppText variant="sm" color="#64748B">Tổng nhu cầu dự kiến</AppText>
-              <AppText variant="sm" weight="bold" color={colors.brand.primary}>{total} đơn</AppText>
+              <AppText variant="md" color="#64748B">Tổng nhu cầu dự kiến</AppText>
+              <AppText variant="md" color={colors.brand.primary}>{total} đơn</AppText>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <AppText variant="sm" color="#64748B">Trung bình / ngày</AppText>
-              <AppText variant="sm" weight="bold" color="#0F172A">{Math.round(total / days)} đơn/ngày</AppText>
+              <AppText variant="md" color="#64748B">Trung bình / ngày</AppText>
+              <AppText variant="md" color="#0F172A">{Math.round(total / days)} đơn/ngày</AppText>
             </View>
           </View>
 
           <View style={{ height: 1, backgroundColor: '#E5E9F0', marginVertical: 4 }} />
 
-          <AppText variant="sm" weight="bold" color="#1E293B">Biểu đồ dự báo đơn hàng AI</AppText>
+          <AppText variant="md" color="#1E293B">Biểu đồ dự báo đơn hàng AI</AppText>
           <ScrollView style={{ maxHeight: 220 }} showsVerticalScrollIndicator={false}>
             {safeData.map((item: any, i: number) => (
               <View key={i} style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 4 }}>
-                <AppText variant="sm" color="#0F172A" style={{ width: 85 }} numberOfLines={1}>
+                <AppText variant="md" color="#0F172A" style={{ width: 85 }} numberOfLines={1}>
                   {item.date?.slice(5) || item.date}
                 </AppText>
                 <View style={{ flex: 1, height: 8, backgroundColor: '#F1F5F9', borderRadius: 4, overflow: 'hidden' }}>
                   <View style={{ width: `${Math.max(8, ((item.predicted_orders || 0) / maxVal) * 100)}%`, height: 8, backgroundColor: colors.brand.primary, borderRadius: 4 }} />
                 </View>
-                <AppText variant="sm" weight="bold" color={colors.brand.primary} style={{ width: 45, textAlign: 'right' }}>
+                <AppText variant="md" color={colors.brand.primary} style={{ width: 45, textAlign: 'right' }}>
                   {item.predicted_orders}
                 </AppText>
               </View>
@@ -158,16 +158,16 @@ export default function ForecastScreen() {
   const renderMobileForecastCard = ({ item: r }: { item: any }) => (
     <TouchableOpacity activeOpacity={0.7} style={ss.listRow} key={r.id || r.date}>
       <View style={{ flex: 1 }}>
-        <AppText variant="sm" weight="bold" color="#0F172A" numberOfLines={1}>
+        <AppText variant="md" color="#0F172A" numberOfLines={1}>
           Ngày {r.date}
         </AppText>
-        <AppText variant="sm" color="#64748B" numberOfLines={1} style={{ marginTop: 1 }}>
+        <AppText variant="md" color="#64748B" numberOfLines={1} style={{ marginTop: 1 }}>
           Dự kiến: {r.predicted_orders || 0} đơn
         </AppText>
       </View>
 
       <View style={{ backgroundColor: '#ECFDF5', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 }}>
-        <AppText variant="sm" weight="bold" color={colors.status.success}>
+        <AppText variant="md" color={colors.status.success}>
           {r.confidence || 92}% tin cậy
         </AppText>
       </View>
@@ -188,8 +188,8 @@ export default function ForecastScreen() {
             <Icon name="chart-line" size={18} color={colors.brand.primary} />
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#0F172A">{total} đơn</AppText>
-            <AppText variant="sm" color="#64748B">Tổng đơn</AppText>
+            <AppText variant="md" color="#0F172A">{total} đơn</AppText>
+            <AppText variant="md" color="#64748B">Tổng đơn</AppText>
           </View>
         </View>
 
@@ -198,8 +198,8 @@ export default function ForecastScreen() {
             <Icon name="calendar" size={18} color="#F97316" />
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#F97316">{avg} đơn/ngày</AppText>
-            <AppText variant="sm" color="#64748B">TB/ngày</AppText>
+            <AppText variant="md" color="#F97316">{avg} đơn/ngày</AppText>
+            <AppText variant="md" color="#64748B">TB/ngày</AppText>
           </View>
         </View>
 
@@ -208,8 +208,8 @@ export default function ForecastScreen() {
             <Icon name="shield-check" size={18} color={colors.status.success} />
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color={colors.status.success}>{avgConf}%</AppText>
-            <AppText variant="sm" color="#64748B">Độ tin cậy AI</AppText>
+            <AppText variant="md" color={colors.status.success}>{avgConf}%</AppText>
+            <AppText variant="md" color="#64748B">Độ tin cậy AI</AppText>
           </View>
         </View>
       </View>
@@ -230,7 +230,7 @@ export default function ForecastScreen() {
                 onPress={() => setDays(d)}
                 style={[ss.filterChip, active && ss.filterChipActive]}
               >
-                <AppText variant="sm" weight="bold" color={active ? colors.brand.primary : "#334155"}>
+                <AppText variant="md" color={active ? colors.brand.primary : "#334155"}>
                   Dự báo {d} ngày tới
                 </AppText>
               </TouchableOpacity>
@@ -276,7 +276,7 @@ export default function ForecastScreen() {
               <View style={[ss.iconCircleSm, { backgroundColor: '#EFF6FF' }]}>
                 <Icon name="brain" size={14} color={colors.brand.primary} />
               </View>
-              <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1 }}>
+              <AppText variant="md" color="#1E293B" style={{ flex: 1 }}>
                 DANH SÁCH DỰ BÁO NHU CẦU AI ({safeData.length})
               </AppText>
             </View>

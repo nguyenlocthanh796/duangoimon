@@ -60,7 +60,7 @@ export default function POSOrderScreen({ tableId, tableName, onClose }: POSOrder
 
   return (
     <SafeAreaView
-      edges={['left', 'right']}
+      edges={isWide ? ['top', 'left', 'right', 'bottom'] : []}
       style={{ flex: 1, backgroundColor: colors.surface.app }}
     >
       <OrderHeader
@@ -70,6 +70,12 @@ export default function POSOrderScreen({ tableId, tableName, onClose }: POSOrder
         isWide={isWide}
         onClose={onClose}
         onOpenSidebar={openSidebar}
+        onSendToKitchen={ord.handleSendToKitchen}
+        hasUnsentItems={ord.cart.some(
+          (i) =>
+            !(i.isSent && i.status && !['moi', undefined, ''].includes(i.status)) &&
+            !i.cancelReason
+        )}
       />
 
       <CategoryTabs
@@ -150,15 +156,9 @@ export default function POSOrderScreen({ tableId, tableName, onClose }: POSOrder
             itemCount={ord.itemCount}
             total={ord.total}
             onPress={() => ord.setCartSheet(true)}
-            onSendToKitchen={ord.handleSendToKitchen}
             onSave={ord.handleSaveTable}
             onPay={ord.handlePay}
             submitting={ord.submitting}
-            hasUnsentItems={ord.cart.some(
-              (i) =>
-                !(i.isSent && i.status && !['moi', undefined, ''].includes(i.status)) &&
-                !i.cancelReason
-            )}
           />
 
           <CartPanel

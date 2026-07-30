@@ -111,7 +111,7 @@ export default function VisualTablePicker({
                   }}
                 >
                   <AppText
-                    variant="sm"
+                    variant="md"
                     weight={active ? 'bold' : 'normal'}
                     color={active ? colors.text.inverse : colors.text.secondary}
                   >
@@ -138,7 +138,7 @@ export default function VisualTablePicker({
         {filteredTables.length === 0 ? (
           <View style={{ flex: 1, width: '100%', alignItems: 'center', paddingVertical: 32, gap: 8 }}>
             <Icon name="table-off" size={36} color={colors.icon.muted} />
-            <AppText variant="sm" color={colors.text.muted}>
+            <AppText variant="md" color={colors.text.muted}>
               Không tìm thấy bàn phù hợp
             </AppText>
           </View>
@@ -195,7 +195,7 @@ export default function VisualTablePicker({
 
                     <View style={{ flex: 1 }}>
                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                        <AppText variant="md" weight="bold" color={colors.text.primary}>
+                        <AppText variant="md" color={colors.text.primary}>
                           {table.name}
                         </AppText>
                         <View
@@ -207,15 +207,15 @@ export default function VisualTablePicker({
                           }}
                         >
                           <AppText
-                            variant="sm"
-                            weight="bold"
+                            variant="md"
+                           
                             color={isOccupied ? colors.status.danger : colors.status.success}
                           >
                             {isOccupied ? 'Có khách' : 'Bàn trống'}
                           </AppText>
                         </View>
                       </View>
-                      <AppText variant="sm" color={colors.text.muted}>
+                      <AppText variant="md" color={colors.text.muted}>
                         {table.area || 'Chung'} · {table.capacity || 4} ghế
                       </AppText>
                     </View>
@@ -223,11 +223,11 @@ export default function VisualTablePicker({
 
                   <View style={{ alignItems: 'flex-end' }}>
                     {isOccupied && table.orderTotal ? (
-                      <AppText variant="sm" weight="bold" color={colors.status.danger}>
+                      <AppText variant="md" color={colors.status.danger}>
                         {formatPrice(table.orderTotal)}
                       </AppText>
                     ) : (
-                      <AppText variant="sm" color={colors.status.success}>
+                      <AppText variant="md" color={colors.status.success}>
                         Sẵn sàng
                       </AppText>
                     )}
@@ -265,8 +265,8 @@ export default function VisualTablePicker({
                 {/* Header row: Status Icon + Table Name */}
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                   <AppText
-                    variant="sm"
-                    weight="bold"
+                    variant="md"
+                   
                     color={isSelected ? colors.brand.primary : isOccupied ? colors.status.danger : colors.status.success}
                     numberOfLines={1}
                     style={{ flex: 1 }}
@@ -285,15 +285,15 @@ export default function VisualTablePicker({
                 </View>
 
                 {/* Subtitle: Area / Capacity */}
-                <AppText variant="sm" color={colors.text.muted} numberOfLines={1}>
+                <AppText variant="md" color={colors.text.muted} numberOfLines={1}>
                   {abbreviateArea(table.area) || 'Khu vực chung'} · {table.capacity || 4} chỗ
                 </AppText>
 
                 {/* Order total if occupied */}
                 {isOccupied && table.orderTotal ? (
                   <AppText
-                    variant="sm"
-                    weight="bold"
+                    variant="md"
+                   
                     color={colors.status.danger}
                     style={{ marginTop: 2 }}
                     numberOfLines={1}
@@ -301,7 +301,7 @@ export default function VisualTablePicker({
                     {formatPrice(table.orderTotal)}
                   </AppText>
                 ) : (
-                  <AppText variant="sm" color={colors.status.success} style={{ marginTop: 2 }}>
+                  <AppText variant="md" color={colors.status.success} style={{ marginTop: 2 }}>
                     Trống
                   </AppText>
                 )}

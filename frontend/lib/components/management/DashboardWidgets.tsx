@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font } from '../../theme';
@@ -48,7 +48,7 @@ function DataTable({ columns, data, maxRows = 5 }: DataTableProps) {
       </View>
       {/* Body */}
       {rows.map((row, i) => (
-        <View key={row.id ?? i} style={[dtStyles.dataRow, i % 2 === 0 && dtStyles.dataRowAlt]}>
+        <View key={row.id ?? i} style={[dtStyles.dataRow, i % 2 === 1 && dtStyles.dataRowAlt]}>
           {columns.map((col) => {
             const val = row[col.key];
             return (
@@ -90,30 +90,34 @@ function DataTable({ columns, data, maxRows = 5 }: DataTableProps) {
 
 const dtStyles = StyleSheet.create({
   wrap: {
-    borderRadius: shape.radius.md,
+    borderRadius: 6,
     overflow: 'hidden',
-    backgroundColor: colors.surface.app,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#F1F5F9',
   },
   headerRow: {
     flexDirection: 'row',
-    backgroundColor: colors.brand.primaryBg,
+    backgroundColor: '#F8FAFC',
     paddingVertical: 6,
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderColor: '#E5E9F0',
   },
   headerCell: { flex: 1 },
-  headerText: { ...font.captionItalic, color: colors.text.secondary },
+  headerText: { fontSize: 12, fontWeight: '500', color: '#64748B' },
   dataRow: {
     flexDirection: 'row',
-    paddingVertical: 10,
-    paddingHorizontal: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
   },
-  dataRowAlt: { backgroundColor: colors.surface.card },
+  dataRowAlt: { backgroundColor: '#F8FAFC' },
   dataCell: { flex: 1, justifyContent: 'center' },
   cellRight: { alignItems: 'flex-end' },
   cellCenter: { alignItems: 'center' },
-  dataText: { ...font.md, color: colors.text.primary },
+  dataText: { fontSize: 16, fontWeight: '400', color: '#0F172A' },
   empty: { alignItems: 'center', paddingVertical: 18 },
-  emptyText: { ...font.captionItalic, color: colors.text.muted },
+  emptyText: { fontSize: 14, fontWeight: '400', color: '#64748B' },
   statusDot: { width: 8, height: 8, borderRadius: 4 },
 });
 
@@ -128,33 +132,90 @@ export function TopProductsList({ data, loading }: TopProductsProps) {
   return (
     <View style={styles.section}>
       <SectionHeader icon="chart-bar" title="Sản phẩm bán chạy" subtitle="Hôm nay" />
-      {loading ? (
-        [1, 2, 3].map((i) => (
-          <View key={i} style={{ flexDirection: 'row', gap: 10, marginBottom: 8 }}>
-            <SkeletonBox w={24} h={24} borderRadius={4} />
-            <SkeletonBox w="55%" h={16} />
-            <SkeletonBox w={40} h={16} />
-          </View>
-        ))
-      ) : (data?.length ?? 0) === 0 ? (
-        <EmptyBox icon="inbox" text="Chưa có dữ liệu" />
-      ) : (
-        <DataTable
-          columns={[
-            { key: 'rank', label: '#', flex: 0.4, align: 'center', render: (v) => (
-              <Text style={{ ...font.sm, fontWeight: 'bold', textAlign: 'center', color: (v <= 3) ? colors.brand.primary : colors.text.muted }}>
-                {v}
-              </Text>
-            ) },
-            { key: 'name', label: 'Tên món', flex: 2 },
-            { key: 'quantity', label: 'SL', flex: 0.8, align: 'right', render: (v) => (
-              <Text style={{ ...font.sm, fontWeight: 'bold', color: colors.text.primary, textAlign: 'right' }}>{v}</Text>
-            ) },
-          ]}
-          data={(data ?? []).map((p, i) => ({ ...p, id: i, rank: i + 1 }))}
-          maxRows={5}
-        />
-      )}
+      <View style={styles.sectionBody}>
+        {loading ? (
+          [1, 2, 3].map((i) => (
+            <View key={i} style={{ flexDirection: 'row', gap: 10, marginBottom: 8 }}>
+              <SkeletonBox w={24} h={24} borderRadius={4} />
+              <SkeletonBox w="55%" h={16} />
+              <SkeletonBox w={40} h={16} />
+            </View>
+          ))
+        ) : (data?.length ?? 0) === 0 ? (
+          <EmptyBox icon="inbox" text="Chưa có dữ liệu" />
+        ) : (
+          <DataTable
+            columns={[
+              {
+                key: 'rank',
+                label: '#',
+                flex: 0.4,
+                align: 'center',
+                render: (v) => {
+                  const rank = Number(v);
+                  const isTop1 = rank === 1;
+                  const isTop2 = rank === 2;
+                  const isTop3 = rank === 3;
+                  if (rank <= 3) {
+                    return (
+                      <View
+                        style={{
+                          width: 22,
+                          height: 22,
+                          borderRadius: 4,
+                          backgroundColor: isTop1 ? '#FFF7ED' : isTop2 ? '#FEF3C7' : '#F1F5F9',
+                          borderWidth: 1,
+                          borderColor: isTop1 ? '#FFEDD5' : isTop2 ? '#FDE68A' : '#E2E8F0',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <Text
+                          style={{
+                            fontSize: 12,
+                            fontWeight: '700',
+                            color: isTop1 ? '#F97316' : isTop2 ? '#D97706' : '#475569',
+                          }}
+                        >
+                          {rank}
+                        </Text>
+                      </View>
+                    );
+                  }
+                  return (
+                    <Text style={{ fontSize: 14, fontWeight: '400', color: '#64748B', textAlign: 'center' }}>
+                      {rank}
+                    </Text>
+                  );
+                },
+              },
+              {
+                key: 'name',
+                label: 'Tên món',
+                flex: 2,
+                render: (v) => (
+                  <Text style={{ fontSize: 16, fontWeight: '400', color: '#0F172A' }} numberOfLines={1}>
+                    {v}
+                  </Text>
+                ),
+              },
+              {
+                key: 'quantity',
+                label: 'SL',
+                flex: 0.8,
+                align: 'right',
+                render: (v) => (
+                  <Text style={{ fontSize: 16, fontWeight: '700', color: '#0F172A', textAlign: 'right' }}>
+                    {v}
+                  </Text>
+                ),
+              },
+            ]}
+            data={(data ?? []).map((p, i) => ({ ...p, id: i, rank: i + 1 }))}
+            maxRows={5}
+          />
+        )}
+      </View>
     </View>
   );
 }
@@ -184,35 +245,37 @@ export function NavigationGrid({ compact }: NavGridProps) {
         subtitle={`${NAV_ITEMS.length} mục`}
         compact={compact}
       />
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 4 }}>
-        {NAV_ITEMS.map((item, i) => (
-          <TouchableOpacity
-            key={i}
-            style={{
-              width: width > 768 ? '23.8%' : '48.5%',
-              backgroundColor: colors.surface.app,
-              paddingVertical: 12,
-              paddingHorizontal: 12,
-              borderRadius: shape.radius.md,
-              borderWidth: 1,
-              borderColor: colors.border.light,
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 10,
-              minHeight: 52,
-            }}
-            onPress={() => router.push(item.route as any)}
-            delayPressIn={0}
-            activeOpacity={0.7}
-          >
-            <View style={{ width: 38, height: 38, borderRadius: shape.radius.md, backgroundColor: item.bg, alignItems: 'center', justifyContent: 'center' }}>
-              <Icon name={item.icon as any} size={20} color={item.color} />
-            </View>
-            <AppText variant="md" color={colors.text.primary} numberOfLines={1} style={{ flex: 1 }}>
-              {item.title}
-            </AppText>
-          </TouchableOpacity>
-        ))}
+      <View style={styles.sectionBody}>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
+          {NAV_ITEMS.map((item, i) => (
+            <TouchableOpacity
+              key={i}
+              style={{
+                width: width > 768 ? '23.8%' : '48.5%',
+                backgroundColor: '#F8FAFC',
+                paddingVertical: 10,
+                paddingHorizontal: 12,
+                borderRadius: 8,
+                borderWidth: 1,
+                borderColor: '#E5E9F0',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 10,
+                minHeight: 52,
+              }}
+              onPress={() => router.push(item.route as any)}
+              delayPressIn={0}
+              activeOpacity={0.7}
+            >
+              <View style={{ width: 36, height: 36, borderRadius: 8, backgroundColor: item.bg, alignItems: 'center', justifyContent: 'center' }}>
+                <Icon name={item.icon as any} size={20} color={item.color} />
+              </View>
+              <Text style={{ fontSize: 16, fontWeight: '400', color: '#0F172A', flex: 1 }} numberOfLines={2}>
+                {item.title}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
     </View>
   );
@@ -239,57 +302,69 @@ export function LowStockList({ items, loading }: LowStockWidgetProps) {
     return (
       <View style={styles.section}>
         <SectionHeader icon="alert-circle-outline" title="Tồn kho thấp" />
-        {[1, 2, 3].map((i) => (
-          <SkeletonBox key={i} w="100%" h={20} style={{ marginBottom: 8 }} />
-        ))}
+        <View style={styles.sectionBody}>
+          {[1, 2, 3].map((i) => (
+            <SkeletonBox key={i} w="100%" h={20} style={{ marginBottom: 8 }} />
+          ))}
+        </View>
       </View>
     );
   }
+
   return (
     <View style={styles.section}>
       <SectionHeader icon="alert-circle-outline" title="Tồn kho thấp" subtitle={`${stockItems.length} mặt hàng`} />
-      {stockItems.length === 0 ? (
-        <EmptyBox icon="check-circle" text="Tồn kho ổn định" iconColor={colors.status.success} />
-      ) : (
-        <DataTable
-          columns={[
-            {
-              key: 'name', label: 'Nguyên liệu', flex: 2,
-              render: (v, row) => (
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                  <View
-                    style={[
-                      dtStyles.statusDot,
-                      { backgroundColor: (row as any)._critical ? colors.status.danger : colors.status.warning },
-                    ]}
-                  />
-                  <Text style={dtStyles.dataText} numberOfLines={1}>{v}</Text>
-                </View>
-              ),
-            },
-            {
-              key: '_stock', label: 'Tồn / Tối thiểu', flex: 1.2, align: 'right',
-              render: (_, row) => {
-                const r = row as any;
-                return (
-                  <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 4 }}>
-                    <Text style={{ ...font.sm, fontWeight: 'bold', color: r._critical ? colors.status.danger : colors.status.warning }}>
-                      {r.current}
-                    </Text>
-                    <Text style={{ ...font.sm, color: colors.text.muted }}>
-                      / {r.min} {r.unit}
+      <View style={styles.sectionBody}>
+        {stockItems.length === 0 ? (
+          <EmptyBox icon="check-circle-outline" text="Tồn kho ổn định" iconColor="#059669" />
+        ) : (
+          <DataTable
+            columns={[
+              {
+                key: 'name',
+                label: 'Nguyên liệu',
+                flex: 2,
+                render: (v, row) => (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                    <View
+                      style={[
+                        dtStyles.statusDot,
+                        { backgroundColor: (row as any)._critical ? '#DC2626' : '#D97706' },
+                      ]}
+                    />
+                    <Text style={{ fontSize: 16, fontWeight: '400', color: '#0F172A' }} numberOfLines={1}>
+                      {v}
                     </Text>
                   </View>
-                );
+                ),
               },
-            },
-          ]}
-          data={(stockItems.slice(0, 4)).map((item) => {
-            const pct = item.min > 0 ? Math.round((item.current / item.min) * 100) : 0;
-            return { ...item, _critical: pct < 30, _stock: `${item.current}/${item.min}` };
-          })}
-        />
-      )}
+              {
+                key: '_stock',
+                label: 'Tồn / Tối thiểu',
+                flex: 1.2,
+                align: 'right',
+                render: (_, row) => {
+                  const r = row as any;
+                  return (
+                    <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'baseline', gap: 2 }}>
+                      <Text style={{ fontSize: 16, fontWeight: '700', color: r._critical ? '#DC2626' : '#D97706' }}>
+                        {r.current}
+                      </Text>
+                      <Text style={{ fontSize: 13, fontWeight: '400', color: '#64748B' }}>
+                        / {r.min} {r.unit}
+                      </Text>
+                    </View>
+                  );
+                },
+              },
+            ]}
+            data={stockItems.slice(0, 4).map((item) => {
+              const pct = item.min > 0 ? Math.round((item.current / item.min) * 100) : 0;
+              return { ...item, _critical: pct < 30, _stock: `${item.current}/${item.min}` };
+            })}
+          />
+        )}
+      </View>
     </View>
   );
 }
@@ -315,9 +390,11 @@ export function RecentActivitiesList({ activities, loading }: ActivitiesProps) {
     return (
       <View style={styles.section}>
         <SectionHeader icon="history" title="Hoạt động" />
-        {[1, 2, 3].map((i) => (
-          <SkeletonBox key={i} w="100%" h={20} style={{ marginBottom: 8 }} />
-        ))}
+        <View style={styles.sectionBody}>
+          {[1, 2, 3].map((i) => (
+            <SkeletonBox key={i} w="100%" h={20} style={{ marginBottom: 8 }} />
+          ))}
+        </View>
       </View>
     );
   }
@@ -325,29 +402,50 @@ export function RecentActivitiesList({ activities, loading }: ActivitiesProps) {
   return (
     <View style={styles.section}>
       <SectionHeader icon="history" title="Hoạt động gần đây" />
-      {acts.length === 0 ? (
-        <EmptyBox icon="inbox" text="Chưa có hoạt động" />
-      ) : (
-        <DataTable
-          columns={[
-            {
-              key: 'text', label: 'Sự kiện', flex: 2.5,
-              render: (v, row) => (
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <View style={[styles.actDot, { backgroundColor: ((row as any).color ?? '#CBD5E1') + '20' }]}>
-                    <Icon name={(row as any).icon as any} size={13} color={(row as any).color ?? '#CBD5E1'} />
-                  </View>
-                  <Text style={dtStyles.dataText} numberOfLines={2}>{v}</Text>
-                </View>
-              ),
-            },
-            { key: 'time', label: 'Thời gian', flex: 1, align: 'right', render: (v) => (
-              <Text style={{ ...font.captionItalic, color: colors.text.muted, textAlign: 'right' }}>{v}</Text>
-            ) },
-          ]}
-          data={acts.slice(0, 5)}
-        />
-      )}
+      <View style={styles.sectionBody}>
+        {acts.length === 0 ? (
+          <EmptyBox icon="inbox" text="Chưa có hoạt động" />
+        ) : (
+          <DataTable
+            columns={[
+              {
+                key: 'text',
+                label: 'Sự kiện',
+                flex: 5.5,
+                render: (v, row) => {
+                  const cleanText = String(v ?? '')
+                    .replace('da_huy', 'Đã hủy')
+                    .replace('da_thanh_toan', 'Đã thanh toán')
+                    .replace('dang_nau', 'Đang chế biến')
+                    .replace('da_gop', 'Đã gộp bàn');
+                  return (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 }}>
+                      <View style={[styles.actDot, { backgroundColor: ((row as any).color ?? '#CBD5E1') + '20' }]}>
+                        <Icon name={(row as any).icon as any} size={13} color={(row as any).color ?? '#CBD5E1'} />
+                      </View>
+                      <Text style={{ fontSize: 16, fontWeight: '400', color: '#0F172A', flex: 1 }} numberOfLines={2}>
+                        {cleanText}
+                      </Text>
+                    </View>
+                  );
+                },
+              },
+              {
+                key: 'time',
+                label: 'Thời gian',
+                flex: 0.35,
+                align: 'right',
+                render: (v) => (
+                  <Text style={{ fontSize: 14, fontWeight: '400', color: '#64748B', textAlign: 'right' }}>
+                    {v}
+                  </Text>
+                ),
+              },
+            ]}
+            data={acts.slice(0, 5)}
+          />
+        )}
+      </View>
     </View>
   );
 }
@@ -361,38 +459,92 @@ interface RevenueChartProps {
 
 export function RevenueChart({ data, loading }: RevenueChartProps) {
   const values = data ?? [];
-  const max = Math.max(...values.map((v) => v.value), 1);
+  const max = Math.max(...values.map((v) => v.value), 0);
+  const totalRev = values.reduce((sum, v) => sum + v.value, 0);
+  const [selectedBar, setSelectedBar] = React.useState<{ hour: number; value: number } | null>(null);
 
   if (loading) {
     return (
       <View style={styles.section}>
         <SectionHeader icon="chart-timeline-variant" title="Doanh thu theo giờ" subtitle="Hôm nay" />
-        <SkeletonBox w="100%" h={120} />
+        <View style={styles.sectionBody}>
+          <SkeletonBox w="100%" h={120} />
+        </View>
       </View>
     );
   }
 
   return (
     <View style={styles.section}>
-      <SectionHeader icon="chart-timeline-variant" title="Doanh thu theo giờ" subtitle="Hôm nay" />
-      <View style={styles.chartContainer}>
-        {values.map((v, i) => {
-          const h = max > 0 ? Math.round((v.value / max) * 100) : 0;
-          const isPeak = i >= values.length - 2;
-          return (
-            <View key={i} style={styles.chartCol}>
-              <View style={styles.chartBarOuter}>
-                <View
+      <SectionHeader
+        icon="chart-timeline-variant"
+        title="Doanh thu theo giờ"
+        subtitle={
+          selectedBar
+            ? `${selectedBar.hour}h: ${new Intl.NumberFormat('vi-VN').format(selectedBar.value)}đ`
+            : totalRev > 0
+            ? `Tổng: ${new Intl.NumberFormat('vi-VN').format(totalRev)}đ`
+            : "Trượt để xem 7h-23h"
+        }
+      />
+      <View style={styles.sectionBody}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.chartScrollContainer}
+        >
+          {values.map((v, i) => {
+            const h = max > 0 ? Math.round((v.value / max) * 100) : 0;
+            const isPeak = v.value > 0 && v.value === max;
+            const hasRevenue = v.value > 0;
+            const isSelected = selectedBar?.hour === v.hour;
+
+            return (
+              <TouchableOpacity
+                key={i}
+                style={styles.chartCol}
+                onPress={() => setSelectedBar(isSelected ? null : v)}
+                activeOpacity={0.7}
+              >
+                <View style={styles.chartBarOuter}>
+                  {hasRevenue && (
+                    <Text style={styles.chartValueLabel} numberOfLines={1}>
+                      {v.value >= 1000000
+                        ? `${(v.value / 1000000).toFixed(1)}M`
+                        : v.value >= 1000
+                        ? `${Math.round(v.value / 1000)}k`
+                        : v.value}
+                    </Text>
+                  )}
+                  <View
+                    style={[
+                      styles.chartBar,
+                      {
+                        height: `${Math.max(h, hasRevenue ? 8 : 2)}%`,
+                        backgroundColor: isSelected
+                          ? '#EA580C'
+                          : isPeak
+                          ? colors.brand.primary
+                          : hasRevenue
+                          ? '#FDBA74'
+                          : '#F1F5F9',
+                      },
+                    ]}
+                  />
+                </View>
+                <Text
                   style={[
-                    styles.chartBar,
-                    { height: `${h}%`, backgroundColor: isPeak ? colors.brand.primary : '#FED7AA' },
+                    styles.chartLabel,
+                    (isPeak || isSelected) && { color: colors.brand.primary, fontWeight: '700' },
                   ]}
-                />
-              </View>
-              <Text style={styles.chartLabel}>{v.hour}h</Text>
-            </View>
-          );
-        })}
+                  numberOfLines={1}
+                >
+                  {v.hour}h
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
       </View>
     </View>
   );
@@ -413,12 +565,14 @@ function SectionHeader({
   return (
     <View style={styles.sectionHeader}>
       <View style={styles.sectionHeaderLeft}>
-        <Icon name={iconName as any} size={16} color={colors.brand.primary} />
-        <Text style={styles.sectionTitle}>
-          {title}
-        </Text>
+        <Icon name={iconName as any} size={18} color={colors.brand.primary} />
+        <Text style={styles.sectionTitle}>{title}</Text>
       </View>
-      {subtitle && <Text style={styles.sectionSub}>{subtitle}</Text>}
+      {subtitle && (
+        <View style={styles.sectionBadge}>
+          <Text style={styles.sectionSub}>{subtitle}</Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -440,45 +594,84 @@ function EmptyBox({
   );
 }
 
-// ── Styles ──
+// ── Styles (Flat Skills UI V2 Standards) ──
 
 const styles = StyleSheet.create({
   section: {
-    backgroundColor: colors.surface.card,
-    borderRadius: shape.radius.lg,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.border.light,
-    padding: 10,
+    borderColor: '#E5E9F0',
+    overflow: 'hidden',
+    marginBottom: 8,
   },
   sectionHeader: {
+    backgroundColor: '#F8FAFC',
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderColor: '#E5E9F0',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
   },
   sectionHeaderLeft: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  sectionTitle: { ...font.sectionTitle, color: colors.text.primary },
-  sectionSub: { ...font.captionItalic, color: colors.text.secondary },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1E293B',
+  },
+  sectionBadge: {
+    backgroundColor: '#F1F5F9',
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  sectionSub: {
+    fontSize: 12,
+    fontWeight: '400',
+    color: '#64748B',
+  },
+  sectionBody: {
+    padding: 10,
+  },
   emptyBox: { alignItems: 'center', paddingVertical: 14, gap: 6 },
-  emptyText: { ...font.captionItalic, color: colors.text.secondary },
+  emptyText: { fontSize: 14, fontWeight: '400', color: '#64748B' },
 
   actDot: {
     width: 24,
     height: 24,
-    borderRadius: shape.radius.md,
+    borderRadius: 6,
     alignItems: 'center',
     justifyContent: 'center',
   },
 
-  chartContainer: {
+  chartScrollContainer: {
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'space-between',
-    height: 100,
-    paddingTop: 6,
+    height: 120,
+    paddingTop: 16,
+    gap: 4,
+    minWidth: '100%',
   },
-  chartCol: { flex: 1, alignItems: 'center' },
-  chartBarOuter: { flex: 1, width: '60%', justifyContent: 'flex-end', alignItems: 'center' },
-  chartBar: { width: '100%', borderRadius: 4, minHeight: 4 },
-  chartLabel: { ...font.sm, color: colors.text.muted, marginTop: 4 },
+  chartCol: { minWidth: 28, flex: 1, alignItems: 'center', height: '100%' },
+  chartBarOuter: { flex: 1, width: '70%', justifyContent: 'flex-end', alignItems: 'center', position: 'relative' },
+  chartBar: { width: '100%', borderRadius: 4, minHeight: 2 },
+  chartValueLabel: {
+    fontSize: 9,
+    fontWeight: '600',
+    color: '#F97316',
+    marginBottom: 2,
+    textAlign: 'center',
+  },
+  chartLabel: {
+    fontSize: 11,
+    fontWeight: '400',
+    color: '#64748B',
+    marginTop: 4,
+  },
 });
+

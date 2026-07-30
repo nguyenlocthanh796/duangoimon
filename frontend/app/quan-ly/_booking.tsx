@@ -1,18 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, StyleSheet, TextInput, Alert, TouchableOpacity, ScrollView, FlatList, RefreshControl } from 'react-native';
+import { View, StyleSheet, TextInput, Alert, TouchableOpacity, ScrollView } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useResponsive } from '../../lib/hooks/useResponsive';
-import { colors, font, ss } from '../../lib/theme';
+import { colors, ss } from '../../lib/theme';
 import { request } from '../../lib/api/client';
 import FormModal from '../../lib/components/ui/FormModal';
-import FAB from '../../lib/components/ui/FAB';
 import AppText from '../../lib/components/ui/AppText';
 import { TableSkeleton } from '../../lib/components/ui/Skeleton';
 import EmptyState from '../../lib/components/ui/EmptyState';
 import DetailModal from '../../lib/components/ui/DetailModal';
-
-import ScreenHeader from '../../lib/components/ui/ScreenHeader';
-import { useSidebar } from '../../lib/context/SidebarContext';
+import { useCrud } from '../../lib/hooks/useCrud';
 
 const API = '/api/v1/quan-ly';
 
@@ -23,755 +20,506 @@ export interface BookingItem {
   booking_time: string;
   guest_count: number;
   table_number?: string;
-  status: 'pending' | 'confirmed' | 'arrived' | 'completed' | 'cancelled';
+  status: string;
   note?: string;
 }
 
-function generateFallbackBookings(): BookingItem[] {
-  return [
-    { id: 'b1', customer_name: 'Anh Cường', phone: '0987654321', booking_time: '18:30 - Hôm nay', guest_count: 6, table_number: 'Bàn T02', status: 'pending', note: 'Đặt sinh nhật, cần ghế trẻ em' },
-    { id: 'b2', customer_name: 'Chị Ngọc', phone: '0912345678', booking_time: '19:00 - Hôm nay', guest_count: 4, table_number: 'Bàn N05', status: 'confirmed', note: 'Vị trí gần cửa sổ' },
-    { id: 'b3', customer_name: 'Anh Hoàng', phone: '0903112233', booking_time: '19:30 - Hôm nay', guest_count: 8, table_number: 'Bàn T08', status: 'arrived', note: 'Đã đến nhận bàn' },
-    { id: 'b4', customer_name: 'Chị Mai', phone: '0977889900', booking_time: '12:00 - Hôm qua', guest_count: 2, table_number: 'Bàn N01', status: 'completed', note: 'Đã thanh toán xong' },
-  ];
-}
-
-const STATUS_MAP: Record<string, { label: string; color: string; bg: string; icon: string }> = {
-  pending: { label: 'Chờ xác nhận', color: '#D97706', bg: '#FEF3C7', icon: 'clock-outline' },
-  confirmed: { label: 'Đã xác nhận', color: '#2563EB', bg: '#EFF6FF', icon: 'check-circle-outline' },
-  arrived: { label: 'Khách đã đến', color: '#16A34A', bg: '#ECFDF5', icon: 'table-furniture' },
-  completed: { label: 'Hoàn thành', color: '#64748B', bg: '#F1F5F9', icon: 'checkbox-marked-circle' },
-  cancelled: { label: 'Đã hủy', color: '#DC2626', bg: '#FEE2E2', icon: 'close-circle-outline' },
+const STATUS_STYLE: Record<string, { label: string; color: string; bg: string }> = {
+  pending: { label: 'Chờ XN', color: '#D97706', bg: '#FEF3C7' },
+  confirmed: { label: 'Đã XN', color: '#2563EB', bg: '#EFF6FF' },
+  arrived: { label: 'Đã đến', color: '#16A34A', bg: '#ECFDF5' },
+  completed: { label: 'Xong', color: '#64748B', bg: '#F1F5F9' },
+  cancelled: { label: 'Hủy', color: '#DC2626', bg: '#FEE2E2' },
 };
 
-export interface BookingScreenProps {
-  isSearchOpen?: boolean;
-}
+type FormState = {
+  customer_name: string;
+  phone: string;
+  booking_time: string;
+  guest_count: string;
+  table_number: string;
+  note: string;
+  status: string;
+};
 
-export default function BookingScreen({ isSearchOpen }: { isSearchOpen?: boolean } = {}) {
+const getCurrentTimeStr = () => {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2, '0');
+  const m = String(now.getMinutes()).padStart(2, '0');
+  return `${h}:${m}`;
+};
+
+export default function BookingScreen(_props?: { isSearchOpen?: boolean }) {
   const { isWide } = useResponsive();
-  const { openSidebar } = useSidebar();
-  const [bookings, setBookings] = useState<BookingItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [showForm, setShowForm] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [form, setForm] = useState({ customer_name: '', phone: '', booking_time: '', guest_count: '2', note: '' });
 
-  const load = useCallback(async () => {
-    try {
-      setLoading(true);
-      const data: any = await request(`${API}/bookings`);
-      const list = Array.isArray(data) ? data : (data?.items || []);
-      if (list && list.length > 0) {
-        setBookings(list);
-        if (isWide && !selectedId) setSelectedId(list[0].id);
-      } else {
-        const fallbacks = generateFallbackBookings();
-        setBookings(fallbacks);
-        if (isWide && !selectedId) setSelectedId(fallbacks[0].id);
-      }
-    } catch {
-      const fallbacks = generateFallbackBookings();
-      setBookings(fallbacks);
-      if (isWide && !selectedId) setSelectedId(fallbacks[0].id);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, [isWide, selectedId]);
+  const {
+    data: items,
+    loading,
+    showForm,
+    setShowForm,
+    editingId,
+    form,
+    setForm,
+    selectedItem,
+    setSelectedId,
+    handleSave,
+    handleDelete,
+    openAdd,
+    openEdit,
+    loadData,
+  } = useCrud<BookingItem, FormState>({
+    fetchFn: () => request(`${API}/bookings`) as Promise<BookingItem[]>,
+    createFn: (p) => request(`${API}/bookings`, { method: 'POST', body: JSON.stringify(p) }),
+    updateFn: (id, p) => request(`${API}/bookings/${id}`, { method: 'PUT', body: JSON.stringify(p) }),
+    deleteFn: (id) => request(`${API}/bookings/${id}`, { method: 'DELETE' }),
+    formState: {
+      customer_name: '',
+      phone: '',
+      booking_time: getCurrentTimeStr(),
+      guest_count: '2',
+      table_number: '',
+      note: '',
+      status: 'pending',
+    },
+    formFromItem: (b) => ({
+      customer_name: b.customer_name,
+      phone: b.phone || '',
+      booking_time: b.booking_time || getCurrentTimeStr(),
+      guest_count: String(b.guest_count || 1),
+      table_number: b.table_number || '',
+      note: b.note || '',
+      status: b.status || 'pending',
+    }),
+    buildPayload: (f) => ({
+      customer_name: f.customer_name,
+      phone: f.phone,
+      booking_time: f.booking_time || getCurrentTimeStr(),
+      guest_count: parseInt(f.guest_count) || 1,
+      table_number: f.table_number || undefined,
+      note: f.note || undefined,
+      status: f.status,
+    }),
+    nameLabel: 'đặt bàn',
+  });
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  const [search, setSearch] = useState('');
+  const filtered = useMemo(() => {
+    if (!search.trim()) return items;
+    const q = search.toLowerCase();
+    return items.filter(
+      (b) =>
+        (b.customer_name || '').toLowerCase().includes(q) ||
+        (b.phone || '').includes(q)
+    );
+  }, [items, search]);
 
-  const onRefresh = () => {
-    setRefreshing(true);
-    load();
+  const stats = {
+    total: filtered.length,
+    pending: filtered.filter((b) => b.status === 'pending').length,
+    arrived: filtered.filter((b) => b.status === 'arrived').length,
   };
 
-  const openAdd = () => {
-    setForm({ customer_name: '', phone: '', booking_time: '19:00', guest_count: '2', note: '' });
-    setShowForm(true);
-  };
-
-  const handleSave = async () => {
-    if (!form.customer_name || !form.phone) {
-      Alert.alert('Lỗi', 'Tên và Số điện thoại là bắt buộc');
-      return;
-    }
+  const handleUpdateStatus = async (id: string, newStatus: string) => {
     try {
-      await request(`${API}/bookings`, {
-        method: 'POST',
-        body: JSON.stringify({
-          customer_name: form.customer_name,
-          phone: form.phone,
-          booking_time: form.booking_time || '19:00',
-          guest_count: parseInt(form.guest_count) || 2,
-          note: form.note,
-          status: 'pending',
-        }),
+      await request(`${API}/bookings/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify({ status: newStatus }),
       });
-      setShowForm(false);
-      load();
-    } catch {
-      Alert.alert('Lỗi', 'Không thể tạo lịch đặt bàn');
-    }
-  };
-
-  const updateStatus = async (id: string, status: string) => {
-    try {
-      await request(`${API}/bookings/${id}`, { method: 'PATCH', body: JSON.stringify({ status }) });
-      load();
+      loadData({ quiet: true });
     } catch {
       Alert.alert('Lỗi', 'Không thể cập nhật trạng thái');
     }
   };
 
-  const filtered = useMemo(() => {
-    if (statusFilter === 'all') return bookings;
-    return bookings.filter((b) => b.status === statusFilter);
-  }, [bookings, statusFilter]);
-
-  const selectedItem = useMemo(
-    () => bookings.find((b) => b.id === selectedId) || null,
-    [bookings, selectedId]
-  );
-
-  const pendingCount = bookings.filter((b) => b.status === 'pending').length;
-  const confirmedCount = bookings.filter((b) => b.status === 'confirmed' || b.status === 'arrived').length;
-
-  // ── Master Detail Right Inspector Panel ──
-  const renderDetailPanel = () => {
-    if (!selectedItem) {
-      return (
-        <View style={ss.detailPanelEmpty}>
-          <AppText variant="md" weight="bold" color="#050505">
-            Chi Tiết Lịch Đặt Bàn
-          </AppText>
-          <AppText variant="sm" color="#65676B" style={{ textAlign: 'center' }}>
-            Chọn một lịch đặt từ danh sách bên trái để xem thông tin & điều phối bàn
-          </AppText>
-          <TouchableOpacity style={ss.panelCta} onPress={openAdd}>
-            <Icon name="plus" size={18} color="#FFF" />
-            <AppText variant="sm" weight="bold" color="#FFF">
-              Thêm lịch đặt mới
-            </AppText>
-          </TouchableOpacity>
-        </View>
-      );
-    }
-
-    const b = selectedItem;
-    const st = STATUS_MAP[b.status] || STATUS_MAP.pending;
+  const renderMobileCard = (b: BookingItem, idx: number) => {
+    const st = STATUS_STYLE[b.status] || { label: b.status, color: '#64748B', bg: '#F1F5F9' };
+    const isLast = idx === filtered.length - 1;
 
     return (
-      <View style={ss.detailPanel}>
-        <View style={s.detailHeader}>
-          <View style={[s.avatarCircle, { backgroundColor: st.bg, width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' }]}>
-            <AppText variant="sm" weight="bold" color={st.color} style={{ fontSize: 12 }}>
-              {st.label?.slice(0, 2)}
-            </AppText>
-          </View>
-          <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#050505">
-              {b.customer_name}
-            </AppText>
-            <AppText variant="sm" color={colors.text.secondary}>
-              📱 {b.phone || 'Chưa có SĐT'}
-            </AppText>
-          </View>
-          <View style={[s.badge, { backgroundColor: st.bg }]}>
-            <AppText variant="sm" weight="bold" color={st.color}>
-              {st.label}
-            </AppText>
-          </View>
+      <View style={[ss.listRow, isLast && { borderBottomWidth: 0 }]} key={b.id}>
+        <View
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: 18,
+            backgroundColor: st.bg,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Icon
+            name={
+              b.status === 'arrived'
+                ? 'table-furniture'
+                : b.status === 'completed'
+                ? 'check'
+                : 'calendar-clock'
+            }
+            size={18}
+            color={st.color}
+          />
         </View>
-
-        <View style={s.detailBody}>
-          <View style={s.detailStatRow}>
-            <AppText variant="sm" color="#65676B">Thời gian hẹn</AppText>
-            <AppText variant="md" weight="bold" color={colors.brand.primary}>
-              {b.booking_time}
-            </AppText>
-          </View>
-
-          <View style={s.detailStatRow}>
-            <AppText variant="sm" color="#65676B">Số lượng khách</AppText>
-            <AppText variant="md" weight="bold" color="#050505">
-              👤 {b.guest_count} người
-            </AppText>
-          </View>
-
-          <View style={s.detailStatRow}>
-            <AppText variant="sm" color="#65676B">Vị trí xếp bàn</AppText>
-            <AppText variant="sm" weight="bold" color="#050505">
-              {b.table_number || 'Chưa phân bàn'}
-            </AppText>
-          </View>
-
-          {b.note ? (
-            <View style={s.statBoxBg}>
-              <AppText variant="sm" color="#65676B">📝 Ghi chú từ khách:</AppText>
-              <AppText variant="sm" color="#334155" style={{ fontStyle: 'italic', marginTop: 2 }}>
-                "{b.note}"
-              </AppText>
-            </View>
-          ) : null}
+        <TouchableOpacity style={{ flex: 1 }} onPress={() => setSelectedId(b.id)}>
+          <AppText variant="md" color="#0F172A">
+            {b.customer_name}
+            {b.table_number ? ` · Bàn ${b.table_number}` : ''}
+          </AppText>
+          <AppText variant="md" color="#64748B">
+            {b.guest_count} khách · {b.booking_time || 'Giờ hẹn --:--'}
+          </AppText>
+        </TouchableOpacity>
+        <View
+          style={{
+            backgroundColor: st.bg,
+            paddingHorizontal: 8,
+            paddingVertical: 3,
+            borderRadius: 6,
+          }}
+        >
+          <AppText variant="md" color={st.color}>
+            {st.label}
+          </AppText>
         </View>
-
-        <View style={s.detailActions}>
-          {b.status === 'pending' && (
-            <TouchableOpacity
-              style={s.panelBtnPrimary}
-              onPress={() => updateStatus(b.id, 'confirmed')}
-            >
-              <Icon name="check" size={16} color="#FFF" />
-              <AppText variant="sm" weight="bold" color="#FFF">
-                Xác nhận đặt bàn
-              </AppText>
-            </TouchableOpacity>
-          )}
-
-          {b.status === 'confirmed' && (
-            <TouchableOpacity
-              style={s.panelBtnPrimary}
-              onPress={() => updateStatus(b.id, 'arrived')}
-            >
-              <Icon name="table-furniture" size={16} color="#FFF" />
-              <AppText variant="sm" weight="bold" color="#FFF">
-                Khách đã đến
-              </AppText>
-            </TouchableOpacity>
-          )}
-
-          {b.status !== 'cancelled' && b.status !== 'completed' && (
-            <TouchableOpacity
-              style={ss.panelBtnDanger}
-              onPress={() => updateStatus(b.id, 'cancelled')}
-            >
-              <Icon name="close" size={16} color={colors.status.danger} />
-              <AppText variant="sm" color={colors.status.danger}>
-                Hủy lịch
-              </AppText>
-            </TouchableOpacity>
-          )}
-        </View>
+        <TouchableOpacity style={ss.miniActionBtn} onPress={() => setSelectedId(b.id)}>
+          <Icon name="eye-outline" size={16} color={colors.brand.primary} />
+        </TouchableOpacity>
       </View>
     );
   };
 
-  const renderCard = ({ item: b }: { item: BookingItem }) => {
-    const isSelected = selectedId === b.id;
-    const st = STATUS_MAP[b.status] || STATUS_MAP.pending;
-
-    if (!isWide) {
+  const content = () => {
+    if (loading)
       return (
-        <View style={ss.listRow}>
-          <View style={[s.posAvatarMiniCircle, { backgroundColor: st.bg, alignItems: 'center', justifyContent: 'center' }]}>
-            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: st.color }} />
-          </View>
-
-          <TouchableOpacity
-            style={{ flex: 1, paddingRight: 8, justifyContent: 'center' }}
-            onPress={() => setSelectedId(isSelected ? null : b.id)}
-            activeOpacity={0.7}
-          >
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-              <AppText variant="sm" weight="bold" color="#0F172A" numberOfLines={1} style={{ maxWidth: '70%' }}>
-                {b.customer_name}
-              </AppText>
-              <AppText variant="sm" color="#64748B" numberOfLines={1} style={{ fontSize: 12 }}>
-                ({b.guest_count} khách)
-              </AppText>
-            </View>
-            <AppText variant="sm" color="#64748B" numberOfLines={1} style={{ marginTop: 2, fontSize: 11 }}>
-              ⏰ {b.booking_time} · {b.table_number || 'Chưa bàn'} · 📱 {b.phone || 'Chưa SĐT'}
-            </AppText>
-          </TouchableOpacity>
-
-          <View style={{ alignItems: 'flex-end', marginRight: 10 }}>
-            <AppText variant="sm" weight="bold" color={st.color}>
-              {st.label}
-            </AppText>
-          </View>
-
-          <TouchableOpacity style={ss.miniActionBtn} onPress={() => setSelectedId(isSelected ? null : b.id)}>
-            <Icon name="pencil" size={16} color={colors.brand.primary} />
-          </TouchableOpacity>
+        <View style={{ flex: 1, justifyContent: 'center' }}>
+          <TableSkeleton rowCount={5} />
         </View>
       );
-    }
+    if (!items.length)
+      return (
+        <EmptyState
+          icon="calendar-text"
+          title="Chưa có đặt bàn"
+          subtitle="Thêm đặt bàn mới"
+        />
+      );
 
     return (
-      <TouchableOpacity
-        onPress={() => setSelectedId(isSelected ? null : b.id)}
-        style={ss.listRow}
-        activeOpacity={0.7}
-      >
-        <View style={[ss.iconCircleSm, { backgroundColor: st.bg, width: 32, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' }]}>
-          <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: st.color }} />
-        </View>
-        <View style={{ flex: 1, paddingLeft: 10 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-            <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>
-              {b.customer_name}
-            </AppText>
-            <AppText variant="sm" color="#65676B">
-              (👤 {b.guest_count} khách)
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 6, paddingTop: 6, gap: 8, paddingBottom: 100 }}>
+        <View style={ss.sectionWrap}>
+          <View style={ss.sectionHeader}>
+            <AppText variant="md" weight="bold" color="#1E293B">
+              Danh Sách Đặt Bàn ({filtered.length})
             </AppText>
           </View>
-          <AppText variant="sm" color="#65676B">
-            ⏰ {b.booking_time} · {b.table_number || 'Chưa xếp bàn'}
-          </AppText>
+          {filtered.map(renderMobileCard)}
         </View>
-        <View style={{ backgroundColor: st.bg, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 999 }}>
-          <AppText variant="sm" weight="bold" color={st.color}>
-            {st.label}
-          </AppText>
-        </View>
-      </TouchableOpacity>
+      </ScrollView>
     );
   };
 
   return (
-    <View style={s.container}>
-      {/* Top Mobile Header */}
-      {!isWide && (
-        isSearchOpen || searchQuery.length > 0 ? (
-          <View style={ss.topActionBar}>
-            <View style={ss.searchInputWrap}>
-              <Icon name="magnify" size={20} color="#64748B" />
-              <TextInput
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                placeholder="Tìm tên khách, SĐT, số bàn..."
-                placeholderTextColor="#94A3B8"
-                style={ss.searchTextInput}
-                autoFocus
-              />
-              {searchQuery.length > 0 && (
-                <TouchableOpacity onPress={() => setSearchQuery('')}>
-                  <Icon name="close-circle" size={18} color="#94A3B8" />
-                </TouchableOpacity>
-              )}
-            </View>
+    <View style={{ flex: 1, backgroundColor: colors.surface.app, position: 'relative' }}>
+      <View style={ss.topActionBar}>
+        <View style={ss.searchInputWrap}>
+          <Icon name="magnify" size={20} color="#64748B" />
+          <TextInput
+            value={search}
+            onChangeText={setSearch}
+            placeholder="Tên KH, SĐT..."
+            placeholderTextColor="#94A3B8"
+            style={ss.searchTextInput}
+          />
+        </View>
+        <TouchableOpacity style={ss.addBtn} onPress={openAdd}>
+          <Icon name="plus" size={18} color="#FFF" />
+          <AppText variant="md" color="#FFF">
+            Đặt bàn
+          </AppText>
+        </TouchableOpacity>
+      </View>
 
-            <TouchableOpacity onPress={openAdd} style={ss.addBtn}>
-              <Icon name="plus" size={16} color={colors.text.inverse} />
-              <AppText variant="sm" weight="bold" color={colors.text.inverse}>
-                Đặt bàn
-              </AppText>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View style={ss.mobileActionRow}>
-            <AppText variant="md" weight="bold" color="#050505">
-              {bookings.length} lịch đặt bàn
-            </AppText>
-            <TouchableOpacity onPress={openAdd} style={ss.addBtn}>
-              <Icon name="plus" size={16} color={colors.text.inverse} />
-              <AppText variant="sm" weight="bold" color={colors.text.inverse}>
-                Đặt bàn
-              </AppText>
-            </TouchableOpacity>
-          </View>
-        )
-      )}
-
-      {/* ── Top Metric Header Badges (Desktop only) ────────────────────────── */}
       {isWide && (
         <View style={ss.metricContainer}>
           <View style={ss.metricCard}>
-            <View style={[ss.metricIcon, { backgroundColor: '#EEF2FF' }]}>
-              <AppText variant="sm" weight="bold" color={colors.brand.primary} style={{ fontSize: 11 }}>Lịch</AppText>
+            <View style={[ss.iconCircleSm, { backgroundColor: '#FEF3C7' }]}>
+              <Icon name="calendar-clock" size={14} color="#D97706" />
             </View>
-            <View style={{ flex: 1 }}>
-              <AppText variant="md" weight="bold" color="#050505">
-                {bookings.length} lịch
+            <View>
+              <AppText variant="md" color="#0F172A">
+                {stats.pending}
               </AppText>
-              <AppText variant="sm" color="#65676B">
-                Tổng đặt bàn
-              </AppText>
-            </View>
-          </View>
-
-          <View style={ss.metricCard}>
-            <View style={[ss.metricIcon, { backgroundColor: '#FEF3C7' }]}>
-              <AppText variant="sm" weight="bold" color="#D97706" style={{ fontSize: 11 }}>chờ</AppText>
-            </View>
-            <View style={{ flex: 1 }}>
-              <AppText variant="md" weight="bold" color="#D97706">
-                {pendingCount} chờ
-              </AppText>
-              <AppText variant="sm" color="#65676B">
-                Cần xác nhận
+              <AppText variant="md" color="#64748B">
+                Chờ XN
               </AppText>
             </View>
           </View>
-
           <View style={ss.metricCard}>
-            <View style={[ss.metricIcon, { backgroundColor: '#ECFDF5' }]}>
-              <AppText variant="sm" weight="bold" color="#16A34A" style={{ fontSize: 12 }}>✓</AppText>
+            <View style={[ss.iconCircleSm, { backgroundColor: '#ECFDF5' }]}>
+              <Icon name="table-furniture" size={14} color="#16A34A" />
             </View>
-            <View style={{ flex: 1 }}>
-              <AppText variant="md" weight="bold" color="#16A34A">
-                {confirmedCount} bàn
+            <View>
+              <AppText variant="md" color="#16A34A">
+                {stats.arrived}
               </AppText>
-              <AppText variant="sm" color="#65676B">
-                Đã chốt giữ bàn
+              <AppText variant="md" color="#64748B">
+                Đã đến
+              </AppText>
+            </View>
+          </View>
+          <View style={ss.metricCard}>
+            <View style={[ss.iconCircleSm, { backgroundColor: '#EEF2FF' }]}>
+              <Icon name="calendar-text" size={14} color="#2563EB" />
+            </View>
+            <View>
+              <AppText variant="md" color="#2563EB">
+                {stats.total}
+              </AppText>
+              <AppText variant="md" color="#64748B">
+                Tổng
               </AppText>
             </View>
           </View>
         </View>
       )}
 
-      {/* ── Toolbar: Status Filter Chips ────────────────────────── */}
-      <View style={{ width: '100%', marginBottom: 6 }}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={{ width: '100%', flexGrow: 0, height: 44 }}
-          contentContainerStyle={{ alignItems: 'center', flexDirection: 'row', gap: 6, paddingHorizontal: 12 }}
-        >
-          {[
-            { key: 'all', label: `Tất cả (${bookings.length})` },
-            { key: 'pending', label: `Chờ xác nhận (${bookings.filter(b => b.status === 'pending').length})` },
-            { key: 'confirmed', label: `Đã xác nhận (${bookings.filter(b => b.status === 'confirmed').length})` },
-            { key: 'arrived', label: `Khách đã đến (${bookings.filter(b => b.status === 'arrived').length})` },
-            { key: 'completed', label: `Hoàn thành (${bookings.filter(b => b.status === 'completed').length})` },
-            { key: 'cancelled', label: `Đã hủy (${bookings.filter(b => b.status === 'cancelled').length})` },
-          ].map((sItem) => {
-            const active = statusFilter === sItem.key;
-            return (
-              <TouchableOpacity
-                key={sItem.key}
-                onPress={() => setStatusFilter(sItem.key)}
-                style={[ss.filterChip, active && ss.filterChipActive]}
-              >
-                <AppText
-                  variant="sm"
-                  weight="bold"
-                  color={active ? colors.brand.primary : '#334155'}
-                >
-                  {sItem.label}
+      {isWide ? (
+        <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: 12, paddingBottom: 12, gap: 12 }}>
+          <View style={{ flex: 0.55 }}>{content()}</View>
+          <View style={{ flex: 0.45 }}>
+            {selectedItem ? (
+              <View style={s.panel}>
+                <View style={s.panelHdr}>
+                  <AppText variant="md" weight="bold" color="#050505">
+                    {selectedItem.customer_name}
+                  </AppText>
+                </View>
+                <View style={{ gap: 8 }}>
+                  <Row label="SĐT" value={selectedItem.phone} />
+                  <Row label="Giờ hẹn" value={selectedItem.booking_time} />
+                  <Row label="Số khách" value={String(selectedItem.guest_count)} />
+                  <Row label="Bàn" value={selectedItem.table_number || '—'} />
+                  <Row label="Ghi chú" value={selectedItem.note || '—'} />
+                  
+                  {/* Status quick switcher */}
+                  <AppText variant="md" color="#64748B" style={{ marginTop: 8 }}>
+                    Cập nhật trạng thái:
+                  </AppText>
+                  <View style={{ flexDirection: 'row', gap: 6, flexWrap: 'wrap' }}>
+                    {Object.entries(STATUS_STYLE).map(([stKey, stVal]) => (
+                      <TouchableOpacity
+                        key={stKey}
+                        onPress={() => handleUpdateStatus(selectedItem.id, stKey)}
+                        style={{
+                          backgroundColor: selectedItem.status === stKey ? stVal.color : stVal.bg,
+                          paddingHorizontal: 10,
+                          paddingVertical: 6,
+                          borderRadius: 6,
+                        }}
+                      >
+                        <AppText
+                          variant="md"
+                          color={selectedItem.status === stKey ? '#FFFFFF' : stVal.color}
+                        >
+                          {stVal.label}
+                        </AppText>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+
+                  <View style={{ flexDirection: 'row', gap: 8, marginTop: 12 }}>
+                    <TouchableOpacity
+                      style={{
+                        flex: 1,
+                        height: 40,
+                        borderRadius: 6,
+                        backgroundColor: colors.brand.primary,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                      onPress={() => openEdit(selectedItem)}
+                    >
+                      <AppText variant="md" color="#FFF">
+                        Sửa
+                      </AppText>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={{
+                        flex: 1,
+                        height: 40,
+                        borderRadius: 6,
+                        backgroundColor: colors.status.danger,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                      onPress={() => handleDelete(selectedItem.id, selectedItem.customer_name)}
+                    >
+                      <AppText variant="md" color="#FFF">
+                        Xóa
+                      </AppText>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            ) : (
+              <View style={s.panel}>
+                <AppText variant="md" color="#64748B">
+                  Chọn đặt bàn để xem chi tiết
                 </AppText>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-      </View>
+              </View>
+            )}
+          </View>
+        </View>
+      ) : (
+        content()
+      )}
+
+      <FormModal
+        visible={showForm}
+        title={editingId ? 'Sửa đặt bàn' : 'Đặt bàn mới'}
+        onClose={() => setShowForm(false)}
+        onSave={() => handleSave(() => (!form.customer_name ? 'Tên KH bắt buộc' : null))}
+      >
+        <View style={{ gap: 12 }}>
+          <TextInput
+            style={s.inp}
+            placeholder="Tên KH (*)"
+            value={form.customer_name}
+            onChangeText={(v: string) => setForm((f: any) => ({ ...f, customer_name: v }))}
+          />
+          <TextInput
+            style={s.inp}
+            placeholder="SĐT"
+            value={form.phone}
+            onChangeText={(v: string) => setForm((f: any) => ({ ...f, phone: v }))}
+          />
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            <TextInput
+              style={[s.inp, { flex: 1 }]}
+              placeholder="Giờ hẹn (VD: 18:30)"
+              value={form.booking_time}
+              onChangeText={(v: string) => setForm((f: any) => ({ ...f, booking_time: v }))}
+            />
+            <TextInput
+              style={[s.inp, { flex: 1 }]}
+              placeholder="Số khách"
+              keyboardType="numeric"
+              value={form.guest_count}
+              onChangeText={(v: string) => setForm((f: any) => ({ ...f, guest_count: v }))}
+            />
+          </View>
+          <TextInput
+            style={s.inp}
+            placeholder="Số bàn (nếu có)"
+            value={form.table_number}
+            onChangeText={(v: string) => setForm((f: any) => ({ ...f, table_number: v }))}
+          />
+          <TextInput
+            style={[s.inp, { height: 64 }]}
+            placeholder="Ghi chú"
+            multiline
+            value={form.note}
+            onChangeText={(v: string) => setForm((f: any) => ({ ...f, note: v }))}
+          />
+        </View>
+      </FormModal>
 
       {!isWide && (
         <DetailModal
           visible={!!selectedItem}
           title={selectedItem?.customer_name || 'Chi tiết đặt bàn'}
-          subtitle={selectedItem ? `Lịch hẹn: ${selectedItem.booking_time || 'Chưa xếp'} · Bàn: ${(selectedItem as any).table_name || selectedItem.table_number || 'Chưa chọn'} · ${selectedItem.guest_count || 1} khách` : undefined}
+          subtitle={selectedItem ? `SĐT: ${selectedItem.phone || '—'} · Bàn: ${selectedItem.table_number || '—'}` : undefined}
           onClose={() => setSelectedId(null)}
+          onEdit={
+            selectedItem
+              ? () => {
+                  openEdit(selectedItem);
+                  setSelectedId(null);
+                }
+              : undefined
+          }
+          onDelete={
+            selectedItem
+              ? () => handleDelete(selectedItem.id, selectedItem.customer_name)
+              : undefined
+          }
         >
-          {renderDetailPanel()}
-        </DetailModal>
-      )}
-      {isWide ? (
-        <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: 12, paddingBottom: 12, gap: 12 }}>
-          <View style={{ flex: 0.55 }}>
-            {loading ? (
-              <TableSkeleton rowCount={5} />
-            ) : filtered.length > 0 ? (
-              <FlatList
-                data={filtered}
-                keyExtractor={(item) => item.id}
-                renderItem={renderCard}
-                contentContainerStyle={{ gap: 10, paddingBottom: 24 }}
-                showsVerticalScrollIndicator={false}
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-              />
-            ) : (
-              <EmptyState
-                icon="calendar-remove"
-                title="Không có lịch đặt bàn"
-                subtitle="Nhấn + Thêm lịch đặt để khởi tạo khách đặt trước"
-              />
-            )}
-          </View>
-          <View style={{ flex: 0.45 }}>{renderDetailPanel()}</View>
-        </View>
-      ) : (
-        <View style={{ flex: 1 }}>
-          {/* Mobile Section List */}
-          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 6, paddingTop: 6, gap: 8, paddingBottom: 100 }}>
-            <View style={ss.sectionWrap}>
-              <View style={ss.sectionHeader}>
-                <View style={[ss.iconCircleSm, { backgroundColor: '#EEF2FF' }]}>
-                  <Icon name="calendar-clock" size={14} color={colors.brand.primary} />
-                </View>
-                <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1 }}>
-                  DANH SÁCH LỊCH ĐẶT BÀN ({filtered.length})
-                </AppText>
-              </View>
+          {selectedItem && (
+            <View style={{ gap: 12 }}>
+              <Row label="SĐT" value={selectedItem.phone || '—'} />
+              <Row label="Giờ hẹn" value={selectedItem.booking_time || '—'} />
+              <Row label="Số khách" value={String(selectedItem.guest_count)} />
+              <Row label="Số bàn" value={selectedItem.table_number || '—'} />
+              <Row label="Ghi chú" value={selectedItem.note || '—'} />
 
-              <View style={ss.sectionItems}>
-                {filtered.map(item => (
-                  <React.Fragment key={item.id}>
-                    {renderCard({ item })}
-                  </React.Fragment>
+              {/* Status quick switcher in Mobile DetailModal */}
+              <AppText variant="md" color="#64748B" style={{ marginTop: 6 }}>
+                Đổi trạng thái:
+              </AppText>
+              <View style={{ flexDirection: 'row', gap: 6, flexWrap: 'wrap' }}>
+                {Object.entries(STATUS_STYLE).map(([stKey, stVal]) => (
+                  <TouchableOpacity
+                    key={stKey}
+                    onPress={() => {
+                      handleUpdateStatus(selectedItem.id, stKey);
+                      setSelectedId(null);
+                    }}
+                    style={{
+                      backgroundColor: selectedItem.status === stKey ? stVal.color : stVal.bg,
+                      paddingHorizontal: 10,
+                      paddingVertical: 6,
+                      borderRadius: 6,
+                    }}
+                  >
+                    <AppText
+                      variant="md"
+                      color={selectedItem.status === stKey ? '#FFFFFF' : stVal.color}
+                    >
+                      {stVal.label}
+                    </AppText>
+                  </TouchableOpacity>
                 ))}
               </View>
             </View>
-          </ScrollView>
-        </View>
+          )}
+        </DetailModal>
       )}
-
-      <FormModal
-        visible={showForm}
-        title="Thêm Đặt Bàn Mới"
-        onClose={() => setShowForm(false)}
-        onSave={handleSave}
-        saveLabel="Tạo lịch đặt"
-      >
-        <View style={{ gap: 12 }}>
-          <View style={{ gap: 4 }}>
-            <AppText variant="sm" weight="normal" color="#050505">Tên khách hàng *</AppText>
-            <TextInput
-              style={s.fieldInput}
-              placeholder="VD: Anh Cường"
-              value={form.customer_name}
-              onChangeText={(v) => setForm((f) => ({ ...f, customer_name: v }))}
-            />
-          </View>
-
-          <View style={{ gap: 4 }}>
-            <AppText variant="sm" weight="normal" color="#050505">Số điện thoại *</AppText>
-            <TextInput
-              style={s.fieldInput}
-              placeholder="0987..."
-              keyboardType="phone-pad"
-              value={form.phone}
-              onChangeText={(v) => setForm((f) => ({ ...f, phone: v }))}
-            />
-          </View>
-
-          <View style={{ flexDirection: 'row', gap: 10 }}>
-            <View style={{ flex: 1, gap: 4 }}>
-              <AppText variant="sm" weight="normal" color="#050505">Giờ đến</AppText>
-              <TextInput
-                style={s.fieldInput}
-                placeholder="19:00"
-                value={form.booking_time}
-                onChangeText={(v) => setForm((f) => ({ ...f, booking_time: v }))}
-              />
-            </View>
-            <View style={{ flex: 1, gap: 4 }}>
-              <AppText variant="sm" weight="normal" color="#050505">Số khách</AppText>
-              <TextInput
-                style={s.fieldInput}
-                placeholder="2"
-                keyboardType="numeric"
-                value={form.guest_count}
-                onChangeText={(v) => setForm((f) => ({ ...f, guest_count: v }))}
-              />
-            </View>
-          </View>
-
-          <View style={{ gap: 4 }}>
-            <AppText variant="sm" weight="normal" color="#050505">Ghi chú đặc biệt</AppText>
-            <TextInput
-              style={s.fieldInput}
-              placeholder="Gần cửa sổ, ghế trẻ em..."
-              value={form.note}
-              onChangeText={(v) => setForm((f) => ({ ...f, note: v }))}
-            />
-          </View>
-        </View>
-      </FormModal>
     </View>
   );
 }
 
-// ── Styles (Matching Suppliers Standard 100%) ──
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+      <AppText variant="md" color="#64748B">
+        {label}
+      </AppText>
+      <AppText variant="md" color="#0F172A">
+        {value}
+      </AppText>
+    </View>
+  );
+}
+
 const s = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.surface.app,
-    position: 'relative',
+  inp: {
+    height: 44,
+    borderWidth: 1,
+    borderColor: colors.border.default,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    color: colors.text.primary,
   },
-  toolbarRow: {
-    marginBottom: 6,
-  },
-  pillChip: {
+  panel: {
+    backgroundColor: colors.surface.card,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    backgroundColor: '#F8FAFC',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    alignSelf: 'center',
-  },
-  pillChipActive: {
-    backgroundColor: '#FFF7ED',
-    borderColor: colors.brand.primary,
-  },
-  mainBody: {
-    flex: 1,
+    borderColor: '#E5E9F0',
+    padding: 16,
     gap: 12,
-    paddingHorizontal: 12,
-    paddingBottom: 12,
   },
-  cardWide: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    padding: 12,
-  },
-  avatarCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  badge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-  },
-  detailHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    paddingBottom: 10,
+  panelHdr: {
+    paddingBottom: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
-  },
-  detailBody: {
-    gap: 10,
-  },
-  detailStatRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  statBoxBg: {
-    backgroundColor: '#F8FAFC',
-    padding: 12,
-    borderRadius: 10,
-    gap: 4,
-    marginTop: 4,
-  },
-  detailActions: {
-    flexDirection: 'row',
-    gap: 10,
-    marginTop: 6,
-  },
-  panelBtnPrimary: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    height: 44,
-    borderRadius: 999,
-    backgroundColor: colors.brand.primary,
-  },
-  cardPromoStyle: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    padding: 12,
-    marginBottom: 10,
-  },
-  itemMobile: {
-    backgroundColor: colors.surface.card,
-    width: '100%',
-    marginBottom: 8,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: colors.border.light,
-    paddingVertical: 12,
-  },
-  cardHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    paddingHorizontal: 12,
-  },
-  cardActionDivider: {
-    height: 1,
-    backgroundColor: colors.border.light,
-    marginVertical: 10,
-  },
-  badgePill: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 999,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cardDivider: {
-    height: 1,
-    backgroundColor: '#F1F5F9',
-    marginVertical: 10,
-  },
-  btnBluePill: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    height: 44,
-    borderRadius: 999,
-    backgroundColor: '#EFF6FF',
-  },
-  btnGreenPill: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    height: 44,
-    borderRadius: 999,
-    backgroundColor: '#DCFCE7',
-  },
-  btnOrangePill: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    height: 44,
-    borderRadius: 999,
-    backgroundColor: '#FFF7ED',
-  },
-  btnRedPill: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    height: 44,
-    borderRadius: 999,
-    backgroundColor: '#FEE2E2',
-  },
-  fieldInput: {
-    height: 44,
-    borderWidth: 1.5,
-    borderColor: '#E2E8F0',
-    borderRadius: 6,
-    paddingHorizontal: 12,
-    fontSize: 14,
-    color: '#050505',
-    backgroundColor: '#F8FAFC',
-  },
-  posAvatarMiniCircle: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 10,
+    borderBottomColor: colors.border.light,
   },
 });

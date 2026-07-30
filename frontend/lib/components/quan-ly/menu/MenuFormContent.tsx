@@ -142,7 +142,7 @@ export default function MenuFormContent({ form, onChange }: MenuFormContentProps
 const styles = StyleSheet.create({
   formRow: { flexDirection: 'row', gap: 10 },
   inputWrap: { marginBottom: 14 },
-  inputLabel: { ...font.smBold, color: '#0F172A', marginBottom: 6 },
+  inputLabel: { ...font.md, color: '#0F172A', marginBottom: 6 },
   input: {
     height: 44,
     borderWidth: 1,

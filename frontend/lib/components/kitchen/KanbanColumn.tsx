@@ -57,7 +57,6 @@ export default function KanbanColumn({
           <Text
             style={{
               ...font.smBold,
-              fontWeight: '600',
               color: col.headerText,
               textTransform: 'uppercase',
               letterSpacing: 0.5,

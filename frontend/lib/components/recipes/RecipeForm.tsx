@@ -410,7 +410,7 @@ export default function RecipeForm({
             }}
           >
             <Icon name="check" size={16} color="#FFF" />
-            <Text style={{ ...font.smBold, color: '#FFF' }}>
+            <Text style={{ ...font.mdBold, color: '#FFF' }}>
               {saving ? 'Đang lưu...' : 'Lưu'}
             </Text>
           </TouchableOpacity>
@@ -506,7 +506,7 @@ export default function RecipeForm({
                   style={s.addBtnSm}
                 >
                   <Icon name="plus" size={14} color="#FFF" />
-                  <Text style={{ ...font.smBold, color: '#FFF' }}>Thêm NL</Text>
+                  <Text style={{ ...font.mdBold, color: '#FFF' }}>Thêm NL</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -583,7 +583,7 @@ const s = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border.default,
   },
-  label: { ...font.smBold, color: colors.text.secondary, marginBottom: 4 },
+  label: { ...font.md, color: colors.text.secondary, marginBottom: 4 },
   input: {
     borderWidth: 1,
     borderColor: '#E2E8F0',

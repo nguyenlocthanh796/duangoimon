@@ -63,13 +63,13 @@ export default function LegacyScreen() {
     >
       <View style={styles.cardBox}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-          <AppText variant="md" weight="bold" color="#0F172A">Dữ Liệu Chuyển Tiếp Tồn Kho Đầu Kỳ (Bảng kê 01/BK-HTK)</AppText>
+          <AppText variant="md" color="#0F172A">Dữ Liệu Chuyển Tiếp Tồn Kho Đầu Kỳ (Bảng kê 01/BK-HTK)</AppText>
           <AppText variant="sm" color="#64748B">Kê khai ban đầu</AppText>
         </View>
 
         <View style={styles.totalRow}>
           <AppText variant="sm" color="#64748B">Tổng giá trị tồn kho đầu kỳ:</AppText>
-          <AppText variant="md" weight="bold" color="#0F172A">
+          <AppText variant="md" color="#0F172A">
             {formatVND(totalValue)}
           </AppText>
         </View>
@@ -77,17 +77,17 @@ export default function LegacyScreen() {
         {(checklist?.items || []).map((item: any, idx: number) => (
           <View key={idx} style={styles.itemRow}>
             <View style={styles.avatarIcon}>
-              <AppText variant="sm" weight="bold" color="#F97316" style={{ fontSize: 12 }}>
+              <AppText variant="sm" color="#F97316" style={{ fontSize: 12 }}>
                 {String(idx + 1).padStart(2, '0')}
               </AppText>
             </View>
             <View style={{ flex: 1 }}>
-              <AppText variant="md" weight="bold" color="#0F172A">{item.product}</AppText>
+              <AppText variant="md" color="#0F172A">{item.product}</AppText>
               <AppText variant="sm" color="#64748B" style={{ marginTop: 2 }}>
                 Tồn: {item.opening_qty} · Đơn giá: {formatVND(item.avg_cost)}
               </AppText>
             </View>
-            <AppText variant="md" weight="bold" color="#0F172A">{formatVND(item.value)}</AppText>
+            <AppText variant="md" color="#0F172A">{formatVND(item.value)}</AppText>
           </View>
         ))}
       </View>

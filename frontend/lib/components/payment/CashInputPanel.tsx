@@ -30,7 +30,7 @@ export default function CashInputPanel({ cashInput, cash, change, total, setCash
     <View style={{ gap: 8 }}>
       <Text
         style={{
-          ...font.smBold,
+          ...font.md,
           textTransform: 'uppercase',
           letterSpacing: 0.5,
           color: colors.text.muted,
@@ -76,7 +76,7 @@ export default function CashInputPanel({ cashInput, cash, change, total, setCash
           />
           <Text
             style={{
-              ...font.smBold,
+              ...font.md,
               color: change >= 0 ? colors.status.successText : colors.status.danger,
             }}
           >
@@ -85,7 +85,7 @@ export default function CashInputPanel({ cashInput, cash, change, total, setCash
         </View>
         <Text
           style={{
-            ...font.mdBold,
+            ...font.md,
             color: change >= 0 ? colors.status.success : colors.status.danger,
           }}
         >
@@ -110,7 +110,7 @@ export default function CashInputPanel({ cashInput, cash, change, total, setCash
           >
             <Text
               style={{
-                ...font.smBold,
+                ...font.md,
                 color: cash === amt ? colors.brand.primary : colors.text.primary,
               }}
             >

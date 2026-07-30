@@ -23,6 +23,7 @@ export interface TicketItem {
   unit_price: number;
   note?: string;
   options?: Record<string, string>;
+  status?: string;
 }
 
 export type KanbanStatus = 'cho_xu_ly' | 'dang_lam' | 'hoan_thanh';
@@ -104,7 +105,7 @@ export default function TicketCard({
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <Icon name={colStatus === 'cho_xu_ly' ? 'play' : 'check'} size={20} color={colors.text.inverse} />
-          <AppText variant="md" weight="bold" color={colors.text.inverse}>
+          <AppText variant="md" color={colors.text.inverse}>
             {nextLabel}
           </AppText>
         </View>
@@ -116,10 +117,10 @@ export default function TicketCard({
     <View
       style={{
         backgroundColor: colors.surface.card,
-        borderRadius: shape.radius.md,
+        borderRadius: 8, // Fixed 8px border radius
         marginBottom: 12,
         borderWidth: 1,
-        borderColor: isDone ? colors.border.success : colors.border.default,
+        borderColor: isDone ? colors.border.success : '#E5E9F0', // Thin border
         borderLeftWidth: 4,
         borderLeftColor: borderColor,
         overflow: 'hidden',
@@ -134,9 +135,9 @@ export default function TicketCard({
           alignItems: 'center',
           paddingHorizontal: 14,
           paddingVertical: 10,
-          backgroundColor: isDone ? colors.status.successBg : colors.surface.app,
+          backgroundColor: isDone ? colors.status.successBg : '#F8FAFC', // Sleek header background
           borderBottomWidth: 1,
-          borderBottomColor: isDone ? colors.border.success : colors.surface.disabled,
+          borderBottomColor: '#E5E9F0',
         }}
       >
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -144,7 +145,7 @@ export default function TicketCard({
             style={{
               width: 36,
               height: 36,
-              borderRadius: shape.radius.md,
+              borderRadius: 6,
               backgroundColor: isDone ? colors.status.success : colors.brand.primary,
               alignItems: 'center',
               justifyContent: 'center',
@@ -153,7 +154,7 @@ export default function TicketCard({
             <Icon name="table-furniture" size={18} color={colors.text.inverse} />
           </View>
           <View style={{ flexShrink: 1 }}>
-            <AppText variant="md" weight="bold" color={colors.text.primary}>{order.table_name}</AppText>
+            <AppText variant="md" weight="normal" color={colors.text.primary}>{order.table_name}</AppText>
             <AppText variant="sm" color={colors.text.muted}>
               #{order.id.slice(-6).toUpperCase()}
             </AppText>
@@ -165,7 +166,7 @@ export default function TicketCard({
             style={{
               paddingHorizontal: 8,
               paddingVertical: 3,
-              borderRadius: shape.radius.md,
+              borderRadius: 4,
               backgroundColor: isDone
                 ? colors.border.success
                 : elapsed > 5
@@ -176,13 +177,13 @@ export default function TicketCard({
               opacity: elapsed > 5 && !isDone ? pulseAnim : 1,
             }}
           >
-            <AppText variant="sm" weight="bold" color={timeColor}>
+            <AppText variant="sm" color={timeColor}>
               {getElapsed(order.created_at)}
             </AppText>
           </Animated.View>
           {elapsed > 5 && !isDone && (
             <Animated.View style={{ opacity: pulseAnim }}>
-              <AppText variant="sm" weight="bold" color={colors.status.danger} style={{ marginTop: 2, letterSpacing: 1 }}>
+              <AppText variant="xs" color={colors.status.danger} style={{ marginTop: 2, letterSpacing: 0.5 }}>
                 QUÁ HẠN
               </AppText>
             </Animated.View>
@@ -194,38 +195,45 @@ export default function TicketCard({
       <View style={{ paddingHorizontal: 14, paddingVertical: 10, gap: 8 }}>
         {order.items
           .filter((i) => i.quantity > 0)
-          .map((item) => (
-            <View key={item.id} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
-              <View
-                style={{
-                  width: 26,
-                  height: 26,
-                  borderRadius: shape.radius.md,
-                  backgroundColor: colors.brand.primaryBg,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginTop: 1,
-                }}
-              >
-                <AppText variant="sm" weight="bold" color={colors.brand.primary}>
-                  ×{item.quantity}
-                </AppText>
+          .map((item) => {
+            const itemSt = item.status || '';
+            const itemDot = itemSt === 'dang_lam' ? '#1D4ED8' : itemSt === 'hoan_thanh' ? '#16A34A' : itemSt === 'gui_bep' ? '#EA580C' : 'transparent';
+            return (
+              <View key={item.id} style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                  <View
+                    style={{
+                      width: 32,
+                      height: 26,
+                      borderRadius: 4,
+                      backgroundColor: '#F1F5F9', // Minimalist neutral gray badge
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginTop: 1,
+                    }}
+                  >
+                    <AppText variant="sm" color="#0F172A">
+                      {item.quantity}x
+                    </AppText>
+                  </View>
+                  {itemDot !== 'transparent' && <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: itemDot }} />}
+                </View>
+                <View style={{ flex: 1 }}>
+                  <AppText variant="md" color={colors.text.primary}>{item.product_name}</AppText>
+                  {item.note && (
+                    <AppText variant="sm" color="#D97706" style={{ marginTop: 2 }}>
+                      📝 {item.note}
+                    </AppText>
+                  )}
+                  {item.options && Object.keys(item.options).length > 0 && (
+                    <AppText variant="sm" color={colors.text.muted} style={{ marginTop: 1 }}>
+                      {Object.entries(item.options).map(([k, v]) => `${k}: ${v}`).join(' · ')}
+                    </AppText>
+                  )}
+                </View>
               </View>
-              <View style={{ flex: 1 }}>
-                <AppText variant="md" color={colors.text.primary}>{item.product_name}</AppText>
-                {item.note && (
-                  <AppText variant="sm" color={colors.status.warning} style={{ marginTop: 2 }}>
-                    📝 {item.note}
-                  </AppText>
-                )}
-                {item.options && Object.keys(item.options).length > 0 && (
-                  <AppText variant="sm" color={colors.text.muted} style={{ marginTop: 1 }}>
-                    {Object.entries(item.options).map(([k, v]) => `${k}: ${v}`).join(' · ')}
-                  </AppText>
-                )}
-              </View>
-            </View>
-          ))}
+            );
+          })}
       </View>
 
       {order.note && (
@@ -240,18 +248,18 @@ export default function TicketCard({
           {colStatus === 'cho_xu_ly' && (
             <TouchableOpacity
               onPress={() => onMoveForward(order.id)}
-              style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, height: 52, borderRadius: shape.radius.lg, backgroundColor: colors.surface.card, borderWidth: 1.5, borderColor: colors.brand.primary }}
+              style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, height: 52, borderRadius: 8, backgroundColor: colors.surface.card, borderWidth: 1, borderColor: colors.brand.primary }}
             >
               <Icon name="play" size={18} color={colors.brand.primary} />
-              <AppText variant="md" color={colors.brand.primary} weight="bold">Bắt đầu làm</AppText>
+              <AppText variant="md" weight="normal" color={colors.brand.primary}>Bắt đầu làm</AppText>
             </TouchableOpacity>
           )}
           <TouchableOpacity
             onPress={() => onMarkDone(order.id)}
-            style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, height: 52, borderRadius: shape.radius.lg, backgroundColor: colors.status.success, borderWidth: 1.5, borderColor: colors.status.available }}
+            style={{ flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, height: 52, borderRadius: 8, backgroundColor: colors.status.success, borderWidth: 1, borderColor: colors.status.available }}
           >
             <Icon name="check" size={18} color={colors.text.inverse} />
-            <AppText variant="md" color={colors.text.inverse} weight="bold">Xong</AppText>
+            <AppText variant="md" weight="normal" color={colors.text.inverse}>Xong</AppText>
           </TouchableOpacity>
         </View>
       )}

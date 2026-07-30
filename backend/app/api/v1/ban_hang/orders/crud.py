@@ -115,7 +115,10 @@ async def list_orders(
 ):
     query = select(Order).options(selectinload(Order.items)).order_by(Order.created_at.desc())
     if status:
-        query = query.where(Order.status == status)
+        if status == "active":
+            query = query.where(Order.status.in_(["moi", "gui_bep", "dang_lam", "hoan_thanh"]))
+        else:
+            query = query.where(Order.status == status)
     if table_id:
         query = query.where(Order.table_id == parse_uuid(table_id))
 
@@ -160,6 +163,7 @@ async def create_order(
     table_uuid = None if not body.table_id or str(body.table_id).upper() == "TAKEAWAY" else _uuid(body.table_id)
     order = Order(
         table_id=table_uuid,
+        branch_id=_safe_uuid(current_user.get("branch_id")),
         cashier_id=_safe_uuid(current_user.get("sub")),
         total_amount=total,
         tax_amount=total_tax,
@@ -216,13 +220,21 @@ async def create_order(
         "event": "new_order",
         "order": {
             "id": str(order.id),
-            "table_id": str(order.table_id),
+            "table_id": str(order.table_id) if order.table_id else None,
             "total": float(order.total_amount),
             "note": order.note,
         },
     }
     await ws_manager.broadcast("kitchen", event_data)
     await ws_manager.broadcast("pos", event_data)
+
+    if order.table_id:
+        tbl_evt = {
+            "event": "table_updated",
+            "table": {"id": str(order.table_id), "status": "dang_su_dung"},
+        }
+        await ws_manager.broadcast("kitchen", tbl_evt)
+        await ws_manager.broadcast("pos", tbl_evt)
 
     # Invalidate in-memory caches so GET /tables, /kitchen-feed, /orders immediately show fresh data
     invalidate_fast_cache()
@@ -289,17 +301,6 @@ async def update_order_status(
         str(order.id),
         old_value={"status": old_status},
         new_value={"status": status},
-        request=request,
-    )
-
-    from app.core.ws_manager import ws_manager
-
-    await ws_manager.broadcast(
-        "kitchen",
-        {
-            "event": "order_updated",
-            "order": {"id": str(order.id), "status": order.status},
-        },
     )
 
     return order
@@ -319,57 +320,81 @@ async def update_order(
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
     if order.status in ("da_thanh_toan", "da_gop", "da_huy"):
-        # If the order is already closed/paid, do not fail with 400 Bad Request.
-        # If new items exist, spawn a new active order for the table; otherwise return existing order.
-        if body.items and order.table_id:
-            from app.schemas.ban_hang import OrderCreate
-            new_order_body = OrderCreate(
-                table_id=str(order.table_id),
-                items=body.items,
-                note=body.note,
-            )
-            return await create_order(new_order_body, request=None, db=db, current_user=_user)
-        return order
+        raise HTTPException(
+            status_code=400,
+            detail=f"Đơn hàng đã ở trạng thái '{order.status}', không thể cập nhật.",
+        )
 
-    await db.execute(delete(OrderItem).where(OrderItem.order_id == order.id))
+    # ── UPSERT: keep non-moi items, replace moi items ──────────────────────
+    # Track immutable items by ID to preserve them; skip incoming items that
+    # would collide with a non-moi item (same product+round still in kitchen)
+    immutable_ids: set[tuple] = set()
+    for oi in order.items:
+        if oi.status != "moi":
+            immutable_ids.add((str(oi.product_id), oi.order_round))
+
+    # Delete only moi items that are not in immutable_ids
+    await db.execute(delete(OrderItem).where(
+        OrderItem.order_id == order.id,
+        OrderItem.status == "moi"
+    ))
 
     # Fetch products from DB — DO NOT trust client unit_price / product_name
-    product_ids = [_uuid(item.product_id) for item in body.items]
-    products_q = await db.execute(select(Product).where(Product.id.in_(product_ids)))
-    products = products_q.scalars().all()
-    prod_map = {str(p.id): p for p in products}
+    product_ids = list(set(_uuid(item.product_id) for item in body.items))
+    products_p = []
+    if product_ids:
+        products_q = await db.execute(select(Product).where(Product.id.in_(product_ids)))
+        products_p = products_q.scalars().all()
+    prod_map = {str(p.id): p for p in products_p}
+
+    # Track totals for newly inserted items
+    new_items_total = 0.0
+    new_items_tax = 0.0
 
     for item in body.items:
         pid = _uuid(item.product_id)
+        key = (str(pid), item.order_round)
+
+        # Skip items that match immutable (kitchen-active) items
+        if key in immutable_ids:
+            continue
+
         prod = prod_map.get(str(pid))
         if not prod:
             raise HTTPException(status_code=404, detail=f"Product {item.product_id} not found")
         db_price = float(prod.price or 0.0)
-        db_name = prod.name
         db_vat_rate = float(prod.vat_rate or 0.0)
+        qty = item.quantity
         oi = OrderItem(
             order_id=order.id,
             product_id=pid,
-            product_name=db_name,  # ← from DB
-            quantity=item.quantity,
-            unit_price=db_price,  # ← from DB
-            total=db_price * item.quantity,
+            product_name=prod.name,
+            quantity=qty,
+            unit_price=db_price,
+            total=db_price * qty,
             options=item.options or {},
-            vat_rate=db_vat_rate,  # ← from DB, NOT from client
+            vat_rate=db_vat_rate,
             note=item.note,
             service_type=item.service_type,
             order_round=item.order_round,
-            status="moi",  # ← always start as 'moi'
+            status="moi",
         )
         db.add(oi)
+        new_items_total += db_price * qty
+        new_items_tax += round(db_price * qty * db_vat_rate / 100, 2)
 
-    order.total_amount = sum(
-        float(prod_map[str(_uuid(i.product_id))].price or 0.0) * i.quantity for i in body.items
+    # Recalculate totals: immutable (non-moi) items + newly inserted items
+    imm_total = sum(
+        float(i.unit_price) * i.quantity
+        for i in order.items if i.status != "moi"
     )
-    order.tax_amount = sum(
-        round(float(prod_map[str(_uuid(i.product_id))].price or 0.0) * i.quantity * float(prod_map[str(_uuid(i.product_id))].vat_rate or 0.0) / 100, 2)
-        for i in body.items
+    imm_tax = sum(
+        round(float(i.unit_price) * i.quantity * float(i.vat_rate or 0) / 100, 2)
+        for i in order.items if i.status != "moi"
     )
+    order.total_amount = imm_total + new_items_total
+    order.tax_amount = imm_tax + new_items_tax
+
     if body.note is not None:
         order.note = body.note
 
@@ -397,7 +422,6 @@ async def update_order(
     await ws_manager.broadcast("kitchen", event_data)
     await ws_manager.broadcast("pos", event_data)
 
-    # Invalidate in-memory caches so GET /tables, /kitchen-feed, /orders immediately show fresh data
     invalidate_fast_cache()
 
     return order

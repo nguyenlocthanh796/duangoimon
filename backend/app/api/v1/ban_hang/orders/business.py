@@ -89,6 +89,7 @@ async def split_order(
 
     new_order = Order(
         table_id=table_uuid,
+        branch_id=order.branch_id,
         cashier_id=parse_uuid(current_user["sub"]),
         total_amount=sum(i.unit_price * i.quantity for i in split_items),
         note=f"Tách từ {order.id}",
@@ -103,6 +104,15 @@ async def split_order(
     await db.commit()
     await db.refresh(order)
     await db.refresh(new_order)
+
+    from app.core.ws_manager import ws_manager
+    evt = {
+        "event": "order_updated",
+        "order": {"id": str(order.id), "table_id": str(order.table_id) if order.table_id else None},
+    }
+    await ws_manager.broadcast("pos", evt)
+    await ws_manager.broadcast("kitchen", evt)
+
     return {"original_order": order, "new_order": new_order}
 
 
@@ -152,6 +162,7 @@ async def split_table(
 
     new_order = Order(
         table_id=table_uuid,
+        branch_id=order.branch_id,
         cashier_id=parse_uuid(current_user["sub"]),
         total_amount=sum(i.unit_price * i.quantity for i in split_items),
         note=f"Tách bàn từ {order.id}",
@@ -166,6 +177,15 @@ async def split_table(
     await db.commit()
     await db.refresh(order)
     await db.refresh(new_order)
+
+    from app.core.ws_manager import ws_manager
+    tbl_evt = {
+        "event": "table_updated",
+        "table": {"id": str(table_uuid), "status": "dang_su_dung"},
+    }
+    await ws_manager.broadcast("pos", tbl_evt)
+    await ws_manager.broadcast("kitchen", tbl_evt)
+
     return {"original_order": order, "new_order": new_order}
 
 
@@ -220,6 +240,16 @@ async def move_table(
         )
         await db.commit()
         await db.refresh(target_order)
+
+        from app.core.ws_manager import ws_manager
+        evt1 = {"event": "table_updated", "table": {"id": str(old_table_id), "status": "trong"}} if old_table_id else None
+        evt2 = {"event": "table_updated", "table": {"id": str(new_table_uuid), "status": "dang_su_dung"}}
+        if evt1:
+            await ws_manager.broadcast("pos", evt1)
+            await ws_manager.broadcast("kitchen", evt1)
+        await ws_manager.broadcast("pos", evt2)
+        await ws_manager.broadcast("kitchen", evt2)
+
         return target_order
 
     # Simple move
@@ -230,6 +260,16 @@ async def move_table(
     await db.execute(update(Table).where(Table.id == new_table_uuid).values(status="dang_su_dung"))
     await db.commit()
     await db.refresh(order)
+
+    from app.core.ws_manager import ws_manager
+    evt1 = {"event": "table_updated", "table": {"id": str(old_table_id), "status": "trong"}} if old_table_id else None
+    evt2 = {"event": "table_updated", "table": {"id": str(new_table_uuid), "status": "dang_su_dung"}}
+    if evt1:
+        await ws_manager.broadcast("pos", evt1)
+        await ws_manager.broadcast("kitchen", evt1)
+    await ws_manager.broadcast("pos", evt2)
+    await ws_manager.broadcast("kitchen", evt2)
+
     return order
 
 
@@ -286,6 +326,10 @@ async def merge_orders(
     target.total_amount = sum(i.unit_price * i.quantity for i in source.items) + sum(
         i.unit_price * i.quantity for i in target.items
     )
+    target.tax_amount = sum(
+        round(float(i.unit_price) * i.quantity * float(i.vat_rate or 0) / 100, 2)
+        for i in list(source.items) + list(target.items)
+    )
     source.status = "da_gop"
     source.table_id = None
     if old_source_table:
@@ -328,6 +372,7 @@ async def cancel_order_item(
     options = item.options or {}
     options["cancel_reason"] = body.reason
     item.options = options
+    await db.flush()  # flush before reload so selectinload sees updated status
 
     # C2: Recalculate order total excluding cancelled items
     if item.order_id:

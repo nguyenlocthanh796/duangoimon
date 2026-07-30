@@ -1,9 +1,11 @@
+import { useEffect } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors } from '../../theme/colors';
 import { font } from '../../theme/typography';
 import { shape } from '../../theme/shape';
+import { haptic } from '../../haptic';
 
 interface PaymentSuccessScreenProps {
   tableName: string;
@@ -26,6 +28,9 @@ export default function PaymentSuccessScreen({
   onPrint,
   onGoBack,
 }: PaymentSuccessScreenProps) {
+  useEffect(() => {
+    haptic.success();
+  }, []);
   const methodLabels: Record<string, string> = {
     tien_mat: 'Tiền mặt',
     card: 'Quẹt thẻ',
@@ -114,9 +119,8 @@ export default function PaymentSuccessScreen({
             <Icon name="printer" size={20} color={colors.brand.primary} />
             <Text
               style={{
-                ...font.mdBold,
+                ...font.md,
                 color: colors.brand.primary,
-                fontWeight: '600',
               }}
             >
               In hóa đơn
@@ -138,9 +142,8 @@ export default function PaymentSuccessScreen({
           >
             <Text
               style={{
-                ...font.mdBold,
+                ...font.md,
                 color: colors.text.inverse,
-                fontWeight: '600',
               }}
             >
               Đóng

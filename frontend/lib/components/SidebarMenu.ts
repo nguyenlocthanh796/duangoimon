@@ -73,15 +73,12 @@ export type ActiveModule = 'ban-hang' | 'quan-ly' | 'ke-toan';
 import { getKitchenModuleEnabled } from '../utils/kitchenSettings';
 
 export function getSections(module: ActiveModule): SidebarGroup[] {
-  const showKitchen = getKitchenModuleEnabled();
   switch (module) {
     case 'ban-hang':
       return [
         {
           label: 'Bán Hàng',
-          items: showKitchen
-            ? [allMenuItems.pos, allMenuItems.kitchen, allMenuItems.posSettings]
-            : [allMenuItems.pos, allMenuItems.posSettings],
+          items: [allMenuItems.pos, allMenuItems.kitchen, allMenuItems.posSettings],
         },
         {
           label: 'Phân Hệ Khác',

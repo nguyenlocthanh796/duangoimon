@@ -36,7 +36,7 @@ from app.middleware.security_headers import SecurityHeadersMiddleware
 from app.core.audit_middleware import audit_mutation_middleware
 from app.core.csrf_middleware import csrf_middleware
 from app.core.rate_limiter import rate_limit_middleware
-from app.api.v1 import auth, public, integrations
+from app.api.v1 import auth, public, integrations, pos_settings
 from app.api.v1 import ban_hang, ke_toan, quan_ly, thue
 
 logger = logging.getLogger(__name__)
@@ -66,6 +66,15 @@ if sys.platform == "win32":
 async def lifespan(app: FastAPI):
     from app.core.sentry_config import init_sentry
     init_sentry()
+
+    # Auto-create missing database tables
+    try:
+        import app.models.all_models  # noqa
+        from app.models import Base
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+    except Exception as e:
+        logger.warning("Failed to create missing tables: %s", e)
 
     # Tax scheduler — fails gracefully on Windows (ProactorEventLoop)
     try:
@@ -139,6 +148,8 @@ app.add_middleware(
     allow_origin_regex=_cors_regex,
 )
 
+
+
 # Middleware stack (order matters)
 app.add_middleware(RequestIDMiddleware)
 app.add_middleware(SecurityHeadersMiddleware)
@@ -154,6 +165,7 @@ app.middleware("http")(rate_limit_middleware)
 app.include_router(auth.router, prefix="/api/v1/auth")
 app.include_router(public.router, prefix="/api/v1")
 app.include_router(integrations.router, prefix="/api/v1")
+app.include_router(pos_settings.router, prefix="/api/v1")
 
 # Ban-hang (POS) — cashier + admin + manager
 _ban_hang_deps = [require_role(endpoint_path="ban-hang"), require_branch_access()]
@@ -245,10 +257,16 @@ async def pos_ws(websocket: WebSocket):
     await ws_manager.connect(websocket, "pos")
     try:
         while True:
-            data = await websocket.receive_text()
+            # 35s timeout matches client heartbeat (25s ping + 10s pong window)
+            try:
+                data = await asyncio.wait_for(websocket.receive_text(), timeout=35.0)
+            except asyncio.TimeoutError:
+                # No heartbeat from client, assume stale
+                await websocket.close(code=1000, reason="Idle timeout")
+                break
             if data == "ping" or '"type":"ping"' in data:
                 await websocket.send_text('{"type":"pong"}')
-    except WebSocketDisconnect:
+    except (WebSocketDisconnect, Exception):
         ws_manager.disconnect(websocket, "pos")
 
 
@@ -287,6 +305,21 @@ def _get_cors_headers(request: Request) -> dict[str, str]:
             "Access-Control-Allow-Headers": "*",
         }
     return {}
+
+
+from app.core.exceptions import AppException
+
+
+@app.exception_handler(AppException)
+async def app_exception_handler(request: Request, exc: AppException):
+    headers = _get_cors_headers(request)
+    if exc.headers:
+        headers.update(exc.headers)
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail, "error_code": exc.error_code},
+        headers=headers,
+    )
 
 
 @app.exception_handler(StarletteHTTPException)

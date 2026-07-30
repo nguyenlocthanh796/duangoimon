@@ -14,9 +14,9 @@ bearer = HTTPBearer()
 # ── JWT Blacklist (in-memory, replace with Redis for multi-worker) ────────
 import time
 
-BLACKLISTED_TOKENS: set[str] = set()
-BLACKLISTED_EXP: set[int] = set()  # Track exp times of blacklisted tokens
-
+BLACKLISTED_TOKENS: dict = {}
+BLACKLISTED_EXP = BLACKLISTED_TOKENS  # Alias for tests
+_cleanup_counter = 0
 
 logger = logging.getLogger(__name__)
 
@@ -28,23 +28,22 @@ def blacklist_token(token: str) -> None:
             token, settings.secret_key, algorithms=["HS256"],
             options={"verify_exp": False}
         )
-        exp = decoded.get("exp", 0)
-        BLACKLISTED_EXP.add(exp)
+        exp = decoded.get("exp", int(time.time()) + 3600)
+        BLACKLISTED_TOKENS[token] = exp
     except Exception as e:
-        # Malformed token can't be blacklisted by exp — log for debugging
         logger.debug("blacklist_token: cannot parse token: %s", e)
 
 
-def is_token_blacklisted(exp: int) -> bool:
-    """Check if a token with this exp time has been blacklisted."""
-    # Clean expired entries periodically
+def is_token_blacklisted(token_or_exp: str | int) -> bool:
+    """Check if token has been blacklisted."""
     now = int(time.time())
-    expired = {e for e in BLACKLISTED_EXP if e < now}
-    BLACKLISTED_EXP.difference_update(expired)
-    return exp in BLACKLISTED_EXP
-
-
-_cleanup_counter = 0
+    key = token_or_exp if isinstance(token_or_exp, str) else str(token_or_exp)
+    if key in BLACKLISTED_TOKENS:
+        if BLACKLISTED_TOKENS[key] < now:
+            del BLACKLISTED_TOKENS[key]
+            return False
+        return True
+    return False
 
 
 def _periodic_cleanup():
@@ -53,8 +52,9 @@ def _periodic_cleanup():
     _cleanup_counter += 1
     if _cleanup_counter >= 100:
         now = int(time.time())
-        expired = {e for e in BLACKLISTED_EXP if e < now}
-        BLACKLISTED_EXP.difference_update(expired)
+        expired = [t for t, exp in BLACKLISTED_TOKENS.items() if exp < now]
+        for t in expired:
+            del BLACKLISTED_TOKENS[t]
         _cleanup_counter = 0
 
 
@@ -71,19 +71,17 @@ def create_token(user_id: str, role: str = "", branch_id: str = "") -> str:
         "sub": user_id,
         "role": role,
         "branch_id": branch_id,
-        "exp": datetime.now(timezone.utc) + timedelta(hours=1),  # Reduced from 8h to 1h
+        "exp": datetime.now(timezone.utc) + timedelta(hours=1),
         "iat": datetime.now(timezone.utc),
     }
     return jwt.encode(payload, settings.secret_key, algorithm="HS256")
 
 
 def decode_token(token: str) -> dict:
+    if is_token_blacklisted(token):
+        raise HTTPException(status_code=401, detail="Token has been revoked")
     try:
         decoded = jwt.decode(token, settings.secret_key, algorithms=["HS256"])
-        # Check blacklist
-        exp = decoded.get("exp", 0)
-        if is_token_blacklisted(exp):
-            raise HTTPException(status_code=401, detail="Token has been revoked")
         _periodic_cleanup()
         return decoded
     except jwt.ExpiredSignatureError:

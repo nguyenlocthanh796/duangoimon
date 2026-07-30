@@ -24,7 +24,7 @@ Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue | Where-Object 
 Start-Sleep -Seconds 1
 
 # -- Load .env file --
-$envFile = if ($Build -or $Serve) { "$root\.env" } else { "$root\.env.development" }
+$envFile = "$root\\.env"
 if (-not (Test-Path $envFile)) { Die "File env '$envFile' is missing." }
 
 Info "Loading environment variables from '$((Get-Item $envFile).Name)'..."
@@ -46,7 +46,7 @@ Get-Content $envFile | ForEach-Object {
 Info "Starting Backend (uvicorn) on port 8000..."
 Start-Process powershell -WindowStyle Normal -ArgumentList @(
   "-NoExit", "-Command",
-  "cd '$root\backend'; `$env:PYTHONPATH='$root'; python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --env-file '$envFile'"
+  "cd '$root\backend'; `$env:PYTHONPATH='$root'; python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
 )
 
 for ($i = 0; $i -lt 15; $i++) {

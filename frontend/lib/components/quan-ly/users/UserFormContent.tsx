@@ -121,7 +121,7 @@ export default function UserFormContent({
 
 const styles = StyleSheet.create({
   inputWrap: { marginBottom: 16 },
-  inputLabel: { ...font.smBold, color: colors.text.body, marginBottom: 6 },
+  inputLabel: { ...font.md, color: colors.text.body, marginBottom: 6 },
   input: {
     borderWidth: 1.5,
     borderColor: colors.border.default,

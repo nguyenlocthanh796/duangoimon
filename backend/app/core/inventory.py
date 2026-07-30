@@ -43,27 +43,27 @@ async def deduct_inventory(order_id: str, db: AsyncSession):
             continue  # No recipe for this product, skip
 
         for ri in recipe.items:
-            qty_to_deduct = ri.quantity * item.quantity
+            qty_to_deduct = float(ri.quantity or 0) * float(item.quantity or 0)
             rm_result = await db.execute(
-                select(RawMaterial).where(RawMaterial.id == ri.raw_material_id)
+                select(RawMaterial).where(RawMaterial.id == ri.raw_material_id).with_for_update()
             )
             raw_material = rm_result.scalar_one_or_none()
             if not raw_material:
                 continue
 
-            raw_material.current_stock -= qty_to_deduct
+            current_stk = float(raw_material.current_stock or 0) - qty_to_deduct
+            raw_material.current_stock = current_stk
 
             # Alert if below min_stock
-            if raw_material.current_stock <= raw_material.min_stock:
+            min_stk = float(raw_material.min_stock or 0)
+            if current_stk <= min_stk:
                 alerts.append(
                     {
                         "raw_material": raw_material.name,
-                        "current_stock": float(raw_material.current_stock),
-                        "min_stock": float(raw_material.min_stock),
+                        "current_stock": current_stk,
+                        "min_stock": min_stk,
                     }
                 )
-
-    await db.commit()
 
     # Broadcast stock alerts
     if alerts:
@@ -76,3 +76,5 @@ async def deduct_inventory(order_id: str, db: AsyncSession):
                 "data": alerts,
             },
         )
+
+    return alerts

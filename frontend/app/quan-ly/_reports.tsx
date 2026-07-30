@@ -72,21 +72,21 @@ export default function ReportsScreen({ isSearchOpen }: { isSearchOpen?: boolean
         <View style={[ss.iconCircleSm, { backgroundColor: '#FFF7ED' }]}>
           <Icon name="chart-arc" size={14} color="#F97316" />
         </View>
-        <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1 }}>Tổng quan doanh thu kỳ này</AppText>
+        <AppText variant="md" color="#1E293B" style={{ flex: 1 }}>Tổng quan doanh thu kỳ này</AppText>
       </View>
       <View style={{ padding: 12, gap: 10 }}>
         <View style={{ alignItems: 'center', paddingVertical: 10, backgroundColor: '#FFF7ED', borderRadius: 6, borderWidth: 1, borderColor: '#FFEDD5' }}>
-          <AppText variant="md" weight="bold" color="#F97316">{formatVND(totalRevenue)}</AppText>
-          <AppText variant="sm" color="#64748B" style={{ marginTop: 2 }}>Tổng doanh thu bán hàng</AppText>
+          <AppText variant="md" color="#F97316">{formatVND(totalRevenue)}</AppText>
+          <AppText variant="md" color="#64748B" style={{ marginTop: 2 }}>Tổng doanh thu bán hàng</AppText>
         </View>
         <View style={{ flexDirection: 'row', gap: 8 }}>
           <View style={{ flex: 1, alignItems: 'center', backgroundColor: '#F8FAFC', paddingVertical: 8, borderRadius: 6, borderWidth: 1, borderColor: '#E2E8F0' }}>
-            <AppText variant="md" weight="bold" color="#0F172A">{totalOrders}</AppText>
-            <AppText variant="sm" color="#64748B">Tổng số đơn</AppText>
+            <AppText variant="md" color="#0F172A">{totalOrders}</AppText>
+            <AppText variant="md" color="#64748B">Tổng số đơn</AppText>
           </View>
           <View style={{ flex: 1, alignItems: 'center', backgroundColor: '#F8FAFC', paddingVertical: 8, borderRadius: 6, borderWidth: 1, borderColor: '#E2E8F0' }}>
-            <AppText variant="md" weight="bold" color={colors.status.success}>{formatVND(avgRevenuePerDay)}</AppText>
-            <AppText variant="sm" color="#64748B">TB mỗi ngày</AppText>
+            <AppText variant="md" color={colors.status.success}>{formatVND(avgRevenuePerDay)}</AppText>
+            <AppText variant="md" color="#64748B">TB mỗi ngày</AppText>
           </View>
         </View>
       </View>
@@ -100,31 +100,31 @@ export default function ReportsScreen({ isSearchOpen }: { isSearchOpen?: boolean
         <View style={ss.metricContainer}>
           <View style={ss.metricCard}>
             <View style={[ss.metricIcon, { backgroundColor: '#ECFDF5' }]}>
-              <AppText variant="sm" weight="bold" color={colors.status.success} style={{ fontSize: 11 }}>đ</AppText>
+              <AppText variant="md" color={colors.status.success}>đ</AppText>
             </View>
             <View style={{ flex: 1 }}>
-              <AppText variant="md" weight="bold" color={colors.status.success}>{formatVND(totalRevenue)}</AppText>
-              <AppText variant="sm" color="#64748B">Doanh thu</AppText>
+              <AppText variant="md" color={colors.status.success}>{formatVND(totalRevenue)}</AppText>
+              <AppText variant="md" color="#64748B">Doanh thu</AppText>
             </View>
           </View>
 
           <View style={ss.metricCard}>
             <View style={[ss.metricIcon, { backgroundColor: '#EEF2FF' }]}>
-              <AppText variant="sm" weight="bold" color={colors.brand.primary} style={{ fontSize: 11 }}>đơn</AppText>
+              <AppText variant="md" color={colors.brand.primary}>đơn</AppText>
             </View>
             <View style={{ flex: 1 }}>
-              <AppText variant="md" weight="bold" color="#0F172A">{totalOrders} đơn</AppText>
-              <AppText variant="sm" color="#64748B">Số đơn</AppText>
+              <AppText variant="md" color="#0F172A">{totalOrders} đơn</AppText>
+              <AppText variant="md" color="#64748B">Số đơn</AppText>
             </View>
           </View>
 
           <View style={ss.metricCard}>
             <View style={[ss.metricIcon, { backgroundColor: '#FFF7ED' }]}>
-              <AppText variant="sm" weight="bold" color="#F97316" style={{ fontSize: 11 }}>TB</AppText>
+              <AppText variant="md" color="#F97316">TB</AppText>
             </View>
             <View style={{ flex: 1 }}>
-              <AppText variant="md" weight="bold" color="#F97316">{formatVND(avgRevenuePerDay)}</AppText>
-              <AppText variant="sm" color="#64748B">TB/Ngày</AppText>
+              <AppText variant="md" color="#F97316">{formatVND(avgRevenuePerDay)}</AppText>
+              <AppText variant="md" color="#64748B">TB/Ngày</AppText>
             </View>
           </View>
         </View>
@@ -150,7 +150,7 @@ export default function ReportsScreen({ isSearchOpen }: { isSearchOpen?: boolean
                   onPress={() => setDateRange(r.id as any)}
                   style={[ss.filterChip, active && ss.filterChipActive]}
                 >
-                  <AppText variant="sm" color={active ? colors.brand.primary : "#334155"} weight="bold">
+                  <AppText variant="md" color={active ? colors.brand.primary : "#334155"}>
                     {r.label}
                   </AppText>
                 </TouchableOpacity>
@@ -167,12 +167,12 @@ export default function ReportsScreen({ isSearchOpen }: { isSearchOpen?: boolean
                   <View style={[ss.iconCircleSm, { backgroundColor: '#EFF6FF' }]}>
                     <Icon name="chart-bar" size={14} color={colors.brand.primary} />
                   </View>
-                  <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1 }}>Doanh thu theo ngày</AppText>
+                  <AppText variant="md" color="#1E293B" style={{ flex: 1 }}>Doanh thu theo ngày</AppText>
                 </View>
                 <View style={{ padding: 10 }}>
                   {(data?.daily?.length ?? 0) === 0 ? (
                     <View style={styles.emptyBox}>
-                      <AppText variant="sm" color={colors.text.muted}>Không có dữ liệu</AppText>
+                      <AppText variant="md" color={colors.text.muted}>Không có dữ liệu</AppText>
                     </View>
                   ) : (
                     <BarChart data={data!.daily} />
@@ -192,12 +192,12 @@ export default function ReportsScreen({ isSearchOpen }: { isSearchOpen?: boolean
                 <View style={[ss.iconCircleSm, { backgroundColor: '#EFF6FF' }]}>
                   <Icon name="chart-bar" size={14} color={colors.brand.primary} />
                 </View>
-                <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1 }}>Doanh thu theo ngày</AppText>
+                <AppText variant="md" color="#1E293B" style={{ flex: 1 }}>Doanh thu theo ngày</AppText>
               </View>
               <View style={{ padding: 10 }}>
                 {(data?.daily?.length ?? 0) === 0 ? (
                   <View style={styles.emptyBox}>
-                    <AppText variant="sm" color={colors.text.muted}>Không có dữ liệu</AppText>
+                    <AppText variant="md" color={colors.text.muted}>Không có dữ liệu</AppText>
                   </View>
                 ) : (
                   <BarChart data={data!.daily} />

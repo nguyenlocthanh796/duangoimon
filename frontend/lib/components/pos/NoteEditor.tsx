@@ -2,6 +2,7 @@ import React from 'react';
 import { View, TextInput, TouchableOpacity, Modal } from 'react-native';
 import { colors, font } from '../../theme';
 import AppText from '../ui/AppText';
+import { haptic } from '../../haptic';
 
 interface NoteEditorProps {
   visible: boolean;
@@ -18,19 +19,29 @@ export default function NoteEditor({
   onSave,
   onCancel,
 }: NoteEditorProps) {
+  const handleSave = () => {
+    haptic.impact('light');
+    onSave();
+  };
+
   return (
-    <Modal visible={visible} transparent animationType="fade">
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onCancel}>
       <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
+        <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={onCancel} />
         <View
           style={{
             backgroundColor: colors.surface.card,
             borderTopLeftRadius: 16,
             borderTopRightRadius: 16,
-            padding: 20,
+            paddingHorizontal: 20,
+            paddingTop: 10,
+            paddingBottom: 24,
             gap: 12,
           }}
         >
-          <AppText variant="md" weight="bold" color={colors.text.primary}>Ghi chú món</AppText>
+          {/* iOS Grabber Bar */}
+          <View style={{ width: 36, height: 5, borderRadius: 3, backgroundColor: '#CBD5E1', alignSelf: 'center', marginBottom: 4 }} />
+          <AppText variant="md" color={colors.text.primary}>Ghi chú món</AppText>
           <TextInput
             value={noteText}
             onChangeText={onChangeText}
@@ -62,7 +73,7 @@ export default function NoteEditor({
               <AppText variant="md" color={colors.text.secondary}>Huỷ</AppText>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={onSave}
+              onPress={handleSave}
               style={{
                 flex: 1,
                 height: 44,

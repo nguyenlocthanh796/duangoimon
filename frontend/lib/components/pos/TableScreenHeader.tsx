@@ -61,7 +61,7 @@ export default function TableScreenHeader({
           }}
         >
           <Icon name="bag-personal" size={isWide ? 20 : 16} color={colors.text.inverse} />
-          <AppText variant="md" weight="bold" color={colors.text.inverse}>Mang về</AppText>
+          <AppText variant="md" color={colors.text.inverse}>Mang về</AppText>
         </TouchableOpacity>
       ) : (
         <TouchableOpacity
@@ -80,7 +80,7 @@ export default function TableScreenHeader({
           }}
         >
           <Icon name="bag-personal" size={isWide ? 20 : 16} color={colors.text.inverse} />
-          <AppText variant="md" weight="bold" color={colors.text.inverse}>Mang về</AppText>
+          <AppText variant="md" color={colors.text.inverse}>Mang về</AppText>
         </TouchableOpacity>
       )}
     </View>

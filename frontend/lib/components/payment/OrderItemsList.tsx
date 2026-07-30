@@ -23,7 +23,7 @@ export default function OrderItemsList({ items }: { items: any[] }) {
     >
       <Text
         style={{
-          ...font.smBold,
+          ...font.md,
           textTransform: 'uppercase',
           letterSpacing: 0.5,
           color: colors.text.muted,

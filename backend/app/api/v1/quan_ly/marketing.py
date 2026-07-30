@@ -40,7 +40,7 @@ def _campaign_dict(c: Campaign) -> dict:
     }
 
 
-@router.get("/campaigns", response_model=list[dict])
+@router.get("/campaigns")
 async def list_campaigns(
     page: PageParams = Depends(),
     db: AsyncSession = Depends(get_db),

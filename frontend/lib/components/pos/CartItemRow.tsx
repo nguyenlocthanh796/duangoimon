@@ -7,6 +7,7 @@ import { colors, palette, font, formatPrice } from '../../theme';
 import { shape } from '../../theme/shape';
 import AppText from '../ui/AppText';
 import { CartItem } from './types';
+import { haptic } from '../../haptic';
 
 const NO_NOTE_CATS = ['do-uong', 'khai-vi'];
 
@@ -28,6 +29,7 @@ interface CartItemRowProps {
   onRequestMoveItem?: (cartItemId: string) => void;
   /** iPad grouped mode: compact stepper row */
   groupedMode?: boolean;
+  rightActions?: React.ReactNode;
 }
 
 const MemoCartItemRow = React.memo(function CartItemRow({
@@ -47,6 +49,7 @@ const MemoCartItemRow = React.memo(function CartItemRow({
   isSelected,
   onRequestMoveItem,
   groupedMode,
+  rightActions,
 }: CartItemRowProps) {
   const [imageError, setImageError] = React.useState(false);
   const [qtyInput, setQtyInput] = React.useState(String(item.qty));
@@ -102,7 +105,9 @@ const MemoCartItemRow = React.memo(function CartItemRow({
 
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <TouchableOpacity
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             onPress={() => {
+              haptic.impact('light');
               if (item.qty <= 1) {
                 onRemoveItem(item.cartItemId);
               } else {
@@ -110,9 +115,9 @@ const MemoCartItemRow = React.memo(function CartItemRow({
               }
             }}
             style={{
-              width: 28,
-              height: 28,
-              borderRadius: shape.radius.sm,
+              width: 32,
+              height: 32,
+              borderRadius: 6,
               backgroundColor: colors.surface.disabled,
               alignItems: 'center',
               justifyContent: 'center',
@@ -134,11 +139,15 @@ const MemoCartItemRow = React.memo(function CartItemRow({
           </AppText>
 
           <TouchableOpacity
-            onPress={() => onUpdateQty(item.cartItemId, 1)}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            onPress={() => {
+              haptic.impact('light');
+              onUpdateQty(item.cartItemId, 1);
+            }}
             style={{
-              width: 28,
-              height: 28,
-              borderRadius: shape.radius.sm,
+              width: 32,
+              height: 32,
+              borderRadius: 6,
               backgroundColor: colors.surface.disabled,
               alignItems: 'center',
               justifyContent: 'center',
@@ -150,8 +159,9 @@ const MemoCartItemRow = React.memo(function CartItemRow({
 
         <AppText
           variant="md"
-          color={colors.brand.primary}
-          style={{ fontWeight: '600', marginLeft: 12, minWidth: 70, textAlign: 'right' }}
+          weight="bold"
+          color="#0F172A"
+          style={{ marginLeft: 12, minWidth: 70, textAlign: 'right' }}
         >
           {formatPrice(totalPrice)}
         </AppText>
@@ -199,35 +209,35 @@ const MemoCartItemRow = React.memo(function CartItemRow({
     ]);
   };
 
-  let rightActions: React.ReactNode = null;
+  let swipeRightActions: React.ReactNode = null;
   if (!isCancelled) {
     if (splitMode) {
-      rightActions = (
-        <TouchableOpacity onPress={() => { swipeRef.current?.close(); onToggleSelect?.(item.cartItemId); }} style={{ width: 72, marginBottom: 4, borderRadius: shape.radius.md, backgroundColor: colors.status.success, alignItems: 'center', justifyContent: 'center', marginLeft: 8 }}>
+      swipeRightActions = (
+        <TouchableOpacity onPress={() => { swipeRef.current?.close(); onToggleSelect?.(item.cartItemId); }} style={{ width: 72, marginBottom: 4, borderRadius: 8, backgroundColor: colors.status.success, alignItems: 'center', justifyContent: 'center', marginLeft: 8 }}>
           <Icon name={item.selected ? 'check-circle' : 'circle-outline'} size={22} color={colors.text.inverse} />
-          <AppText variant="sm" color={colors.text.inverse} style={{ marginTop: 2 }}>Chọn</AppText>
+          <AppText variant="md" color={colors.text.inverse} style={{ marginTop: 2 }}>Chọn</AppText>
         </TouchableOpacity>
       );
     } else if (isKitchenLocked) {
-      rightActions = (
+      swipeRightActions = (
         <View style={{ flexDirection: 'row' }}>
           {onMoveItem && (
-            <TouchableOpacity onPress={() => { swipeRef.current?.close(); onRequestMoveItem?.(item.cartItemId); }} style={{ width: 64, marginBottom: 4, borderRadius: shape.radius.md, backgroundColor: colors.status.info, alignItems: 'center', justifyContent: 'center', marginLeft: 8 }}>
+            <TouchableOpacity onPress={() => { swipeRef.current?.close(); onRequestMoveItem?.(item.cartItemId); }} style={{ width: 64, marginBottom: 4, borderRadius: 8, backgroundColor: colors.status.info, alignItems: 'center', justifyContent: 'center', marginLeft: 8 }}>
               <Icon name="swap-horizontal" size={20} color={colors.text.inverse} />
-              <AppText variant="sm" color={colors.text.inverse} style={{ marginTop: 2 }}>Chuyển</AppText>
+              <AppText variant="md" color={colors.text.inverse} style={{ marginTop: 2 }}>Chuyển</AppText>
             </TouchableOpacity>
           )}
-          <TouchableOpacity onPress={() => { swipeRef.current?.close(); handleCancel(); }} style={{ width: 64, marginBottom: 4, borderRadius: shape.radius.md, backgroundColor: colors.status.danger, alignItems: 'center', justifyContent: 'center', marginLeft: 8 }}>
+          <TouchableOpacity onPress={() => { swipeRef.current?.close(); handleCancel(); }} style={{ width: 64, marginBottom: 4, borderRadius: 8, backgroundColor: colors.status.danger, alignItems: 'center', justifyContent: 'center', marginLeft: 8 }}>
             <Icon name="cancel" size={20} color={colors.text.inverse} />
-            <AppText variant="sm" color={colors.text.inverse} style={{ marginTop: 2 }}>Huỷ</AppText>
+            <AppText variant="md" color={colors.text.inverse} style={{ marginTop: 2 }}>Huỷ</AppText>
           </TouchableOpacity>
         </View>
       );
     } else {
-      rightActions = (
-        <TouchableOpacity onPress={() => { swipeRef.current?.close(); onRemoveItem(item.cartItemId); }} style={{ width: 72, marginBottom: 4, borderRadius: shape.radius.md, backgroundColor: colors.status.danger, alignItems: 'center', justifyContent: 'center', marginLeft: 8 }}>
+      swipeRightActions = (
+        <TouchableOpacity onPress={() => { swipeRef.current?.close(); onRemoveItem(item.cartItemId); }} style={{ width: 72, marginBottom: 4, borderRadius: 8, backgroundColor: colors.status.danger, alignItems: 'center', justifyContent: 'center', marginLeft: 8 }}>
           <Icon name="trash-can-outline" size={22} color={colors.text.inverse} />
-          <AppText variant="sm" color={colors.text.inverse} style={{ marginTop: 2 }}>Xoá</AppText>
+          <AppText variant="md" color={colors.text.inverse} style={{ marginTop: 2 }}>Xoá</AppText>
         </TouchableOpacity>
       );
     }
@@ -255,15 +265,15 @@ const MemoCartItemRow = React.memo(function CartItemRow({
       }}
     >
       <View style={{ flexDirection: 'row', gap: 8 }}>
-        <View style={{ width: 64, height: 64, borderRadius: 6, backgroundColor: colors.surface.disabled, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ width: 56, height: 56, borderRadius: 6, backgroundColor: '#FFF7ED', overflow: 'hidden', alignItems: 'center', justifyContent: 'center' }}>
           {item.image && !imageError ? (
-            <Image source={item.image} style={{ width: '100%', height: '100%' }} contentFit="cover" transition={200} cachePolicy="disk" onError={() => setImageError(true)} />
+            <Image source={typeof item.image === 'string' ? { uri: item.image } : item.image} style={{ width: '100%', height: '100%' }} contentFit="cover" transition={150} cachePolicy="disk" onError={() => setImageError(true)} />
           ) : (
-            <Icon name="silverware-fork-knife" size={22} color={colors.icon.muted} />
+            <Icon name="bowl-mix" size={22} color="#F97316" />
           )}
           {item.qty > 1 && !isCancelled && (
             <View style={{ position: 'absolute', top: 0, left: 0, backgroundColor: colors.brand.primary, paddingHorizontal: 4, paddingVertical: 1, borderBottomRightRadius: 6 }}>
-              <AppText variant="sm" weight="bold" color={colors.text.inverse}>x{item.qty}</AppText>
+              <AppText variant="xs" color={colors.text.inverse}>x{item.qty}</AppText>
             </View>
           )}
           {isKitchenLocked && !isCancelled && (
@@ -275,22 +285,35 @@ const MemoCartItemRow = React.memo(function CartItemRow({
         <View style={{ flex: 1, justifyContent: 'space-between', paddingVertical: 1 }}>
           <AppText variant="md" color={isCancelled ? colors.text.muted : colors.text.primary} numberOfLines={1}>{item.name}</AppText>
           <AppText variant="sm" color={colors.text.muted} numberOfLines={1}>{mods ? `${mods} · ` : ''}{item.qty > 1 ? `${formatPrice(unitPrice)} x ${item.qty}` : formatPrice(unitPrice)}</AppText>
-          <AppText variant="md" color={isCancelled ? colors.text.muted : colors.brand.primary}>{formatPrice(totalPrice)}</AppText>
+          <AppText variant="md" weight="bold" color={isCancelled ? colors.text.muted : '#0F172A'}>{formatPrice(totalPrice)}</AppText>
         </View>
         <View style={{ alignItems: 'flex-end', justifyContent: 'space-between', gap: 4 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
             {isCancelled ? (
-              <View style={{ backgroundColor: colors.status.dangerBg, paddingHorizontal: 4, paddingVertical: 2, borderRadius: 3, borderWidth: 1, borderColor: colors.border.danger }}>
-                <AppText variant="sm" color={colors.status.danger}>Đã huỷ</AppText>
-              </View>
-            ) : isKitchenLocked ? (
-              <View style={{ backgroundColor: colors.badge.success.bg, paddingHorizontal: 4, paddingVertical: 2, borderRadius: 3, borderWidth: 1, borderColor: colors.border.success }}>
-                <AppText variant="sm" color={colors.status.success}>Đã gửi bếp{` (Lần ${item.orderRound || 1})`}</AppText>
+              <View style={{ backgroundColor: colors.status.dangerBg, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, borderWidth: 1, borderColor: colors.border.danger }}>
+                <AppText variant="xs" color={colors.status.danger}>Đã huỷ</AppText>
               </View>
             ) : (
-              <TouchableOpacity onPress={() => onToggleServiceType?.(item.cartItemId)} activeOpacity={0.7} style={{ backgroundColor: isTakeaway ? colors.brand.primaryBg : colors.badge.info.bg, paddingHorizontal: 4, paddingVertical: 2, borderRadius: 3, borderWidth: 1, borderColor: isTakeaway ? colors.border.brand : colors.border.info }}>
-                <AppText variant="sm" color={isTakeaway ? colors.text.brand : colors.status.info}>{isTakeaway ? 'Mang về' : 'Tại bàn'}</AppText>
-              </TouchableOpacity>
+              <>
+                {(() => {
+                  const st = item.status;
+                  let bg = '#FFF7ED', text = '#EA580C', label = 'Đã gửi bếp';
+                  if (st === 'dang_lam') { bg = '#EFF6FF'; text = '#1D4ED8'; label = 'Đang chế biến'; }
+                  else if (st === 'hoan_thanh') { bg = '#ECFDF5'; text = '#16A34A'; label = 'Hoàn thành'; }
+                  else if (st === 'moi' || !st) { label = ''; }
+                  if (!label) return null;
+                  return (
+                    <View style={{ backgroundColor: bg, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 }}>
+                      <AppText variant="xs" color={text}>{label}</AppText>
+                    </View>
+                  );
+                })()}
+                {(!item.status || item.status === 'moi') && (
+                  <TouchableOpacity onPress={() => onToggleServiceType?.(item.cartItemId)} activeOpacity={0.7} style={{ backgroundColor: isTakeaway ? colors.brand.primaryBg : colors.badge.info.bg, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, borderWidth: 1, borderColor: isTakeaway ? colors.border.brand : colors.border.info }}>
+                    <AppText variant="xs" color={isTakeaway ? colors.text.brand : colors.status.info}>{isTakeaway ? 'Mang về' : 'Tại bàn'}</AppText>
+                  </TouchableOpacity>
+                )}
+              </>
             )}
             {!isCancelled && !isQtyEditing && (
               <TouchableOpacity onPress={() => onEditNote?.(item.cartItemId)} hitSlop={8}>
@@ -299,8 +322,8 @@ const MemoCartItemRow = React.memo(function CartItemRow({
             )}
           </View>
           {!isCancelled && (
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: 104, height: 34, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default, padding: 2, borderRadius: shape.radius.md }}>
-              <TouchableOpacity onPress={() => handleQtyChange(-1)} disabled={item.qty <= 1} style={{ width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: item.qty <= 1 ? 'transparent' : colors.surface.card, alignItems: 'center', justifyContent: 'center', borderWidth: item.qty <= 1 ? 0 : 1, borderColor: colors.border.default }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: 104, height: 34, backgroundColor: colors.surface.disabled, borderWidth: 1, borderColor: colors.border.default, padding: 2, borderRadius: 6 }}>
+              <TouchableOpacity onPress={() => { haptic.impact('light'); handleQtyChange(-1); }} disabled={item.qty <= 1} hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }} style={{ width: 36, height: 36, borderRadius: 6, backgroundColor: item.qty <= 1 ? 'transparent' : colors.surface.card, alignItems: 'center', justifyContent: 'center', borderWidth: item.qty <= 1 ? 0 : 1, borderColor: colors.border.default }}>
                 <Icon name="minus" size={16} color={item.qty <= 1 ? colors.border.strong : colors.text.secondary} />
               </TouchableOpacity>
               {isQtyEditing ? (
@@ -310,7 +333,7 @@ const MemoCartItemRow = React.memo(function CartItemRow({
                   <AppText variant="md" color={colors.text.primary} style={{ textAlign: 'center', width: 36 }}>{item.qty}</AppText>
                 </TouchableOpacity>
               )}
-              <TouchableOpacity onPress={() => handleQtyChange(1)} style={{ width: 36, height: 36, borderRadius: shape.radius.md, backgroundColor: colors.brand.primaryBg, borderWidth: 1, borderColor: colors.border.brand, alignItems: 'center', justifyContent: 'center' }}>
+              <TouchableOpacity onPress={() => { haptic.impact('light'); handleQtyChange(1); }} hitSlop={{ top: 8, bottom: 8, left: 6, right: 6 }} style={{ width: 36, height: 36, borderRadius: 6, backgroundColor: colors.brand.primaryBg, borderWidth: 1, borderColor: colors.border.brand, alignItems: 'center', justifyContent: 'center' }}>
                 <Icon name="plus" size={16} color={colors.brand.primary} />
               </TouchableOpacity>
             </View>
@@ -318,13 +341,13 @@ const MemoCartItemRow = React.memo(function CartItemRow({
         </View>
       </View>
       {isCancelled && item.cancelReason && (
-        <View style={{ marginTop: 6, padding: 6, backgroundColor: colors.status.dangerBg, borderRadius: shape.radius.md, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+        <View style={{ marginTop: 6, padding: 6, backgroundColor: colors.status.dangerBg, borderRadius: 6, flexDirection: 'row', alignItems: 'center', gap: 4 }}>
           <Icon name="information-outline" size={12} color={colors.status.danger} />
           <AppText variant="sm" color={colors.status.danger}>Lý do: {item.cancelReason}</AppText>
         </View>
       )}
       {!skipNote && item.note ? (
-        <TouchableOpacity onPress={() => onEditNote?.(item.cartItemId)} activeOpacity={0.7} style={{ marginTop: 8, padding: 8, backgroundColor: colors.status.warningBg, borderWidth: 1, borderColor: palette.amber[200], borderRadius: shape.radius.md, flexDirection: 'row', alignItems: 'flex-start', gap: 4 }}>
+        <TouchableOpacity onPress={() => onEditNote?.(item.cartItemId)} activeOpacity={0.7} style={{ marginTop: 8, padding: 8, backgroundColor: colors.status.warningBg, borderWidth: 1, borderColor: palette.amber[200], borderRadius: 6, flexDirection: 'row', alignItems: 'flex-start', gap: 4 }}>
           <Icon name="information-outline" size={14} color={colors.status.warning} />
           <AppText variant="sm" color={palette.amber[800]} style={{ flex: 1 }} numberOfLines={3}>{item.note}</AppText>
           <Icon name="pencil" size={12} color={colors.status.warning} style={{ marginTop: 2 }} />
@@ -333,9 +356,9 @@ const MemoCartItemRow = React.memo(function CartItemRow({
     </TouchableOpacity>
   );
 
-  if (rightActions && !isCancelled) {
+  if (swipeRightActions && !isCancelled) {
     return (
-      <Swipeable ref={swipeRef} renderRightActions={() => rightActions} overshootRight={false}>
+      <Swipeable ref={swipeRef} renderRightActions={() => swipeRightActions} overshootRight={false}>
         {card}
       </Swipeable>
     );

@@ -187,7 +187,7 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
           activeOpacity={0.8}
         >
           <Icon name="plus" size={18} color={colors.text.inverse} />
-          <AppText variant="sm" weight="bold" color={colors.text.inverse}>
+          <AppText variant="md" color={colors.text.inverse}>
             {activeSection === 'categories' ? 'Thêm DM' : 'Thêm nhóm'}
           </AppText>
         </TouchableOpacity>
@@ -202,10 +202,10 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
               <Icon name="shape-outline" size={20} color="#D97706" />
             </View>
             <View style={{ flex: 1 }}>
-              <AppText variant="md" weight="bold" color="#050505">
+              <AppText variant="md" color="#050505">
                 {categories.length} danh mục
               </AppText>
-              <AppText variant="sm" color="#65676B">
+              <AppText variant="md" color="#65676B">
                 Tổng nhóm món ăn
               </AppText>
             </View>
@@ -216,10 +216,10 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
               <Icon name="tune-variant" size={20} color="#2563EB" />
             </View>
             <View style={{ flex: 1 }}>
-              <AppText variant="md" weight="bold" color="#2563EB">
+              <AppText variant="md" color="#2563EB">
                 {optionGroups.length} nhóm tùy chọn
               </AppText>
-              <AppText variant="sm" color="#65676B">
+              <AppText variant="md" color="#65676B">
                 Size & Topping
               </AppText>
             </View>
@@ -230,10 +230,10 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
               <Icon name="format-list-checks" size={20} color="#16A34A" />
             </View>
             <View style={{ flex: 1 }}>
-              <AppText variant="md" weight="bold" color="#16A34A">
+              <AppText variant="md" color="#16A34A">
                 {totalChoicesCount} món kèm & size
               </AppText>
-              <AppText variant="sm" color="#65676B">
+              <AppText variant="md" color="#65676B">
                 Tùy chọn chi tiết
               </AppText>
             </View>
@@ -254,8 +254,8 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
             style={[styles.pillChip, activeSection === 'categories' && styles.pillChipActive]}
           >
             <AppText
-              variant="sm"
-              weight="bold"
+              variant="md"
+             
               color={activeSection === 'categories' ? '#F97316' : '#334155'}
             >
               Danh Mục Món ({categories.length})
@@ -267,8 +267,8 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
             style={[styles.pillChip, activeSection === 'options' && styles.pillChipActive]}
           >
             <AppText
-              variant="sm"
-              weight="bold"
+              variant="md"
+             
               color={activeSection === 'options' ? '#F97316' : '#334155'}
             >
               Size & Toppings ({optionGroups.length})
@@ -299,17 +299,17 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
                         </View>
 
                         <View style={{ flex: 1, gap: 2 }}>
-                          <AppText variant="md" weight="bold" color="#050505">
+                          <AppText variant="md" color="#050505">
                             {cat.name}
                           </AppText>
-                          <AppText variant="sm" color="#65676B">
+                          <AppText variant="md" color="#65676B">
                             Mã slug: {cat.id}
                           </AppText>
                         </View>
 
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
                           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                            <AppText variant="sm" color="#65676B">
+                            <AppText variant="md" color="#65676B">
                               {cat.isActive ? 'Bật' : 'Ẩn'}
                             </AppText>
                             <Switch
@@ -363,11 +363,11 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
                               color={colors.brand.primary}
                             />
                           </View>
-                          <AppText variant="md" weight="bold" color="#050505">
+                          <AppText variant="md" color="#050505">
                             {grp.name}
                           </AppText>
                           <View style={styles.typeBadge}>
-                            <AppText variant="sm" color={colors.brand.primary} weight="bold">
+                            <AppText variant="md" color={colors.brand.primary}>
                               {grp.type === 'size' ? 'Size Kích Cỡ' : grp.type === 'topping' ? 'Topping Kèm' : 'Khẩu vị'}
                             </AppText>
                           </View>
@@ -390,11 +390,11 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
                       <View style={{ gap: 6, marginTop: 4 }}>
                         {grp.choices.map((ch) => (
                           <View key={ch.id} style={styles.choiceRow}>
-                            <AppText variant="sm" weight="bold" color="#050505">
+                            <AppText variant="md" color="#050505">
                               {ch.name}
                             </AppText>
                             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                              <AppText variant="sm" color={colors.status.success} weight="bold">
+                              <AppText variant="md" color={colors.status.success}>
                                 {ch.price > 0 ? `+${formatVND(ch.price)}` : 'Miễn phí'}
                               </AppText>
                               <TouchableOpacity onPress={() => deleteChoiceFromGroup(grp.id, ch.id)}>
@@ -430,13 +430,13 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
                               onPress={() => handleAddChoice(grp.id)}
                               style={styles.smallSaveBtn}
                             >
-                              <AppText variant="sm" weight="bold" color="#FFF">Lưu</AppText>
+                              <AppText variant="md" color="#FFF">Lưu</AppText>
                             </TouchableOpacity>
                             <TouchableOpacity
                               onPress={() => setChoiceInputGroup(null)}
                               style={styles.smallCancelBtn}
                             >
-                              <AppText variant="sm" color="#65676B">Hủy</AppText>
+                              <AppText variant="md" color="#65676B">Hủy</AppText>
                             </TouchableOpacity>
                           </View>
                         </View>
@@ -450,7 +450,7 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
                           style={styles.addChoiceTriggerBtn}
                         >
                           <Icon name="plus" size={16} color={colors.brand.primary} />
-                          <AppText variant="sm" weight="bold" color={colors.brand.primary}>
+                          <AppText variant="md" color={colors.brand.primary}>
                             Thêm giá tùy chọn vào nhóm này
                           </AppText>
                         </TouchableOpacity>
@@ -475,18 +475,18 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
                     <Icon name={(selectedCat.icon || 'food') as any} size={20} color={selectedCat.color || colors.brand.primary} />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <AppText variant="md" weight="bold" color="#050505">
+                    <AppText variant="md" color="#050505">
                       {selectedCat.name}
                     </AppText>
-                    <AppText variant="sm" color={colors.text.secondary}>
+                    <AppText variant="md" color={colors.text.secondary}>
                       Mã slug: {selectedCat.id}
                     </AppText>
                   </View>
                 </View>
 
                 <View style={styles.panelStatRow}>
-                  <AppText variant="sm" color="#65676B">Trạng thái hiển thị</AppText>
-                  <AppText variant="sm" weight="bold" color={selectedCat.isActive ? colors.status.success : '#65676B'}>
+                  <AppText variant="md" color="#65676B">Trạng thái hiển thị</AppText>
+                  <AppText variant="md" color={selectedCat.isActive ? colors.status.success : '#65676B'}>
                     {selectedCat.isActive ? 'Đang bật' : 'Tạm ẩn'}
                   </AppText>
                 </View>
@@ -501,7 +501,7 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
                     }}
                   >
                     <Icon name={selectedCat.isActive ? "eye-off-outline" : "eye-outline"} size={16} color={colors.brand.primary} />
-                    <AppText variant="sm" weight="bold" color={colors.brand.primary}>
+                    <AppText variant="md" color={colors.brand.primary}>
                       {selectedCat.isActive ? 'Ẩn danh mục' : 'Hiện danh mục'}
                     </AppText>
                   </TouchableOpacity>
@@ -523,17 +523,17 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
                     }}
                   >
                     <Icon name="trash-can-outline" size={16} color={colors.status.danger} />
-                    <AppText variant="sm" color={colors.status.danger}>Xóa</AppText>
+                    <AppText variant="md" color={colors.status.danger}>Xóa</AppText>
                   </TouchableOpacity>
                 </View>
               </View>
             ) : (
               <View style={ss.detailPanelEmpty}>
                 <Icon name="shape-outline" size={48} color={colors.text.muted} />
-                <AppText variant="md" weight="bold" color="#050505">
+                <AppText variant="md" color="#050505">
                   Chi Tiết Danh Mục Món
                 </AppText>
-                <AppText variant="sm" color="#65676B" style={{ textAlign: 'center' }}>
+                <AppText variant="md" color="#65676B" style={{ textAlign: 'center' }}>
                   Chọn một danh mục từ danh sách bên trái để xem chi tiết & điều chỉnh
                 </AppText>
                 <TouchableOpacity
@@ -544,7 +544,7 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
                   }}
                 >
                   <Icon name="plus" size={18} color="#FFF" />
-                  <AppText variant="sm" weight="bold" color="#FFF">
+                  <AppText variant="md" color="#FFF">
                     Thêm danh mục món mới
                   </AppText>
                 </TouchableOpacity>
@@ -562,7 +562,7 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
                     <View style={[ss.iconCircleSm, { backgroundColor: '#EEF2FF' }]}>
                       <Icon name="shape-outline" size={14} color={colors.brand.primary} />
                     </View>
-                    <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1 }}>
+                    <AppText variant="md" color="#1E293B" style={{ flex: 1 }}>
                       Danh mục món ăn ({filteredCategories.length})
                     </AppText>
                   </View>
@@ -576,11 +576,11 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
                           </View>
 
                           <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8, paddingRight: 8 }}>
-                            <AppText variant="sm" weight="bold" color="#0F172A" numberOfLines={1}>
+                            <AppText variant="md" color="#0F172A" numberOfLines={1}>
                               {cat.name}
                             </AppText>
                             <View style={styles.posCodeBadge}>
-                              <AppText variant="sm" color="#64748B" numberOfLines={1}>
+                              <AppText variant="md" color="#64748B" numberOfLines={1}>
                                 {cat.id}
                               </AppText>
                             </View>
@@ -641,11 +641,11 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
                           color={colors.brand.primary}
                         />
                       </View>
-                      <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1 }}>
+                      <AppText variant="md" color="#1E293B" style={{ flex: 1 }}>
                         {grp.name} ({grp.choices.length})
                       </AppText>
                       <View style={[styles.typeBadge, { marginRight: 8, backgroundColor: '#F1F5F9' }]}>
-                        <AppText variant="sm" color="#64748B" weight="normal">
+                        <AppText variant="md" color="#64748B" weight="normal">
                           {grp.type === 'size' ? 'Size Kích Cỡ' : grp.type === 'topping' ? 'Topping Kèm' : 'Khẩu vị'}
                         </AppText>
                       </View>
@@ -666,13 +666,13 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
                       {grp.choices.map((ch) => (
                         <View key={ch.id} style={ss.listRow}>
                           <View style={{ flex: 1, paddingRight: 8 }}>
-                            <AppText variant="sm" weight="normal" color="#0F172A">
+                            <AppText variant="md" weight="normal" color="#0F172A">
                               {ch.name}
                             </AppText>
                           </View>
 
                           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                            <AppText variant="sm" color={colors.status.success} weight="bold">
+                            <AppText variant="md" color={colors.status.success}>
                               {ch.price > 0 ? `+${formatVND(ch.price)}` : 'Miễn phí'}
                             </AppText>
                             <TouchableOpacity style={ss.miniActionBtn} onPress={() => deleteChoiceFromGroup(grp.id, ch.id)}>
@@ -706,13 +706,13 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
                               onPress={() => handleAddChoice(grp.id)}
                               style={styles.smallSaveBtn}
                             >
-                              <AppText variant="sm" weight="bold" color="#FFF">Lưu</AppText>
+                              <AppText variant="md" color="#FFF">Lưu</AppText>
                             </TouchableOpacity>
                             <TouchableOpacity
                               onPress={() => setChoiceInputGroup(null)}
                               style={styles.smallCancelBtn}
                             >
-                              <AppText variant="sm" color="#65676B">Hủy</AppText>
+                              <AppText variant="md" color="#65676B">Hủy</AppText>
                             </TouchableOpacity>
                           </View>
                         </View>
@@ -726,7 +726,7 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
                           style={styles.addChoiceTriggerBtn}
                         >
                           <Icon name="plus" size={16} color={colors.brand.primary} />
-                          <AppText variant="sm" weight="bold" color={colors.brand.primary}>
+                          <AppText variant="md" color={colors.brand.primary}>
                             Thêm giá tùy chọn vào nhóm này
                           </AppText>
                         </TouchableOpacity>
@@ -755,7 +755,7 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
       >
         <View style={{ gap: 14 }}>
           <View style={{ gap: 4 }}>
-            <AppText variant="sm" weight="bold" color="#050505">
+            <AppText variant="md" color="#050505">
               Tên danh mục món ăn *
             </AppText>
             <TextInput
@@ -768,7 +768,7 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
           </View>
 
           <View style={{ gap: 6 }}>
-            <AppText variant="sm" weight="bold" color="#050505">
+            <AppText variant="md" color="#050505">
               Biểu tượng (Icon đại diện):
             </AppText>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
@@ -795,7 +795,7 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
           </View>
 
           <View style={{ gap: 6 }}>
-            <AppText variant="sm" weight="bold" color="#050505">
+            <AppText variant="md" color="#050505">
               Tông màu nhận diện:
             </AppText>
             <View style={{ flexDirection: 'row', gap: 10 }}>
@@ -828,7 +828,7 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
       >
         <View style={{ gap: 14 }}>
           <View style={{ gap: 4 }}>
-            <AppText variant="sm" weight="bold" color="#050505">
+            <AppText variant="md" color="#050505">
               Tên nhóm tùy chọn *
             </AppText>
             <TextInput
@@ -841,7 +841,7 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
           </View>
 
           <View style={{ gap: 6 }}>
-            <AppText variant="sm" weight="bold" color="#050505">
+            <AppText variant="md" color="#050505">
               Loại nhóm:
             </AppText>
             <View style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap' }}>
@@ -859,7 +859,7 @@ export default function OptionCategoryManager({ isSearchOpen }: { isSearchOpen?:
                   ]}
                 >
                   <AppText
-                    variant="sm"
+                    variant="md"
                     weight={newGroupType === t.type ? 'bold' : 'normal'}
                     color={newGroupType === t.type ? colors.brand.primary : colors.text.secondary}
                   >

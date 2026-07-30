@@ -1,3 +1,4 @@
+import React, { Suspense, useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -10,7 +11,6 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useState, useEffect, useCallback, useRef } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { api } from '../../lib/api';
@@ -25,13 +25,16 @@ import TableScreenHeader from '../../lib/components/pos/TableScreenHeader';
 import CategoryTabs from '../../lib/components/pos/CategoryTabs';
 import ProductGrid from '../../lib/components/pos/ProductGrid';
 import CartPanel from '../../lib/components/pos/CartPanel';
-import ModifierSheet from '../../lib/components/pos/ModifierSheet';
 import AreaFilter from '../../lib/components/pos/AreaFilter';
 import OrderHeader from '../../lib/components/pos/OrderHeader';
+
+const ModifierSheet = React.lazy(() => import('../../lib/components/pos/ModifierSheet'));
 import OverviewPanel from '../../lib/components/pos/OverviewPanel';
 import AppText from '../../lib/components/ui/AppText';
 import type { Table, TableStatus } from '../../lib/components/pos/TableCard';
 import { subscribeRealtimeSync } from '../../lib/sync/realtimeSync';
+import { normalizeAreaName } from '../../lib/utils/area';
+import { invalidateCache } from '../../lib/api/cache';
 
 export default function TableSelection() {
   const { openSidebar } = useSidebar();
@@ -55,6 +58,9 @@ export default function TableSelection() {
       const successTotal = params.total || '0';
       const successMethod = params.methodLabel || 'Tiền mặt';
 
+      invalidateCache();
+      setSelectedTable(null);
+
       setToast({
         visible: true,
         message: `Thanh toán thành công ${successTable}`,
@@ -68,6 +74,8 @@ export default function TableSelection() {
         total: undefined,
         methodLabel: undefined,
       });
+
+      loadData(false, false);
 
       const timer = setTimeout(() => {
         setToast(null);
@@ -84,6 +92,12 @@ export default function TableSelection() {
   const [error, setError] = useState<string | null>(null);
   const [selectedArea, setSelectedArea] = useState('Tất cả');
   const [leftPanelWidth, setLeftPanelWidth] = useState(containerWidth);
+  const [currentTime, setCurrentTime] = useState(Date.now());
+  // Single 60s interval — replaces per-TableCard setInterval
+  useEffect(() => {
+    const id = setInterval(() => setCurrentTime(Date.now()), 60000);
+    return () => clearInterval(id);
+  }, []);
 
   const orderState = useTableOrder(selectedTable?.id || '', selectedTable?.name || '', () => {
     setSelectedTable(null);
@@ -162,9 +176,12 @@ export default function TableSelection() {
       const orderTotals: Record<string, number> = {};
       const orderItemCounts: Record<string, number> = {};
       const orderTimes: Record<string, string> = {};
+      const earliestOrderCreatedAt: Record<string, string> = {};
+
+      const ACTIVE_STATUSES = new Set(['moi', 'gui_bep', 'dang_lam', 'hoan_thanh']);
 
       (orders || []).forEach((o: any) => {
-        if (o.status !== 'da_thanh_toan' && o.table_id) {
+        if (ACTIVE_STATUSES.has(o.status) && o.table_id) {
           orderTotals[o.table_id] = (orderTotals[o.table_id] || 0) + Number(o.total_amount);
           const qtySum = (o.items || []).reduce(
             (sum: number, item: any) => sum + Number(item.quantity || 0),
@@ -180,6 +197,10 @@ export default function TableSelection() {
                 minute: '2-digit',
               });
               orderTimes[o.table_id] = timeStr;
+              // Track earliest created_at per table
+              if (!earliestOrderCreatedAt[o.table_id] || new Date(o.created_at) < new Date(earliestOrderCreatedAt[o.table_id])) {
+                earliestOrderCreatedAt[o.table_id] = o.created_at;
+              }
             } catch {
               orderTimes[o.table_id] = '--:--';
             }
@@ -187,16 +208,20 @@ export default function TableSelection() {
         }
       });
 
-      const newTables: Table[] = tableData.map((t: any) => ({
-        id: t.id,
-        name: t.name,
-        capacity: t.capacity || 4,
-        area: t.area || t.location || undefined,
-        status: (t.status === 'dang_su_dung' ? 'co_khach' : t.status) as TableStatus,
-        orderTotal: orderTotals[t.id],
-        orderItemCount: orderItemCounts[t.id] || 0,
-        orderTime: orderTimes[t.id] || undefined,
-      }));
+      const newTables: Table[] = tableData.map((t: any) => {
+        const hasActiveOrder = (orderItemCounts[t.id] || 0) > 0 || (orderTotals[t.id] || 0) > 0;
+        return {
+          id: t.id,
+          name: t.name,
+          capacity: t.capacity || 4,
+          area: normalizeAreaName(t.area || t.location),
+          status: (hasActiveOrder ? 'co_khach' : 'trong') as TableStatus,
+          orderTotal: hasActiveOrder ? orderTotals[t.id] : undefined,
+          orderItemCount: hasActiveOrder ? orderItemCounts[t.id] : 0,
+          orderTime: hasActiveOrder ? orderTimes[t.id] : undefined,
+          createdAt: hasActiveOrder ? earliestOrderCreatedAt[t.id] : undefined,
+        };
+      });
 
       setTables((prev) => {
         if (prev.length === newTables.length) {
@@ -236,7 +261,7 @@ export default function TableSelection() {
       loadData(false, initialLoadedRef.current);
       const timer = setInterval(() => {
         loadData(false, true);
-      }, 10000);
+      }, 30000);
       return () => clearInterval(timer);
     }, [loadData])
   );
@@ -269,7 +294,7 @@ export default function TableSelection() {
       return (
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 8}}>
           <ActivityIndicator size="large" color={colors.brand.primary} />
-          <Text style={{ ...font.sm, color: colors.text.muted }}>Đang tải...</Text>
+          <AppText variant="sm" color={colors.text.muted}>Đang tải...</AppText>
         </View>
       );
     if (error)
@@ -287,7 +312,7 @@ export default function TableSelection() {
             style={{
               width: 56,
               height: 56,
-              borderRadius: shape.radius.md,
+              borderRadius: 8,
               backgroundColor: colors.surface.danger,
               alignItems: 'center',
               justifyContent: 'center',
@@ -295,25 +320,25 @@ export default function TableSelection() {
           >
             <Icon name="cloud-off-outline" size={28} color={colors.text.danger} />
           </View>
-          <Text style={{ ...font.lg, color: colors.text.primary, textAlign: 'center' }}>
+          <AppText variant="lg" color={colors.text.primary} style={{ textAlign: 'center' }}>
             Không thể kết nối
-          </Text>
-          <Text style={{ ...font.sm, color: colors.text.muted, textAlign: 'center' }}>
+          </AppText>
+          <AppText variant="sm" color={colors.text.muted} style={{ textAlign: 'center' }}>
             {error}
-          </Text>
+          </AppText>
           <View style={{ flexDirection: 'row', gap: 10, marginTop: 4 }}>
             <TouchableOpacity
               onPress={() => loadData()}
               style={{
                 paddingHorizontal: 16,
-                minHeight: 42,
+                minHeight: 44,
                 justifyContent: 'center',
                 alignItems: 'center',
                 backgroundColor: colors.brand.primary,
-                borderRadius: shape.radius.md,
+                borderRadius: 8,
               }}
             >
-              <Text style={{ ...font.smBold, color: colors.text.inverse }}>Thử lại</Text>
+              <AppText variant="md" weight="bold" color={colors.text.inverse}>Thử lại</AppText>
             </TouchableOpacity>
 
             {(error?.includes('Unauthorized') || error?.includes('401') || error?.includes('Forbidden')) && (
@@ -327,40 +352,44 @@ export default function TableSelection() {
                 }}
                 style={{
                   paddingHorizontal: 16,
-                  minHeight: 42,
+                  minHeight: 44,
                   justifyContent: 'center',
                   alignItems: 'center',
                   backgroundColor: colors.surface.card,
                   borderWidth: 1,
                   borderColor: colors.border.brand,
-                  borderRadius: shape.radius.md,
+                  borderRadius: 8,
                 }}
               >
-                <Text style={{ ...font.smBold, color: colors.brand.primary }}>Đăng nhập lại</Text>
+                <AppText variant="md" weight="bold" color={colors.brand.primary}>Đăng nhập lại</AppText>
               </TouchableOpacity>
             )}
           </View>
         </View>
       );
-    return (
-      <View style={{ flex: 1 }}>
-        <AreaFilter areas={areas} selectedArea={selectedArea} onSelectArea={setSelectedArea} />
-        <FlatList
-          key={`cols-${CARD_COLS}`}
-          data={displayTables}
-          numColumns={CARD_COLS}
-          extraData={`${cardWidth}-${selectedTable?.id}`}
-          keyExtractor={(item) => item.id}
-          initialNumToRender={8}
-          maxToRenderPerBatch={6}
-          windowSize={5}
-          removeClippedSubviews={true}
-          columnWrapperStyle={{ gap: gutter, justifyContent: 'center' }}
-          contentContainerStyle={{
-            paddingHorizontal: hPad,
-            paddingTop: gutter,
-            paddingBottom: gridPaddingBottom + insets.bottom,
-          }}
+
+    // Group tables by area
+    const groupedAreas: { name: string; tables: Table[] }[] = [];
+    const areaMap: Record<string, Table[]> = {};
+
+    displayTables.forEach((t) => {
+      const areaName = t.area || 'Bàn Khác';
+      if (!areaMap[areaName]) {
+        areaMap[areaName] = [];
+      }
+      areaMap[areaName].push(t);
+    });
+
+    Object.keys(areaMap).sort().forEach((name) => {
+      groupedAreas.push({ name, tables: areaMap[name] });
+    });
+
+    const boxAvailWidth = panelWidth - 26; // Account for scrollview padding, cardbox border & internal padding
+    const calculatedCardWidth = Math.floor((boxAvailWidth - gutter * (CARD_COLS - 1)) / CARD_COLS);
+
+    if (tables.length === 0 || displayTables.length === 0) {
+      return (
+        <ScrollView
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -369,50 +398,129 @@ export default function TableSelection() {
               colors={[colors.brand.primary]}
             />
           }
-          ListHeaderComponent={null}
-          renderItem={({ item }) => (
-            <View style={{ width: cardWidth, marginBottom: gutter }}>
-              <TableCard
-                table={item}
-                selected={selectedTable?.id === item.id}
-                onPress={() => handleTablePress(item)}
-                isWide={isWide}
-                cardWidth={cardWidth}
-              />
-            </View>
-          )}
-          ListEmptyComponent={
-            <View style={{ paddingTop: 60, alignItems: 'center', gap: 8}}>
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 16 }}
+        >
+          <View
+            style={{
+              width: 64,
+              height: 64,
+              borderRadius: 8,
+              backgroundColor: colors.surface.disabled,
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: 12,
+            }}
+          >
+            <Icon name="table-furniture" size={32} color={colors.border.strong} />
+          </View>
+          <AppText variant="lg" color={colors.text.primary} style={{ marginBottom: 4 }}>
+            {tables.length === 0 ? 'Chưa có bàn nào' : 'Không tìm thấy bàn'}
+          </AppText>
+          <AppText
+            variant="sm"
+            color={colors.text.muted}
+            style={{
+              textAlign: 'center',
+              paddingHorizontal: 12,
+            }}
+          >
+            {tables.length === 0
+              ? 'Thêm bàn trong phần cài đặt hoặc kiểm tra kết nối backend'
+              : 'Hãy thử đổi bộ lọc khu vực khác'}
+          </AppText>
+        </ScrollView>
+      );
+    }
+
+    return (
+      <View style={{ flex: 1 }}>
+        <AreaFilter areas={areas} selectedArea={selectedArea} onSelectArea={setSelectedArea} />
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => loadData(true)}
+              tintColor={colors.brand.primary}
+              colors={[colors.brand.primary]}
+            />
+          }
+          contentContainerStyle={{
+            paddingHorizontal: 6, // Strict Flat Skills UI V2 6px edge-to-edge
+            paddingTop: 6,
+            gap: 8,
+            paddingBottom: 100 + insets.bottom,
+          }}
+          showsVerticalScrollIndicator={false}
+        >
+          {groupedAreas.map((group) => (
+            /* CardBox Độc Lập (ss.sectionWrap style) */
+            <View
+              key={group.name}
+              style={{
+                borderRadius: 8,
+                borderWidth: 1,
+                borderColor: '#E5E9F0',
+                backgroundColor: '#FFFFFF',
+                overflow: 'hidden',
+                marginBottom: 8,
+              }}
+            >
+              {/* Tiêu Đề Nhóm (ss.sectionHeader style) */}
               <View
                 style={{
-                  width: 64,
-                  height: 64,
-                  borderRadius: shape.radius.md,
-                  backgroundColor: colors.surface.disabled,
+                  backgroundColor: '#F8FAFC',
+                  paddingHorizontal: 10,
+                  paddingVertical: 8,
+                  borderBottomWidth: 1,
+                  borderColor: '#E5E9F0',
+                  flexDirection: 'row',
                   alignItems: 'center',
-                  justifyContent: 'center',
+                  justifyContent: 'space-between',
                 }}
               >
-                <Icon name="table-furniture" size={32} color={colors.border.strong} />
+                <AppText variant="md" weight="bold" color="#1E293B">
+                  {group.name}
+                </AppText>
+                {/* Badge đếm số lượng nhã nhặn */}
+                <View
+                  style={{
+                    backgroundColor: '#F1F5F9',
+                    paddingHorizontal: 6,
+                    paddingVertical: 2,
+                    borderRadius: 4,
+                  }}
+                >
+                  <AppText variant="xs" color="#64748B">
+                    {group.tables.length} bàn
+                  </AppText>
+                </View>
               </View>
-              <Text style={{ ...font.lg, color: colors.text.primary }}>
-                {tables.length === 0 ? 'Chưa có bàn nào' : 'Không tìm thấy bàn'}
-              </Text>
-              <Text
+
+              {/* Grid Content */}
+              <View
                 style={{
-                  ...font.sm,
-                  color: colors.text.muted,
-                  textAlign: 'center',
-                  paddingHorizontal: 12,
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                  paddingHorizontal: 6,
+                  paddingVertical: 8,
+                  gap: gutter,
                 }}
               >
-                {tables.length === 0
-                  ? 'Thêm bàn trong phần cài đặt hoặc kiểm tra kết nối backend'
-                  : 'Không tìm thấy bàn'}
-              </Text>
+                {group.tables.map((tableItem) => (
+                  <View key={tableItem.id} style={{ width: calculatedCardWidth }}>
+                    <TableCard
+                      table={tableItem}
+                      selected={selectedTable?.id === tableItem.id}
+                      onPress={() => handleTablePress(tableItem)}
+                      isWide={isWide}
+                      cardWidth={calculatedCardWidth}
+                    />
+                  </View>
+                ))}
+              </View>
             </View>
-          }
-        />
+          ))}
+        </ScrollView>
       </View>
     );
   };
@@ -423,7 +531,7 @@ export default function TableSelection() {
       <View
         style={{
           position: 'absolute',
-          top: insets.top + 16,
+          top: isWide ? 16 : insets.top + 16,
           right: isWide ? 24 : 16,
           left: isWide ? undefined : 16,
           width: isWide ? 380 : undefined,
@@ -457,7 +565,7 @@ export default function TableSelection() {
           <Icon name="check-circle" size={24} color="#16A34A" />
         </View>
         <View style={{ flex: 1 }}>
-          <AppText variant="md" weight="bold" color={colors.text.primary}>
+          <AppText variant="md" color={colors.text.primary}>
             {toast.message}
           </AppText>
           {toast.subMessage && (
@@ -473,12 +581,14 @@ export default function TableSelection() {
     );
   };
 
-  // iPad Landscape / Desktop: 62/38 Master-Detail Split Layout
-  if (isSplitLayout) {
-    return (
-      <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+  return (
+    <SafeAreaView
+      edges={isWide ? ['top', 'left', 'right', 'bottom'] : ['left', 'right']}
+      style={{ flex: 1, backgroundColor: colors.surface.app }}
+    >
+      {isSplitLayout ? (
         <View style={{ flex: 1, flexDirection: 'row' }}>
-          <View 
+          <View
             style={{ flex: 62, position: 'relative', backgroundColor: colors.surface.app }}
             onLayout={(e) => setLeftPanelWidth(e.nativeEvent.layout.width)}
           >
@@ -577,45 +687,42 @@ export default function TableSelection() {
             )}
           </View>
         </View>
+      ) : (
+        <>
+          <TableScreenHeader
+            tablesCount={tables.length}
+            isWide={isWide}
+            onOpenSidebar={openSidebar}
+            onRefresh={() => loadData(true)}
+            lastRefreshTime={new Date().toLocaleTimeString('vi-VN', {
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
+          />
+          {renderTableGrid()}
+        </>
+      )}
 
-        <ModifierSheet
-          modalItem={modalItem}
-          modalQty={modalQty}
-          setModalQty={setModalQty}
-          modalSize={modalSize}
-          setModalSize={setModalSize}
-          modalToppings={modalToppings}
-          setModalToppings={setModalToppings}
-          modalNote={modalNote}
-          setModalNote={setModalNote}
-          modalPrice={modalPrice}
-          isWide={isWide}
-          onClose={closeModifierSheet}
-          onSave={saveEditFromModal}
-          onAdd={addToCartFromModal}
-        />
-        {renderToast()}
-      </View>
-    );
-  }
-
-  // Mobile
-  return (
-    <SafeAreaView
-      edges={['left', 'right']}
-      style={{ flex: 1, backgroundColor: colors.surface.app }}
-    >
-      <TableScreenHeader
-        tablesCount={tables.length}
-        isWide={isWide}
-        onOpenSidebar={openSidebar}
-        onRefresh={() => loadData(true)}
-        lastRefreshTime={new Date().toLocaleTimeString('vi-VN', {
-          hour: '2-digit',
-          minute: '2-digit',
-        })}
-      />
-      {renderTableGrid()}
+      {isSplitLayout && (
+        <Suspense fallback={null}>
+          <ModifierSheet
+            modalItem={modalItem}
+            modalQty={modalQty}
+            setModalQty={setModalQty}
+            modalSize={modalSize}
+            setModalSize={setModalSize}
+            modalToppings={modalToppings}
+            setModalToppings={setModalToppings}
+            modalNote={modalNote}
+            setModalNote={setModalNote}
+            modalPrice={modalPrice}
+            isWide={isWide}
+            onClose={closeModifierSheet}
+            onSave={saveEditFromModal}
+            onAdd={addToCartFromModal}
+          />
+        </Suspense>
+      )}
       {renderToast()}
     </SafeAreaView>
   );

@@ -22,7 +22,7 @@ export default function SummaryRow({ items, style }: SummaryRowProps) {
           <AppText variant="sm" color="#64748B" numberOfLines={1}>
             {item.label}
           </AppText>
-          <AppText variant="md" weight="bold" color={item.color} style={styles.valueText}>
+          <AppText variant="md" color={item.color} style={styles.valueText}>
             {item.value}
           </AppText>
         </View>

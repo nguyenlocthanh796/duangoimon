@@ -44,7 +44,13 @@ CREATE TABLE IF NOT EXISTS ban_hang.stations (
     is_active BOOLEAN DEFAULT TRUE, created_at TIMESTAMPTZ NOT NULL
 );
 
--- ke_toan
+-- public.pos_settings
+CREATE TABLE IF NOT EXISTS public.pos_settings (
+    id VARCHAR(50) PRIMARY KEY DEFAULT 'default_store',
+    settings_data JSONB NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT now()
+);
+
 CREATE TABLE IF NOT EXISTS ke_toan.transactions (
     id UUID PRIMARY KEY, branch_id UUID, type VARCHAR(10),
     category VARCHAR(50), amount NUMERIC(14,2), ref_id UUID,
@@ -191,12 +197,20 @@ CREATE TABLE IF NOT EXISTS thue.notified_bank_accounts (
     wallet_type VARCHAR(20) DEFAULT 'bank', notified_at TIMESTAMPTZ,
     form_status VARCHAR(20) DEFAULT 'chua_thong_bao'
 );
-CREATE TABLE IF NOT EXISTS thue.declaration_deadlines (
-    id UUID PRIMARY KEY, branch_id UUID, form VARCHAR(20),
-    period_type VARCHAR(10) DEFAULT 'thang', due_date DATE,
-    reminded_14 BOOLEAN DEFAULT FALSE, reminded_7 BOOLEAN DEFAULT FALSE,
-    reminded_3 BOOLEAN DEFAULT FALSE, reminded_1 BOOLEAN DEFAULT FALSE,
-    notified BOOLEAN DEFAULT FALSE, submitted BOOLEAN DEFAULT FALSE, submitted_at TIMESTAMPTZ
+CREATE TABLE IF NOT EXISTS public.bookings (
+    id UUID PRIMARY KEY, branch_id UUID, customer_name VARCHAR(200),
+    customer_phone VARCHAR(20), guest_count INTEGER DEFAULT 1,
+    booking_date DATE, booking_time TIME, table_number VARCHAR(50),
+    note TEXT, status VARCHAR(20) DEFAULT 'pending',
+    confirmed_at TIMESTAMPTZ, created_at TIMESTAMPTZ NOT NULL
+);
+ALTER TABLE public.bookings ADD COLUMN IF NOT EXISTS table_number VARCHAR(50);
+
+CREATE TABLE IF NOT EXISTS public.campaigns (
+    id UUID PRIMARY KEY, branch_id UUID, name VARCHAR(200),
+    type VARCHAR(20), trigger VARCHAR(30), segment_filters JSONB DEFAULT '{}',
+    template JSONB DEFAULT '{}', scheduled_at TIMESTAMPTZ, sent_count INTEGER DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE, created_at TIMESTAMPTZ NOT NULL
 );
 """
 

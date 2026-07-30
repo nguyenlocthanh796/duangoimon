@@ -21,6 +21,7 @@ class Booking(Base):
     guest_count: Mapped[int] = mapped_column(Integer, default=1)
     booking_date: Mapped[date] = mapped_column(Date)
     booking_time: Mapped[time] = mapped_column(Time)
+    table_number: Mapped[str | None] = mapped_column(String(50), nullable=True)
     note: Mapped[str | None] = mapped_column(Text)
     status: Mapped[str] = mapped_column(
         String(20), default="pending"

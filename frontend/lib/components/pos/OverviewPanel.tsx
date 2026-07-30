@@ -33,7 +33,7 @@ export default function OverviewPanel({ tables, onTablePress }: OverviewPanelPro
           justifyContent: 'space-between',
         }}
       >
-        <AppText variant="md" weight="bold" color={colors.text.primary}>
+        <AppText variant="md" color={colors.text.primary}>
           Tổng quan vận hành
         </AppText>
         <View
@@ -48,7 +48,7 @@ export default function OverviewPanel({ tables, onTablePress }: OverviewPanelPro
           }}
         >
           <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: '#16A34A' }} />
-          <AppText variant="sm" weight="bold" color="#15803D">
+          <AppText variant="md" color="#15803D">
             Realtime 0ms
           </AppText>
         </View>
@@ -68,28 +68,28 @@ export default function OverviewPanel({ tables, onTablePress }: OverviewPanelPro
         >
           <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <View style={{ flex: 1, alignItems: 'center', gap: 2 }}>
-              <AppText variant="md" weight="bold" color="#EA580C">
+              <AppText variant="md" color="#EA580C">
                 {occupied.length}
               </AppText>
-              <AppText variant="sm" color={colors.text.muted}>
+              <AppText variant="md" color={colors.text.muted}>
                 Bàn có khách
               </AppText>
             </View>
             <View style={{ width: 1, backgroundColor: colors.border.light }} />
             <View style={{ flex: 1, alignItems: 'center', gap: 2 }}>
-              <AppText variant="md" weight="bold" color="#16A34A">
+              <AppText variant="md" color="#16A34A">
                 {emptyCount}
               </AppText>
-              <AppText variant="sm" color={colors.text.muted}>
+              <AppText variant="md" color={colors.text.muted}>
                 Bàn trống
               </AppText>
             </View>
             <View style={{ width: 1, backgroundColor: colors.border.light }} />
             <View style={{ flex: 1, alignItems: 'center', gap: 2 }}>
-              <AppText variant="md" weight="bold" color="#2563EB">
+              <AppText variant="md" color="#2563EB">
                 {totalItems}
               </AppText>
-              <AppText variant="sm" color={colors.text.muted}>
+              <AppText variant="md" color={colors.text.muted}>
                 Tổng món
               </AppText>
             </View>
@@ -101,7 +101,7 @@ export default function OverviewPanel({ tables, onTablePress }: OverviewPanelPro
             <AppText variant="md" weight="bold" color={colors.brand.primary}>
               {formatPrice(totalRevenue)}
             </AppText>
-            <AppText variant="sm" color={colors.text.muted}>
+            <AppText variant="md" color={colors.text.muted}>
               Tiền đang phục vụ
             </AppText>
           </View>
@@ -118,22 +118,22 @@ export default function OverviewPanel({ tables, onTablePress }: OverviewPanelPro
             gap: 6,
           }}
         >
-          <AppText variant="sm" weight="bold" color="#475569">
+          <AppText variant="md" color="#475569">
             HẠ TẦNG HỆ THỐNG
           </AppText>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <AppText variant="sm" color="#64748B">
+            <AppText variant="md" color="#64748B">
               Backend (Render)
             </AppText>
-            <AppText variant="sm" weight="bold" color="#16A34A">
+            <AppText variant="md" color="#16A34A">
               🟢 Live (200ms)
             </AppText>
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <AppText variant="sm" color="#64748B">
+            <AppText variant="md" color="#64748B">
               Frontend (Pages)
             </AppText>
-            <AppText variant="sm" weight="bold" color="#16A34A">
+            <AppText variant="md" color="#16A34A">
               🟢 CDN Fast
             </AppText>
           </View>

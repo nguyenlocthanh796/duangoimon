@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { colors, font } from '../../theme';
+import { haptic } from '../../haptic';
 
 export interface ChipOption {
   key: string;
@@ -21,7 +22,10 @@ export default function FilterChips({ options, selected, onSelect }: FilterChips
         return (
           <TouchableOpacity
             key={opt.key}
-            onPress={() => onSelect(opt.key)}
+            onPress={() => {
+              haptic.impact('light');
+              onSelect(opt.key);
+            }}
             style={{
               paddingHorizontal: 10,
               paddingVertical: 5,

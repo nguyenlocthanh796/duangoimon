@@ -190,7 +190,7 @@ export default function QRPaymentCard({ total, orderId, note }: QRPaymentCardPro
         >
           <Icon name="bank" size={18} color="#fff" />
         </View>
-        <Text style={{ ...font.mdBold, color: colors.text.primary }}>Chuyển khoản ngân hàng</Text>
+        <Text style={{ ...font.md, color: colors.text.primary }}>Chuyển khoản ngân hàng</Text>
       </View>
 
       {/* QR Code Area */}

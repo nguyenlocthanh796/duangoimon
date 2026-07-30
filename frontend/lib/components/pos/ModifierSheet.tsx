@@ -6,8 +6,9 @@ import {
   TextInput,
   Modal,
   StyleSheet,
+  Platform,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import BottomSheet, { BottomSheetTextInput, BottomSheetScrollView } from '@gorhom/bottom-sheet';
@@ -15,6 +16,7 @@ import { colors, palette, font, formatPrice } from '../../theme';
 import { shape } from '../../theme/shape';
 import { MenuItem, CartItem } from './types';
 import AppText from '../ui/AppText';
+import { haptic } from '../../haptic';
 
 const QUICK_NOTES = ['Ít đá', 'Nhiều đá', 'Không đá', 'Ít ngọt', 'Không đường', 'Nước béo'];
 
@@ -51,6 +53,7 @@ export default function ModifierSheet({
   onSave,
   onAdd,
 }: ModifierSheetProps) {
+  const insets = useSafeAreaInsets();
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['50%', '85%'], []);
 
@@ -75,95 +78,109 @@ export default function ModifierSheet({
     const InputComponent = isSheet ? BottomSheetTextInput : TextInput;
     const ScrollComponent = isSheet ? BottomSheetScrollView : ScrollView;
     return (
-      <View style={{ flex: 1, minHeight: 0 }}>
+      <View style={{ flex: 1, minHeight: 0, backgroundColor: colors.surface.app }}>
+        {/* iOS Drag Handlebar */}
+        <View style={{ width: '100%', alignItems: 'center', paddingTop: 8, paddingBottom: 2, backgroundColor: '#F8FAFC' }}>
+          <View style={{ width: 36, height: 4, borderRadius: 2, backgroundColor: '#CBD5E1' }} />
+        </View>
+
         {/* Fixed Header */}
         <View
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
-            alignItems: 'flex-start',
-            paddingHorizontal: 20,
-            paddingTop: isSheet ? 10 : 20,
-            paddingBottom: 12,
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            paddingTop: isSheet ? 6 : Math.max(insets.top, 10),
+            paddingBottom: 10,
+            backgroundColor: '#F8FAFC',
             borderBottomWidth: 1,
-            borderBottomColor: palette.stone[100],
+            borderBottomColor: colors.border.default,
           }}
         >
           <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color={colors.text.primary} style={{ marginBottom: 4 }}>
+            <AppText variant="md" weight="bold" color={colors.text.primary} numberOfLines={1}>
               {modalItem?.name}
             </AppText>
-            <AppText variant="md" weight="bold" color={colors.brand.primary}>{formatPrice(modalPrice)}</AppText>
+            <AppText variant="md" weight="bold" color={colors.brand.primary}>
+              {formatPrice(modalPrice)}
+            </AppText>
           </View>
           <TouchableOpacity
             onPress={onClose}
             style={{
-              width: 40,
-              height: 40,
-              borderRadius: shape.radius.md,
-              backgroundColor: colors.surface.disabled,
+              width: 32,
+              height: 32,
+              borderRadius: 6,
+              backgroundColor: '#FFFFFF',
+              borderWidth: 1,
+              borderColor: '#E5E9F0',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <MaterialCommunityIcons name="close" size={20} color={colors.text.body} />
+            <MaterialCommunityIcons name="close" size={18} color="#64748B" />
           </TouchableOpacity>
         </View>
 
         <ScrollComponent
-          contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 120 }}
+          contentContainerStyle={{ paddingHorizontal: 12, paddingTop: 10, paddingBottom: 110 }}
         >
-          {/* Quantity stepper */}
+          {/* CardBox 1: Quantity Stepper */}
           <View
             style={{
-              backgroundColor: colors.surface.app,
-              padding: 16,
-              borderRadius: shape.radius.md,
+              backgroundColor: '#FFFFFF',
+              borderRadius: 8,
               borderWidth: 1,
-              borderColor: colors.border.default,
-              marginBottom: 16,
+              borderColor: '#E5E9F0',
+              overflow: 'hidden',
+              marginBottom: 8,
             }}
           >
-            <AppText
-              variant="md"
-              color={colors.text.secondary}
+            <View
               style={{
-                textTransform: 'uppercase',
-                letterSpacing: 1.2,
-                marginBottom: 12,
+                backgroundColor: '#F8FAFC',
+                paddingHorizontal: 12,
+                paddingVertical: 8,
+                borderBottomWidth: 1,
+                borderColor: '#E5E9F0',
               }}
             >
-              Số lượng
-            </AppText>
+              <AppText variant="md" weight="bold" color="#1E293B">
+                SỐ LƯỢNG
+              </AppText>
+            </View>
+
             <View
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: 20,
+                padding: 12,
+                gap: 16,
               }}
             >
               <TouchableOpacity
                 onPress={() => setModalQty((q) => Math.max(1, q - 1))}
                 style={{
-                  width: 52,
-                  height: 52,
-                  borderRadius: shape.radius.md,
+                  width: 44,
+                  height: 44,
+                  borderRadius: 6,
                   backgroundColor: colors.brand.primaryBg,
-                  borderWidth: 1.5,
+                  borderWidth: 1,
                   borderColor: colors.border.brand,
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
               >
-                                <MaterialCommunityIcons name="minus" size={22} color={colors.brand.primary} />
+                <MaterialCommunityIcons name="minus" size={20} color={colors.brand.primary} />
               </TouchableOpacity>
               <AppText
                 variant="md"
                 weight="bold"
                 color={colors.text.primary}
                 style={{
-                  width: 60,
+                  minWidth: 40,
                   textAlign: 'center',
                 }}
               >
@@ -172,36 +189,48 @@ export default function ModifierSheet({
               <TouchableOpacity
                 onPress={() => setModalQty((q) => q + 1)}
                 style={{
-                  width: 52,
-                  height: 52,
-                  borderRadius: shape.radius.md,
+                  width: 44,
+                  height: 44,
+                  borderRadius: 6,
                   backgroundColor: colors.brand.primaryBg,
-                  borderWidth: 1.5,
+                  borderWidth: 1,
                   borderColor: colors.border.brand,
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
               >
-                <MaterialCommunityIcons name="plus" size={22} color={colors.brand.primary} />
+                <MaterialCommunityIcons name="plus" size={20} color={colors.brand.primary} />
               </TouchableOpacity>
             </View>
           </View>
 
-          {/* Sizes */}
+          {/* CardBox 2: Sizes */}
           {modalItem && modalItem.sizes && modalItem.sizes.length > 0 && (
-            <View style={{ marginBottom: 16 }}>
-              <AppText
-                variant="md"
-                color={colors.text.muted}
+            <View
+              style={{
+                backgroundColor: '#FFFFFF',
+                borderRadius: 8,
+                borderWidth: 1,
+                borderColor: '#E5E9F0',
+                overflow: 'hidden',
+                marginBottom: 8,
+              }}
+            >
+              <View
                 style={{
-                  textTransform: 'uppercase',
-                  letterSpacing: 1.2,
-                  marginBottom: 10,
+                  backgroundColor: '#F8FAFC',
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                  borderBottomWidth: 1,
+                  borderColor: '#E5E9F0',
                 }}
               >
-                Kích thước
-              </AppText>
-              <View style={{ flexDirection: 'row', gap: 8 }}>
+                <AppText variant="md" weight="bold" color="#1E293B">
+                  KÍCH THƯỚC
+                </AppText>
+              </View>
+
+              <View style={{ flexDirection: 'row', padding: 10, gap: 8 }}>
                 {(() => {
                   const allSizes = [{ name: 'M', price: modalItem.price }, ...modalItem.sizes];
                   return allSizes.map((s) => {
@@ -219,47 +248,28 @@ export default function ModifierSheet({
                         onPress={() => setModalSize(s.name)}
                         style={{
                           flex: 1,
-                          paddingVertical: 14,
-                          borderRadius: shape.radius.md,
-                          borderWidth: 2,
+                          paddingVertical: 10,
+                          borderRadius: 6,
+                          borderWidth: 1,
                           alignItems: 'center',
-                          backgroundColor: sel ? colors.brand.primaryBg : colors.surface.app,
-                          borderColor: sel ? colors.brand.primary : colors.border.default,
-                          minHeight: 44,
+                          backgroundColor: sel ? '#FFF7ED' : '#F8FAFC',
+                          borderColor: sel ? '#F97316' : '#E2E8F0',
                         }}
                       >
                         <AppText
                           variant="md"
-                          weight="bold"
-                          color={sel ? colors.brand.primary : colors.text.body}
+                          weight="normal"
+                          color={sel ? '#F97316' : '#0F172A'}
                         >
                           Size {s.name}
                         </AppText>
                         <AppText
-                          variant="sm"
-                          color={sel ? colors.text.brandDark : colors.text.muted}
-                          style={{ marginTop: 4 }}
+                          variant="xs"
+                          color={sel ? '#C2410C' : '#64748B'}
+                          style={{ marginTop: 2 }}
                         >
                           {deltaText}
                         </AppText>
-                        {sel && (
-                          <View
-                            style={{
-                              position: 'absolute',
-                              top: 0,
-                              right: 0,
-                              width: 24,
-                              height: 24,
-                              backgroundColor: colors.brand.primary,
-                              borderBottomLeftRadius: 2,
-                              borderTopRightRadius: 4,
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                            }}
-                          >
-                            <MaterialCommunityIcons name="check" size={14} color={colors.text.inverse} />
-                          </View>
-                        )}
                       </TouchableOpacity>
                     );
                   });
@@ -268,23 +278,36 @@ export default function ModifierSheet({
             </View>
           )}
 
-          {/* Toppings */}
+          {/* CardBox 3: Toppings */}
           {(modalItem?.toppings?.length ?? 0) > 0 && (
-            <View style={{ marginBottom: 16 }}>
-              <AppText
-                variant="md"
-                color={colors.text.secondary}
+            <View
+              style={{
+                backgroundColor: '#FFFFFF',
+                borderRadius: 8,
+                borderWidth: 1,
+                borderColor: '#E5E9F0',
+                overflow: 'hidden',
+                marginBottom: 8,
+              }}
+            >
+              <View
                 style={{
-                  textTransform: 'uppercase',
-                  letterSpacing: 1.2,
-                  marginBottom: 10,
+                  backgroundColor: '#F8FAFC',
+                  paddingHorizontal: 12,
+                  paddingVertical: 8,
+                  borderBottomWidth: 1,
+                  borderColor: '#E5E9F0',
                 }}
               >
-                Topping
-              </AppText>
-              <View style={{ gap: 8 }}>
-                {modalItem?.toppings?.map((t) => {
+                <AppText variant="md" weight="bold" color="#1E293B">
+                  CHỌN TOPPING
+                </AppText>
+              </View>
+
+              <View style={{ paddingHorizontal: 12, paddingVertical: 4 }}>
+                {modalItem?.toppings?.map((t, idx) => {
                   const sel = modalToppings.includes(t.name);
+                  const isLast = idx === (modalItem.toppings?.length || 0) - 1;
                   return (
                     <TouchableOpacity
                       key={t.name}
@@ -293,39 +316,37 @@ export default function ModifierSheet({
                         flexDirection: 'row',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        padding: 12,
-                        borderRadius: shape.radius.md,
-                        borderWidth: 1.5,
-                        backgroundColor: sel ? colors.brand.primaryBg : colors.surface.app,
-                        borderColor: sel ? colors.brand.primary : colors.border.default,
+                        paddingVertical: 10,
+                        borderBottomWidth: isLast ? 0 : 1,
+                        borderBottomColor: '#F1F5F9',
                       }}
                     >
-                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                         <View
                           style={{
-                            width: 22,
-                            height: 22,
-                            borderRadius: 2,
-                            backgroundColor: sel ? colors.brand.primary : colors.surface.card,
+                            width: 20,
+                            height: 20,
+                            borderRadius: 4,
+                            backgroundColor: sel ? '#F97316' : '#FFFFFF',
                             borderWidth: 1.5,
-                            borderColor: sel ? colors.brand.primary : colors.border.strong,
+                            borderColor: sel ? '#F97316' : '#CBD5E1',
                             alignItems: 'center',
                             justifyContent: 'center',
                           }}
                         >
                           {sel && (
-                            <MaterialCommunityIcons name="check" size={14} color={colors.text.inverse} />
+                            <MaterialCommunityIcons name="check" size={13} color="#FFFFFF" />
                           )}
                         </View>
                         <AppText
                           variant="md"
-                          color={sel ? colors.text.primary : colors.text.body}
-                          weight="bold"
+                          weight="normal"
+                          color={sel ? '#F97316' : '#0F172A'}
                         >
                           {t.name}
                         </AppText>
                       </View>
-                      <AppText variant="md" color={colors.text.secondary}>
+                      <AppText variant="md" color="#64748B">
                         +{formatPrice(t.price)}
                       </AppText>
                     </TouchableOpacity>
@@ -335,122 +356,141 @@ export default function ModifierSheet({
             </View>
           )}
 
-          {/* Notes */}
-          <View style={{ marginBottom: 12 }}>
-            <AppText
-              variant="md"
-              color={colors.text.secondary}
+          {/* CardBox 4: Notes */}
+          <View
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: 8,
+              borderWidth: 1,
+              borderColor: '#E5E9F0',
+              overflow: 'hidden',
+              marginBottom: 8,
+            }}
+          >
+            <View
               style={{
-                textTransform: 'uppercase',
-                letterSpacing: 1.2,
-                marginBottom: 10,
+                backgroundColor: '#F8FAFC',
+                paddingHorizontal: 12,
+                paddingVertical: 8,
+                borderBottomWidth: 1,
+                borderColor: '#E5E9F0',
               }}
             >
-              Ghi chú cho bếp
-            </AppText>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
-              {QUICK_NOTES.map((q) => {
-                const active = modalNote.includes(q);
-                return (
-                  <TouchableOpacity
-                    key={q}
-                    onPress={() =>
-                      setModalNote(
-                        active
-                          ? modalNote
-                              .replace(q, '')
-                              .replace(', ,', ',')
-                              .replace(/^, |, $/, '')
-                              .trim()
-                          : modalNote
-                            ? `${modalNote}, ${q}`
-                            : q
-                      )
-                    }
-                    style={{
-                      paddingHorizontal: 14,
-                      paddingVertical: 10,
-                      minHeight: 44,
-                      justifyContent: 'center',
-                      borderRadius: shape.radius.md,
-                      backgroundColor: active ? colors.brand.primaryBg : colors.surface.disabled,
-                      borderWidth: 1,
-                      borderColor: active ? colors.border.brand : 'transparent',
-                    }}
-                  >
-                    <AppText
-                      variant="sm"
-                      color={active ? colors.brand.primary : colors.text.body}
-                    >
-                      {q}
-                    </AppText>
-                  </TouchableOpacity>
-                );
-              })}
+              <AppText variant="md" weight="bold" color="#1E293B">
+                GHI CHÚ CHO BẾP
+              </AppText>
             </View>
-            <View style={{ position: 'relative' }}>
-              <MaterialCommunityIcons name="square-edit-outline"
-                size={18}
-                color={colors.text.placeholder}
-                style={{ position: 'absolute', left: 12, top: 14, zIndex: 1 }}
-              />
-              <InputComponent
-                value={modalNote}
-                onChangeText={setModalNote}
-                placeholder="Gõ ghi chú khác..."
-                placeholderTextColor={colors.text.placeholder}
-                style={{
-                  borderWidth: 1.5,
-                  borderColor: colors.border.default,
-                  borderRadius: shape.radius.md,
-                  paddingVertical: 12,
-                  paddingLeft: 38,
-                  paddingRight: 16,
-                  ...font.sm,
-                  color: colors.text.primary,
-                  backgroundColor: colors.surface.app,
-                }}
-              />
+
+            <View style={{ padding: 10 }}>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
+                {QUICK_NOTES.map((q) => {
+                  const active = modalNote.includes(q);
+                  return (
+                    <TouchableOpacity
+                      key={q}
+                      onPress={() =>
+                        setModalNote(
+                          active
+                            ? modalNote
+                                .replace(q, '')
+                                .replace(', ,', ',')
+                                .replace(/^, |, $/, '')
+                                .trim()
+                            : modalNote
+                              ? `${modalNote}, ${q}`
+                              : q
+                        )
+                      }
+                      style={{
+                        paddingHorizontal: 10,
+                        paddingVertical: 6,
+                        borderRadius: 6,
+                        backgroundColor: active ? '#FFF7ED' : '#F8FAFC',
+                        borderWidth: 1,
+                        borderColor: active ? '#F97316' : '#E2E8F0',
+                      }}
+                    >
+                      <AppText
+                        variant="md"
+                        color={active ? '#F97316' : '#475569'}
+                      >
+                        {q}
+                      </AppText>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+              <View style={{ position: 'relative' }}>
+                <MaterialCommunityIcons
+                  name="square-edit-outline"
+                  size={16}
+                  color="#94A3B8"
+                  style={{ position: 'absolute', left: 10, top: 11, zIndex: 1 }}
+                />
+                <InputComponent
+                  value={modalNote}
+                  onChangeText={setModalNote}
+                  placeholder="Gõ ghi chú khác..."
+                  placeholderTextColor="#94A3B8"
+                  style={{
+                    borderWidth: 1,
+                    borderColor: '#E5E9F0',
+                    borderRadius: 6,
+                    paddingVertical: 8,
+                    paddingLeft: 34,
+                    paddingRight: 12,
+                    ...font.sm,
+                    color: '#0F172A',
+                    backgroundColor: '#F8FAFC',
+                  }}
+                />
+              </View>
             </View>
           </View>
         </ScrollComponent>
 
-        {/* Fixed bottom action buttons */}
+        {/* Fixed Bottom Actions */}
         <View
           style={{
             position: 'absolute',
             bottom: 0,
             left: 0,
             right: 0,
-            backgroundColor: colors.surface.card,
+            backgroundColor: '#FFFFFF',
             borderTopWidth: 1,
-            borderTopColor: colors.border.default,
-            paddingHorizontal: 20,
-            paddingVertical: 12,
-            paddingBottom: 16,
+            borderTopColor: '#E5E9F0',
+            paddingHorizontal: 16,
+            paddingTop: 10,
+            paddingBottom: isSheet ? 14 : (Platform.OS === 'web' ? 6 : Math.max(Math.floor(insets.bottom * 0.5), 6)),
           }}
         >
-          <View style={{ flexDirection: 'row', gap: 10 }}>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
             <TouchableOpacity
               onPress={onClose}
               delayPressIn={0}
               activeOpacity={0.7}
               style={{
-                flex: 1,
-                paddingVertical: 14,
+                width: 72,
+                height: 52,
                 borderRadius: 8,
-                backgroundColor: colors.surface.disabled,
+                backgroundColor: '#F1F5F9',
                 alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
-              <AppText variant="md" color={colors.text.body}>Hủy</AppText>
+              <AppText variant="md" color="#64748B">Hủy</AppText>
             </TouchableOpacity>
+
             <TouchableOpacity
-              onPress={isEditMode ? onSave : onAdd}
+              onPress={() => {
+                haptic.impact('medium');
+                if (isEditMode) onSave();
+                else onAdd();
+              }}
               delayPressIn={0}
               activeOpacity={0.85}
               style={{
-                flex: 2.5,
+                flex: 1,
                 borderRadius: 8,
                 overflow: 'hidden',
               }}
@@ -458,27 +498,38 @@ export default function ModifierSheet({
               <LinearGradient
                 colors={['#F97316', '#EA580C']}
                 style={{
-                  paddingVertical: 14,
+                  height: 52,
+                  paddingHorizontal: 16,
                   alignItems: 'center',
                   flexDirection: 'row',
-                  justifyContent: 'center',
-                  gap: 8,
-                  borderTopColor: 'rgba(255,255,255,0.3)',
-                  borderTopWidth: 1,
-                  borderWidth: 1,
-                  borderColor: 'rgba(249,115,22,0.4)',
+                  justifyContent: 'space-between',
                   borderRadius: 8,
                   width: '100%',
                 }}
               >
-                <MaterialCommunityIcons
-                  name={isEditMode ? 'pencil' : 'cart-plus'}
-                  size={18}
-                  color={colors.text.inverse}
-                />
-                <AppText variant="md" weight="bold" color={colors.text.inverse}>
-                  {isEditMode ? 'Cập nhật' : 'Thêm vào giỏ'} · {formatPrice(modalPrice * modalQty)}
-                </AppText>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <MaterialCommunityIcons
+                    name={isEditMode ? 'pencil' : 'cart-plus'}
+                    size={20}
+                    color="#FFFFFF"
+                  />
+                  <AppText variant="md" weight="normal" color="#FFFFFF">
+                    {isEditMode ? 'Cập nhật' : 'Thêm vào giỏ'}
+                  </AppText>
+                </View>
+
+                <View
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.22)',
+                    paddingHorizontal: 12,
+                    paddingVertical: 5,
+                    borderRadius: 6,
+                  }}
+                >
+                  <AppText variant="md" weight="bold" color="#FFFFFF">
+                    {formatPrice(modalPrice * modalQty)}
+                  </AppText>
+                </View>
               </LinearGradient>
             </TouchableOpacity>
           </View>
@@ -517,12 +568,32 @@ export default function ModifierSheet({
         </Modal>
       )}
 
-      {/* Modifier Modal — iPhone/Mobile screen (Full Screen Locked) */}
+      {/* Modifier Modal — iPhone/Mobile screen (Full Screen Bottom Sheet iOS style) */}
       {!isWide && !!modalItem && (
-        <Modal visible={!!modalItem} animationType="slide" transparent={false} statusBarTranslucent>
-          <SafeAreaView style={{ flex: 1, backgroundColor: colors.surface.card }}>
-            {renderModifierContent(false)}
-          </SafeAreaView>
+        <Modal visible={!!modalItem} animationType="fade" transparent statusBarTranslucent onRequestClose={onClose}>
+          <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.4)' }}>
+            <TouchableOpacity style={StyleSheet.absoluteFill} activeOpacity={1} onPress={onClose} />
+            <BottomSheet
+              ref={bottomSheetRef}
+              index={1}
+              snapPoints={snapPoints}
+              onChange={handleSheetChange}
+              enablePanDownToClose
+              handleIndicatorStyle={{
+                backgroundColor: '#CBD5E1',
+                width: 40,
+                height: 5,
+                borderRadius: 2.5,
+              }}
+              backgroundStyle={{
+                backgroundColor: colors.surface.app,
+                borderTopLeftRadius: 20,
+                borderTopRightRadius: 20,
+              }}
+            >
+              {renderModifierContent(true)}
+            </BottomSheet>
+          </View>
         </Modal>
       )}
     </>

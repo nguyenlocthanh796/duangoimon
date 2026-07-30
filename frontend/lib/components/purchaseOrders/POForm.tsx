@@ -171,7 +171,7 @@ const s = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border.default,
   },
-  label: { ...font.smBold, color: colors.text.secondary, marginBottom: 4 },
+  label: { ...font.md, color: colors.text.secondary, marginBottom: 4 },
   input: {
     borderWidth: 1.5,
     borderColor: colors.border.default,

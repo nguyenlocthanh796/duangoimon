@@ -4,7 +4,9 @@ import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font } from '../../theme';
 import { shape } from '../../theme/shape';
 import AppText from '../ui/AppText';
-import { usePOSSettings, POSSettings } from '../../hooks/usePOSSettings';
+import { usePOSSettings } from '../../hooks/usePOSSettings';
+import { POSSettings } from '../../types/posSettings';
+import { setKitchenModuleEnabled } from '../../utils/kitchenSettings';
 
 interface POSSettingsModalProps {
   visible: boolean;
@@ -29,6 +31,9 @@ export default function POSSettingsModal({ visible, onClose }: POSSettingsModalP
 
   const handleSave = () => {
     updateSettings(localSettings);
+    if (localSettings.enableKitchenModule !== undefined) {
+      setKitchenModuleEnabled(localSettings.enableKitchenModule);
+    }
     onClose();
   };
 
@@ -93,7 +98,7 @@ export default function POSSettingsModal({ visible, onClose }: POSSettingsModalP
                 <Icon name="cog-outline" size={22} color={colors.brand.primary} />
               </View>
               <View>
-                <AppText variant="md" weight="bold" color={colors.text.primary}>
+                <AppText variant="md" color={colors.text.primary}>
                   Cài Đặt Mô-đun Bán Hàng
                 </AppText>
                 <AppText variant="sm" color={colors.text.muted}>
@@ -155,7 +160,7 @@ export default function POSSettingsModal({ visible, onClose }: POSSettingsModalP
             <ScrollView style={{ flex: 1, padding: 20 }}>
               {activeTab === 'in_an' && (
                 <View style={{ gap: 20 }}>
-                  <AppText variant="md" weight="bold" color={colors.text.primary}>Cấu hình In ấn & Mẫu Hóa đơn</AppText>
+                  <AppText variant="md" color={colors.text.primary}>Cấu hình In ấn & Mẫu Hóa đơn</AppText>
 
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                     <View style={{ flex: 1, paddingRight: 12 }}>
@@ -182,7 +187,7 @@ export default function POSSettingsModal({ visible, onClose }: POSSettingsModalP
                   </View>
 
                   <View>
-                    <AppText variant="sm" weight="bold" color={colors.text.secondary} style={{ marginBottom: 8 }}>
+                    <AppText variant="sm" color={colors.text.secondary} style={{ marginBottom: 8 }}>
                       Khổ giấy in mặc định:
                     </AppText>
                     <View style={{ flexDirection: 'row', gap: 10 }}>
@@ -202,7 +207,7 @@ export default function POSSettingsModal({ visible, onClose }: POSSettingsModalP
                               alignItems: 'center',
                             }}
                           >
-                            <AppText variant="md" weight="bold" color={sel ? colors.brand.primary : colors.text.primary}>
+                            <AppText variant="md" color={sel ? colors.brand.primary : colors.text.primary}>
                               Khổ {paper} {paper === 'K80' ? '(80mm - Phổ biến)' : '(57mm - Nhỏ gọn)'}
                             </AppText>
                           </TouchableOpacity>
@@ -212,7 +217,7 @@ export default function POSSettingsModal({ visible, onClose }: POSSettingsModalP
                   </View>
 
                   <View>
-                    <AppText variant="sm" weight="bold" color={colors.text.secondary} style={{ marginBottom: 6 }}>
+                    <AppText variant="sm" color={colors.text.secondary} style={{ marginBottom: 6 }}>
                       Tên nhà hàng / Tiêu đề hóa đơn:
                     </AppText>
                     <TextInput
@@ -232,7 +237,7 @@ export default function POSSettingsModal({ visible, onClose }: POSSettingsModalP
                   </View>
 
                   <View>
-                    <AppText variant="sm" weight="bold" color={colors.text.secondary} style={{ marginBottom: 6 }}>
+                    <AppText variant="sm" color={colors.text.secondary} style={{ marginBottom: 6 }}>
                       Địa chỉ hiển thị trên hóa đơn:
                     </AppText>
                     <TextInput
@@ -252,7 +257,7 @@ export default function POSSettingsModal({ visible, onClose }: POSSettingsModalP
                   </View>
 
                   <View>
-                    <AppText variant="sm" weight="bold" color={colors.text.secondary} style={{ marginBottom: 6 }}>
+                    <AppText variant="sm" color={colors.text.secondary} style={{ marginBottom: 6 }}>
                       Lời chúc chân hóa đơn (Footer):
                     </AppText>
                     <TextInput
@@ -278,10 +283,10 @@ export default function POSSettingsModal({ visible, onClose }: POSSettingsModalP
 
               {activeTab === 'van_hanh' && (
                 <View style={{ gap: 20 }}>
-                  <AppText variant="md" weight="bold" color={colors.text.primary}>Quy trình Gọi món & Vận hành</AppText>
+                  <AppText variant="md" color={colors.text.primary}>Quy trình Gọi món & Vận hành</AppText>
 
                   <View>
-                    <AppText variant="sm" weight="bold" color={colors.text.secondary} style={{ marginBottom: 8 }}>
+                    <AppText variant="sm" color={colors.text.secondary} style={{ marginBottom: 8 }}>
                       Hình thức phục vụ mặc định:
                     </AppText>
                     <View style={{ flexDirection: 'row', gap: 10 }}>
@@ -304,7 +309,7 @@ export default function POSSettingsModal({ visible, onClose }: POSSettingsModalP
                               alignItems: 'center',
                             }}
                           >
-                            <AppText variant="md" weight="bold" color={sel ? colors.brand.primary : colors.text.primary}>
+                            <AppText variant="md" color={sel ? colors.brand.primary : colors.text.primary}>
                               {st.label}
                             </AppText>
                           </TouchableOpacity>
@@ -314,7 +319,7 @@ export default function POSSettingsModal({ visible, onClose }: POSSettingsModalP
                   </View>
 
                   <View>
-                    <AppText variant="sm" weight="bold" color={colors.text.secondary} style={{ marginBottom: 8 }}>
+                    <AppText variant="sm" color={colors.text.secondary} style={{ marginBottom: 8 }}>
                       Thuế VAT mặc định (%):
                     </AppText>
                     <View style={{ flexDirection: 'row', gap: 10 }}>
@@ -334,7 +339,7 @@ export default function POSSettingsModal({ visible, onClose }: POSSettingsModalP
                               alignItems: 'center',
                             }}
                           >
-                            <AppText variant="md" weight="bold" color={sel ? colors.brand.primary : colors.text.primary}>
+                            <AppText variant="md" color={sel ? colors.brand.primary : colors.text.primary}>
                               {rate}% VAT
                             </AppText>
                           </TouchableOpacity>
@@ -357,6 +362,18 @@ export default function POSSettingsModal({ visible, onClose }: POSSettingsModalP
 
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                     <View style={{ flex: 1, paddingRight: 12 }}>
+                      <AppText variant="md" color={colors.text.primary}>Bật Phân Hệ Báo Bếp / Gửi Bếp KDS</AppText>
+                      <AppText variant="sm" color={colors.text.muted}>Cho phép truyền đơn xuống Bếp/Bar. Tắt nếu cửa hàng bán lẻ/takeaway không có bếp</AppText>
+                    </View>
+                    <Switch
+                      value={localSettings.enableKitchenModule}
+                      onValueChange={(val) => updateLocal('enableKitchenModule', val)}
+                      trackColor={{ false: colors.border.default, true: colors.brand.primary }}
+                    />
+                  </View>
+
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <View style={{ flex: 1, paddingRight: 12 }}>
                       <AppText variant="md" color={colors.text.primary}>Tự động đóng giỏ hàng sau khi thêm món (Mobile)</AppText>
                       <AppText variant="sm" color={colors.text.muted}>Ẩn Bottom Sheet sau mỗi lần bấm chọn món</AppText>
                     </View>
@@ -371,10 +388,10 @@ export default function POSSettingsModal({ visible, onClose }: POSSettingsModalP
 
               {activeTab === 'thanh_toan' && (
                 <View style={{ gap: 20 }}>
-                  <AppText variant="md" weight="bold" color={colors.text.primary}>Thanh toán & Phím Tiền mặt</AppText>
+                  <AppText variant="md" color={colors.text.primary}>Thanh toán & Phím Tiền mặt</AppText>
 
                   <View>
-                    <AppText variant="sm" weight="bold" color={colors.text.secondary} style={{ marginBottom: 8 }}>
+                    <AppText variant="sm" color={colors.text.secondary} style={{ marginBottom: 8 }}>
                       Phương thức thanh toán ưu tiên:
                     </AppText>
                     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
@@ -399,7 +416,7 @@ export default function POSSettingsModal({ visible, onClose }: POSSettingsModalP
                               alignItems: 'center',
                             }}
                           >
-                            <AppText variant="md" weight="bold" color={sel ? colors.brand.primary : colors.text.primary}>
+                            <AppText variant="md" color={sel ? colors.brand.primary : colors.text.primary}>
                               {pm.label}
                             </AppText>
                           </TouchableOpacity>
@@ -424,7 +441,7 @@ export default function POSSettingsModal({ visible, onClose }: POSSettingsModalP
 
               {activeTab === 'giao_dien' && (
                 <View style={{ gap: 20 }}>
-                  <AppText variant="md" weight="bold" color={colors.text.primary}>Giao diện & Hiệu ứng Cảm giác</AppText>
+                  <AppText variant="md" color={colors.text.primary}>Giao diện & Hiệu ứng Cảm giác</AppText>
 
                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                     <View style={{ flex: 1, paddingRight: 12 }}>
@@ -501,7 +518,7 @@ export default function POSSettingsModal({ visible, onClose }: POSSettingsModalP
                   justifyContent: 'center',
                 }}
               >
-                <AppText variant="md" weight="bold" color={colors.text.inverse}>
+                <AppText variant="md" color={colors.text.inverse}>
                   Lưu Cài Đặt
                 </AppText>
               </TouchableOpacity>

@@ -119,6 +119,7 @@ async def end_shift(
         select(Order).where(
             Order.cashier_id == uid,
             Order.paid_at >= shift.start_at,
+            Order.paid_at.is_not(None),
             Order.status == "da_thanh_toan",
         )
     )

@@ -103,13 +103,13 @@ export default function TierDashboard() {
       <View style={styles.cardBox}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <View style={[styles.tierIcon, { backgroundColor: meta.color }]}>
-            <AppText variant="sm" weight="bold" color="#fff" style={{ fontSize: 11 }}>
+            <AppText variant="md" color="#fff" style={{ fontSize: 12}}>
               {meta.label.replace('Tầng ', 'N').split(' ')[0]}
             </AppText>
           </View>
           <View style={{ flex: 1 }}>
             <AppText variant="md" weight="normal" color={meta.color}>{meta.label}</AppText>
-            <AppText variant="sm" color="#64748B" style={{ marginTop: 2 }}>{meta.method}</AppText>
+            <AppText variant="md" color="#64748B" style={{ marginTop: 2 }}>{meta.method}</AppText>
           </View>
         </View>
       </View>
@@ -117,9 +117,9 @@ export default function TierDashboard() {
       {/* Revenue YTD Progress vs 1 Tỷ Threshold */}
       <View style={styles.cardBox}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-          <AppText variant="md" weight="bold" color="#0F172A">Doanh thu lũy kế năm (YTD)</AppText>
+          <AppText variant="md" color="#0F172A">Doanh thu lũy kế năm (YTD)</AppText>
           <View style={[styles.sevBadge, { backgroundColor: SEVERITY_COLOR[severity] }]}>
-            <AppText variant="sm" weight="normal" color="#fff">
+            <AppText variant="md" weight="normal" color="#fff">
               {pct.toFixed(1)}% · {SEVERITY_LABEL[severity]}
             </AppText>
           </View>
@@ -139,32 +139,32 @@ export default function TierDashboard() {
         </View>
 
         <View style={styles.barLegend}>
-          <AppText variant="sm" color="#64748B">0đ (Khởi điểm)</AppText>
-          <AppText variant="sm" weight="bold" color={colors.status.danger}>
+          <AppText variant="md" color="#64748B">0đ (Khởi điểm)</AppText>
+          <AppText variant="md" color={colors.status.danger}>
             Ngưỡng 1 tỷ VNĐ
           </AppText>
         </View>
       </View>
 
       {/* 📊 4 Tầng HKD Reference Grid */}
-      <AppText variant="md" weight="bold" color="#0F172A" style={{ marginBottom: 8, marginTop: 4 }}>
+      <AppText variant="md" color="#0F172A" style={{ marginBottom: 8, marginTop: 4 }}>
         Bảng Quy Định Phân Tầng Thuế HKD (Thông tư 40/2021/TT-BTC)
       </AppText>
       <ResponsiveGrid mobileCols={1} minColWidth={340} gap={6}>
         {/* Card 1 */}
         <View style={[styles.tierCard, { borderColor: colors.status.success }, status?.tier === 'N1' && styles.activeTierCard]}>
           <View style={styles.cardTagRow}>
-            <AppText variant="sm" weight="bold" color={colors.status.success}>NHÓM 1</AppText>
+            <AppText variant="md" color={colors.status.success}>NHÓM 1</AppText>
             {status?.tier === 'N1' && (
               <View style={[styles.activeBadge, { backgroundColor: '#DCFCE7' }]}>
-                <AppText variant="sm" weight="bold" color={colors.status.success}>● Đang áp dụng</AppText>
+                <AppText variant="md" color={colors.status.success}>● Đang áp dụng</AppText>
               </View>
             )}
           </View>
-          <AppText variant="md" weight="bold" color="#0F172A" style={{ marginTop: 4 }}>
+          <AppText variant="md" color="#0F172A" style={{ marginTop: 4 }}>
             Doanh số &le; 100 Tr/năm
           </AppText>
-          <AppText variant="sm" color="#64748B" style={{ marginTop: 6, lineHeight: 18 }}>
+          <AppText variant="md" color="#64748B" style={{ marginTop: 6, lineHeight: 18 }}>
             Miễn nộp thuế GTGT & TNCN. Chỉ kê khai doanh thu định kỳ (Sổ S1a).
           </AppText>
         </View>
@@ -172,17 +172,17 @@ export default function TierDashboard() {
         {/* Card 2 */}
         <View style={[styles.tierCard, { borderColor: colors.brand.primary }, status?.tier === 'N2' && styles.activeTierCard]}>
           <View style={styles.cardTagRow}>
-            <AppText variant="sm" weight="bold" color={colors.brand.primary}>NHÓM 2</AppText>
+            <AppText variant="md" color={colors.brand.primary}>NHÓM 2</AppText>
             {status?.tier === 'N2' && (
               <View style={[styles.activeBadge, { backgroundColor: colors.brand.primaryBg }]}>
-                <AppText variant="sm" weight="bold" color={colors.brand.primary}>● Đang áp dụng</AppText>
+                <AppText variant="md" color={colors.brand.primary}>● Đang áp dụng</AppText>
               </View>
             )}
           </View>
-          <AppText variant="md" weight="bold" color="#0F172A" style={{ marginTop: 4 }}>
+          <AppText variant="md" color="#0F172A" style={{ marginTop: 4 }}>
             Doanh số 100 Tr – 300 Tr/năm
           </AppText>
-          <AppText variant="sm" color="#64748B" style={{ marginTop: 6, lineHeight: 18 }}>
+          <AppText variant="md" color="#64748B" style={{ marginTop: 6, lineHeight: 18 }}>
             Tính thuế trực tiếp trên doanh thu: 1% VAT + 0.5% TNCN. Sử dụng Sổ S1a & S2a.
           </AppText>
         </View>
@@ -190,17 +190,17 @@ export default function TierDashboard() {
         {/* Card 3 */}
         <View style={[styles.tierCard, { borderColor: colors.status.warning }, status?.tier === 'N3' && styles.activeTierCard]}>
           <View style={styles.cardTagRow}>
-            <AppText variant="sm" weight="bold" color={colors.status.warning}>NHÓM 3</AppText>
+            <AppText variant="md" color={colors.status.warning}>NHÓM 3</AppText>
             {status?.tier === 'N3' && (
               <View style={[styles.activeBadge, { backgroundColor: '#FEF3C7' }]}>
-                <AppText variant="sm" weight="bold" color={colors.status.warning}>● Đang áp dụng</AppText>
+                <AppText variant="md" color={colors.status.warning}>● Đang áp dụng</AppText>
               </View>
             )}
           </View>
-          <AppText variant="md" weight="bold" color="#0F172A" style={{ marginTop: 4 }}>
+          <AppText variant="md" color="#0F172A" style={{ marginTop: 4 }}>
             Doanh số 300 Tr – 500 Tr/năm
           </AppText>
-          <AppText variant="sm" color="#64748B" style={{ marginTop: 6, lineHeight: 18 }}>
+          <AppText variant="md" color="#64748B" style={{ marginTop: 6, lineHeight: 18 }}>
             Kê khai theo chi phí thực tế 17% lợi nhuận. Sử dụng Sổ S2c.
           </AppText>
         </View>
@@ -208,17 +208,17 @@ export default function TierDashboard() {
         {/* Card 4 */}
         <View style={[styles.tierCard, { borderColor: colors.status.danger }, status?.tier === 'N4' && styles.activeTierCard]}>
           <View style={styles.cardTagRow}>
-            <AppText variant="sm" weight="bold" color={colors.status.danger}>NHÓM 4</AppText>
+            <AppText variant="md" color={colors.status.danger}>NHÓM 4</AppText>
             {status?.tier === 'N4' && (
               <View style={[styles.activeBadge, { backgroundColor: '#FEE2E2' }]}>
-                <AppText variant="sm" weight="bold" color={colors.status.danger}>● Đang áp dụng</AppText>
+                <AppText variant="md" color={colors.status.danger}>● Đang áp dụng</AppText>
               </View>
             )}
           </View>
-          <AppText variant="md" weight="bold" color="#0F172A" style={{ marginTop: 4 }}>
+          <AppText variant="md" color="#0F172A" style={{ marginTop: 4 }}>
             Doanh số &ge; 500 Tr (Ngưỡng 1 tỷ)
           </AppText>
-          <AppText variant="sm" color="#64748B" style={{ marginTop: 6, lineHeight: 18 }}>
+          <AppText variant="md" color="#64748B" style={{ marginTop: 6, lineHeight: 18 }}>
             Bắt buộc kê khai đầy đủ theo lợi nhuận 20%. Sử dụng S2c + S2d.
           </AppText>
         </View>

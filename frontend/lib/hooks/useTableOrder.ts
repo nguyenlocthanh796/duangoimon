@@ -82,20 +82,7 @@ export function useTableOrder(tableId: string, tableName: string, onClose?: () =
     };
   }, [tableId]);
 
-  // Auto-save: debounce 1.5s via reusable hook
-  useAutoSave({
-    tableId,
-    cart: cart.cart,
-    loading,
-    submitting: order.submitting,
-    activeOrderId: cart.activeOrderId,
-    onSave: useCallback(
-      (saveCart: CartItem[], saveTableId: string, saveActiveOrderId: string | null) =>
-        order.submitOrder(saveCart, saveTableId, saveActiveOrderId),
-      [order]
-    ),
-    onOrderCreated: useCallback((orderId: string) => cart.setActiveOrderId(orderId), [cart]),
-  });
+  // Explicit Action Mode: API requests and WebSocket broadcasts fire strictly when cashier taps 'Lưu bàn', 'Báo bếp', or 'Thanh toán'.
 
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -193,7 +180,10 @@ export function useTableOrder(tableId: string, tableName: string, onClose?: () =
   const handlePay = useCallback(async () => {
     try {
       let activeId = cart.activeOrderId;
-      order.goToPayment(cart.cart, tableId, tableName, activeId, cart.total);
+      const payCart = [...cart.cart];
+      const payTotal = cart.total;
+      cart.reset();
+      order.goToPayment(payCart, tableId, tableName, activeId, payTotal);
     } catch {
       /* ignore */
     }

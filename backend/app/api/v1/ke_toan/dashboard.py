@@ -1,6 +1,7 @@
 """Dashboard API for Kế Toán — returns all data in one call."""
 
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta, date
+from calendar import monthrange
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import select
@@ -11,6 +12,63 @@ from app.core.database import get_db
 from app.models.ke_toan import Transaction, Invoice
 
 router = APIRouter(prefix="/ke-toan", tags=["ke-toan"])
+
+
+def _compute_deadlines(now: datetime) -> list[dict]:
+    """Compute upcoming tax filing deadlines relative to current date."""
+    today = now.date()
+    year = today.year
+    month = today.month
+
+    def _deadline(d: date) -> dict | None:
+        delta = (d - today).days
+        if delta < -10:  # skip deadlines more than 10 days past
+            return None
+        return {
+            "label": "",
+            "due": d.strftime("%d/%m/%Y"),
+            "days_left": max(delta, 0),
+        }
+
+    # Deadline 20th of current month — monthly VAT/PIT
+    items = []
+    vat_deadline = date(year, month, 20)
+    prev_m = month - 1 or 12
+    prev_y = year - 1 if month == 1 else year
+    d = _deadline(vat_deadline)
+    if d:
+        d["label"] = f"Thuế GTGT tháng {prev_m:02d}/{prev_y}"
+        items.append(d)
+    pit_d = _deadline(vat_deadline)
+    if pit_d:
+        pit_d = dict(pit_d)
+        pit_d["label"] = f"Thuế TNCN tháng {prev_m:02d}/{prev_y}"
+        items.append(pit_d)
+
+    # Quarterly report deadline — last day of month following quarter end
+    quarter = (month - 1) // 3 + 1
+    quarter_end_month = quarter * 3
+    quarter_report_year = year
+    if quarter_end_month + 1 > 12:
+        quarter_report_month = 1
+        quarter_report_year = year + 1
+    else:
+        quarter_report_month = quarter_end_month + 1
+    last_day = monthrange(quarter_report_year, quarter_report_month)[1]
+    q_deadline = date(quarter_report_year, quarter_report_month, last_day)
+    qd = _deadline(q_deadline)
+    if qd:
+        qd["label"] = f"Báo cáo thuế quý {quarter}/{year}"
+        items.append(qd)
+
+    # Annual settlement — March 31 of next year
+    annual = date(year + 1, 3, 31)
+    ad = _deadline(annual)
+    if ad:
+        ad["label"] = f"Quyết toán thuế năm {year}"
+        items.append(ad)
+
+    return sorted(items, key=lambda x: x["days_left"])
 
 
 @router.get("/dashboard")
@@ -171,10 +229,5 @@ async def dashboard(
             "thu_growth": round((month_thu / max(prev_thu, 1) - 1) * 100, 1),
             "chi_growth": round((month_chi / max(prev_chi, 1) - 1) * 100, 1),
         },
-        "deadlines": [
-            {"label": "Thuế GTGT tháng 6/2026", "due": "20/07/2026", "days_left": 7},
-            {"label": "Thuế TNCN tháng 6/2026", "due": "20/07/2026", "days_left": 7},
-            {"label": "Báo cáo thuế quý 2/2026", "due": "30/07/2026", "days_left": 17},
-            {"label": "Quyết toán thuế năm 2026", "due": "31/03/2027", "days_left": 261},
-        ],
+        "deadlines": _compute_deadlines(now),
     }

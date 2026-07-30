@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TouchableOpacity, Text, StyleSheet, Platform, ActivityIndicator } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { colors, font, shape } from '../../theme';
+import { haptic } from '../../haptic';
 
 interface PillButtonProps {
   label: string;
@@ -63,7 +64,10 @@ export default function PillButton({
         disabled && styles.disabled,
         style,
       ]}
-      onPress={onPress}
+      onPress={() => {
+        haptic.impact('light');
+        onPress();
+      }}
       delayPressIn={0}
       disabled={disabled || loading}
       activeOpacity={0.8}

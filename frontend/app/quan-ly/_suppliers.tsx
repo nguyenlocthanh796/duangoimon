@@ -1,22 +1,35 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { TableSkeleton } from '../../lib/components/ui/Skeleton';
+import React, { useCallback } from 'react';
 import {
-  View, FlatList, TouchableOpacity, StyleSheet,
-  Alert, RefreshControl, TextInput, ScrollView,
+  View, TouchableOpacity, StyleSheet,
+  Alert, RefreshControl, TextInput, ScrollView, FlatList,
 } from 'react-native';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useResponsive } from '../../lib/hooks/useResponsive';
-import { colors, font, ss } from '../../lib/theme';
+import { useCrud } from '../../lib/hooks/useCrud';
+import { useFilter } from '../../lib/hooks/useFilter';
+import { colors, ss } from '../../lib/theme';
 import AppText from '../../lib/components/ui/AppText';
-import SearchBar from '../../lib/components/ui/SearchBar';
 import EmptyState from '../../lib/components/ui/EmptyState';
 import FormModal from '../../lib/components/ui/FormModal';
-import FAB from '../../lib/components/ui/FAB';
-import ScreenHeader from '../../lib/components/ui/ScreenHeader';
 import DetailModal from '../../lib/components/ui/DetailModal';
+import { TableSkeleton } from '../../lib/components/ui/Skeleton';
 import { request } from '../../lib/api/client';
 
-function generateFallbackSuppliers() {
+type Supplier = {
+  id: string; code: string; name: string;
+  contact_person?: string; phone?: string; email?: string; address?: string; note?: string;
+};
+
+type FormState = {
+  code: string; name: string; contact_person: string; phone: string;
+  email: string; address: string; note: string;
+};
+
+const EMPTY_FORM: FormState = {
+  code: '', name: '', contact_person: '', phone: '', email: '', address: '', note: '',
+};
+
+function generateFallbackSuppliers(): Supplier[] {
   return [
     { id: 's1', code: 'NCC01', name: 'Công Ty Thực Phẩm Sạch CP', contact_person: 'Anh Hoàng Thành', phone: '0988112233', email: 'sales@cpfood.vn', address: 'KCN Biên Hòa 2, Đồng Nai', note: 'Chuyên cung cấp thịt heo, thịt gà tươi sống hàng ngày' },
     { id: 's2', code: 'NCC02', name: 'Nông Sản Sạch Đà Lạt Farm', contact_person: 'Chị Thu Thủy', phone: '0912334455', email: 'thuy@dalatfarm.com', address: 'Đức Trọng, Lâm Đồng', note: 'Cung cấp rau củ quả hữu cơ giao sáng sớm' },
@@ -25,168 +38,70 @@ function generateFallbackSuppliers() {
   ];
 }
 
-export default function SuppliersScreen({ isSearchOpen }: { isSearchOpen?: boolean } = {}) {
+export default function SuppliersScreen(_props?: { isSearchOpen?: boolean }) {
   const { isWide } = useResponsive();
-  const [suppliers, setSuppliers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [search, setSearch] = useState('');
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [showForm, setShowForm] = useState(false);
-  const [editingItem, setEditingItem] = useState<any | null>(null);
-  const [saving, setSaving] = useState(false);
 
-  const [form, setForm] = useState({
-    code: '', name: '', contact_person: '', phone: '', email: '', address: '', note: '',
+  const {
+    data: suppliers, loading, refreshing, saving,
+    showForm, setShowForm, selectedId, setSelectedId,
+    selectedItem, editingId, form, setForm,
+    loadData, onRefresh, openAdd, openEdit, handleSave, handleDelete,
+  } = useCrud<Supplier, FormState>({
+    fetchFn: () => request('/api/v1/quan-ly/suppliers') as Promise<Supplier[]>,
+    createFn: (payload) => request('/api/v1/quan-ly/suppliers', { method: 'POST', body: JSON.stringify(payload) }) as Promise<Supplier>,
+    updateFn: (id, payload) => request(`/api/v1/quan-ly/suppliers/${id}`, { method: 'PUT', body: JSON.stringify(payload) }) as Promise<Supplier>,
+    deleteFn: (id) => request(`/api/v1/quan-ly/suppliers/${id}`, { method: 'DELETE' }),
+    fallbackData: generateFallbackSuppliers(),
+    formState: EMPTY_FORM,
+    formFromItem: (s) => ({
+      code: s.code || '', name: s.name || '',
+      contact_person: s.contact_person || '', phone: s.phone || '',
+      email: s.email || '', address: s.address || '', note: s.note || '',
+    }),
+    buildPayload: (f) => f,
+    nameLabel: 'nhà cung cấp',
   });
 
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res: any = await request('/api/v1/quan-ly/suppliers');
-      const list = Array.isArray(res) ? res : (res?.items || []);
-      if (list && list.length > 0) {
-        setSuppliers(list);
-      } else {
-        setSuppliers(generateFallbackSuppliers());
-      }
-    } catch {
-      setSuppliers(generateFallbackSuppliers());
-    } finally {
-      setLoading(false); setRefreshing(false);
-    }
-  }, []);
+  const { search, setSearch, filteredData: filtered } = useFilter<Supplier>({
+    data: suppliers,
+    searchFields: ['name', 'code', 'phone'],
+  });
 
-  useEffect(() => { loadData(); }, [loadData]);
-
-  const onRefresh = () => { setRefreshing(true); loadData(); };
-
-  const filtered = useMemo(() => {
-    if (!search.trim()) return suppliers;
-    const q = search.toLowerCase();
-    return suppliers.filter(
-      s => (s.name || '').toLowerCase().includes(q) ||
-           (s.code || '').toLowerCase().includes(q) ||
-           (s.phone || '').includes(q)
-    );
-  }, [suppliers, search]);
-
-  const selectedItem = useMemo(
-    () => suppliers.find(s => s.id === selectedId) || null,
-    [suppliers, selectedId]
-  );
-
-  const openAdd = () => {
-    setEditingItem(null);
-    setForm({ code: '', name: '', contact_person: '', phone: '', email: '', address: '', note: '' });
-    setShowForm(true);
-  };
-
-  const openEdit = (item: any) => {
-    setEditingItem(item);
-    setForm({
-      code: item.code || '',
-      name: item.name || '',
-      contact_person: item.contact_person || '',
-      phone: item.phone || '',
-      email: item.email || '',
-      address: item.address || '',
-      note: item.note || '',
-    });
-    setShowForm(true);
-  };
-
-  const handleSave = async () => {
-    if (!form.name.trim()) {
-      Alert.alert('Lỗi', 'Tên nhà cung cấp không được để trống'); return;
-    }
-    try {
-      setSaving(true);
-      if (editingItem?.id) {
-        await request(`/api/v1/quan-ly/suppliers/${editingItem.id}`, { method: 'PUT', body: JSON.stringify(form) });
-      } else {
-        await request('/api/v1/quan-ly/suppliers', { method: 'POST', body: JSON.stringify(form) });
-      }
-      setShowForm(false); loadData();
-    } catch (e: any) {
-      Alert.alert('Lỗi', e.message || 'Không thể lưu nhà cung cấp');
-    } finally { setSaving(false); }
-  };
-
-  const deleteSupplier = (id: string) => {
-    Alert.alert('Xóa nhà cung cấp', 'Bạn có chắc chắn muốn xóa?', [
-      { text: 'Hủy', style: 'cancel' },
-      {
-        text: 'Xóa',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await request(`/api/v1/quan-ly/suppliers/${id}`, { method: 'DELETE' });
-            if (selectedId === id) setSelectedId(null);
-            loadData();
-          } catch (e: any) {
-            Alert.alert('Lỗi', e.message || 'Không thể xóa');
-          }
-        },
-      },
-    ]);
-  };
-
-  const renderCard = ({ item }: { item: any }) => {
+  const renderCard = ({ item }: { item: Supplier }) => {
     const isSelected = selectedId === item.id;
-
     if (!isWide) {
-      // 📱 Compact 48px POS Row Layout
       return (
         <View style={ss.listRow}>
           <View style={s.posCodeBadge}>
-            <AppText variant="sm" weight="normal" color="#64748B">
-              {item.code || 'NCC'}
-            </AppText>
+            <AppText variant="md" weight="normal" color="#64748B">{item.code || 'NCC'}</AppText>
           </View>
-
-          <TouchableOpacity
-            style={{ flex: 1, paddingRight: 8 }}
-            onPress={() => setSelectedId(isSelected ? null : item.id)}
-            activeOpacity={0.7}
-          >
-            <AppText variant="sm" weight="bold" color="#0F172A" numberOfLines={1}>
-              {item.name}
-            </AppText>
-            <AppText variant="sm" color="#64748B" numberOfLines={1}>
-              {item.contact_person ? `👤 ${item.contact_person} · ` : ''}📱 {item.phone || 'Chưa có SĐT'}
+          <TouchableOpacity style={{ flex: 1, paddingRight: 8 }}
+            onPress={() => setSelectedId(isSelected ? null : item.id)} activeOpacity={0.7}>
+            <AppText variant="md" color="#0F172A" numberOfLines={1}>{item.name}</AppText>
+            <AppText variant="md" color="#64748B" numberOfLines={1}>
+              {item.contact_person ? `👤 ${item.contact_person}` : ''} · 📱 {item.phone || 'Chưa có SĐT'}
             </AppText>
           </TouchableOpacity>
-
           <TouchableOpacity style={ss.miniActionBtn} onPress={() => openEdit(item)}>
             <Icon name="pencil" size={16} color={colors.brand.primary} />
           </TouchableOpacity>
         </View>
       );
     }
-
-    // 💻 Wide Screen Card
     return (
-      <TouchableOpacity
-        onPress={() => setSelectedId(isSelected ? null : item.id)}
-        style={[s.cardWide, isSelected && { backgroundColor: colors.brand.primaryBg }]}
-        activeOpacity={0.7}
-      >
+      <TouchableOpacity onPress={() => setSelectedId(isSelected ? null : item.id)}
+        style={[s.cardWide, isSelected && { backgroundColor: colors.brand.primaryBg }]} activeOpacity={0.7}>
         <View style={s.cardTop}>
           <View style={[s.cardIcon, { alignItems: 'center', justifyContent: 'center' }]}>
-            <AppText variant="sm" weight="bold" color={colors.brand.primary} style={{ fontSize: 12 }}>
-              {item.code?.slice(0, 3) || 'NCC'}
-            </AppText>
+            <AppText variant="md" color={colors.brand.primary}>{item.code?.slice(0, 3) || 'NCC'}</AppText>
           </View>
           <View style={{ flex: 1, marginLeft: 10 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>{item.name}</AppText>
-              <AppText variant="sm" color={colors.text.muted}>{item.code}</AppText>
+              <AppText variant="md" color="#050505" numberOfLines={1}>{item.name}</AppText>
+              <AppText variant="md" color={colors.text.muted}>{item.code}</AppText>
             </View>
             {item.contact_person && (
-              <AppText variant="sm" color={colors.text.secondary} style={{ marginTop: 2 }}>
-                👤 {item.contact_person}
-              </AppText>
+              <AppText variant="md" color={colors.text.secondary} style={{ marginTop: 2 }}>👤 {item.contact_person}</AppText>
             )}
           </View>
         </View>
@@ -198,17 +113,13 @@ export default function SuppliersScreen({ isSearchOpen }: { isSearchOpen?: boole
     if (!selectedItem) {
       return (
         <View style={ss.detailPanelEmpty}>
-          <AppText variant="md" weight="bold" color="#050505">
-            Chi Tiết Nhà Cung Cấp
-          </AppText>
-          <AppText variant="sm" color="#65676B" style={{ textAlign: 'center' }}>
-            Chọn một nhà cung cấp từ danh sách bên trái để xem chi tiết liên hệ
+          <AppText variant="md" color="#050505">Chi Tiết Nhà Cung Cấp</AppText>
+          <AppText variant="md" color="#65676B" style={{ textAlign: 'center' }}>
+            Chọn nhà cung cấp từ danh sách bên trái
           </AppText>
           <TouchableOpacity style={ss.panelCta} onPress={openAdd}>
             <Icon name="plus" size={18} color="#FFF" />
-            <AppText variant="sm" weight="bold" color="#FFF">
-              Thêm nhà cung cấp mới
-            </AppText>
+            <AppText variant="md" color="#FFF">Thêm nhà cung cấp mới</AppText>
           </TouchableOpacity>
         </View>
       );
@@ -218,37 +129,33 @@ export default function SuppliersScreen({ isSearchOpen }: { isSearchOpen?: boole
       <View style={ss.detailPanel}>
         <View style={s.detailHeader}>
           <View style={[s.cardIcon, { alignItems: 'center', justifyContent: 'center' }]}>
-            <AppText variant="sm" weight="bold" color={colors.brand.primary} style={{ fontSize: 12 }}>
-              {item.code?.slice(0, 3) || 'NCC'}
-            </AppText>
+            <AppText variant="md" color={colors.brand.primary}>{item.code?.slice(0, 3) || 'NCC'}</AppText>
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#050505">{item.name}</AppText>
-            <AppText variant="sm" color={colors.text.secondary}>Mã nhà cung cấp: {item.code || 'N/A'}</AppText>
+            <AppText variant="md" color="#050505">{item.name}</AppText>
+            <AppText variant="md" color={colors.text.secondary}>Mã: {item.code || 'N/A'}</AppText>
           </View>
         </View>
-
         <View style={s.detailBody}>
-          {item.contact_person ? <AppText variant="sm" color="#050505">👤 Người đại diện: {item.contact_person}</AppText> : null}
-          {item.phone ? <AppText variant="sm" color="#050505">📱 Số điện thoại: {item.phone}</AppText> : null}
-          {item.email ? <AppText variant="sm" color="#050505">✉️ Email: {item.email}</AppText> : null}
-          {item.address ? <AppText variant="sm" color="#050505">📍 Địa chỉ: {item.address}</AppText> : null}
+          {item.contact_person ? <AppText variant="md" color="#050505">👤 Người đại diện: {item.contact_person}</AppText> : null}
+          {item.phone ? <AppText variant="md" color="#050505">📱 SĐT: {item.phone}</AppText> : null}
+          {item.email ? <AppText variant="md" color="#050505">✉️ Email: {item.email}</AppText> : null}
+          {item.address ? <AppText variant="md" color="#050505">📍 Địa chỉ: {item.address}</AppText> : null}
           {item.note ? (
             <View style={{ backgroundColor: '#F8FAFC', padding: 10, borderRadius: 8, marginTop: 4 }}>
-              <AppText variant="sm" color={colors.text.secondary}>📝 Ghi chú hợp tác:</AppText>
-              <AppText variant="sm" color="#334155" style={{ fontStyle: 'italic', marginTop: 2 }}>"{item.note}"</AppText>
+              <AppText variant="md" color={colors.text.secondary}>📝 Ghi chú:</AppText>
+              <AppText variant="md" color="#334155" style={{ fontStyle: 'italic', marginTop: 2 }}>"{item.note}"</AppText>
             </View>
           ) : null}
         </View>
-
         <View style={s.detailActions}>
           <TouchableOpacity style={ss.panelBtnSecondary} onPress={() => openEdit(item)}>
             <Icon name="pencil" size={16} color={colors.brand.primary} />
-            <AppText variant="sm" weight="bold" color={colors.brand.primary}>Chỉnh sửa</AppText>
+            <AppText variant="md" color={colors.brand.primary}>Sửa</AppText>
           </TouchableOpacity>
-          <TouchableOpacity style={ss.panelBtnDanger} onPress={() => deleteSupplier(item.id)}>
+          <TouchableOpacity style={ss.panelBtnDanger} onPress={() => handleDelete(item.id, item.name)}>
             <Icon name="trash-can-outline" size={16} color={colors.status.danger} />
-            <AppText variant="sm" color={colors.status.danger}>Xóa</AppText>
+            <AppText variant="md" color={colors.status.danger}>Xóa</AppText>
           </TouchableOpacity>
         </View>
       </View>
@@ -257,109 +164,49 @@ export default function SuppliersScreen({ isSearchOpen }: { isSearchOpen?: boole
 
   return (
     <View style={s.container}>
-      {/* Unified Top Action Bar: Search Input + Add Button */}
       <View style={ss.topActionBar}>
         <View style={ss.searchInputWrap}>
           <Icon name="magnify" size={20} color="#64748B" />
-          <TextInput
-            value={search}
-            onChangeText={setSearch}
-            placeholder="Tìm NCC, mã, SĐT..."
-            placeholderTextColor="#94A3B8"
-            style={ss.searchTextInput}
-          />
+          <TextInput value={search} onChangeText={setSearch} placeholder="Tìm NCC, mã, SĐT..."
+            placeholderTextColor="#94A3B8" style={ss.searchTextInput} />
           {search.length > 0 && (
             <TouchableOpacity onPress={() => setSearch('')}>
               <Icon name="close-circle" size={18} color="#94A3B8" />
             </TouchableOpacity>
           )}
         </View>
-
         <TouchableOpacity style={ss.addBtn} onPress={openAdd} activeOpacity={0.8}>
           <Icon name="plus" size={18} color="#FFFFFF" />
-          <AppText variant="sm" weight="bold" color="#FFFFFF">
-            Thêm NCC
-          </AppText>
+          <AppText variant="md" color="#FFFFFF">Thêm NCC</AppText>
         </TouchableOpacity>
       </View>
-
-      {/* Unified Horizontal Category Chips Filter */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={{ flexGrow: 0, height: 46 }}
-        contentContainerStyle={ss.filterChipsContainer}
-      >
-        <TouchableOpacity
-          onPress={() => setSearch('')}
-          style={[ss.filterChip, !search && ss.filterChipActive]}
-        >
-          <AppText
-            variant="sm"
-            weight="bold"
-            color={!search ? colors.brand.primary : '#334155'}
-          >
-            Tất cả ({suppliers.length})
-          </AppText>
-        </TouchableOpacity>
-
-        {['Thực phẩm tươi', 'Đồ khô & Gia vị', 'Bao bì & Ly tách', 'Thiết bị'].map((groupName) => (
-          <TouchableOpacity
-            key={groupName}
-            onPress={() => setSearch(search === groupName ? '' : groupName)}
-            style={[ss.filterChip, search === groupName && ss.filterChipActive]}
-          >
-            <AppText
-              variant="sm"
-              weight="bold"
-              color={search === groupName ? colors.brand.primary : '#334155'}
-            >
-              {groupName}
-            </AppText>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
 
       {isWide ? (
         <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: 12, paddingBottom: 12, gap: 12 }}>
           <View style={{ flex: 0.55 }}>
-            <FlatList
-              data={filtered}
-              keyExtractor={item => item.id}
-              renderItem={renderCard}
-              contentContainerStyle={{ paddingBottom: 20 }}
-              showsVerticalScrollIndicator={false}
+            <FlatList data={filtered} keyExtractor={item => item.id} renderItem={renderCard}
+              contentContainerStyle={{ paddingBottom: 20 }} showsVerticalScrollIndicator={false}
               refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-              ListEmptyComponent={
-                loading ? (
-                  <TableSkeleton rowCount={5} />
-                ) : (
-                  <EmptyState
-                    icon="truck-off"
-                    title="Chưa có nhà cung cấp nào"
-                    subtitle="Nhấn + Thêm NCC để tiếp nhận đối tác mới"
-                  />
-                )
-              }
-            />
+              ListEmptyComponent={loading ? <TableSkeleton rowCount={5} /> : (
+                <EmptyState icon="truck-off" title="Chưa có nhà cung cấp nào"
+                  subtitle="Nhấn + Thêm NCC để tiếp nhận đối tác mới" />
+              )} />
           </View>
           <View style={{ flex: 0.45 }}>{renderDetailPanel()}</View>
         </View>
       ) : (
         <View style={{ flex: 1 }}>
-          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 6, paddingTop: 6, gap: 8, paddingBottom: 100 }}>
+          <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 6, paddingTop: 6, gap: 8, paddingBottom: 100 }}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
             <View style={ss.sectionWrap}>
               <View style={ss.sectionHeader}>
-                <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1, letterSpacing: 0.5 }}>
+                <AppText variant="md" color="#1E293B" style={{ flex: 1, letterSpacing: 0.5 }}>
                   DANH SÁCH NHÀ CUNG CẤP ({filtered.length})
                 </AppText>
               </View>
-
               <View style={ss.sectionItems}>
                 {filtered.map(item => (
-                  <React.Fragment key={item.id}>
-                    {renderCard({ item })}
-                  </React.Fragment>
+                  <React.Fragment key={item.id}>{renderCard({ item })}</React.Fragment>
                 ))}
               </View>
             </View>
@@ -367,54 +214,35 @@ export default function SuppliersScreen({ isSearchOpen }: { isSearchOpen?: boole
         </View>
       )}
 
-      {/* Mobile Detail Modal */}
       {!isWide && (
-        <DetailModal
-          visible={!!selectedItem}
-          title={selectedItem?.name || 'Chi tiết nhà cung cấp'}
+        <DetailModal visible={!!selectedItem} title={selectedItem?.name || ''}
           subtitle={selectedItem ? `SĐT: ${selectedItem.phone || 'N/A'}` : undefined}
           onClose={() => setSelectedId(null)}
-          onEdit={selectedItem ? () => { const item = selectedItem; openEdit(item); setSelectedId(null); } : undefined}
-          onDelete={selectedItem ? () => {
-            const item = selectedItem;
-            Alert.alert('Xác nhận', `Xóa nhà cung cấp "${item.name}"?`, [
-              { text: 'Hủy', style: 'cancel' },
-              {
-                text: 'Xóa',
-                style: 'destructive',
-                onPress: async () => {
-                  try {
-                    await request(`/api/v1/quan-ly/suppliers/${item.id}`, { method: 'DELETE' });
-                    setSelectedId(null);
-                    loadData();
-                  } catch {
-                    Alert.alert('Lỗi', 'Không thể xóa nhà cung cấp');
-                  }
-                },
-              },
-            ]);
-          } : undefined}
-        >
+          onEdit={selectedItem ? () => { openEdit(selectedItem); setSelectedId(null); } : undefined}
+          onDelete={selectedItem ? () => { handleDelete(selectedItem.id, selectedItem.name); setSelectedId(null); } : undefined}>
           {renderDetailPanel()}
         </DetailModal>
       )}
 
-      <FormModal
-        visible={showForm}
-        title={editingItem ? 'Sửa nhà cung cấp' : 'Thêm nhà cung cấp mới'}
+      <FormModal visible={showForm} title={editingId ? 'Sửa nhà cung cấp' : 'Thêm nhà cung cấp mới'}
         onClose={() => setShowForm(false)}
-        onSave={handleSave}
-        saveLabel={editingItem ? 'Cập nhật' : 'Thêm mới'}
-        saving={saving}
-      >
+        onSave={() => handleSave(() => !form.name.trim() ? 'Tên nhà cung cấp không được để trống' : null)}
+        saveLabel={editingId ? 'Cập nhật' : 'Thêm mới'} saving={saving}>
         <View style={{ gap: 12 }}>
-          <TextInput style={s.input} placeholder="Mã nhà cung cấp (VD: NCC01)" value={form.code} onChangeText={(v) => setForm(f => ({ ...f, code: v }))} />
-          <TextInput style={s.input} placeholder="Tên nhà cung cấp (*)" value={form.name} onChangeText={(v) => setForm(f => ({ ...f, name: v }))} />
-          <TextInput style={s.input} placeholder="Người liên hệ" value={form.contact_person} onChangeText={(v) => setForm(f => ({ ...f, contact_person: v }))} />
-          <TextInput style={s.input} placeholder="Số điện thoại" keyboardType="phone-pad" value={form.phone} onChangeText={(v) => setForm(f => ({ ...f, phone: v }))} />
-          <TextInput style={s.input} placeholder="Email" keyboardType="email-address" value={form.email} onChangeText={(v) => setForm(f => ({ ...f, email: v }))} />
-          <TextInput style={s.input} placeholder="Địa chỉ" value={form.address} onChangeText={(v) => setForm(f => ({ ...f, address: v }))} />
-          <TextInput style={s.input} placeholder="Ghi chú hợp tác" value={form.note} onChangeText={(v) => setForm(f => ({ ...f, note: v }))} />
+          <TextInput style={s.input} placeholder="Mã NCC (VD: NCC01)" value={form.code}
+            onChangeText={(v) => setForm(f => ({ ...f, code: v }))} />
+          <TextInput style={s.input} placeholder="Tên nhà cung cấp (*)" value={form.name}
+            onChangeText={(v) => setForm(f => ({ ...f, name: v }))} />
+          <TextInput style={s.input} placeholder="Người liên hệ" value={form.contact_person}
+            onChangeText={(v) => setForm(f => ({ ...f, contact_person: v }))} />
+          <TextInput style={s.input} placeholder="SĐT" keyboardType="phone-pad" value={form.phone}
+            onChangeText={(v) => setForm(f => ({ ...f, phone: v }))} />
+          <TextInput style={s.input} placeholder="Email" keyboardType="email-address" value={form.email}
+            onChangeText={(v) => setForm(f => ({ ...f, email: v }))} />
+          <TextInput style={s.input} placeholder="Địa chỉ" value={form.address}
+            onChangeText={(v) => setForm(f => ({ ...f, address: v }))} />
+          <TextInput style={s.input} placeholder="Ghi chú" value={form.note}
+            onChangeText={(v) => setForm(f => ({ ...f, note: v }))} />
         </View>
       </FormModal>
     </View>
@@ -423,117 +251,12 @@ export default function SuppliersScreen({ isSearchOpen }: { isSearchOpen?: boole
 
 const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface.app, position: 'relative' },
-
-  mobileActionRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: colors.surface.card,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border.light,
-  },
-  addBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    paddingHorizontal: 14,
-    height: 44,
-    borderRadius: 999,
-    backgroundColor: colors.brand.primary,
-  },
-
-  /* Facebook Story Highlight Metric Cards Container */
-  fbMetricContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    gap: 8,
-    marginBottom: 8,
-    flexWrap: 'wrap',
-  },
-  fbMetricCard: {
-    flex: 1,
-    minWidth: 140,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    backgroundColor: colors.surface.card,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  fbMetricIcon: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  /* 📱 Mobile Full-Width Facebook Feed Card Block */
-  itemMobile: {
-    backgroundColor: colors.surface.card,
-    width: '100%',
-    marginBottom: 8,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: colors.border.light,
-    paddingVertical: 12,
-  },
-  cardHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    paddingHorizontal: 12,
-  },
-  avatarCircle: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cardActionDivider: {
-    height: 1,
-    backgroundColor: colors.border.light,
-    marginTop: 10,
-  },
-  /* 💻 Wide Screen Card */
-  cardWide: {
-    backgroundColor: colors.surface.card,
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
+  cardWide: { backgroundColor: colors.surface.card, borderRadius: 12, padding: 12, marginBottom: 8, borderWidth: 1, borderColor: '#E2E8F0' },
   cardTop: { flexDirection: 'row', alignItems: 'center' },
-  cardIcon: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#EEF2FF', alignItems: 'center', justifyContent: 'center' },
-
-  /* Detail-specific */
+  cardIcon: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#EEF2FF' },
   detailHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: colors.border.light },
   detailBody: { gap: 8 },
   detailActions: { flexDirection: 'row', gap: 10, marginTop: 10 },
-  input: {
-    height: 44,
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    ...font.md,
-    color: '#0F172A',
-    backgroundColor: '#FFFFFF',
-  },
-  posCodeBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    backgroundColor: colors.brand.primaryBg,
-    marginRight: 10,
-  },
+  posCodeBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, backgroundColor: colors.brand.primaryBg, marginRight: 10 },
+  input: { height: 44, borderWidth: 1, borderColor: '#CBD5E1', borderRadius: 8, paddingHorizontal: 12, color: '#0F172A', backgroundColor: '#FFFFFF' },
 });

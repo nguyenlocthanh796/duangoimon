@@ -43,7 +43,7 @@ export default function StatusBadge({
 
   return (
     <View style={[styles.badge, { backgroundColor: bg }, style]}>
-      <AppText variant="sm" weight="bold" color={badgeColor} style={styles.text}>
+      <AppText variant="sm" color={badgeColor} style={styles.text}>
         {showDot ? `● ${label}` : label}
       </AppText>
     </View>

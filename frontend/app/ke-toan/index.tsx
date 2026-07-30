@@ -44,7 +44,7 @@ export default function KeToanParentShell() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom', 'left', 'right']}>
+    <SafeAreaView style={styles.container} edges={isWide ? ['top', 'bottom', 'left', 'right'] : ['left', 'right']}>
       <ScreenHeader
         title="Kế Toán & Thuế"
         subtitle="Quản lý dòng tiền, hóa đơn VAT & sổ sách kê khai thuế HKD"

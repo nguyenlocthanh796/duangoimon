@@ -186,12 +186,12 @@ function NavItemRow({
         style={{
           alignItems: 'center',
           justifyContent: 'center',
-          paddingVertical: 10,
-          borderRadius: shape.radius.md,
-          marginBottom: 2,
-          backgroundColor: active ? colors.brand.primaryBg : 'transparent',
+          paddingVertical: 8,
+          borderRadius: 6,
+          marginBottom: 4,
+          backgroundColor: active ? '#FFF7ED' : 'transparent',
           borderWidth: 1,
-          borderColor: active ? colors.border.brand : 'transparent',
+          borderColor: active ? '#FDBA74' : 'transparent',
         }}
         accessibilityLabel={item.label}
       >
@@ -199,16 +199,16 @@ function NavItemRow({
           style={{
             width: 36,
             height: 36,
-            borderRadius: shape.radius.md,
+            borderRadius: 6,
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: active ? colors.brand.primary : colors.surface.disabled,
+            backgroundColor: active ? '#EA580C' : '#F1F5F9',
           }}
         >
           <Icon
             name={item.icon as any}
             size={20}
-            color={active ? colors.text.inverse : colors.icon.muted}
+            color={active ? '#FFFFFF' : '#64748B'}
           />
         </View>
       </TouchableOpacity>
@@ -219,19 +219,19 @@ function NavItemRow({
     <TouchableOpacity
       onPress={onPress}
       delayPressIn={0}
-      activeOpacity={0.6}
+      activeOpacity={0.7}
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 12,
-        paddingHorizontal: 14,
-        paddingVertical: 11,
-        borderRadius: shape.radius.md,
-        marginBottom: 2,
-        backgroundColor: active ? colors.brand.primaryBg : 'transparent',
+        gap: 10,
+        paddingHorizontal: 12,
+        paddingVertical: 9,
+        borderRadius: 8,
+        marginBottom: 4,
+        backgroundColor: active ? '#FFF7ED' : 'transparent',
         borderWidth: 1,
-        borderColor: active ? colors.border.brand : 'transparent',
-        minHeight: 50,
+        borderColor: active ? '#FED7AA' : 'transparent',
+        minHeight: 48,
       }}
       accessibilityLabel={item.label}
     >
@@ -239,23 +239,25 @@ function NavItemRow({
         style={{
           width: 36,
           height: 36,
-          borderRadius: shape.radius.md,
+          borderRadius: 8,
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: active ? colors.brand.primary : colors.surface.disabled,
+          backgroundColor: active ? '#EA580C' : '#F1F5F9',
         }}
       >
         <Icon
           name={item.icon as any}
           size={20}
-          color={active ? colors.text.inverse : colors.icon.muted}
+          color={active ? '#FFFFFF' : '#64748B'}
         />
       </View>
       <View style={{ flex: 1 }}>
         <Text
           style={{
-            ...font.md,
-            color: active ? colors.brand.primary : colors.text.primary,
+            fontFamily: active ? 'BeVietnamPro_700Bold' : 'BeVietnamPro_400Regular',
+            fontSize: 15,
+            fontWeight: active ? '700' : '400',
+            color: active ? '#EA580C' : '#0F172A',
           }}
         >
           {item.label}
@@ -263,8 +265,9 @@ function NavItemRow({
         {item.description && (
           <Text
             style={{
-              ...font.sm,
-              color: active ? colors.brand.primary : colors.text.muted,
+              fontFamily: 'BeVietnamPro_400Regular',
+              fontSize: 12,
+              color: active ? '#C2410C' : '#64748B',
               marginTop: 1,
             }}
           >
@@ -278,7 +281,7 @@ function NavItemRow({
             width: 6,
             height: 6,
             borderRadius: 3,
-            backgroundColor: colors.brand.primary,
+            backgroundColor: '#EA580C',
           }}
         />
       )}
@@ -333,7 +336,7 @@ function LogoutButton({ collapsed, onClose }: { collapsed: boolean; onClose: (()
           <Icon name="logout" size={18} color={colors.text.danger} />
         </View>
         {!collapsed && (
-          <Text style={{ ...font.mdBold, color: colors.text.danger }}>Đăng xuất</Text>
+          <Text style={{ ...font.md, color: colors.text.danger }}>Đăng xuất</Text>
         )}
       </TouchableOpacity>
     </View>

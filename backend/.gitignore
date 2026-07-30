@@ -1,0 +1,24 @@
+# Python / FastAPI
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+ENV/
+
+# Databases & Runtime State
+*.db
+*.sqlite
+*.sqlite3
+pos_local.db
+.rate_limit_state.json
+
+# Environment & IDE
+.env
+.env.local
+.vscode/
+.idea/
+.pytest_cache/
+.coverage
+htmlcov/

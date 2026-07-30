@@ -60,19 +60,19 @@ export default function BankAccountsScreen() {
     >
       <View style={styles.cardBox}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-          <AppText variant="md" weight="bold" color="#0F172A">Tài Khoản Ngân Hàng Đã Đăng Ký Thuế (Phụ lục II-1)</AppText>
+          <AppText variant="md" color="#0F172A">Tài Khoản Ngân Hàng Đã Đăng Ký Thuế (Phụ lục II-1)</AppText>
           <AppText variant="sm" color="#64748B">{accounts.length} tài khoản</AppText>
         </View>
 
         {accounts.map((acc, idx) => (
           <View key={acc.id || idx} style={styles.itemRow}>
             <View style={styles.avatarBank}>
-              <AppText variant="sm" weight="bold" color="#2563EB" style={{ fontSize: 10 }}>
+              <AppText variant="sm" color="#2563EB" style={{ fontSize: 12}}>
                 {acc.bank_name?.split(' ').map((w: string) => w[0]).join('').slice(0, 3).toUpperCase() || 'BNK'}
               </AppText>
             </View>
             <View style={{ flex: 1 }}>
-              <AppText variant="md" weight="bold" color="#0F172A">{acc.bank_name}</AppText>
+              <AppText variant="md" color="#0F172A">{acc.bank_name}</AppText>
               <AppText variant="sm" color="#64748B" style={{ marginTop: 2 }}>
                 STK: {acc.account_number} · Chủ TK: {(acc as any).account_holder}
               </AppText>

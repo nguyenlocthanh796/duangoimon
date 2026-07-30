@@ -4,7 +4,7 @@
  * Upgraded to industrial-grade: AppState wake reconnect, ping-pong heartbeat, exponential backoff.
  */
 
-import { AppState, AppStateStatus } from 'react-native';
+import { AppState, AppStateStatus, Platform } from 'react-native';
 import { logger } from '../logger';
 import { invalidateCache, mutateCacheSync } from '../api/cache';
 import { getToken } from '../api/client';
@@ -108,24 +108,25 @@ function connectWebSocket() {
           return;
         }
 
-        if (message && (message.event === 'order_updated' || message.event === 'table_updated')) {
-          if (message.table_id) {
+        const isSyncEvent = message && ['order_updated', 'table_updated', 'new_order', 'item_cancelled'].includes(message.event);
+        if (isSyncEvent) {
+          const tableId = message.table_id || message.table?.id || message.order?.table_id;
+          if (tableId) {
             mutateCacheSync<any[]>('tables_ban_hang', (tables: any[] | undefined) => {
               if (!Array.isArray(tables)) return tables || [];
               return tables.map((t) =>
-                t.id === message.table_id
+                t.id === tableId
                   ? {
                       ...t,
-                      status: message.status || t.status,
-                      orderTotal: message.order_total !== undefined ? message.order_total : t.orderTotal,
+                      status: message.status || message.table?.status || (message.order?.status === 'da_thanh_toan' ? 'trong' : 'co_khach'),
+                      orderTotal: message.order_total !== undefined ? message.order_total : (message.order?.status === 'da_thanh_toan' ? 0 : t.orderTotal),
                     }
                   : t
               );
             });
-          } else {
-            invalidateCache('orders_ban_hang');
-            invalidateCache('tables_ban_hang');
           }
+          invalidateCache('orders_ban_hang');
+          invalidateCache('tables_ban_hang');
           
           // Notify all active listeners
           _listeners.forEach((listener) => {
@@ -165,7 +166,9 @@ function connectWebSocket() {
 }
 
 // ── AppState Integration for Mobile Wake/Sleep ─────────────────────────────
-if (typeof window !== 'undefined') {
+// Only on native; web AppState fires spurious background/active transitions.
+const isNative = Platform.OS !== 'web';
+if (typeof window !== 'undefined' && isNative) {
   AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
     if (nextAppState === 'active') {
       logger.info('realtimeSync', 'App active, ensuring WebSocket connection');

@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, font } from '../../theme';
 import { shape } from '../../theme/shape';
 import { useResponsive } from '../../hooks/useResponsive';
+import { haptic } from '../../haptic';
 
 export interface UnifiedHeaderProps {
   title?: string;
@@ -19,6 +20,7 @@ export interface UnifiedHeaderProps {
   animated?: boolean;
   titleComponent?: React.ReactNode;
   backIcon?: string;
+  noTopInset?: boolean;
 }
 
 /**
@@ -40,6 +42,7 @@ export default function UnifiedHeader({
   animated = false,
   titleComponent,
   backIcon = 'arrow-left',
+  noTopInset = false,
 }: UnifiedHeaderProps) {
   const insets = useSafeAreaInsets();
   const { isWide } = useResponsive();
@@ -64,34 +67,42 @@ export default function UnifiedHeader({
         styles.header,
         compact ? styles.headerCompact : styles.headerDefault,
         {
-          paddingTop: isWide ? 6 : 2,
-          paddingBottom: isWide ? 8 : 6,
+          paddingTop: noTopInset ? 44 : (isWide ? 10 : Math.max(insets.top + 4, 16)),
+          paddingBottom: noTopInset ? 12 : (isWide ? 10 : 8),
           paddingHorizontal: isWide ? shape.spacing.xl : 12,
           opacity: fadeAnim,
           transform: [{ translateY: slideAnim }],
         },
       ]}
     >
-      <View style={[styles.row, { height: isWide ? shape.header.heightTablet : 42 }]}>
+      <View style={[styles.row, { height: isWide ? shape.header.heightTablet : 44 }]}>
         {/* Left: back / menu button */}
         {showLeftButton && !hideMenu && (
           onBackPress ? (
             <TouchableOpacity
-              onPress={onBackPress}
+              onPress={() => {
+                haptic.impact('light');
+                onBackPress();
+              }}
               delayPressIn={0}
               activeOpacity={0.6}
               style={[styles.menuBtn, !isWide && styles.menuBtnMobile]}
               accessibilityLabel={backLabel || 'Quay lại'}
+              hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
             >
               <Icon name={backIcon as any} size={isWide ? 20 : 18} color={colors.brand.primary} />
             </TouchableOpacity>
           ) : onMenuPress ? (
             <TouchableOpacity
-              onPress={onMenuPress}
+              onPress={() => {
+                haptic.impact('light');
+                onMenuPress();
+              }}
               delayPressIn={0}
               activeOpacity={0.6}
               style={[styles.menuBtn, !isWide && styles.menuBtnMobile]}
               accessibilityLabel="Mở menu"
+              hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
             >
               <Icon name="menu" size={isWide ? 24 : 22} color={colors.brand.primary} />
             </TouchableOpacity>
@@ -146,21 +157,21 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   menuBtnMobile: {
-    width: 36,
-    height: 36,
+    width: 44,
+    height: 44,
     marginLeft: -4,
   },
   iconWrap: {
-    width: 36,
-    height: 36,
+    width: 44,
+    height: 44,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.brand.primaryBg,
     borderRadius: shape.radius.sm,
   },
   iconWrapMobile: {
-    width: 30,
-    height: 30,
+    width: 44,
+    height: 44,
   },
   title: {
     fontFamily: 'BeVietnamPro_700Bold',

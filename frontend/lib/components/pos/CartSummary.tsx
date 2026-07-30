@@ -48,7 +48,7 @@ export default function CartSummary({
       )}
       <View style={{ height: 1, backgroundColor: colors.border.light, marginVertical: 2 }} />
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <AppText variant="md" weight="bold" color={colors.text.primary}>Tổng cộng</AppText>
+        <AppText variant="md" color={colors.text.primary}>Tổng cộng</AppText>
         <AppText variant="md" weight="bold" color={colors.text.primary}>{formatPrice(grandTotal)}</AppText>
       </View>
     </View>

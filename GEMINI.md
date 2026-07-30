@@ -18,7 +18,7 @@ Mọi giao diện sub-mô-đun và màn hình trong hệ thống POS (`/quan-ly`
   - `paddingVertical: 8`
   - `borderBottomWidth: 1`
   - `borderColor: '#E5E9F0'`
-  - Phông chữ BeVietnamPro đậm, màu `#1E293B`, kèm badge đếm số lượng nhã nhặn.
+  - Phông chữ BeVietnamPro_700Bold đậm cỡ text md (16px), màu `#1E293B`, kèm badge đếm số lượng nhã nhặn.
 
 ## 3. Padding Sát Viền Màn Hình (Edge-to-Edge 6px)
 - `ScrollView` danh sách trên mobile/web thu gọn phải luôn cài đặt:
@@ -34,7 +34,8 @@ Mọi giao diện sub-mô-đun và màn hình trong hệ thống POS (`/quan-ly`
 ## 5. Bộ Lọc Nhóm (`ss.filterChip`)
 - Các chip lọc dạng pill bo góc 6px, nền nhã nhặn `#F8FAFC`, viền nhạt `#E2E8F0`, màu chữ active nhã nhặn.
 
-## 6. Hàng Món Ăn Tinh Gọn (Item Row)
+## 6. Hàng Món Ăn Tinh Gọn (Item Row `ss.listRow` & `ss.itemRow`)
+- Đệm lề ngang: `paddingHorizontal: 10` thống nhất toàn bộ các màn hình sub-module.
 - Mã món: Badge nền xám nhạt `#F1F5F9` bo góc 4px.
 - Giá tiền: Màu nổi bật nhã nhặn `#0F172A`.
 - Trạng thái: Badge bo 6px (`Đang bán`: xanh nhạt `#ECFDF5`, `Ngưng bán`: đỏ nhạt `#FEE2E2`).
@@ -51,9 +52,18 @@ Mọi giao diện sub-mô-đun và màn hình trong hệ thống POS (`/quan-ly`
   - Trực quan hóa Biểu đồ (BarChart): CardBox chứa đồ thị trực quan xu hướng doanh thu & chi phí.
   - Bảng danh sách chi tiết: Badge thứ trong tuần (T2-CN), Ngày, Số đơn, AOV (k/đơn) và Doanh thu tổng.
 
-## 9. Quy Tắc Typography & Iconography Tinh Gọn (Subtle Visual Hierarchy)
+## 9. Quy Tắc Typography Chuẩn Nút Bấm `md` & Iconography Tinh Gọn (Subtle Visual Hierarchy)
+- **Nút Bấm Thao Tác Chuẩn `md` (16px)**: Tất cả nút bấm thao tác (`addBtn`, nút Lưu HĐ, nút Thanh toán, nút Xóa, nút Sửa, nút Chuyển bàn) bắt buộc cài đặt cỡ text `md` (`16px` / `variant="md"`), gia tăng tối đa thị giác giúp thu ngân dễ thao tác.
+- **Tỉ Lệ Bao Phủ Text `md` Chủ Đạo Tối Ưu (~80% - 88%)**: Cỡ chữ `16px` (`md`) là chuẩn cỡ chữ chủ đạo toàn ứng dụng cho Tên món ăn, Giá tiền, Nội dung dòng, Nút bấm thao tác và Tiêu đề nhóm (`ss.sectionHeader`), trong khi cỡ `sm` (14px) ~10% dành riêng cho phụ đề/ghi chú nhỏ và `xs` (12px) ~1.5% cho badge/tag.
 - **Không lạm dụng in đậm (`font-weight: 700`)**: Văn bản thường (tên ngày, tên sản phẩm, phụ đề, nhãn số lượng) sử dụng `BeVietnamPro_400Regular` màu nhã nhặn `#0F172A` hoặc `#64748B`. Chỉ in đậm (`BeVietnamPro_700Bold`) đối với Tiêu Đề Nhóm (`ss.sectionHeader`) và Con Số Tổng Doanh Thu.
 - **Tiết chế Icon (Minimalist Iconography)**: Loại bỏ các biểu tượng/icon dư thừa trong hàng dữ liệu và bảng. Sử dụng badge màu nhạt nhã nhặn (`#F1F5F9`, `#ECFDF5`, `#FFF7ED`) thay vì chèn icon dày đặc gây rối mắt.
+
+## 10. Quy Tắc Thanh Thao Tác Đáy & Home Bar Margin (Bottom Safe Area Offset 50%)
+- **Đệm Đáy Home Bar (50% Bottom Inset)**: Tất cả thanh thao tác / footer cố định ở đáy màn hình (`MobileCartBar`, `CartPanel`, `PaymentScreen`, `SettingsScreen`, `ModifierSheet`) bắt buộc cài đặt padding đệm đáy bằng **50% `insets.bottom`**:
+  `paddingBottom: Platform.OS === 'web' ? 6 : Math.max(Math.floor(insets.bottom * 0.5), 6)`
+  giúp dải thanh thao tác ôm sát viền màn hình iPhone thật, vừa tầm mắt và không bị đệm thô cao.
+- **Nút Bấm Đáy Thuần Phẳng (No CoreAnimation Overlay)**: Các hàng nút bấm thao tác ở đáy dùng `TouchableOpacity` phẳng (`width: '100%'`, `hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}`), tuyệt đối không bọc `Animated.View` `PressScale` lồng nhau gây lỗi GPU CoreAnimation layer đè nút trên Native iOS.
+
 
 
 

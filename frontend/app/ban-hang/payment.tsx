@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Image, Platform } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
@@ -42,6 +42,7 @@ export default function PaymentScreen() {
   const [splits, setSplits] = useState<{ method: string; amount: number }[]>([]);
   const [showSplitter, setShowSplitter] = useState(false);
   const [mobileTab, setMobileTab] = useState<'payment' | 'invoice'>('payment');
+  const [autoPrint, setAutoPrint] = useState(true);
 
   const pm = usePayment({
     tableId: tableId || '',
@@ -52,6 +53,9 @@ export default function PaymentScreen() {
 
   useEffect(() => {
     if (pm.paid) {
+      if (autoPrint) {
+        pm.handlePrint();
+      }
       const methodLabel = pm.method === 'tien_mat' ? 'Tiền mặt' : pm.method === 'qr' ? 'QR Code' : pm.method === 'chuyen_khoan' ? 'Chuyển khoản' : 'Thẻ';
       router.replace({
         pathname: '/ban-hang',
@@ -63,7 +67,7 @@ export default function PaymentScreen() {
         }
       });
     }
-  }, [pm.paid, tableName, total, pm.method]);
+  }, [pm.paid, tableName, total, pm.method, autoPrint]);
 
   if (pm.paid) {
     return (
@@ -94,7 +98,6 @@ export default function PaymentScreen() {
               <View style={{ backgroundColor: colors.surface.card, paddingHorizontal: 16, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: colors.border.default }}>
               <AppText
                 variant="md"
-                weight="bold"
                 style={{
                   textTransform: 'uppercase',
                   letterSpacing: 1,
@@ -108,7 +111,7 @@ export default function PaymentScreen() {
                 style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}
               >
                 <AppText color={colors.text.body}>Tên bàn</AppText>
-                <AppText weight="bold" color={colors.text.primary}>
+                <AppText color={colors.text.primary}>
                   {tableName}
                 </AppText>
               </View>
@@ -133,7 +136,6 @@ export default function PaymentScreen() {
               <View style={{ backgroundColor: colors.surface.card, paddingHorizontal: 16, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: colors.border.default }}>
               <AppText
                 variant="md"
-                weight="bold"
                 style={{
                   textTransform: 'uppercase',
                   letterSpacing: 1,
@@ -219,7 +221,7 @@ export default function PaymentScreen() {
               <View style={{ flex: 1 }}>
                 <AppText
                   variant="md"
-                  weight="bold"
+                  
                   style={{
                     color: colors.text.muted,
                     marginBottom: 8,
@@ -287,7 +289,7 @@ export default function PaymentScreen() {
                     resizeMode="contain"
                   />
                 </View>
-                <AppText variant="md" weight="bold" color={colors.text.primary} style={{ textAlign: 'center' }}>
+                <AppText variant="md" color={colors.text.primary} style={{ textAlign: 'center' }}>
                   Quét mã VietQR tự động điền tiền
                 </AppText>
                 <View style={{ gap: 10, width: '100%', marginTop: 6 }}>
@@ -325,7 +327,7 @@ export default function PaymentScreen() {
               <View style={{ flex: 1 }}>
                 <AppText
                   variant="md"
-                  weight="bold"
+                  
                   style={{
                     textTransform: 'uppercase',
                     letterSpacing: 1,
@@ -347,7 +349,6 @@ export default function PaymentScreen() {
                 >
                   <AppText
                     variant="md"
-                    weight="bold"
                     color={pm.cashInput ? colors.text.primary : colors.text.placeholder}
                   >
                     {pm.cashInput ? formatPriceFull(pm.cash) : '0đ'}
@@ -374,7 +375,6 @@ export default function PaymentScreen() {
                     />
                     <AppText
                       variant="md"
-                      weight="bold"
                       color={pm.change >= 0 ? colors.status.success : colors.status.danger}
                     >
                       Tiền thối lại:
@@ -382,7 +382,6 @@ export default function PaymentScreen() {
                   </View>
                   <AppText
                     variant="md"
-                    weight="bold"
                     color={pm.change >= 0 ? colors.status.success : colors.status.danger}
                   >
                     {pm.change >= 0
@@ -406,7 +405,7 @@ export default function PaymentScreen() {
                     }}
                   >
                     <AppText variant="md" color="#FFFFFF" numberOfLines={1}>Đúng tiền</AppText>
-                    <AppText variant="md" weight="bold" color="#FFFFFF" numberOfLines={1}>
+                    <AppText variant="md" color="#FFFFFF" numberOfLines={1}>
                       {formatPriceFull(total)}
                     </AppText>
                   </TouchableOpacity>
@@ -426,7 +425,7 @@ export default function PaymentScreen() {
                         alignItems: 'center',
                       }}
                     >
-                      <AppText variant="md" weight="bold" color={colors.text.body} numberOfLines={1}>
+                      <AppText variant="md" color={colors.text.body} numberOfLines={1}>
                         {formatPriceFull(amt)}
                       </AppText>
                     </TouchableOpacity>
@@ -447,11 +446,11 @@ export default function PaymentScreen() {
                 }}
               >
                 <Icon name="credit-card-chip" size={24} color={colors.status.warning} />
-              <AppText variant="sm" color={colors.text.muted} style={{ marginTop: 4, letterSpacing: 2 }}>
+              <AppText variant="md" color={colors.text.muted} style={{ marginTop: 4, letterSpacing: 2 }}>
                   •••• 4242
                 </AppText>
               </View>
-              <AppText variant="md" weight="bold" color={colors.text.primary} style={{ textAlign: 'center' }}>
+              <AppText variant="md" color={colors.text.primary} style={{ textAlign: 'center' }}>
                 Đang chờ quẹt thẻ
               </AppText>
               <AppText color={colors.text.muted} style={{ textAlign: 'center' }}>
@@ -478,13 +477,13 @@ export default function PaymentScreen() {
               >
                 <Icon name="qrcode-scan" size={90} color={colors.text.primary} />
               </View>
-              <AppText variant="md" weight="bold" color={colors.text.primary} style={{ textAlign: 'center' }}>
+              <AppText variant="md" color={colors.text.primary} style={{ textAlign: 'center' }}>
                 Quét mã QR để thanh toán
               </AppText>
               <AppText variant="md" weight="bold" color={colors.brand.primary}>
                 {formatPriceFull(total)}
               </AppText>
-              <AppText variant="sm" color={colors.text.muted} style={{ textAlign: 'center' }}>
+              <AppText variant="md" color={colors.text.muted} style={{ textAlign: 'center' }}>
                 Sử dụng app ngân hàng hoặc ví điện tử quét mã trên.
               </AppText>
             </View>
@@ -502,7 +501,7 @@ export default function PaymentScreen() {
               >
                 <Icon name="bank-transfer" size={40} color="#E11D48" />
               </View>
-              <AppText variant="md" weight="bold" color={colors.text.primary} style={{ textAlign: 'center' }}>
+              <AppText variant="md" color={colors.text.primary} style={{ textAlign: 'center' }}>
                 Chuyển khoản ngân hàng
               </AppText>
               <View
@@ -517,31 +516,31 @@ export default function PaymentScreen() {
                 }}
               >
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <AppText variant="sm" color={colors.text.muted}>Ngân hàng</AppText>
-                  <AppText variant="sm" weight="bold" color={colors.text.primary}>
+                  <AppText variant="md" color={colors.text.muted}>Ngân hàng</AppText>
+                  <AppText variant="md" color={colors.text.primary}>
                     MB Bank
                   </AppText>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <AppText variant="sm" color={colors.text.muted}>Số tài khoản</AppText>
-                  <AppText variant="sm" weight="bold" color={colors.text.primary}>
+                  <AppText variant="md" color={colors.text.muted}>Số tài khoản</AppText>
+                  <AppText variant="md" color={colors.text.primary}>
                     0987654321
                   </AppText>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <AppText variant="sm" color={colors.text.muted}>Chủ tài khoản</AppText>
-                  <AppText variant="sm" weight="bold" color={colors.text.primary}>
+                  <AppText variant="md" color={colors.text.muted}>Chủ tài khoản</AppText>
+                  <AppText variant="md" color={colors.text.primary}>
                     NGUYEN VAN A
                   </AppText>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <AppText variant="sm" color={colors.text.muted}>Số tiền</AppText>
-                  <AppText variant="sm" weight="bold" color={colors.brand.primary}>
+                  <AppText variant="md" color={colors.text.muted}>Số tiền</AppText>
+                  <AppText variant="md" weight="bold" color={colors.brand.primary}>
                     {formatPriceFull(total)}
                   </AppText>
                 </View>
               </View>
-              <AppText variant="md" weight="bold" color={colors.text.primary} style={{ textAlign: 'center' }}>
+              <AppText variant="md" color={colors.text.primary} style={{ textAlign: 'center' }}>
                 Nội dung chuyển khoản
               </AppText>
               <View
@@ -555,7 +554,7 @@ export default function PaymentScreen() {
                 }}
               >
                 <AppText
-                  weight="bold"
+                  
                   color={colors.text.inverse}
                   style={{ textAlign: 'center' }}
                 >
@@ -583,7 +582,7 @@ export default function PaymentScreen() {
             }}
           >
             <Icon name="printer-eye" size={20} color={colors.text.primary} />
-            <AppText variant="md" weight="bold" color={colors.text.primary}>
+            <AppText variant="md" color={colors.text.primary}>
               In Thử K80
             </AppText>
           </TouchableOpacity>
@@ -607,7 +606,7 @@ export default function PaymentScreen() {
             ) : (
               <Icon name="check-circle" size={24} color={pm.canPay ? colors.text.inverse : colors.text.muted} />
             )}
-            <AppText variant="md" weight="bold" color={pm.canPay ? colors.text.inverse : colors.text.muted}>
+            <AppText variant="md" color={pm.canPay ? colors.text.inverse : colors.text.muted}>
               {pm.paying ? 'Đang xử lý...' : 'Hoàn tất thanh toán'}
             </AppText>
           </TouchableOpacity>
@@ -616,109 +615,166 @@ export default function PaymentScreen() {
     </View>
   );
 
-  // iPhone tabbed layout — all font tokens standardized, no virtual numpad
+  // iPhone tabbed layout — Flat Skills UI V2 & Layout V2 standard
   const tabs = ['payment' as const, 'invoice' as const];
   const tabLabels = { payment: 'Thanh toán', invoice: 'Chi tiết đơn' };
   const tabIcons = { payment: 'credit-card-outline', invoice: 'file-document-outline' };
   const iPhoneView = (
     <View style={{ flex: 1 }}>
-      {/* 4.1 — Summary bar cố định đầu màn (iPhone) */}
+      {/* Summary bar cố định đầu màn (iPhone) */}
       <View
         style={{
-          backgroundColor: colors.brand.primaryBg,
-          paddingHorizontal: 16,
-          paddingVertical: 12,
+          backgroundColor: '#FFF7ED',
+          paddingHorizontal: 10,
+          paddingVertical: 8,
           borderBottomWidth: 1,
-          borderBottomColor: colors.border.brand,
+          borderBottomColor: '#FDBA74',
         }}
       >
-        <AppText variant="sm" color={colors.text.muted}>
-          {tableName || ''} · Tại bàn · {pm.orderItems.length} món
+        <AppText variant="sm" color="#64748B">
+          {tableName ? `Bàn ${tableName}` : ''} · Tại bàn · {pm.orderItems.length} món
         </AppText>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2 }}>
-          <AppText variant="md" weight="bold" color={colors.text.primary}>Tổng cộng</AppText>
-          <AppText variant="md" weight="bold" color={colors.brand.primary}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 2, alignItems: 'center' }}>
+          <AppText variant="md" color="#0F172A">Tổng cộng</AppText>
+          <AppText variant="md" weight="bold" color="#EA580C">
             {formatPriceFull(total)}
           </AppText>
         </View>
       </View>
 
-      {/* Tab bar */}
+      {/* Segmented Tab Bar (iOS style Segmented Control) */}
       <View
         style={{
-          flexDirection: 'row',
-          paddingHorizontal: 0,
-          backgroundColor: colors.surface.card,
+          paddingHorizontal: 6,
+          paddingVertical: 6,
+          backgroundColor: '#FFFFFF',
           borderBottomWidth: 1,
-          borderBottomColor: colors.border.default,
+          borderBottomColor: '#E5E9F0',
         }}
       >
-        {tabs.map((t) => {
-          const sel = mobileTab === t;
-          return (
-            <TouchableOpacity
-              key={t}
-              onPress={() => setMobileTab(t)}
-              style={{
-                flex: 1,
-                paddingVertical: 14,
-                backgroundColor: sel ? colors.surface.app : colors.surface.card,
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexDirection: 'row',
-                gap: 12,
-                borderBottomWidth: sel ? 2 : 0,
-                borderBottomColor: colors.brand.primary,
-              }}
-            >
-              <Icon
-                name={tabIcons[t] as any}
-                size={18}
-                color={sel ? colors.text.inverse : colors.text.secondary}
-              />
-              <AppText
-                variant="md"
-                weight="bold"
-                color={sel ? colors.brand.primary : colors.text.muted}
+        <View
+          style={{
+            flexDirection: 'row',
+            backgroundColor: '#F1F5F9',
+            borderRadius: 8,
+            padding: 3,
+          }}
+        >
+          {tabs.map((t) => {
+            const sel = mobileTab === t;
+            return (
+              <TouchableOpacity
+                key={t}
+                onPress={() => setMobileTab(t)}
+                activeOpacity={0.7}
+                style={{
+                  flex: 1,
+                  paddingVertical: 8,
+                  backgroundColor: sel ? '#FFFFFF' : 'transparent',
+                  borderRadius: 6,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexDirection: 'row',
+                  gap: 6,
+                  ...(sel ? {
+                    shadowColor: '#000000',
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: 0.05,
+                    shadowRadius: 1.5,
+                    elevation: 1,
+                  } : {}),
+                }}
               >
-                {tabLabels[t]}
-              </AppText>
-            </TouchableOpacity>
-          );
-        })}
+                <Icon
+                  name={tabIcons[t] as any}
+                  size={16}
+                  color={sel ? '#0F172A' : '#64748B'}
+                />
+                <AppText
+                  variant="md"
+                  weight={sel ? 'bold' : 'normal'}
+                  color={sel ? '#0F172A' : '#64748B'}
+                >
+                  {tabLabels[t]}
+                </AppText>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
       </View>
 
       {/* Tab: Invoice detail */}
       {mobileTab === 'invoice' && (
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 0, paddingBottom: 24, flexGrow: 1 }}
-          style={{ backgroundColor: colors.surface.app }}
+          contentContainerStyle={{
+            paddingHorizontal: 6, // Edge-to-Edge 6px
+            paddingTop: 6,
+            gap: 8,
+            paddingBottom: 100,
+          }}
+          style={{ backgroundColor: '#F8FAFC' }}
         >
-          <View style={{ backgroundColor: colors.surface.card, borderBottomWidth: 1, borderBottomColor: colors.border.default }}>
+          {/* CardBox 1: Chi tiết các món */}
+          <View
+            style={{
+              borderRadius: 8,
+              borderWidth: 1,
+              borderColor: '#E5E9F0',
+              backgroundColor: '#FFFFFF',
+              overflow: 'hidden',
+              marginBottom: 8,
+            }}
+          >
+            <View
+              style={{
+                backgroundColor: '#F8FAFC',
+                paddingHorizontal: 10,
+                paddingVertical: 8,
+                borderBottomWidth: 1,
+                borderColor: '#E5E9F0',
+              }}
+            >
+              <AppText variant="md" weight="bold" color="#1E293B">
+                Danh sách món ăn
+              </AppText>
+            </View>
             <OrderItemsList items={pm.orderItems} />
           </View>
-          <View style={{ backgroundColor: colors.surface.card, paddingHorizontal: 16, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: colors.border.default, gap: 12 }}>
+
+          {/* CardBox 2: Tóm tắt thanh toán */}
+          <View
+            style={{
+              borderRadius: 8,
+              borderWidth: 1,
+              borderColor: '#E5E9F0',
+              backgroundColor: '#FFFFFF',
+              overflow: 'hidden',
+              padding: 10,
+              gap: 8,
+              marginBottom: 8,
+            }}
+          >
             <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <AppText color={colors.text.muted}>Tạm tính</AppText>
-              <AppText weight="bold" color={colors.text.primary}>
+              <AppText variant="md" color="#64748B">Tạm tính</AppText>
+              <AppText variant="md" color="#0F172A">
                 {formatPriceFull(total)}
               </AppText>
             </View>
             {pm.vatAmount > 0 && (
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <AppText color={colors.text.muted}>
+                <AppText variant="md" color="#64748B">
                   Thuế VAT (đã gồm)
                 </AppText>
-                <AppText weight="bold" color={colors.text.primary}>
+                <AppText variant="md" color="#0F172A">
                   {formatPriceFull(pm.vatAmount)}
                 </AppText>
               </View>
             )}
-            <View style={{ height: 1, backgroundColor: colors.border.default, marginVertical: 4 }} />
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <AppText color={colors.text.primary}>Tổng cộng</AppText>
-              <AppText variant="md" weight="bold" color={colors.brand.primary}>
+            <View style={{ height: 1, backgroundColor: '#E5E9F0', marginVertical: 2 }} />
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <AppText variant="md" color="#0F172A">Tổng cộng</AppText>
+              <AppText variant="md" weight="bold" color="#EA580C">
                 {formatPriceFull(total)}
               </AppText>
             </View>
@@ -730,237 +786,357 @@ export default function PaymentScreen() {
       {mobileTab === 'payment' && (
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 0, paddingBottom: 24, flexGrow: 1 }}
-          style={{ backgroundColor: colors.surface.app }}
+          contentContainerStyle={{
+            paddingHorizontal: 6, // Edge-to-Edge 6px
+            paddingTop: 6,
+            gap: 8,
+            paddingBottom: 100,
+          }}
+          style={{ backgroundColor: '#F8FAFC' }}
         >
-          {/* Payment methods 2x2 grid */}
-          <View style={{ backgroundColor: colors.surface.card, paddingHorizontal: 16, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: colors.border.default, gap: 12 }}>
-            <AppText
-              variant="md"
-              weight="bold"
+          {/* CardBox 1: Phương thức thanh toán */}
+          <View
+            style={{
+              borderRadius: 8,
+              borderWidth: 1,
+              borderColor: '#E5E9F0',
+              backgroundColor: '#FFFFFF',
+              overflow: 'hidden',
+              marginBottom: 8,
+            }}
+          >
+            <View
               style={{
-                textTransform: 'uppercase',
-                letterSpacing: 0.5,
-                color: colors.text.muted,
+                backgroundColor: '#F8FAFC',
+                paddingHorizontal: 10,
+                paddingVertical: 8,
+                borderBottomWidth: 1,
+                borderColor: '#E5E9F0',
               }}
             >
-              Phương thức thanh toán
-            </AppText>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 12 }}>
-            {PAY_METHODS.map((m) => {
-              const sel = pm.method === m.id;
-              return (
-                <TouchableOpacity
-                  key={m.id}
-                  onPress={() => pm.setMethod(m.id)}
+              <AppText variant="md" weight="bold" color="#1E293B">
+                Phương thức thanh toán
+              </AppText>
+            </View>
+            <View style={{ padding: 10, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: 8 }}>
+              {PAY_METHODS.map((m) => {
+                const sel = pm.method === m.id;
+                return (
+                  <TouchableOpacity
+                    key={m.id}
+                    onPress={() => pm.setMethod(m.id)}
+                    activeOpacity={0.7}
+                    style={{
+                      width: '48%',
+                      paddingVertical: 10,
+                      paddingHorizontal: 8,
+                      borderRadius: 8,
+                      backgroundColor: sel ? m.bg : '#FFFFFF',
+                      borderWidth: 1,
+                      borderColor: sel ? m.color : '#E5E9F0',
+                      alignItems: 'center',
+                      gap: 6,
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: 8,
+                        backgroundColor: sel ? m.color + '20' : '#F1F5F9',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <Icon
+                        name={m.icon as any}
+                        size={20}
+                        color={sel ? m.color : '#64748B'}
+                      />
+                    </View>
+                    <AppText
+                      variant="md"
+                      weight={sel ? 'bold' : 'normal'}
+                      color={sel ? m.color : '#475569'}
+                      style={{ textAlign: 'center' }}
+                    >
+                      {m.label}
+                    </AppText>
+                    {sel && (
+                      <View
+                        style={{
+                          position: 'absolute',
+                          top: 6,
+                          right: 6,
+                          width: 18,
+                          height: 18,
+                          borderRadius: 9,
+                          backgroundColor: m.color,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <Icon name="check" size={12} color="#FFFFFF" />
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </View>
+
+          {/* CardBox 2: Chi tiết tiền mặt */}
+          {pm.method === 'tien_mat' && (
+            <View
+              style={{
+                borderRadius: 8,
+                borderWidth: 1,
+                borderColor: '#E5E9F0',
+                backgroundColor: '#FFFFFF',
+                overflow: 'hidden',
+                marginBottom: 8,
+              }}
+            >
+              <View
+                style={{
+                  backgroundColor: '#F8FAFC',
+                  paddingHorizontal: 10,
+                  paddingVertical: 8,
+                  borderBottomWidth: 1,
+                  borderColor: '#E5E9F0',
+                }}
+              >
+                <AppText variant="md" weight="bold" color="#1E293B">
+                  Nhập tiền khách đưa
+                </AppText>
+              </View>
+              <View style={{ padding: 10, gap: 10 }}>
+                <View
                   style={{
-                    width: '48%',
+                    backgroundColor: '#F8FAFC',
+                    borderRadius: 8,
                     paddingVertical: 10,
-                    borderRadius: 0,
-                    backgroundColor: sel ? m.bg : colors.surface.card,
-                    borderWidth: 1,
-                    borderColor: sel ? m.color : colors.border.default,
                     alignItems: 'center',
-                    gap: 8,
+                    borderWidth: 1,
+                    borderColor: '#E5E9F0',
                   }}
                 >
-                  <View
+                  <AppText
+                    variant="md"
+                    weight="bold"
+                    color={pm.cashInput ? '#0F172A' : '#94A3B8'}
+                  >
+                    {pm.cashInput ? formatPriceFull(pm.cash) : '0đ'}
+                  </AppText>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    paddingVertical: 8,
+                    paddingHorizontal: 10,
+                    backgroundColor: changeBg,
+                    borderRadius: 8,
+                    borderWidth: 1,
+                    borderColor: changeBorder,
+                  }}
+                >
+                  <AppText
+                    variant="md"
+                    weight="normal"
+                    color={pm.change >= 0 ? colors.status.success : colors.status.danger}
+                  >
+                    Tiền thối:
+                  </AppText>
+                  <AppText
+                    variant="md"
+                    weight="bold"
+                    color={pm.change >= 0 ? colors.status.success : colors.status.danger}
+                  >
+                    {pm.change >= 0
+                      ? formatPriceFull(pm.change)
+                      : `Thiếu ${formatPriceFull(Math.abs(pm.change))}`}
+                  </AppText>
+                </View>
+
+                <AppText variant="sm" color="#64748B">
+                  Phím chọn tiền nhanh (1-chạm không phím ảo):
+                </AppText>
+                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6 }}>
+                  {/* Row 1 */}
+                  <TouchableOpacity
+                    onPress={() => pm.setCashInput(String(total))}
+                    activeOpacity={0.7}
                     style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: 8,
-                      backgroundColor: sel ? m.color + '20' : colors.surface.app,
+                      width: '23.5%',
+                      height: 44,
+                      borderRadius: 6,
+                      backgroundColor: pm.cash === total ? '#FFF7ED' : '#F8FAFC',
+                      borderWidth: 1,
+                      borderColor: pm.cash === total ? '#F97316' : '#E5E9F0',
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}
                   >
-                    <Icon
-                      name={m.icon as any}
-                      size={20}
-                      color={sel ? m.color : colors.icon.muted}
-                    />
-                  </View>
-                  <AppText
-                    variant="md"
-                    weight="bold"
-                    color={sel ? m.color : colors.text.muted}
-                    style={{ textAlign: 'center' }}
-                  >
-                    {m.label}
-                  </AppText>
-                  {sel && (
-                    <View
-                      style={{
-                        position: 'absolute',
-                        top: 8,
-                        right: 8,
-                        width: 20,
-                        height: 20,
-                        borderRadius: 3,
-                        backgroundColor: m.color,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Icon name="check" size={14} color={colors.text.inverse} />
-                    </View>
-                  )}
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-          </View>
+                    <AppText variant="xs" color="#F97316" weight="bold">Đúng tiền</AppText>
+                  </TouchableOpacity>
 
-          {/* Cash — smartSuggestions 2×2 grid */}
-          {pm.method === 'tien_mat' && (
-            <View style={{ backgroundColor: colors.surface.card, paddingHorizontal: 16, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: colors.border.default, gap: 16 }}>
-              <View
-                style={{
-                  backgroundColor: colors.surface.app,
-                  borderRadius: 0,
-                  paddingVertical: 10,
-                  alignItems: 'center',
-                  borderWidth: 1,
-                  borderColor: colors.border.default,
-                }}
-              >
-                <AppText
-                  variant="md"
-                  weight="bold"
-                  color={pm.cashInput ? colors.text.primary : colors.text.placeholder}
-                >
-                  {pm.cashInput ? formatPriceFull(pm.cash) : '0đ'}
-                </AppText>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  paddingVertical: 12,
-                  paddingHorizontal: 12,
-                  backgroundColor: changeBg,
-                  borderWidth: 1,
-                  borderColor: changeBorder,
-                }}
-              >
-                <AppText
-                  variant="md"
-                  weight="bold"
-                  color={pm.change >= 0 ? colors.status.success : colors.status.danger}
-                >
-                  Tiền thối:
-                </AppText>
-                <AppText
-                  variant="md"
-                  weight="bold"
-                  color={pm.change >= 0 ? colors.status.success : colors.status.danger}
-                >
-                  {pm.change >= 0
-                    ? formatPriceFull(pm.change)
-                    : `Thiếu ${formatPriceFull(Math.abs(pm.change))}`}
-                </AppText>
-              </View>
-              <AppText variant="md" color={colors.text.muted}>
-                Chọn số tiền khách đưa:
-              </AppText>
-              {/* 4.2 — Quick amount 2×2 grid */}
-              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                {pm.smartSuggestions.slice(0, 4).map((amt, idx) => {
-                  const label = idx === 0 ? 'Đúng tiền' : '';
-                  return (
+                  {[10000, 20000, 50000].map((denom) => (
                     <TouchableOpacity
-                      key={amt}
-                      onPress={() => pm.setCashInput(String(amt))}
+                      key={denom}
+                      onPress={() => {
+                        const current = pm.cashInput ? pm.cash : 0;
+                        pm.setCashInput(String(current + denom));
+                      }}
+                      activeOpacity={0.7}
                       style={{
-                        width: '48%',
-                        height: 52,
-                        borderRadius: shape.radius.md,
-                        backgroundColor: pm.cash === amt ? colors.brand.primaryBg : colors.surface.app,
+                        width: '23.5%',
+                        height: 44,
+                        borderRadius: 6,
+                        backgroundColor: '#F8FAFC',
                         borderWidth: 1,
-                        borderColor: pm.cash === amt ? colors.brand.primary : colors.border.default,
+                        borderColor: '#E5E9F0',
                         alignItems: 'center',
                         justifyContent: 'center',
                       }}
                     >
-                      {label ? (
-                        <>
-                          <AppText
-                            variant="sm"
-                            color={pm.cash === amt ? colors.brand.primary : colors.text.primary}
-                          >
-                            {label}
-                          </AppText>
-                          <AppText
-                            variant="md"
-                            color={pm.cash === amt ? colors.brand.primary : colors.text.primary}
-                          >
-                            {formatPriceFull(amt)}
-                          </AppText>
-                        </>
-                      ) : (
-                        <AppText
-                          variant="md"
-                          weight="bold"
-                          color={pm.cash === amt ? colors.brand.primary : colors.text.primary}
-                        >
-                          {formatPriceFull(amt)}
-                        </AppText>
-                      )}
+                      <AppText variant="sm" color="#0F172A" weight="bold">
+                        +{denom / 1000}k
+                      </AppText>
                     </TouchableOpacity>
-                  );
-                })}
+                  ))}
+
+                  {/* Row 2 */}
+                  {[100000, 200000, 500000].map((denom) => (
+                    <TouchableOpacity
+                      key={denom}
+                      onPress={() => {
+                        const current = pm.cashInput ? pm.cash : 0;
+                        pm.setCashInput(String(current + denom));
+                      }}
+                      activeOpacity={0.7}
+                      style={{
+                        width: '23.5%',
+                        height: 44,
+                        borderRadius: 6,
+                        backgroundColor: '#F8FAFC',
+                        borderWidth: 1,
+                        borderColor: '#E5E9F0',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <AppText variant="sm" color="#0F172A" weight="bold">
+                        +{denom / 1000}k
+                      </AppText>
+                    </TouchableOpacity>
+                  ))}
+
+                  <TouchableOpacity
+                    onPress={() => pm.setCashInput('')}
+                    activeOpacity={0.7}
+                    style={{
+                      width: '23.5%',
+                      height: 44,
+                      borderRadius: 6,
+                      backgroundColor: '#FEF2F2',
+                      borderWidth: 1,
+                      borderColor: '#FCA5A5',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <AppText variant="sm" color="#EF4444" weight="bold">Xóa (C)</AppText>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           )}
 
-          {/* Card reader */}
+          {/* CardBox 3: Quẹt thẻ */}
           {pm.method === 'card' && (
-            <View style={{ backgroundColor: colors.surface.card, paddingHorizontal: 16, paddingVertical: 24, borderBottomWidth: 1, borderBottomColor: colors.border.default, gap: 12, alignItems: 'center' }}>
-              <View style={{ width: 80, height: 52, borderRadius: 12, backgroundColor: colors.surface.overlay, alignItems: 'center', justifyContent: 'center' }}>
+            <View
+              style={{
+                borderRadius: 8,
+                borderWidth: 1,
+                borderColor: '#E5E9F0',
+                backgroundColor: '#FFFFFF',
+                overflow: 'hidden',
+                padding: 16,
+                gap: 10,
+                alignItems: 'center',
+                marginBottom: 8,
+              }}
+            >
+              <View style={{ width: 80, height: 52, borderRadius: 8, backgroundColor: '#F1F5F9', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#E5E9F0' }}>
                 <Icon name="credit-card-chip" size={20} color={colors.status.warning} />
-                <Text style={{ ...font.sm, color: colors.text.muted, marginTop: 2, letterSpacing: 2 }}>•••• 4242</Text>
+                <AppText variant="xs" color="#64748B" style={{ marginTop: 2, letterSpacing: 2 }}>•••• 4242</AppText>
               </View>
-              <Text style={{ ...font.lg, color: colors.text.primary }}>Đang chờ quẹt thẻ</Text>
-              <Text style={{ ...font.lg, color: colors.brand.primary }}>{formatPriceFull(total)}</Text>
-              <ActivityIndicator size="small" color={colors.brand.primary} />
+              <AppText variant="md" color="#0F172A">Đang chờ quẹt thẻ</AppText>
+              <AppText variant="md" weight="bold" color="#EA580C">{formatPriceFull(total)}</AppText>
+              <ActivityIndicator size="small" color="#EA580C" />
             </View>
           )}
 
-          {/* QR code */}
+          {/* CardBox 4: Dynamic VietQR */}
           {pm.method === 'qr' && (
-            <View style={{ backgroundColor: colors.surface.card, paddingHorizontal: 16, paddingVertical: 24, borderBottomWidth: 1, borderBottomColor: colors.border.default, gap: 12, alignItems: 'center' }}>
-              <View style={{ width: 140, height: 140, borderRadius: 0, borderWidth: 1.5, borderColor: colors.border.default, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center', padding: 8 }}>
-                <Icon name="qrcode-scan" size={100} color={colors.text.primary} />
+            <View
+              style={{
+                borderRadius: 8,
+                borderWidth: 1,
+                borderColor: '#E5E9F0',
+                backgroundColor: '#FFFFFF',
+                overflow: 'hidden',
+                padding: 16,
+                gap: 10,
+                alignItems: 'center',
+                marginBottom: 8,
+              }}
+            >
+              <View style={{ width: 140, height: 140, borderRadius: 8, borderWidth: 1.5, borderColor: '#E5E9F0', backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', padding: 8 }}>
+                <Icon name="qrcode-scan" size={100} color="#0F172A" />
               </View>
-              <AppText variant="md" weight="bold" color={colors.text.primary}>Quét mã QR để thanh toán</AppText>
-              <AppText variant="md" weight="bold" color={colors.brand.primary}>{formatPriceFull(total)}</AppText>
+              <AppText variant="md" color="#0F172A">Quét mã QR để thanh toán</AppText>
+              <AppText variant="md" weight="bold" color="#EA580C">{formatPriceFull(total)}</AppText>
             </View>
           )}
 
-          {/* Bank transfer */}
+          {/* CardBox 5: Chuyển khoản */}
           {pm.method === 'chuyen_khoan' && (
-            <View style={{ backgroundColor: colors.surface.card, paddingHorizontal: 16, paddingVertical: 24, borderBottomWidth: 1, borderBottomColor: colors.border.default, gap: 16, alignItems: 'center' }}>
-              <View style={{ width: 140, height: 140, borderRadius: 0, borderWidth: 1.5, borderColor: colors.border.default, backgroundColor: colors.surface.card, alignItems: 'center', justifyContent: 'center', padding: 8 }}>
-                <Icon name="qrcode-scan" size={100} color={colors.text.primary} />
+            <View
+              style={{
+                borderRadius: 8,
+                borderWidth: 1,
+                borderColor: '#E5E9F0',
+                backgroundColor: '#FFFFFF',
+                overflow: 'hidden',
+                padding: 16,
+                gap: 12,
+                alignItems: 'center',
+                marginBottom: 8,
+              }}
+            >
+              <View style={{ width: 140, height: 140, borderRadius: 8, borderWidth: 1.5, borderColor: '#E5E9F0', backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', padding: 8 }}>
+                <Icon name="qrcode-scan" size={100} color="#0F172A" />
               </View>
-              <View style={{ width: '100%', gap: 12 }}>
+              <View style={{ width: '100%', gap: 10 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <AppText color={colors.text.muted}>Ngân hàng</AppText>
-                  <AppText weight="bold" color={colors.text.primary}>MB Bank</AppText>
+                  <AppText variant="md" color="#64748B">Ngân hàng</AppText>
+                  <AppText variant="md" color="#0F172A">MB Bank</AppText>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <AppText color={colors.text.muted}>Số tài khoản</AppText>
-                  <AppText weight="bold" color={colors.text.primary}>0987654321</AppText>
+                  <AppText variant="md" color="#64748B">Số tài khoản</AppText>
+                  <AppText variant="md" color="#0F172A">0987654321</AppText>
                 </View>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <AppText color={colors.text.muted}>Số tiền</AppText>
-                  <AppText weight="bold" color={colors.brand.primary}>{formatPriceFull(total)}</AppText>
+                  <AppText variant="md" color="#64748B">Số tiền</AppText>
+                  <AppText variant="md" weight="bold" color="#EA580C">{formatPriceFull(total)}</AppText>
                 </View>
               </View>
-              <View style={{ backgroundColor: colors.surface.app, borderRadius: 0, paddingVertical: 16, paddingHorizontal: 12, borderWidth: 1, borderColor: colors.border.default, width: '100%', alignItems: 'center' }}>
-                <AppText variant="sm" color={colors.text.muted} style={{ textAlign: 'center' }}>
-                  TT {tableName} #{orderId?.slice(-6)}
+              <View style={{ backgroundColor: '#F8FAFC', borderRadius: 8, paddingVertical: 10, paddingHorizontal: 12, borderWidth: 1, borderColor: '#E5E9F0', width: '100%', alignItems: 'center' }}>
+                <AppText variant="md" color="#475569" style={{ textAlign: 'center' }}>
+                  Nội dung: TT {tableName} #{orderId?.slice(-6)}
                 </AppText>
               </View>
             </View>
@@ -968,31 +1144,113 @@ export default function PaymentScreen() {
         </ScrollView>
       )}
 
-      {/* Pay button (always visible) */}
+      {/* Pay button & Split bill toggle (always visible at bottom with 50% bottom inset) */}
       {mobileTab === 'payment' && (
-        <View style={{ paddingHorizontal: 16, paddingBottom: Math.max(12, insets.bottom), paddingTop: 8 }}>
+        <View
+          style={{
+            paddingHorizontal: 12,
+            paddingBottom: Platform.OS === 'web' ? 6 : Math.max(Math.floor(insets.bottom * 0.5), 6),
+            paddingTop: 8,
+            backgroundColor: '#FFFFFF',
+            borderTopWidth: 1,
+            borderTopColor: '#E2E8F0',
+            gap: 6,
+          }}
+        >
+          {/* Quick options row: Auto-print K80 & Split bill */}
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 2 }}>
+            <TouchableOpacity
+              onPress={() => setAutoPrint(!autoPrint)}
+              activeOpacity={0.7}
+              hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 6,
+              }}
+            >
+              <Icon
+                name={autoPrint ? 'checkbox-marked' : 'checkbox-blank-outline'}
+                size={18}
+                color={autoPrint ? '#EA580C' : '#94A3B8'}
+              />
+              <AppText variant="md" color={autoPrint ? '#0F172A' : '#64748B'}>
+                Tự động in K80
+              </AppText>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => pm.handlePrint()}
+              activeOpacity={0.7}
+              hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 4,
+              }}
+            >
+              <Icon name="printer-eye" size={16} color="#64748B" />
+              <AppText variant="md" color="#64748B">In thử</AppText>
+            </TouchableOpacity>
+
+            {!showSplitter && (
+              <TouchableOpacity
+                onPress={() => setShowSplitter(true)}
+                activeOpacity={0.7}
+                hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+                style={{
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                  gap: 4,
+                }}
+              >
+                <Icon name="content-copy" size={14} color="#EA580C" />
+                <AppText variant="md" color="#EA580C">Chia HĐ</AppText>
+              </TouchableOpacity>
+            )}
+          </View>
+
           <TouchableOpacity
             onPress={() => pm.handlePay()}
             disabled={!pm.canPay || pm.paying}
+            activeOpacity={0.85}
+            hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
             style={{
               width: '100%',
-              height: 56,
+              height: 52,
               borderRadius: 8,
-              backgroundColor: pm.canPay ? colors.brand.primary : colors.surface.disabled,
+              backgroundColor: pm.canPay ? '#F97316' : '#E2E8F0',
               alignItems: 'center',
-              justifyContent: 'center',
+              justifyContent: 'space-between',
+              paddingHorizontal: 14,
               flexDirection: 'row',
-              gap: 8,
             }}
           >
-            {pm.paying ? (
-              <ActivityIndicator color={colors.text.inverse} />
-            ) : (
-              <Icon name="check-circle" size={24} color={pm.canPay ? colors.text.inverse : colors.text.muted} />
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              {pm.paying ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <Icon name="check-circle" size={20} color={pm.canPay ? '#FFFFFF' : '#94A3B8'} />
+              )}
+              <AppText variant="md" weight="bold" color={pm.canPay ? '#FFFFFF' : '#94A3B8'}>
+                {pm.paying ? 'Đang xử lý...' : 'Hoàn tất thanh toán'}
+              </AppText>
+            </View>
+
+            {pm.canPay && (
+              <View
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.22)',
+                  paddingHorizontal: 10,
+                  paddingVertical: 4,
+                  borderRadius: 6,
+                }}
+              >
+                <AppText variant="md" weight="bold" color="#FFFFFF">
+                  {formatPriceFull(total)}
+                </AppText>
+              </View>
             )}
-            <AppText variant="md" weight="bold" color={pm.canPay ? colors.text.inverse : colors.text.muted}>
-              {pm.paying ? 'Đang xử lý...' : 'Hoàn tất thanh toán'}
-            </AppText>
           </TouchableOpacity>
         </View>
       )}
@@ -1002,7 +1260,7 @@ export default function PaymentScreen() {
   const btnSize = isWide ? 40 : 36;
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+    <SafeAreaView edges={isWide ? ['top', 'left', 'right', 'bottom'] : []} style={{ flex: 1, backgroundColor: colors.surface.app }}>
       <UnifiedHeader
         icon="receipt"
         title="Thanh toán"
@@ -1022,7 +1280,7 @@ export default function PaymentScreen() {
           >
             <AppText
               variant="md"
-              weight="bold"
+              
               color={colors.text.inverse}
             >
               {formatPriceFull(total)}
@@ -1047,10 +1305,10 @@ export default function PaymentScreen() {
           >
             <Icon name="alert-circle" size={24} color={colors.status.danger} />
             <View style={{ flex: 1 }}>
-              <AppText weight="bold" color={palette.red[800]}>
+              <AppText color={palette.red[800]}>
                 Thiếu ID đơn hàng
               </AppText>
-              <AppText variant="sm" color={colors.status.danger} style={{ marginTop: 2 }}>
+              <AppText variant="md" color={colors.status.danger} style={{ marginTop: 2 }}>
                 Không thể tiếp tục thanh toán vì chưa tạo được đơn hàng trên hệ thống.
               </AppText>
             </View>
@@ -1063,24 +1321,26 @@ export default function PaymentScreen() {
                 borderRadius: 12,
               }}
             >
-              <AppText variant="sm" color={colors.text.inverse}>Quay lại</AppText>
+              <AppText variant="md" color={colors.text.inverse}>Quay lại</AppText>
             </TouchableOpacity>
           </View>
         )}
 
         {orderId && (isWide ? iPadView : iPhoneView)}
 
-        <SplitBillToggle
-          showSplitter={showSplitter}
-          setShowSplitter={setShowSplitter}
-          splits={splits}
-          setSplits={setSplits}
-          handlePay={pm.handlePay}
-          paying={pm.paying}
-          canPay={pm.canPay}
-          total={total}
-        />
+        {(isWide || showSplitter) && (
+          <SplitBillToggle
+            showSplitter={showSplitter}
+            setShowSplitter={setShowSplitter}
+            splits={splits}
+            setSplits={setSplits}
+            handlePay={pm.handlePay}
+            paying={pm.paying}
+            canPay={pm.canPay}
+            total={total}
+          />
+        )}
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

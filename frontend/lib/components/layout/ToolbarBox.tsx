@@ -28,12 +28,12 @@ export default function ToolbarBox({
         <View style={styles.titleRow}>
           {codeTag && (
             <View style={[styles.codeTag, { backgroundColor: `${codeColor}15` }]}>
-              <AppText variant="sm" weight="bold" color={codeColor}>
+              <AppText variant="sm" color={codeColor}>
                 {codeTag}
               </AppText>
             </View>
           )}
-          <AppText variant="md" weight="bold" color="#0F172A" numberOfLines={1}>
+          <AppText variant="md" color="#0F172A" numberOfLines={1}>
             {title}
           </AppText>
         </View>

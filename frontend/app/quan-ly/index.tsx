@@ -108,12 +108,17 @@ export default function QuanLyDashboard() {
   ];
 
   const renderQuickActions = () => (
-    <View style={{ backgroundColor: colors.surface.card, padding: isWide ? 14 : 12, borderRadius: shape.radius.lg, borderWidth: 1, borderColor: colors.border.light, gap: 10 }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-        <Icon name="flash-outline" size={18} color={colors.brand.primary} />
-        <AppText style={{ ...font.sectionTitle, color: colors.text.primary }}>Thao tác nhanh</AppText>
+    <View style={{ backgroundColor: '#FFFFFF', borderRadius: 8, borderWidth: 1, borderColor: '#E5E9F0', overflow: 'hidden', marginBottom: 8 }}>
+      <View style={{ backgroundColor: '#F8FAFC', paddingHorizontal: 10, paddingVertical: 8, borderBottomWidth: 1, borderColor: '#E5E9F0', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <Icon name="flash-outline" size={18} color={colors.brand.primary} />
+          <AppText style={{ fontSize: 16, fontWeight: '700', color: '#1E293B' }}>Thao tác nhanh</AppText>
+        </View>
+        <View style={{ backgroundColor: '#F1F5F9', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 2, borderWidth: 1, borderColor: '#E2E8F0' }}>
+          <AppText style={{ fontSize: 12, fontWeight: '400', color: '#64748B' }}>4 mục</AppText>
+        </View>
       </View>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: isWide ? 10 : 8 }}>
+      <View style={{ padding: 10, flexDirection: 'row', flexWrap: 'wrap', gap: isWide ? 10 : 8 }}>
         {QUICK_ACTIONS.map((act, i) => (
           <TouchableOpacity
             key={i}
@@ -129,13 +134,13 @@ export default function QuanLyDashboard() {
               gap: 8,
               paddingHorizontal: 10,
               backgroundColor: act.bg,
-              borderRadius: shape.radius.md,
+              borderRadius: 8,
               borderWidth: 1,
-              borderColor: colors.border.light,
+              borderColor: '#E5E9F0',
             }}
           >
             <Icon name={act.icon as any} size={20} color={act.color} />
-            <AppText variant="md" color={act.color} numberOfLines={1}>
+            <AppText variant="md" color={act.color} numberOfLines={2}>
               {act.title}
             </AppText>
           </TouchableOpacity>
@@ -161,7 +166,7 @@ export default function QuanLyDashboard() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={styles.container} edges={isWide ? ['top', 'left', 'right', 'bottom'] : ['left', 'right']}>
       <ScreenHeader
         title="Quản Lý"
         subtitle={isWide ? "Trung tâm tổng quan kinh doanh & vận hành" : undefined}
@@ -208,7 +213,7 @@ export default function QuanLyDashboard() {
                 }}
               >
                 <Icon name="point-of-sale" size={isWide ? 18 : 16} color="#FFF" />
-                <AppText variant="md" weight="bold" color="#FFF">Bán hàng</AppText>
+                <AppText variant="md" color="#FFF">Bán hàng</AppText>
               </LinearGradient>
             </TouchableOpacity>
           </View>
@@ -234,13 +239,11 @@ export default function QuanLyDashboard() {
             <View style={{ flex: 1.4, gap: 12 }}>
               <RevenueChart data={data?.revenue_by_hour} loading={loading} />
               {!loading && data?.table_stats && (
-                <View style={{ backgroundColor: colors.surface.card, padding: 14, borderRadius: shape.radius.lg }}>
-                  <OccupancyProgress
-                    trong={data.table_stats.trong}
-                    coKhach={data.table_stats.co_khach}
-                    daDat={data.table_stats.da_dat}
-                  />
-                </View>
+                <OccupancyProgress
+                  trong={data.table_stats.trong}
+                  coKhach={data.table_stats.co_khach}
+                  daDat={data.table_stats.da_dat}
+                />
               )}
             </View>
 
@@ -255,13 +258,11 @@ export default function QuanLyDashboard() {
           <View style={{ gap: 8 }}>
             <RevenueChart data={data?.revenue_by_hour} loading={loading} />
 
-            <View style={{ backgroundColor: colors.surface.card, padding: 10, borderRadius: shape.radius.lg }}>
-              <OccupancyProgress
-                trong={data?.table_stats?.trong ?? 0}
-                coKhach={data?.table_stats?.co_khach ?? 0}
-                daDat={data?.table_stats?.da_dat ?? 0}
-              />
-            </View>
+            <OccupancyProgress
+              trong={data?.table_stats?.trong ?? 0}
+              coKhach={data?.table_stats?.co_khach ?? 0}
+              daDat={data?.table_stats?.da_dat ?? 0}
+            />
 
             <TopProductsList data={data?.top_products} loading={loading} />
             <LowStockList items={data?.low_stock_items} loading={loading} />

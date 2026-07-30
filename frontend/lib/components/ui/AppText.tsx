@@ -3,7 +3,7 @@ import { Text, TextProps } from 'react-native';
 import { font, colors } from '../../theme';
 
 interface AppTextProps extends TextProps {
-  variant?: 'sm' | 'md' | 'lg';
+  variant?: 'xs' | 'sm' | 'md' | 'lg';
   weight?: 'normal' | 'bold';
   italic?: boolean;
   color?: string;
@@ -12,10 +12,12 @@ interface AppTextProps extends TextProps {
 
 /**
  * AppText — Mobile & iPad Native typography system.
- * Strict 3 Font Sizes Design System:
- * - sm = 13px (Small: Caption, Hint, Badge)
- * - md = 16px (Medium: Body, Title, Button, Item Name, Price, Card Titles, KPI Metrics)
- * - lg = 18px (Large: EXCLUSIVE for Screen Header Title & Modal Title ONLY)
+ * Strict 4 Font Sizes Design System (iOS HIG aligned):
+ * - xs = 12px (Tiny: Badge, tag, subtle label ≈ iOS Caption 2)
+ * - sm = 14px (Small: Caption, Note, Badge ≈ iOS Footnote)
+ * - md = 16px (Medium: Body, Labels, Items, Prices ≈ iOS Callout)
+ * - lg = 18px (Large: EXCLUSIVE for Screen Header Title & Modal Title ONLY ≈ iOS Headline)
+ * Bold allowed ONLY for: filter chip active, section header, KPI total.
  */
 export default function AppText({
   variant = 'md',
@@ -30,6 +32,8 @@ export default function AppText({
 }: AppTextProps) {
   const getFontToken = () => {
     switch (variant) {
+      case 'xs':
+        return weight === 'bold' ? font.xsBold : font.xs;
       case 'sm':
         if (italic) return font.captionItalic;
         return weight === 'bold' ? font.smBold : font.sm;

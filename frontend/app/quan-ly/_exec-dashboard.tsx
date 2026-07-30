@@ -46,11 +46,11 @@ export default function ExecDashboardScreen() {
       render: (r) => (
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
           <View style={{ width: 28, height: 28, borderRadius: 14, backgroundColor: '#F1F5F9', alignItems: 'center', justifyContent: 'center' }}>
-            <AppText variant="sm" weight="bold" color={colors.brand.primary} style={{ fontSize: 10 }}>
+            <AppText variant="md" color={colors.brand.primary}>
               {tab === 'branch' ? 'CN' : 'Ng'}
             </AppText>
           </View>
-          <AppText variant="sm" weight="bold" color="#050505" numberOfLines={1}>
+          <AppText variant="md" color="#050505" numberOfLines={1}>
             {r.branch || r.date?.slice(5) || r.date || 'Chi nhánh'}
           </AppText>
         </View>
@@ -63,7 +63,7 @@ export default function ExecDashboardScreen() {
       align: 'right',
       sortable: true,
       sortValue: (r) => r.revenue || 0,
-      render: (r) => <AppText variant="sm" weight="bold" color={colors.brand.primary}>{formatVND(r.revenue || 0)}</AppText>,
+      render: (r) => <AppText variant="md" color={colors.brand.primary}>{formatVND(r.revenue || 0)}</AppText>,
     },
   ];
 
@@ -80,7 +80,7 @@ export default function ExecDashboardScreen() {
         <View style={[ss.iconCircleSm, { backgroundColor: '#EEF2FF' }]}>
           <Icon name="chart-pie" size={14} color={colors.brand.primary} />
         </View>
-        <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1 }}>Chỉ số điều hành P&L</AppText>
+        <AppText variant="md" color="#1E293B" style={{ flex: 1 }}>Chỉ số điều hành P&L</AppText>
       </View>
       <View style={{ padding: 10, gap: 8 }}>
         {[
@@ -91,8 +91,8 @@ export default function ExecDashboardScreen() {
           { label: 'Trung bình / Đơn hàng', value: formatVND(avgOrder), color: '#0EA5E9' },
         ].map((r, i) => (
           <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 6, borderBottomWidth: i === 4 ? 0 : 1, borderBottomColor: '#F1F5F9' }}>
-            <AppText variant="sm" color="#64748B">{r.label}</AppText>
-            <AppText variant="sm" weight="bold" color="#0F172A">{r.value}</AppText>
+            <AppText variant="md" color="#64748B">{r.label}</AppText>
+            <AppText variant="md" color="#0F172A">{r.value}</AppText>
           </View>
         ))}
       </View>
@@ -102,21 +102,21 @@ export default function ExecDashboardScreen() {
   const renderMobileCard = ({ item: r }: { item: any }) => (
     <TouchableOpacity activeOpacity={0.7} style={ss.listRow} key={r.id || r.branch || r.date}>
       <View style={[ss.iconCircleSm, { backgroundColor: '#EEF2FF' }]}>
-        <AppText variant="sm" weight="bold" color={colors.brand.primary} style={{ fontSize: 10 }}>
+        <AppText variant="md" color={colors.brand.primary}>
           {tab === 'branch' ? 'CN' : r.date?.slice(5) || 'Ng'}
         </AppText>
       </View>
       <View style={{ flex: 1, paddingLeft: 8 }}>
-        <AppText variant="sm" weight="bold" color="#0F172A" numberOfLines={1}>
+        <AppText variant="md" color="#0F172A" numberOfLines={1}>
           {r.branch || r.date || 'Chi nhánh'}
         </AppText>
-        <AppText variant="sm" color="#64748B">
+        <AppText variant="md" color="#64748B">
           {tab === 'branch' ? 'Chi nhánh hoạt động' : `Ngày ${r.date}`}
         </AppText>
       </View>
       <View style={{ alignItems: 'flex-end' }}>
-        <AppText variant="sm" weight="bold" color={colors.brand.primary}>{formatVND(r.revenue || 0)}</AppText>
-        <AppText variant="sm" color="#64748B">Doanh thu</AppText>
+        <AppText variant="md" color={colors.brand.primary}>{formatVND(r.revenue || 0)}</AppText>
+        <AppText variant="md" color="#64748B">Doanh thu</AppText>
       </View>
     </TouchableOpacity>
   );
@@ -127,41 +127,41 @@ export default function ExecDashboardScreen() {
       <View style={ss.metricContainer}>
         <View style={ss.metricCard}>
           <View style={[ss.metricIcon, { backgroundColor: '#ECFDF5' }]}>
-            <AppText variant="sm" weight="bold" color={colors.status.success} style={{ fontSize: 11 }}>đ</AppText>
+            <AppText variant="md" color={colors.status.success}>đ</AppText>
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color={colors.status.success}>{formatVND(totalRevenue)}</AppText>
-            <AppText variant="sm" color="#64748B">Doanh thu</AppText>
+            <AppText variant="md" color={colors.status.success}>{formatVND(totalRevenue)}</AppText>
+            <AppText variant="md" color="#64748B">Doanh thu</AppText>
           </View>
         </View>
 
         <View style={ss.metricCard}>
           <View style={[ss.metricIcon, { backgroundColor: '#EEF2FF' }]}>
-            <AppText variant="sm" weight="bold" color={colors.brand.primary} style={{ fontSize: 11 }}>đơn</AppText>
+            <AppText variant="md" color={colors.brand.primary}>đơn</AppText>
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#0F172A">{totalOrders} đơn</AppText>
-            <AppText variant="sm" color="#64748B">Đơn hàng</AppText>
+            <AppText variant="md" color="#0F172A">{totalOrders} đơn</AppText>
+            <AppText variant="md" color="#64748B">Đơn hàng</AppText>
           </View>
         </View>
 
         <View style={ss.metricCard}>
           <View style={[ss.metricIcon, { backgroundColor: '#FFF7ED' }]}>
-            <AppText variant="sm" weight="bold" color="#F97316" style={{ fontSize: 11 }}>bàn</AppText>
+            <AppText variant="md" color="#F97316">bàn</AppText>
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#F97316">{activeTables} bàn</AppText>
-            <AppText variant="sm" color="#64748B">Đang dùng</AppText>
+            <AppText variant="md" color="#F97316">{activeTables} bàn</AppText>
+            <AppText variant="md" color="#64748B">Đang dùng</AppText>
           </View>
         </View>
 
         <View style={ss.metricCard}>
           <View style={[ss.metricIcon, { backgroundColor: '#F3E8FF' }]}>
-            <AppText variant="sm" weight="bold" color="#8B5CF6" style={{ fontSize: 11 }}>%</AppText>
+            <AppText variant="md" color="#8B5CF6">%</AppText>
           </View>
           <View style={{ flex: 1 }}>
-            <AppText variant="md" weight="bold" color="#8B5CF6">{tableOccupancy}%</AppText>
-            <AppText variant="sm" color="#64748B">Lấp đầy</AppText>
+            <AppText variant="md" color="#8B5CF6">{tableOccupancy}%</AppText>
+            <AppText variant="md" color="#64748B">Lấp đầy</AppText>
           </View>
         </View>
       </View>
@@ -182,7 +182,7 @@ export default function ExecDashboardScreen() {
                 onPress={() => setTab(t)}
                 style={[ss.filterChip, active && ss.filterChipActive]}
               >
-                <AppText variant="sm" weight="bold" color={active ? colors.brand.primary : "#334155"}>
+                <AppText variant="md" color={active ? colors.brand.primary : "#334155"}>
                   {t === 'branch' ? 'Theo chi nhánh' : '7 ngày gần đây'}
                 </AppText>
               </TouchableOpacity>
@@ -225,7 +225,7 @@ export default function ExecDashboardScreen() {
               <View style={[ss.iconCircleSm, { backgroundColor: '#EEF2FF' }]}>
                 <Icon name="view-list-outline" size={14} color={colors.brand.primary} />
               </View>
-              <AppText variant="sm" weight="bold" color="#1E293B" style={{ flex: 1 }}>
+              <AppText variant="md" color="#1E293B" style={{ flex: 1 }}>
                 {tab === 'branch' ? 'DOANH THU THEO CHI NHÁNH' : 'DOANH THU 7 NGÀY GẦN ĐÂY'} ({rows.length})
               </AppText>
             </View>

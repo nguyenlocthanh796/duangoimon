@@ -249,7 +249,7 @@ export function DonutChart({ data, size = 150, innerRadius = 0.6 }: DonutChartPr
       {/* Center hole */}
       <Circle cx={cx} cy={cy} r={ir} fill="#FFFFFF" />
       {/* Center text */}
-      <SvgText x={cx} y={cy - 3} textAnchor="middle" fontSize={16} fontWeight="700" fill="#0F172A" fontFamily="BeVietnamPro_700Bold">
+      <SvgText x={cx} y={cy - 3} textAnchor="middle" fontSize={16} fill="#0F172A" fontFamily="BeVietnamPro_400Regular">
         {Intl.NumberFormat('vi-VN').format(total)}
       </SvgText>
       <SvgText x={cx} y={cy + 12} textAnchor="middle" fontSize={13} fill="#94A3B8" fontFamily="BeVietnamPro_400Regular">
@@ -282,19 +282,19 @@ export function StatChartCard({
     <View style={sccStyles.card}>
       <View style={sccStyles.top}>
         <View style={{ flex: 1 }}>
-          <AppText variant="sm" style={sccStyles.title}>{title}</AppText>
+          <AppText variant="md" style={sccStyles.title}>{title}</AppText>
           <AppText variant="md" weight="bold" style={[sccStyles.value, { color }]} numberOfLines={1}>
             {value}
           </AppText>
           {trend !== undefined && (
-            <AppText variant="sm"
+            <AppText variant="md"
               style={[
                 sccStyles.trend,
                 { color: isUp ? colors.status.success : colors.status.danger },
               ]}
             >
               {isUp ? '\u2191' : '\u2193'} {Math.abs(trend)}%{' '}
-              <AppText variant="sm" style={sccStyles.trendLabel}>so v\u1edbi k\u1ef3 tr\u01b0\u1edbc</AppText>
+              <AppText variant="md" style={sccStyles.trendLabel}>so v\u1edbi k\u1ef3 tr\u01b0\u1edbc</AppText>
             </AppText>
           )}
         </View>
@@ -310,7 +310,7 @@ export function StatChartCard({
           </View>
         )}
       </View>
-      {subtitle && <AppText variant="sm" style={sccStyles.subtitle}>{subtitle}</AppText>}
+      {subtitle && <AppText variant="md" style={sccStyles.subtitle}>{subtitle}</AppText>}
     </View>
   );
 }
@@ -356,7 +356,7 @@ export function QuickTable({ columns, data, maxRows = 5 }: QuickTableProps) {
       <View style={qtStyles.headerRow}>
         {columns.map((col) => (
           <View key={col.key} style={[qtStyles.headerCell, col.width != null ? { width: col.width } : undefined]}>
-            <AppText variant="sm" weight="bold" style={qtStyles.headerText} numberOfLines={1}>
+            <AppText variant="md" weight="bold" style={qtStyles.headerText} numberOfLines={1}>
               {col.label}
             </AppText>
           </View>
@@ -394,7 +394,7 @@ export function QuickTable({ columns, data, maxRows = 5 }: QuickTableProps) {
       ))}
       {rows.length === 0 && (
         <View style={qtStyles.empty}>
-          <AppText variant="sm" style={qtStyles.emptyText}>Chưa có dữ liệu</AppText>
+          <AppText variant="md" style={qtStyles.emptyText}>Chưa có dữ liệu</AppText>
         </View>
       )}
     </View>
@@ -460,7 +460,7 @@ export function QuickTableSummary({
         }
         return (
           <View key={col.key} style={[qtsStyles.cell, col.width != null ? { width: col.width } : undefined]}>
-            <AppText variant="sm" weight="bold" style={qtsStyles.label}>{col.key === 'label' ? 'Tổng' : ''}</AppText>
+            <AppText variant="md" weight="bold" style={qtsStyles.label}>{col.key === 'label' ? 'Tổng' : ''}</AppText>
           </View>
         );
       })}

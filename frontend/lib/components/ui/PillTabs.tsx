@@ -19,40 +19,42 @@ interface PillTabsProps {
 export default function PillTabs({ items, activeId, onSelect, containerStyle }: PillTabsProps) {
   return (
     <View style={[styles.tabBarWrap, containerStyle]}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
-        {items.map((t) => {
-          const active = activeId === t.id;
-          return (
-            <TouchableOpacity
-              key={t.id}
-              style={[styles.pillBtn, active && styles.pillBtnActive]}
-              onPress={() => onSelect(t.id)}
-              activeOpacity={0.7}
-              delayPressIn={0}
-            >
-              <AppText
-                variant="sm"
-                weight={active ? 'bold' : 'normal'}
-                color={active ? colors.brand.primary : colors.text.primary}
+      <View style={styles.trackContainer}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 4 }}>
+          {items.map((t) => {
+            const active = activeId === t.id;
+            return (
+              <TouchableOpacity
+                key={t.id}
+                style={[styles.pillBtn, active && styles.pillBtnActive]}
+                onPress={() => onSelect(t.id)}
+                activeOpacity={0.8}
+                delayPressIn={0}
               >
-                {t.label}
-              </AppText>
-              {t.count !== undefined && (
-                <View style={[styles.countBadge, active && styles.countBadgeActive]}>
-                  <AppText
-                    variant="sm"
-                    weight="bold"
-                    color={active ? colors.brand.primary : colors.text.secondary}
-                    style={{ fontSize: 11 }}
-                  >
-                    {t.count}
-                  </AppText>
-                </View>
-              )}
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
+                <AppText
+                  variant="md"
+                  weight={active ? 'bold' : 'normal'}
+                  color={active ? colors.brand.primary : colors.text.secondary}
+                >
+                  {t.label}
+                </AppText>
+                {t.count !== undefined && (
+                  <View style={[styles.countBadge, active && styles.countBadgeActive]}>
+                    <AppText
+                      variant="xs"
+                      weight="bold"
+                      color={active ? colors.brand.primary : colors.text.secondary}
+                      style={{ fontSize: 11 }}
+                    >
+                      {t.count}
+                    </AppText>
+                  </View>
+                )}
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+      </View>
     </View>
   );
 }
@@ -60,25 +62,35 @@ export default function PillTabs({ items, activeId, onSelect, containerStyle }: 
 const styles = StyleSheet.create({
   tabBarWrap: {
     paddingHorizontal: 6,
-    paddingVertical: 6,
+    paddingVertical: 4,
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: '#E5E9F0',
+  },
+  trackContainer: {
+    backgroundColor: '#F1F5F9',
+    borderRadius: 8,
+    padding: 3,
   },
   pillBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
     height: 32,
     borderRadius: 6,
-    backgroundColor: '#F8FAFC',
-    borderWidth: 1,
-    borderColor: '#E5E9F0',
+    backgroundColor: 'transparent',
+    borderWidth: 0,
   },
   pillBtnActive: {
-    backgroundColor: '#FFF7ED',
-    borderColor: '#F97316',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
+    elevation: 2,
   },
   countBadge: {
     paddingHorizontal: 5,

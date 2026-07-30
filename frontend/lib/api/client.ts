@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+import { router } from 'expo-router';
 import { ApiError, ExpectedNotFoundError } from '../logger';
 import { getApiBaseUrl } from './serverConfig';
 
@@ -11,8 +13,9 @@ import { getToken as getSecureToken, setToken as setSecureToken, clearToken as c
 let cachedToken: string | null = null;
 
 // Initialize: read token from storage on module load
+let _initPromise: Promise<void> | null = null;
 if (typeof window !== 'undefined') {
-  getSecureToken().then(t => { cachedToken = t; });
+  _initPromise = getSecureToken().then(t => { cachedToken = t; });
 }
 
 const TOKEN_KEY = 'pos_token';
@@ -32,7 +35,13 @@ export async function clearToken() {
 }
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const token = getToken();
+  // Await module-init token load to avoid race condition on first call
+  if (_initPromise) { await _initPromise; _initPromise = null; }
+  let token = getToken();
+  if (!token) {
+    token = await getSecureToken();
+    if (token) cachedToken = token;
+  }
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(options.headers as Record<string, string>),
@@ -52,10 +61,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     clearTimeout(timeoutId);
     if (!res.ok) {
       if (res.status === 401 || res.status === 403) {
-        clearToken();
-        if (typeof window !== 'undefined' && window.location && typeof window.location.href === 'string') {
-          window.location.href = '/login';
-        }
+        await clearToken();
         throw new ApiError(res.status === 401 ? 'Unauthorized' : 'Forbidden', res.status);
       }
       const err = await res.json().catch(() => ({ detail: res.statusText }));
@@ -114,6 +120,7 @@ export interface Product {
   price: number;
   cost_price: number;
   unit: string;
+  image_url: string | null;
   is_active: boolean;
   options: any[];
   vat_rate: number;
@@ -406,6 +413,7 @@ export interface OrderItem {
   product_name: string;
   quantity: number;
   unit_price: number;
+  total: number;
   options: Record<string, any>;
   note: string | null;
   status: string;

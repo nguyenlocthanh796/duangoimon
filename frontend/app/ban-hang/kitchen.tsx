@@ -5,7 +5,6 @@ import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { api } from '../../lib/api';
 import { logger } from '../../lib/logger';
-import { getApiBaseUrl } from '../../lib/api/serverConfig';
 import { colors, palette, font, formatPrice } from '../../lib/theme';
 import { shape } from '../../lib/theme/shape';
 import { useAuth } from '../../lib/context/AuthContext';
@@ -16,6 +15,7 @@ import { useResponsive } from '../../lib/hooks/useResponsive';
 import UnifiedHeader from '../../lib/components/ui/UnifiedHeader';
 import AppText from '../../lib/components/ui/AppText';
 import type { TicketOrder, KanbanStatus } from '../../lib/components/kitchen/TicketCard';
+import { subscribeRealtimeSync } from '../../lib/sync/realtimeSync';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const formatTime = (d: Date) =>
@@ -81,15 +81,10 @@ export default function KitchenScreen() {
   const [colMap, setColMap] = useState<Record<string, KanbanStatus>>({});
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState(new Date());
-  const [wsStatus, setWsStatus] = useState<'connecting' | 'connected' | 'disconnected'>(
-    'connecting'
-  );
   const [activeTab, setActiveTab] = useState<KanbanStatus>('cho_xu_ly');
   const [soundEnabled, setSoundEnabled] = useState(true);
 
-  const wsRef = useRef<WebSocket | null>(null);
   const isMounted = useRef(true);
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const soundEnabledRef = useRef(soundEnabled);
   soundEnabledRef.current = soundEnabled;
 
@@ -142,6 +137,7 @@ export default function KitchenScreen() {
             unit_price: i.unit_price,
             note: i.note,
             options: i.options,
+            status: i.status,
           })),
           status: o.status,
         }));
@@ -151,59 +147,18 @@ export default function KitchenScreen() {
     setLoading(false);
   }, []);
 
-  // ── Auto-refresh + WebSocket ──────────────────────────────────────────────
+  // ── WebSocket auto-refresh ──────────────────────────────────────────────
   useEffect(() => {
     isMounted.current = true;
     fetchOrders();
 
-    const pollId = setInterval(fetchOrders, 30000);
-
-    const connectWs = () => {
-      if (!isMounted.current) return;
-      setWsStatus('connecting');
-      try {
-        const httpUrl = getApiBaseUrl();
-        const wsProto = httpUrl.startsWith('https') ? 'wss' : 'ws';
-        const hostAndPort = httpUrl.replace(/^https?:\/\//, '').replace(/\/api\/v1\/?$/, '');
-        const url = `${wsProto}://${hostAndPort}/ws/kitchen${token ? `?token=${encodeURIComponent(token)}` : ''}`;
-        const socket = new WebSocket(url);
-        socket.onopen = () => {
-          if (isMounted.current) setWsStatus('connected');
-        };
-        socket.onmessage = (e) => {
-          try {
-            const msg = JSON.parse(e.data);
-            if (msg.event === 'new_order' || msg.event === 'order_updated') fetchOrders();
-          } catch {}
-        };
-        socket.onerror = () => {
-          if (isMounted.current) setWsStatus('disconnected');
-        };
-        socket.onclose = () => {
-          if (isMounted.current) {
-            setWsStatus('disconnected');
-            if (wsRef.current === socket) {
-              reconnectTimeoutRef.current = setTimeout(connectWs, 5000);
-            }
-          }
-        };
-        wsRef.current = socket;
-      } catch {
-        if (isMounted.current) {
-          setWsStatus('disconnected');
-          reconnectTimeoutRef.current = setTimeout(connectWs, 5000);
-        }
-      }
-    };
-    connectWs();
+    const unsub = subscribeRealtimeSync(() => {
+      if (isMounted.current) fetchOrders();
+    });
 
     return () => {
       isMounted.current = false;
-      clearInterval(pollId);
-      if (reconnectTimeoutRef.current) clearTimeout(reconnectTimeoutRef.current);
-      const ws = wsRef.current;
-      wsRef.current = null;
-      ws?.close();
+      unsub();
     };
   }, [fetchOrders]);
 
@@ -258,7 +213,7 @@ export default function KitchenScreen() {
 
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
-    <View style={{ flex: 1, backgroundColor: colors.surface.app }}>
+    <SafeAreaView edges={isWide ? ['top', 'left', 'right', 'bottom'] : []} style={{ flex: 1, backgroundColor: colors.surface.app }}>
       <UnifiedHeader
         icon="fridge-industrial-outline"
         title="Bếp"
@@ -271,8 +226,8 @@ export default function KitchenScreen() {
               delayPressIn={0}
               activeOpacity={0.7}
               style={{
-                width: isWide ? 44 : 36,
-                height: isWide ? 44 : 36,
+                width: 44,
+                height: 44,
                 borderRadius: 8,
                 backgroundColor: soundEnabled ? colors.brand.primary : colors.surface.disabled,
                 alignItems: 'center',
@@ -294,7 +249,7 @@ export default function KitchenScreen() {
                 borderRadius: 8,
               }}
             >
-              <AppText variant="sm" weight="bold" color={colors.text.secondary}>
+              <AppText variant="sm" weight="normal" color={colors.text.secondary}>
                 {allOrders.length} đơn
               </AppText>
             </View>
@@ -315,73 +270,81 @@ export default function KitchenScreen() {
         }
       />
 
-      {/* Mobile tab bar for kitchen columns */}
+      {/* Mobile Segmented Tab Bar for KDS status */}
       {!isWide && (
         <View
           style={{
-            flexDirection: 'row',
             paddingHorizontal: 12,
-            paddingVertical: 10,
-            backgroundColor: colors.surface.card,
+            paddingVertical: 8,
+            backgroundColor: '#FFFFFF',
             borderBottomWidth: 1,
-            borderBottomColor: colors.border.default,
-            gap: 6,
+            borderBottomColor: '#E5E9F0',
           }}
         >
-          {COLUMNS.map((col) => {
-            const sel = activeTab === col.id;
-            const count = ordersForCol(col.id).length;
-            return (
-              <TouchableOpacity
-                key={col.id}
-                onPress={() => setActiveTab(col.id)}
-                style={{
-                  flex: 1,
-                  height: 40,
-                  borderRadius: 8,
-                  backgroundColor: sel ? colors.brand.primary : 'transparent',
-                  borderWidth: 1,
-                  borderColor: sel ? colors.brand.primary : colors.border.default,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexDirection: 'row',
-                  gap: 6,
-                }}
-              >
-                <Icon
-                  name={col.icon as any}
-                  size={16}
-                  color={sel ? colors.text.inverse : colors.text.muted}
-                />
-                  <AppText
-                    variant="sm"
-                    weight={sel ? 'bold' : 'normal'}
-                    color={sel ? colors.text.inverse : colors.text.muted}
-                  >
-                  {col.label}
-                </AppText>
-                <View
+          <View
+            style={{
+              flexDirection: 'row',
+              backgroundColor: '#F1F5F9',
+              borderRadius: 8,
+              padding: 3,
+            }}
+          >
+            {COLUMNS.map((col) => {
+              const sel = activeTab === col.id;
+              const count = ordersForCol(col.id).length;
+              return (
+                <TouchableOpacity
+                  key={col.id}
+                  onPress={() => setActiveTab(col.id)}
                   style={{
-                    minWidth: 20,
-                    height: 20,
-                    borderRadius: shape.radius.sm,
-                    backgroundColor: sel ? colors.brand.primaryHover : colors.surface.disabled,
+                    flex: 1,
+                    height: 36,
+                    borderRadius: 6,
+                    backgroundColor: sel ? '#FFFFFF' : 'transparent',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    paddingHorizontal: 4,
+                    flexDirection: 'row',
+                    gap: 4,
+                    ...(sel ? {
+                      shadowColor: '#000000',
+                      shadowOffset: { width: 0, height: 1 },
+                      shadowOpacity: 0.05,
+                      shadowRadius: 1.5,
+                      elevation: 1,
+                    } : {}),
                   }}
                 >
                   <AppText
-                    variant="sm"
-                    weight="bold"
-                    color={sel ? colors.text.inverse : colors.text.muted}
+                    variant="md"
+                    weight={sel ? 'bold' : 'normal'}
+                    color={sel ? '#0F172A' : '#64748B'}
                   >
-                    {count}
+                    {col.label}
                   </AppText>
-                </View>
-              </TouchableOpacity>
-            );
-          })}
+                  <View
+                    style={{
+                      minWidth: 18,
+                      height: 18,
+                      borderRadius: 9,
+                      backgroundColor: sel ? '#F97316' : '#E2E8F0',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      paddingHorizontal: 4,
+                      marginLeft: 4,
+                    }}
+                  >
+                    <AppText
+                      variant="xs"
+                      weight={sel ? 'bold' : 'normal'}
+                      color={sel ? '#FFFFFF' : '#64748B'}
+                    >
+                      {count}
+                    </AppText>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
         </View>
       )}
 
@@ -416,6 +379,6 @@ export default function KitchenScreen() {
           </View>
         )}
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

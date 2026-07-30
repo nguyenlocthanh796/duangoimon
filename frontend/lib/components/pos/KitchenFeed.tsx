@@ -75,7 +75,7 @@ export default function KitchenFeed({
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 8, paddingVertical: 40 }}>
         <Icon name="chef-hat" size={32} color={colors.icon.muted} />
-        <AppText variant="sm" color={colors.text.placeholder}>Bếp / Bar</AppText>
+        <AppText variant="md" color={colors.text.placeholder}>Bếp / Bar</AppText>
       </View>
     );
   }
@@ -86,10 +86,10 @@ export default function KitchenFeed({
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 8 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
           <View style={{ width: 3, height: 16, borderRadius: 1.5, backgroundColor: colors.brand.primary }} />
-          <AppText variant="sm" weight="bold" color={colors.text.secondary}>Bếp / Bar</AppText>
-          {loading && <AppText variant="sm" color={colors.text.placeholder}>⋯</AppText>}
+          <AppText variant="md" color={colors.text.secondary}>Bếp / Bar</AppText>
+          {loading && <AppText variant="md" color={colors.text.placeholder}>⋯</AppText>}
         </View>
-        <AppText variant="sm" color={colors.text.placeholder}>⏱ {pollInterval / 1000}s</AppText>
+        <AppText variant="md" color={colors.text.placeholder}>⏱ {pollInterval / 1000}s</AppText>
       </View>
 
       {/* Filter chips */}
@@ -108,7 +108,7 @@ export default function KitchenFeed({
               }}
             >
               <Icon name={f.icon as any} size={12} color={active ? '#fff' : colors.text.muted} />
-              <AppText variant="sm" weight="bold" color={active ? '#fff' : colors.text.muted}>
+              <AppText variant="md" color={active ? '#fff' : colors.text.muted}>
                 {f.label}
               </AppText>
             </TouchableOpacity>
@@ -121,7 +121,7 @@ export default function KitchenFeed({
         {filtered.length === 0 && (
           <View style={{ alignItems: 'center', paddingVertical: 20, gap: 6 }}>
             <Icon name="check-all" size={24} color={colors.icon.muted} />
-            <AppText variant="sm" color={colors.text.placeholder}>
+            <AppText variant="md" color={colors.text.placeholder}>
               {filter === 'all' ? 'Chưa có món nào' : filter === 'done' ? 'Không có món chờ trả' : 'Không có món trễ'}
             </AppText>
           </View>
@@ -152,33 +152,33 @@ export default function KitchenFeed({
                   size={14}
                   color={it.isDelayed ? colors.status.danger : it.status === 'hoan_thanh' ? colors.status.success : colors.brand.primary}
                 />
-                <AppText variant="sm" weight="bold" color={colors.text.primary} numberOfLines={1}>
+                <AppText variant="md" color={colors.text.primary} numberOfLines={1}>
                   {it.tableName}
                 </AppText>
                 <View style={{ width: 1, height: 10, backgroundColor: colors.border.light }} />
                 {it.quantity > 1 && (
-                  <AppText variant="sm" color={colors.text.muted} numberOfLines={1}>
+                  <AppText variant="md" color={colors.text.muted} numberOfLines={1}>
                     {it.quantity}x
                   </AppText>
                 )}
-                <AppText variant="sm" color={colors.text.secondary} numberOfLines={1}>
+                <AppText variant="md" color={colors.text.secondary} numberOfLines={1}>
                   {it.productName}
                 </AppText>
               </View>
-              <AppText variant="sm" color={colors.text.muted}>
+              <AppText variant="md" color={colors.text.muted}>
                 {it.ageMinutes < 1 ? '<1' : Math.round(it.ageMinutes)}p
               </AppText>
             </View>
             {it.isDelayed && (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 }}>
                 <Icon name="clock-alert-outline" size={10} color={colors.status.danger} />
-                <AppText variant="sm" color={colors.status.danger}>
+                <AppText variant="md" color={colors.status.danger}>
                   Chờ {Math.round(it.ageMinutes)}p!
                 </AppText>
               </View>
             )}
             {it.note ? (
-              <AppText variant="sm" color={colors.text.placeholder} style={{ marginTop: 2 }}>
+              <AppText variant="md" color={colors.text.placeholder} style={{ marginTop: 2 }}>
                 📝 {it.note}
               </AppText>
             ) : null}

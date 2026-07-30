@@ -11,6 +11,7 @@ from app.core.database import get_db
 from app.models.ban_hang import Order, OrderItem, Product, Table
 from app.models.ke_toan import Transaction
 from app.models.quan_ly import Inventory
+from app.models.recipe import RawMaterial
 
 router = APIRouter(prefix="/quan-ly", tags=["quan-ly"])
 
@@ -84,9 +85,9 @@ async def dashboard_stats(
         .limit(5)
     )
 
-    # 6. Revenue by hour (last 12 hours from 7h to 18h)
+    # 6. Revenue by hour (7h to 23h — covers full restaurant hours)
     hour_slots = []
-    for h in range(7, 19):
+    for h in range(7, 24):
         slot_start = today_start.replace(hour=h)
         slot_end = slot_start + timedelta(hours=1)
         row = await db.execute(
@@ -99,24 +100,39 @@ async def dashboard_stats(
         val = float(row.scalar() or 0)
         hour_slots.append({"hour": h, "value": val})
 
-    # 7. Low stock items
+    # 7. Low stock items — include both product inventory and raw materials
     low_stock = await db.execute(
         select(Inventory).where(
             Inventory.quantity < Inventory.min_alert,
             Inventory.min_alert > 0,
-        ).limit(5)
+        ).limit(3)
     )
     low_stock_items = [
         {
-            "name": f"Nguyên liệu #{row.id.hex[:6]}",
+            "name": f"Sản phẩm #{row.id.hex[:6]}",
             "unit": row.unit,
             "current": float(row.quantity),
             "min": float(row.min_alert),
+            "source": "inventory",
         }
         for row in low_stock.scalars()
     ]
-    if not low_stock_items:
-        low_stock_items = []
+    low_rm = await db.execute(
+        select(RawMaterial).where(
+            RawMaterial.current_stock <= RawMaterial.min_stock,
+            RawMaterial.min_stock > 0,
+            RawMaterial.is_active == True,
+        ).limit(5)
+    )
+    for rm in low_rm.scalars():
+        low_stock_items.append({
+            "name": rm.name,
+            "unit": rm.unit,
+            "current": float(rm.current_stock or 0),
+            "min": float(rm.min_stock or 0),
+            "source": "raw_material",
+        })
+    low_stock_items = low_stock_items[:5]  # cap at 5
 
     # 8. Recent activities
     recent_orders = await db.execute(
@@ -125,16 +141,38 @@ async def dashboard_stats(
     activities = []
     for o in recent_orders.scalars():
         status_label = {
-            "moi": "Tạo đơn mới",
+            "moi": "Mới tạo",
             "dang_nau": "Đang chế biến",
+            "hoan_thanh": "Hoàn thành",
             "da_thanh_toan": "Đã thanh toán",
+            "da_gop": "Đã gộp bàn",
+            "da_huy": "Đã hủy",
             "huy": "Đã hủy",
         }
+        color_map = {
+            "da_thanh_toan": "#10B981",
+            "hoan_thanh": "#10B981",
+            "dang_nau": "#F97316",
+            "da_huy": "#EF4444",
+            "huy": "#EF4444",
+            "da_gop": "#64748B",
+            "moi": "#6366F1",
+        }
+        icon_map = {
+            "da_thanh_toan": "receipt",
+            "hoan_thanh": "check-circle",
+            "dang_nau": "clock-outline",
+            "da_huy": "close-circle",
+            "huy": "close-circle",
+            "da_gop": "call-merge",
+            "moi": "plus-circle",
+        }
+        label = status_label.get(o.status, o.status)
         activities.append({
-            "icon": "receipt" if o.status == "da_thanh_toan" else "clock-outline" if o.status == "dang_nau" else "close-circle" if o.status == "huy" else "plus-circle",
-            "text": f"Đơn hàng #{str(o.id)[:8]} — {status_label.get(o.status, o.status)}",
-            "time": o.created_at.strftime("%H:%M"),
-            "color": "#10B981" if o.status == "da_thanh_toan" else "#F97316" if o.status == "dang_nau" else "#EF4444" if o.status == "huy" else "#6366F1",
+            "icon": icon_map.get(o.status, "receipt"),
+            "text": f"Đơn hàng #{str(o.id)[:8]} — {label}",
+            "time": o.created_at.strftime("%H:%M") if o.created_at else "",
+            "color": color_map.get(o.status, "#6366F1"),
         })
 
     recent_tx = await db.execute(
@@ -158,7 +196,7 @@ async def dashboard_stats(
         "orders_growth": orders_growth,
         "table_stats": {
             "trong": table_stats.get("trong", 0),
-            "co_khach": table_stats.get("co_khach", 0),
+            "co_khach": table_stats.get("dang_su_dung", 0),  # backend uses dang_su_dung
             "da_dat": table_stats.get("da_dat", 0),
         },
         "top_products": [{"name": row.name, "quantity": row.qty} for row in top],

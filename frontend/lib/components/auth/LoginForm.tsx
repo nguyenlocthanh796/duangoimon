@@ -11,10 +11,10 @@ import {
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 const Icon = MaterialCommunityIcons;
-import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../context/ThemeContext';
 import { palette } from '../../theme/colors';
 import { font } from '../../theme/typography';
+import FormWrapper from '../ui/FormWrapper';
 
 // ─── Input ────────────────────────────────────────────────
 function FormInput({
@@ -94,7 +94,7 @@ function FormInput({
           focused && Platform.OS === 'web' ? { boxShadow: `0 0 0 3px rgba(249,115,22,0.12)` } : {},
         ]}
       >
-        <Icon name={icon} size={20} color={iconClr} style={{ marginRight: 10 }} />
+        <Icon name={icon} size={18} color={iconClr} style={{ marginRight: 8 }} />
 
         <TextInput
           ref={inputRef}
@@ -117,6 +117,7 @@ function FormInput({
           <TouchableOpacity
             onPress={() => setShowPw(!showPw)}
             style={s.pwToggle}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             aria-label={showPw ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
           >
             <Icon
@@ -192,82 +193,71 @@ export default function LoginForm({ onLogin, isTablet }: LoginFormProps) {
 
   return (
     <Animated.View style={{ transform: [{ translateX: shakeAnim }] }}>
-      {/* Hidden form for web */}
-      {Platform.OS === 'web' && (
-        <form
-          onSubmit={(e) => { e.preventDefault(); handleLogin(); }}
-          style={{ display: 'contents' }}
-        >
-          <input type="hidden" name="username" value={username} readOnly />
-          <input type="hidden" name="password" value={password} readOnly />
-        </form>
-      )}
-
-      <FormInput
-        label="Tài khoản"
-        icon="account-outline"
-        value={username}
-        onChangeText={(v) => { setUsername(v); setErrors((e) => ({ ...e, username: undefined })); }}
-        error={errors.username}
-        onSubmitEditing={() => pwRef.current?.focus()}
-        returnKeyType="next"
-      />
-
-      <FormInput
-        label="Mật khẩu"
-        icon="lock-outline"
-        value={password}
-        onChangeText={(v) => { setPassword(v); setErrors((e) => ({ ...e, password: undefined })); }}
-        secureTextEntry
-        error={errors.password}
-        onSubmitEditing={handleLogin}
-        inputRef={pwRef}
-        returnKeyType="done"
-      />
-
-      {/* Remember me + Forgot password */}
-      <View style={s.optionsRow}>
-        <TouchableOpacity
-          onPress={() => setRememberMe(!rememberMe)}
-          activeOpacity={0.7}
-          style={s.rememberRow}
-          aria-label="Duy trì đăng nhập"
-        >
-          <View style={[s.checkbox, rememberMe && s.checkboxChecked]}>
-            {rememberMe && <Icon name="check" size={12} color="#fff" />}
-          </View>
-          <Text style={[s.rememberText, { color: mutedText }]}>Duy trì đăng nhập</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity activeOpacity={0.7} aria-label="Quên mật khẩu">
-          <Text style={[s.forgotLink, { color: linkText }]}>Quên mật khẩu?</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Login button */}
-      <TouchableOpacity
-        onPress={handleLogin}
-        disabled={loading}
-        activeOpacity={0.85}
-        style={s.btnOuter}
-        aria-label="Đăng nhập"
+      <FormWrapper
+        onSubmit={handleLogin}
+        style={{ width: '100%' }}
       >
-        <LinearGradient
-          colors={['#F97316', '#EA580C']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={s.btn}
-        >
-          {loading ? (
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <ActivityIndicator color="#fff" size="small" />
-              <Text style={s.btnText}>Đang đăng nhập</Text>
+        <FormInput
+          label="Tài khoản"
+          icon="account-outline"
+          value={username}
+          onChangeText={(v) => { setUsername(v); setErrors((e) => ({ ...e, username: undefined })); }}
+          error={errors.username}
+          onSubmitEditing={() => pwRef.current?.focus()}
+          returnKeyType="next"
+        />
+
+        <FormInput
+          label="Mật khẩu"
+          icon="lock-outline"
+          value={password}
+          onChangeText={(v) => { setPassword(v); setErrors((e) => ({ ...e, password: undefined })); }}
+          secureTextEntry
+          error={errors.password}
+          onSubmitEditing={handleLogin}
+          inputRef={pwRef}
+          returnKeyType="done"
+        />
+
+        {/* Remember me + Forgot password */}
+        <View style={s.optionsRow}>
+          <TouchableOpacity
+            onPress={() => setRememberMe(!rememberMe)}
+            activeOpacity={0.7}
+            style={s.rememberRow}
+            aria-label="Duy trì đăng nhập"
+          >
+            <View style={[s.checkbox, rememberMe && s.checkboxChecked]}>
+              {rememberMe && <Icon name="check" size={12} color="#fff" />}
             </View>
-          ) : (
-            <Text style={s.btnText}>Đăng nhập</Text>
-          )}
-        </LinearGradient>
-      </TouchableOpacity>
+            <Text style={[s.rememberText, { color: mutedText }]}>Duy trì đăng nhập</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity activeOpacity={0.7} aria-label="Quên mật khẩu" style={{ minHeight: 44, justifyContent: 'center' }}>
+            <Text style={[s.forgotLink, { color: linkText }]}>Quên mật khẩu?</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Login button */}
+        <TouchableOpacity
+          onPress={handleLogin}
+          disabled={loading}
+          activeOpacity={0.85}
+          style={s.btnOuter}
+          aria-label="Đăng nhập"
+        >
+          <View style={s.btn}>
+            {loading ? (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <ActivityIndicator color="#fff" size="small" />
+                <Text style={s.btnText}>Đang đăng nhập</Text>
+              </View>
+            ) : (
+              <Text style={s.btnText}>Đăng nhập</Text>
+            )}
+          </View>
+        </TouchableOpacity>
+      </FormWrapper>
     </Animated.View>
   );
 }
@@ -275,17 +265,20 @@ export default function LoginForm({ onLogin, isTablet }: LoginFormProps) {
 // ─── Styles ───────────────────────────────────────────────
 const s = StyleSheet.create({
   fieldLabel: {
-    ...font.smBold,
-    marginBottom: 6,
+    fontFamily: font.sm.fontFamily,
+    fontSize: font.sm.fontSize,
+    lineHeight: font.sm.lineHeight,
+    color: '#64748B',
+    marginBottom: 4,
     marginLeft: 2,
   },
   inputWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 14,
-    borderRadius: 12,
-    borderWidth: 1.5,
-    height: 52,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    height: 44,
     ...(Platform.OS === 'web' ? { transition: 'border-color 0.2s, background-color 0.2s' as any } : {}),
   },
   input: {
@@ -303,7 +296,7 @@ const s = StyleSheet.create({
     alignItems: 'center',
     flexWrap: 'wrap',
     gap: 12,
-    marginBottom: 24,
+    marginBottom: 20,
   },
   rememberRow: {
     flexDirection: 'row',
@@ -314,9 +307,9 @@ const s = StyleSheet.create({
   checkbox: {
     width: 20,
     height: 20,
-    borderRadius: 5,
-    borderWidth: 1.5,
-    borderColor: '#D1D5DB',
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'transparent',
@@ -329,24 +322,24 @@ const s = StyleSheet.create({
     ...font.sm,
   },
   forgotLink: {
-    ...font.smBold,
+    ...font.mdBold,
   },
   btnOuter: {
-    borderRadius: 12,
+    borderRadius: 8,
     overflow: 'hidden',
   },
   btn: {
-    height: 50,
+    height: 44,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#F97316',
   },
   btnText: {
     ...font.mdBold,
     color: '#FFFFFF',
-    letterSpacing: 0.5,
   },
   pwToggle: {
-    padding: 6,
+    padding: 4,
     marginLeft: 2,
     alignItems: 'center',
     justifyContent: 'center',

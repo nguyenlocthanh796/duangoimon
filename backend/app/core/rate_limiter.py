@@ -66,10 +66,10 @@ def _save_state() -> None:
 
 _load_state()
 
-RATE_LIMIT_LOGIN = 50
-RATE_LIMIT_PUBLIC = 100
-RATE_LIMIT_API = 200
-RATE_WINDOW = 60
+RATE_LIMIT_LOGIN = int(os.getenv("RATE_LIMIT_LOGIN", "50"))
+RATE_LIMIT_PUBLIC = int(os.getenv("RATE_LIMIT_PUBLIC", "100"))
+RATE_LIMIT_API = int(os.getenv("RATE_LIMIT_API", "600"))
+RATE_WINDOW = int(os.getenv("RATE_LIMIT_WINDOW", "60"))
 
 
 def _get_limit(path: str) -> int:

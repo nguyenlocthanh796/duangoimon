@@ -61,19 +61,19 @@ export default function DeadlinesScreen() {
     >
       <View style={styles.cardBox}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-          <AppText variant="md" weight="bold" color="#0F172A">Lịch Hạn Nộp Thuế & Tờ Khai Năm 2026</AppText>
+          <AppText variant="md" color="#0F172A">Lịch Hạn Nộp Thuế & Tờ Khai Năm 2026</AppText>
           <AppText variant="sm" color="#64748B">{deadlines.length} mốc thời gian</AppText>
         </View>
 
         {deadlines.map((item, idx) => (
           <View key={item.id || idx} style={styles.itemRow}>
             <View style={[styles.avatarIcon, { backgroundColor: item.submitted ? '#DCFCE7' : '#FEF3C7' }]}>
-              <AppText variant="sm" weight="bold" color={item.submitted ? '#16A34A' : '#D97706'} style={{ fontSize: 13 }}>
+              <AppText variant="sm" color={item.submitted ? '#16A34A' : '#D97706'} style={{ fontSize: 14}}>
                 {item.submitted ? '✓' : '!'}
               </AppText>
             </View>
             <View style={{ flex: 1 }}>
-              <AppText variant="md" weight="bold" color="#0F172A">{item.form}</AppText>
+              <AppText variant="md" color="#0F172A">{item.form}</AppText>
               <AppText variant="sm" color="#64748B" style={{ marginTop: 2 }}>
                 Hạn chót: {item.due_date} · {item.period_type === 'thang' ? 'Tháng' : item.period_type === 'quy' ? 'Quý' : 'Năm'}
               </AppText>

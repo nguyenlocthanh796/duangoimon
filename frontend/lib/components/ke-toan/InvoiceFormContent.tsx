@@ -151,7 +151,7 @@ export default function InvoiceFormContent({
 }
 
 const styles = StyleSheet.create({
-  label: { ...font.smBold, color: colors.text.secondary, marginBottom: 6 },
+  label: { ...font.md, color: colors.text.secondary, marginBottom: 6 },
   input: {
     borderWidth: 1,
     borderColor: colors.border.default,

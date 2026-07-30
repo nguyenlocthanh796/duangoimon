@@ -51,7 +51,7 @@ export default function AnalyticsModule() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom', 'left', 'right']}>
+    <SafeAreaView style={styles.container} edges={isWide ? ['top', 'bottom', 'left', 'right'] : ['left', 'right']}>
       <ScreenHeader
         title="Báo cáo & Phân tích"
         subtitle="Phân tích báo cáo điều hành, BI, P&L & dự báo doanh thu"

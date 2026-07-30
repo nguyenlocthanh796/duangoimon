@@ -622,12 +622,12 @@ const styles = StyleSheet.create({
   // wide
   headRow: {
     flexDirection: 'row',
-    backgroundColor: colors.surface.card,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border.default,
-    minHeight: 44,
+    backgroundColor: '#F8FAFC',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#E2E8F0',
+    minHeight: 40,
   },
-  headCell: { paddingVertical: 12, paddingHorizontal: 12, justifyContent: 'center' },
+  headCell: { paddingVertical: 10, paddingHorizontal: 12, justifyContent: 'center' },
   headCellActive: { backgroundColor: colors.brand.primaryBg },
   headInner: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   headText: { ...font.sm, fontStyle: 'italic', color: colors.text.tableHeader },
@@ -637,8 +637,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: colors.surface.card,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border.default,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#F1F5F9',
     minHeight: 48,
   },
   bodyRowCompact: {
@@ -722,7 +722,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: shape.radius.md,
   },
-  bulkBtnText: { ...font.smBold, color: '#fff', fontWeight: '600' },
+  bulkBtnText: { ...font.mdBold, color: '#fff' },
   // mobile
   mobileList: { paddingHorizontal: 0, gap: 0, paddingBottom: 100, paddingTop: 0 },
   mobileCard: {

@@ -52,7 +52,7 @@ export default function CashSuggestions({ total, onSelect, selectedAmount }: Cas
         >
           <Text
             style={{
-              ...font.smBold,
+              ...font.md,
               color: selectedAmount === amt ? colors.text.inverse : colors.text.primary,
             }}
           >

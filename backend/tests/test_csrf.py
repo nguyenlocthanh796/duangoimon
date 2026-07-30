@@ -44,9 +44,8 @@ class TestCSRFMiddleware:
 
     async def test_missing_origin_and_referer_rejected(self):
         req = _FakeRequest(method="POST", headers={})
-        with pytest.raises(HTTPException) as exc:
-            await csrf_middleware(req, _noop_call_next)
-        assert exc.value.status_code == 403
+        resp = await csrf_middleware(req, _noop_call_next)
+        assert getattr(resp, "status_code", None) == 403
 
     async def test_bearer_token_allows_missing_origin(self):
         # JWT Bearer cannot be set cross-origin, so it's CSRF-safe.
@@ -60,9 +59,8 @@ class TestCSRFMiddleware:
 
     async def test_invalid_origin_rejected(self):
         req = _FakeRequest(method="POST", headers={"origin": "http://evil.example.com"})
-        with pytest.raises(HTTPException) as exc:
-            await csrf_middleware(req, _noop_call_next)
-        assert exc.value.status_code == 403
+        resp = await csrf_middleware(req, _noop_call_next)
+        assert getattr(resp, "status_code", None) == 403
 
     async def test_valid_referer_allowed(self):
         origin = next(iter(ALLOWED_ORIGINS))
@@ -71,6 +69,5 @@ class TestCSRFMiddleware:
 
     async def test_invalid_referer_rejected(self):
         req = _FakeRequest(method="POST", headers={"referer": "http://evil.example.com/x"})
-        with pytest.raises(HTTPException) as exc:
-            await csrf_middleware(req, _noop_call_next)
-        assert exc.value.status_code == 403
+        resp = await csrf_middleware(req, _noop_call_next)
+        assert getattr(resp, "status_code", None) == 403

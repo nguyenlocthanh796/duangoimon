@@ -245,68 +245,68 @@ export default function SoSachScreen() {
     switch (selectedBookKey) {
       case 'S1a':
         return [
-          { key: 'date', title: 'Ngày CT', width: 115, render: (r) => <AppText variant="sm" color="#65676B" numberOfLines={1}>{formatDateShort(r.date)}</AppText> },
-          { key: 'doc_no', title: 'Số chứng từ', width: 130, render: (r) => <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>{r.doc_no}</AppText> },
+          { key: 'date', title: 'Ngày CT', width: 115, render: (r) => <AppText variant="md" color="#65676B" numberOfLines={1}>{formatDateShort(r.date)}</AppText> },
+          { key: 'doc_no', title: 'Số chứng từ', width: 130, render: (r) => <AppText variant="md" color="#050505" numberOfLines={1}>{r.doc_no}</AppText> },
           { key: 'customer', title: 'Diễn giải / Khách hàng', flex: 1.5, render: (r) => <AppText variant="md" color="#050505" numberOfLines={1}>{r.customer}</AppText> },
-          { key: 'goods_rev', title: 'DT Hàng hóa', flex: 1, align: 'right', render: (r) => <AppText variant="sm" color="#050505">{formatVND(r.goods_rev)}</AppText> },
-          { key: 'service_rev', title: 'DT Dịch vụ', flex: 1, align: 'right', render: (r) => <AppText variant="sm" color="#050505">{formatVND(r.service_rev)}</AppText> },
+          { key: 'goods_rev', title: 'DT Hàng hóa', flex: 1, align: 'right', render: (r) => <AppText variant="md" color="#050505">{formatVND(r.goods_rev)}</AppText> },
+          { key: 'service_rev', title: 'DT Dịch vụ', flex: 1, align: 'right', render: (r) => <AppText variant="md" color="#050505">{formatVND(r.service_rev)}</AppText> },
           { key: 'total_rev', title: 'Tổng Doanh Thu', flex: 1.2, align: 'right', render: (r) => <AppText variant="md" weight="bold" color={colors.brand.primary}>{formatVND(r.total_rev)}</AppText> },
         ];
       case 'S2a':
         return [
-          { key: 'date', title: 'Ngày CT', width: 115, render: (r) => <AppText variant="sm" color="#65676B" numberOfLines={1}>{formatDateShort(r.date)}</AppText> },
-          { key: 'doc_no', title: 'Số chứng từ', width: 130, render: (r) => <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>{r.doc_no}</AppText> },
-          { key: 'labor_cost', title: 'CP Nhân công', flex: 1, align: 'right', render: (r) => <AppText variant="sm" color="#050505">{formatVND(r.labor_cost)}</AppText> },
-          { key: 'material_cost', title: 'CP Nguyên vật liệu', flex: 1.2, align: 'right', render: (r) => <AppText variant="sm" color="#050505">{formatVND(r.material_cost)}</AppText> },
-          { key: 'utility_cost', title: 'CP Điện nước/Thuê', flex: 1.1, align: 'right', render: (r) => <AppText variant="sm" color="#050505">{formatVND(r.utility_cost)}</AppText> },
+          { key: 'date', title: 'Ngày CT', width: 115, render: (r) => <AppText variant="md" color="#65676B" numberOfLines={1}>{formatDateShort(r.date)}</AppText> },
+          { key: 'doc_no', title: 'Số chứng từ', width: 130, render: (r) => <AppText variant="md" color="#050505" numberOfLines={1}>{r.doc_no}</AppText> },
+          { key: 'labor_cost', title: 'CP Nhân công', flex: 1, align: 'right', render: (r) => <AppText variant="md" color="#050505">{formatVND(r.labor_cost)}</AppText> },
+          { key: 'material_cost', title: 'CP Nguyên vật liệu', flex: 1.2, align: 'right', render: (r) => <AppText variant="md" color="#050505">{formatVND(r.material_cost)}</AppText> },
+          { key: 'utility_cost', title: 'CP Điện nước/Thuê', flex: 1.1, align: 'right', render: (r) => <AppText variant="md" color="#050505">{formatVND(r.utility_cost)}</AppText> },
           { key: 'total_cost', title: 'Tổng Chi Phí', flex: 1.2, align: 'right', render: (r) => <AppText variant="md" weight="bold" color={colors.status.warning}>{formatVND(r.total_cost)}</AppText> },
         ];
       case 'S2b':
         return [
-          { key: 'period', title: 'Kỳ tính thuế', width: 120, render: (r) => <AppText variant="md" weight="bold" color="#050505">{r.period}</AppText> },
+          { key: 'period', title: 'Kỳ tính thuế', width: 120, render: (r) => <AppText variant="md" color="#050505">{r.period}</AppText> },
           { key: 'rev', title: 'Doanh số tính thuế', flex: 1.2, align: 'right', render: (r) => <AppText variant="md" color="#050505">{formatVND(r.rev)}</AppText> },
-          { key: 'vat_due', title: 'Thuế GTGT (1%)', flex: 1, align: 'right', render: (r) => <AppText variant="sm" color={colors.brand.primary}>{formatVND(r.vat_due)}</AppText> },
-          { key: 'pit_due', title: 'Thuế TNCN (0.5%)', flex: 1, align: 'right', render: (r) => <AppText variant="sm" color={colors.status.danger}>{formatVND(r.pit_due)}</AppText> },
-          { key: 'tax_paid', title: 'Số đã nộp', flex: 1, align: 'right', render: (r) => <AppText variant="sm" color={colors.status.success}>{formatVND(r.tax_paid)}</AppText> },
+          { key: 'vat_due', title: 'Thuế GTGT (1%)', flex: 1, align: 'right', render: (r) => <AppText variant="md" color={colors.brand.primary}>{formatVND(r.vat_due)}</AppText> },
+          { key: 'pit_due', title: 'Thuế TNCN (0.5%)', flex: 1, align: 'right', render: (r) => <AppText variant="md" color={colors.status.danger}>{formatVND(r.pit_due)}</AppText> },
+          { key: 'tax_paid', title: 'Số đã nộp', flex: 1, align: 'right', render: (r) => <AppText variant="md" color={colors.status.success}>{formatVND(r.tax_paid)}</AppText> },
           { key: 'balance', title: 'Còn phải nộp', flex: 1, align: 'right', render: (r) => <AppText variant="md" weight="bold" color={r.balance > 0 ? colors.status.danger : colors.status.success}>{formatVND(r.balance)}</AppText> },
         ];
       case 'S2c':
         return [
-          { key: 'code', title: 'Mã VT', width: 90, render: (r) => <AppText variant="sm" color="#65676B">{r.code}</AppText> },
-          { key: 'name', title: 'Tên vật tư / Hàng hóa', flex: 1.8, render: (r) => <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>{r.name}</AppText> },
-          { key: 'unit', title: 'ĐVT', width: 70, align: 'center', render: (r) => <AppText variant="sm" color="#65676B">{r.unit}</AppText> },
-          { key: 'opening', title: 'Tồn đầu', width: 80, align: 'right', render: (r) => <AppText variant="sm" color="#050505">{r.opening}</AppText> },
-          { key: 'in_qty', title: 'Nhập', width: 80, align: 'right', render: (r) => <AppText variant="sm" color={colors.status.success}>+{r.in_qty}</AppText> },
-          { key: 'out_qty', title: 'Xuất', width: 80, align: 'right', render: (r) => <AppText variant="sm" color={colors.status.danger}>-{r.out_qty}</AppText> },
-          { key: 'closing', title: 'Tồn cuối', width: 85, align: 'right', render: (r) => <AppText variant="md" weight="bold" color="#0284C7">{r.closing}</AppText> },
-          { key: 'value', title: 'Giá trị tồn kho', flex: 1.2, align: 'right', render: (r) => <AppText variant="md" weight="bold" color={colors.brand.primary}>{formatVND(r.value)}</AppText> },
+          { key: 'code', title: 'Mã VT', width: 90, render: (r) => <AppText variant="md" color="#65676B">{r.code}</AppText> },
+          { key: 'name', title: 'Tên vật tư / Hàng hóa', flex: 1.8, render: (r) => <AppText variant="md" color="#050505" numberOfLines={1}>{r.name}</AppText> },
+          { key: 'unit', title: 'ĐVT', width: 70, align: 'center', render: (r) => <AppText variant="md" color="#65676B">{r.unit}</AppText> },
+          { key: 'opening', title: 'Tồn đầu', width: 80, align: 'right', render: (r) => <AppText variant="md" color="#050505">{r.opening}</AppText> },
+          { key: 'in_qty', title: 'Nhập', width: 80, align: 'right', render: (r) => <AppText variant="md" color={colors.status.success}>+{r.in_qty}</AppText> },
+          { key: 'out_qty', title: 'Xuất', width: 80, align: 'right', render: (r) => <AppText variant="md" color={colors.status.danger}>-{r.out_qty}</AppText> },
+          { key: 'closing', title: 'Tồn cuối', width: 85, align: 'right', render: (r) => <AppText variant="md" color="#0284C7">{r.closing}</AppText> },
+          { key: 'value', title: 'Giá trị tồn kho', flex: 1.2, align: 'right', render: (r) => <AppText variant="md" color={colors.brand.primary}>{formatVND(r.value)}</AppText> },
         ];
       case 'S2d':
         return [
-          { key: 'name', title: 'Họ và tên người lao động', flex: 1.5, render: (r) => <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>{r.name}</AppText> },
-          { key: 'pos', title: 'Chức danh', flex: 1.2, render: (r) => <AppText variant="sm" color="#65676B" numberOfLines={1}>{r.pos}</AppText> },
-          { key: 'base', title: 'Lương hợp đồng', flex: 1, align: 'right', render: (r) => <AppText variant="sm" color="#050505">{formatVND(r.base)}</AppText> },
-          { key: 'allow', title: 'Phụ cấp', flex: 1, align: 'right', render: (r) => <AppText variant="sm" color="#050505">{formatVND(r.allow)}</AppText> },
-          { key: 'ins', title: 'Khấu trừ BHXH', flex: 1, align: 'right', render: (r) => <AppText variant="sm" color={colors.status.danger}>-{formatVND(r.ins)}</AppText> },
-          { key: 'net', title: 'Thực lĩnh', flex: 1.2, align: 'right', render: (r) => <AppText variant="md" weight="bold" color="#7C3AED">{formatVND(r.net)}</AppText> },
+          { key: 'name', title: 'Họ và tên người lao động', flex: 1.5, render: (r) => <AppText variant="md" color="#050505" numberOfLines={1}>{r.name}</AppText> },
+          { key: 'pos', title: 'Chức danh', flex: 1.2, render: (r) => <AppText variant="md" color="#65676B" numberOfLines={1}>{r.pos}</AppText> },
+          { key: 'base', title: 'Lương hợp đồng', flex: 1, align: 'right', render: (r) => <AppText variant="md" color="#050505">{formatVND(r.base)}</AppText> },
+          { key: 'allow', title: 'Phụ cấp', flex: 1, align: 'right', render: (r) => <AppText variant="md" color="#050505">{formatVND(r.allow)}</AppText> },
+          { key: 'ins', title: 'Khấu trừ BHXH', flex: 1, align: 'right', render: (r) => <AppText variant="md" color={colors.status.danger}>-{formatVND(r.ins)}</AppText> },
+          { key: 'net', title: 'Thực lĩnh', flex: 1.2, align: 'right', render: (r) => <AppText variant="md" color="#7C3AED">{formatVND(r.net)}</AppText> },
         ];
       case 'S2e':
         return [
-          { key: 'date', title: 'Ngày GD', width: 115, render: (r) => <AppText variant="sm" color="#65676B" numberOfLines={1}>{formatDateShort(r.date)}</AppText> },
-          { key: 'code', title: 'Mã GD', width: 110, render: (r) => <AppText variant="sm" color="#65676B">{r.code}</AppText> },
+          { key: 'date', title: 'Ngày GD', width: 115, render: (r) => <AppText variant="md" color="#65676B" numberOfLines={1}>{formatDateShort(r.date)}</AppText> },
+          { key: 'code', title: 'Mã GD', width: 110, render: (r) => <AppText variant="md" color="#65676B">{r.code}</AppText> },
           { key: 'desc', title: 'Diễn giải nội dung', flex: 1.6, render: (r) => <AppText variant="md" color="#050505" numberOfLines={1}>{r.desc}</AppText> },
-          { key: 'in_amt', title: 'Tiền gửi (Thu)', flex: 1, align: 'right', render: (r) => <AppText variant="sm" color={colors.status.success}>{r.in_amt > 0 ? `+${formatVND(r.in_amt)}` : '—'}</AppText> },
-          { key: 'out_amt', title: 'Tiền rút (Chi)', flex: 1, align: 'right', render: (r) => <AppText variant="sm" color={colors.status.danger}>{r.out_amt > 0 ? `-${formatVND(r.out_amt)}` : '—'}</AppText> },
-          { key: 'balance', title: 'Số dư TK', flex: 1.2, align: 'right', render: (r) => <AppText variant="md" weight="bold" color="#2563EB">{formatVND(r.balance)}</AppText> },
+          { key: 'in_amt', title: 'Tiền gửi (Thu)', flex: 1, align: 'right', render: (r) => <AppText variant="md" color={colors.status.success}>{r.in_amt > 0 ? `+${formatVND(r.in_amt)}` : '—'}</AppText> },
+          { key: 'out_amt', title: 'Tiền rút (Chi)', flex: 1, align: 'right', render: (r) => <AppText variant="md" color={colors.status.danger}>{r.out_amt > 0 ? `-${formatVND(r.out_amt)}` : '—'}</AppText> },
+          { key: 'balance', title: 'Số dư TK', flex: 1.2, align: 'right', render: (r) => <AppText variant="md" color="#2563EB">{formatVND(r.balance)}</AppText> },
         ];
       case 'S3a':
         return [
-          { key: 'date', title: 'Ngày CT', width: 115, render: (r) => <AppText variant="sm" color="#65676B" numberOfLines={1}>{formatDateShort(r.date)}</AppText> },
-          { key: 'doc_no', title: 'Số phiếu', width: 100, render: (r) => <AppText variant="md" weight="bold" color="#050505">{r.doc_no}</AppText> },
+          { key: 'date', title: 'Ngày CT', width: 115, render: (r) => <AppText variant="md" color="#65676B" numberOfLines={1}>{formatDateShort(r.date)}</AppText> },
+          { key: 'doc_no', title: 'Số phiếu', width: 100, render: (r) => <AppText variant="md" color="#050505">{r.doc_no}</AppText> },
           { key: 'desc', title: 'Diễn giải', flex: 1.6, render: (r) => <AppText variant="md" color="#050505" numberOfLines={1}>{r.desc}</AppText> },
-          { key: 'cash_in', title: 'Thu tiền mặt', flex: 1, align: 'right', render: (r) => <AppText variant="sm" color={colors.status.success}>{r.cash_in > 0 ? `+${formatVND(r.cash_in)}` : '—'}</AppText> },
-          { key: 'cash_out', title: 'Chi tiền mặt', flex: 1, align: 'right', render: (r) => <AppText variant="sm" color={colors.status.danger}>{r.cash_out > 0 ? `-${formatVND(r.cash_out)}` : '—'}</AppText> },
-          { key: 'balance', title: 'Tồn quỹ tiền mặt', flex: 1.2, align: 'right', render: (r) => <AppText variant="md" weight="bold" color={colors.status.danger}>{formatVND(r.balance)}</AppText> },
+          { key: 'cash_in', title: 'Thu tiền mặt', flex: 1, align: 'right', render: (r) => <AppText variant="md" color={colors.status.success}>{r.cash_in > 0 ? `+${formatVND(r.cash_in)}` : '—'}</AppText> },
+          { key: 'cash_out', title: 'Chi tiền mặt', flex: 1, align: 'right', render: (r) => <AppText variant="md" color={colors.status.danger}>{r.cash_out > 0 ? `-${formatVND(r.cash_out)}` : '—'}</AppText> },
+          { key: 'balance', title: 'Tồn quỹ tiền mặt', flex: 1.2, align: 'right', render: (r) => <AppText variant="md" color={colors.status.danger}>{formatVND(r.balance)}</AppText> },
         ];
     }
   }, [selectedBookKey]);
@@ -318,12 +318,12 @@ export default function SoSachScreen() {
         return (
           <View style={styles.mCard}>
             <View style={styles.mCardHeader}>
-              <AppText variant="md" weight="bold" color="#050505">{r.doc_no}</AppText>
-              <AppText variant="sm" color="#65676B">{formatDateShort(r.date)}</AppText>
+              <AppText variant="md" color="#050505">{r.doc_no}</AppText>
+              <AppText variant="md" color="#65676B">{formatDateShort(r.date)}</AppText>
             </View>
-            <AppText variant="sm" color="#334155" style={{ marginVertical: 4 }}>{r.customer}</AppText>
+            <AppText variant="md" color="#334155" style={{ marginVertical: 4 }}>{r.customer}</AppText>
             <View style={styles.mCardFooter}>
-              <AppText variant="sm" color="#65676B">Hàng: {formatVND(r.goods_rev)} · Dịch vụ: {formatVND(r.service_rev)}</AppText>
+              <AppText variant="md" color="#65676B">Hàng: {formatVND(r.goods_rev)} · Dịch vụ: {formatVND(r.service_rev)}</AppText>
               <AppText variant="md" weight="bold" color={colors.brand.primary}>{formatVND(r.total_rev)}</AppText>
             </View>
           </View>
@@ -332,14 +332,14 @@ export default function SoSachScreen() {
         return (
           <View style={styles.mCard}>
             <View style={styles.mCardHeader}>
-              <AppText variant="md" weight="bold" color="#050505">{r.doc_no}</AppText>
-              <AppText variant="sm" color="#65676B">{formatDateShort(r.date)}</AppText>
+              <AppText variant="md" color="#050505">{r.doc_no}</AppText>
+              <AppText variant="md" color="#65676B">{formatDateShort(r.date)}</AppText>
             </View>
-            <AppText variant="sm" color="#334155" style={{ marginVertical: 4 }}>
+            <AppText variant="md" color="#334155" style={{ marginVertical: 4 }}>
               Nhân công: {formatVND(r.labor_cost)} · Vật tư: {formatVND(r.material_cost)}
             </AppText>
             <View style={styles.mCardFooter}>
-              <AppText variant="sm" color="#65676B">Điện nước: {formatVND(r.utility_cost)}</AppText>
+              <AppText variant="md" color="#65676B">Điện nước: {formatVND(r.utility_cost)}</AppText>
               <AppText variant="md" weight="bold" color={colors.status.warning}>{formatVND(r.total_cost)}</AppText>
             </View>
           </View>
@@ -348,18 +348,18 @@ export default function SoSachScreen() {
         return (
           <View style={styles.mCard}>
             <View style={styles.mCardHeader}>
-              <AppText variant="md" weight="bold" color="#050505">{r.period}</AppText>
+              <AppText variant="md" color="#050505">{r.period}</AppText>
               <View style={[styles.mBadge, { backgroundColor: r.status === 'da_nop' ? '#ECFDF5' : '#FEF3C7' }]}>
-                <AppText variant="sm" weight="bold" color={r.status === 'da_nop' ? colors.status.success : colors.status.warning}>
+                <AppText variant="md" color={r.status === 'da_nop' ? colors.status.success : colors.status.warning}>
                   {r.status === 'da_nop' ? 'Đã nộp' : 'Chờ nộp'}
                 </AppText>
               </View>
             </View>
-            <AppText variant="sm" color="#334155" style={{ marginVertical: 4 }}>
+            <AppText variant="md" color="#334155" style={{ marginVertical: 4 }}>
               Doanh số tính thuế: {formatVND(r.rev)}
             </AppText>
             <View style={styles.mCardFooter}>
-              <AppText variant="sm" color="#65676B">GTGT: {formatVND(r.vat_due)} | TNCN: {formatVND(r.pit_due)}</AppText>
+              <AppText variant="md" color="#65676B">GTGT: {formatVND(r.vat_due)} | TNCN: {formatVND(r.pit_due)}</AppText>
               <AppText variant="md" weight="bold" color={r.balance > 0 ? colors.status.danger : colors.status.success}>
                 {r.balance > 0 ? `Nợ: ${formatVND(r.balance)}` : 'Đã nộp đủ'}
               </AppText>
@@ -370,14 +370,14 @@ export default function SoSachScreen() {
         return (
           <View style={styles.mCard}>
             <View style={styles.mCardHeader}>
-              <AppText variant="md" weight="bold" color="#050505">{r.name}</AppText>
-              <AppText variant="sm" weight="bold" color="#0284C7">{r.code}</AppText>
+              <AppText variant="md" color="#050505">{r.name}</AppText>
+              <AppText variant="md" color="#0284C7">{r.code}</AppText>
             </View>
-            <AppText variant="sm" color="#65676B" style={{ marginVertical: 4 }}>
+            <AppText variant="md" color="#65676B" style={{ marginVertical: 4 }}>
               Tồn đầu: {r.opening} {r.unit} · Nhập: +{r.in_qty} · Xuất: -{r.out_qty}
             </AppText>
             <View style={styles.mCardFooter}>
-              <AppText variant="sm" color="#050505">Tồn cuối: {r.closing} {r.unit}</AppText>
+              <AppText variant="md" color="#050505">Tồn cuối: {r.closing} {r.unit}</AppText>
               <AppText variant="md" weight="bold" color={colors.brand.primary}>{formatVND(r.value)}</AppText>
             </View>
           </View>
@@ -386,15 +386,15 @@ export default function SoSachScreen() {
         return (
           <View style={styles.mCard}>
             <View style={styles.mCardHeader}>
-              <AppText variant="md" weight="bold" color="#050505">{r.name}</AppText>
-              <AppText variant="sm" color="#65676B">{r.pos}</AppText>
+              <AppText variant="md" color="#050505">{r.name}</AppText>
+              <AppText variant="md" color="#65676B">{r.pos}</AppText>
             </View>
-            <AppText variant="sm" color="#65676B" style={{ marginVertical: 4 }}>
+            <AppText variant="md" color="#65676B" style={{ marginVertical: 4 }}>
               HĐ: {formatVND(r.base)} · Phụ cấp: {formatVND(r.allow)} · BHXH: -{formatVND(r.ins)}
             </AppText>
             <View style={styles.mCardFooter}>
-              <AppText variant="sm" color="#65676B">Thực lĩnh</AppText>
-              <AppText variant="md" weight="bold" color="#7C3AED">{formatVND(r.net)}</AppText>
+              <AppText variant="md" color="#65676B">Thực lĩnh</AppText>
+              <AppText variant="md" color="#7C3AED">{formatVND(r.net)}</AppText>
             </View>
           </View>
         );
@@ -402,15 +402,15 @@ export default function SoSachScreen() {
         return (
           <View style={styles.mCard}>
             <View style={styles.mCardHeader}>
-              <AppText variant="md" weight="bold" color="#050505">{r.code}</AppText>
-              <AppText variant="sm" color="#65676B">{formatDateShort(r.date)}</AppText>
+              <AppText variant="md" color="#050505">{r.code}</AppText>
+              <AppText variant="md" color="#65676B">{formatDateShort(r.date)}</AppText>
             </View>
-            <AppText variant="sm" color="#334155" style={{ marginVertical: 4 }}>{r.desc}</AppText>
+            <AppText variant="md" color="#334155" style={{ marginVertical: 4 }}>{r.desc}</AppText>
             <View style={styles.mCardFooter}>
-              <AppText variant="sm" color={r.in_amt > 0 ? colors.status.success : colors.status.danger}>
+              <AppText variant="md" color={r.in_amt > 0 ? colors.status.success : colors.status.danger}>
                 {r.in_amt > 0 ? `+${formatVND(r.in_amt)}` : `-${formatVND(r.out_amt)}`}
               </AppText>
-              <AppText variant="md" weight="bold" color="#2563EB">Số dư: {formatVND(r.balance)}</AppText>
+              <AppText variant="md" color="#2563EB">Số dư: {formatVND(r.balance)}</AppText>
             </View>
           </View>
         );
@@ -418,15 +418,15 @@ export default function SoSachScreen() {
         return (
           <View style={styles.mCard}>
             <View style={styles.mCardHeader}>
-              <AppText variant="md" weight="bold" color="#050505">{r.doc_no}</AppText>
-              <AppText variant="sm" color="#65676B">{formatDateShort(r.date)}</AppText>
+              <AppText variant="md" color="#050505">{r.doc_no}</AppText>
+              <AppText variant="md" color="#65676B">{formatDateShort(r.date)}</AppText>
             </View>
-            <AppText variant="sm" color="#334155" style={{ marginVertical: 4 }}>{r.desc}</AppText>
+            <AppText variant="md" color="#334155" style={{ marginVertical: 4 }}>{r.desc}</AppText>
             <View style={styles.mCardFooter}>
-              <AppText variant="sm" color={r.cash_in > 0 ? colors.status.success : colors.status.danger}>
+              <AppText variant="md" color={r.cash_in > 0 ? colors.status.success : colors.status.danger}>
                 {r.cash_in > 0 ? `Thu: +${formatVND(r.cash_in)}` : `Chi: -${formatVND(r.cash_out)}`}
               </AppText>
-              <AppText variant="md" weight="bold" color={colors.status.danger}>Tồn: {formatVND(r.balance)}</AppText>
+              <AppText variant="md" color={colors.status.danger}>Tồn: {formatVND(r.balance)}</AppText>
             </View>
           </View>
         );
@@ -479,21 +479,21 @@ export default function SoSachScreen() {
         <View style={{ flex: 1 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
             <View style={[styles.codeTag, { backgroundColor: meta.color + '15' }]}>
-              <AppText variant="sm" weight="bold" color={meta.color}>{meta.officialCode}</AppText>
+              <AppText variant="md" color={meta.color}>{meta.officialCode}</AppText>
             </View>
-            <AppText variant="md" weight="bold" color="#050505" numberOfLines={1}>{meta.title}</AppText>
+            <AppText variant="md" color="#050505" numberOfLines={1}>{meta.title}</AppText>
           </View>
-          <AppText variant="sm" color="#65676B" style={{ marginTop: 2 }} numberOfLines={isWide ? 1 : 2}>
+          <AppText variant="md" color="#65676B" style={{ marginTop: 2 }} numberOfLines={isWide ? 1 : 2}>
             {meta.subtitle}
           </AppText>
         </View>
 
         <View style={[styles.actionGroup, !isWide && { width: '100%', marginTop: 8 }]}>
           <TouchableOpacity style={[styles.toolbarBtn, !isWide && { flex: 1, justifyContent: 'center' }]} onPress={handleExportCsv} activeOpacity={0.7}>
-            <AppText variant="sm" weight="bold" color={colors.status.success}>Xuất CSV</AppText>
+            <AppText variant="md" color={colors.status.success}>Xuất CSV</AppText>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.toolbarBtnPrimary, !isWide && { flex: 1, justifyContent: 'center' }]} onPress={handleOpenPrintModal} activeOpacity={0.7}>
-            <AppText variant="sm" weight="bold" color="#fff">In Sổ / Bản in</AppText>
+            <AppText variant="md" color="#fff">In Sổ / Bản in</AppText>
           </TouchableOpacity>
         </View>
       </View>
@@ -524,7 +524,7 @@ export default function SoSachScreen() {
             <View style={styles.printContainer}>
               {/* Header Toolbar */}
               <View style={styles.printHeader}>
-                <AppText variant="md" weight="bold" color="#050505">Xem Bản In Chuẩn Bộ Tài Chính (TT 88/2021/TT-BTC)</AppText>
+                <AppText variant="md" color="#050505">Xem Bản In Chuẩn Bộ Tài Chính (TT 88/2021/TT-BTC)</AppText>
                 <View style={{ flexDirection: 'row', gap: 8 }}>
                   <TouchableOpacity
                     style={styles.toolbarBtnPrimary}
@@ -532,10 +532,10 @@ export default function SoSachScreen() {
                       if (typeof window !== 'undefined') window.print();
                     }}
                   >
-                    <AppText variant="sm" weight="bold" color="#fff">In Trực Tiếp</AppText>
+                    <AppText variant="md" color="#fff">In Trực Tiếp</AppText>
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.closeBtn} onPress={() => setPrintModalVisible(false)}>
-                    <AppText variant="md" weight="bold" color="#65676B">✕</AppText>
+                    <AppText variant="md" color="#65676B">✕</AppText>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -544,21 +544,21 @@ export default function SoSachScreen() {
               <ScrollView style={{ flex: 1, padding: 20, backgroundColor: '#fff' }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 }}>
                   <View>
-                    <AppText variant="sm" weight="bold" color="#050505">HỘ KINH DOANH F&B SÀI GÒN</AppText>
-                    <AppText variant="sm" color="#65676B">Mã số thuế: 0101234567</AppText>
-                    <AppText variant="sm" color="#65676B">Địa chỉ: 123 Nguyễn Thị Minh Khai, Q.1, TP.HCM</AppText>
+                    <AppText variant="md" color="#050505">HỘ KINH DOANH F&B SÀI GÒN</AppText>
+                    <AppText variant="md" color="#65676B">Mã số thuế: 0101234567</AppText>
+                    <AppText variant="md" color="#65676B">Địa chỉ: 123 Nguyễn Thị Minh Khai, Q.1, TP.HCM</AppText>
                   </View>
                   <View style={{ alignItems: 'flex-end' }}>
-                    <AppText variant="sm" weight="bold" color="#050505">{meta.officialCode}</AppText>
-                    <AppText variant="sm" color="#65676B" style={{ fontStyle: 'italic' }}>Ban hành theo TT 88/2021/TT-BTC</AppText>
+                    <AppText variant="md" color="#050505">{meta.officialCode}</AppText>
+                    <AppText variant="md" color="#65676B" style={{ fontStyle: 'italic' }}>Ban hành theo TT 88/2021/TT-BTC</AppText>
                   </View>
                 </View>
 
                 <View style={{ alignItems: 'center', marginVertical: 14 }}>
-                  <AppText variant="md" weight="bold" color="#050505" style={{ textTransform: 'uppercase' }}>
+                  <AppText variant="md" color="#050505" style={{ textTransform: 'uppercase' }}>
                     {meta.title}
                   </AppText>
-                  <AppText variant="sm" color="#65676B" style={{ fontStyle: 'italic', marginTop: 4 }}>
+                  <AppText variant="md" color="#65676B" style={{ fontStyle: 'italic', marginTop: 4 }}>
                     Kỳ kế toán: {PERIODS.find((p) => p.id === selectedPeriod)?.label}
                   </AppText>
                 </View>
@@ -567,7 +567,7 @@ export default function SoSachScreen() {
                 <View style={styles.printTable}>
                   <View style={styles.printTableRowHeader}>
                     {columns.map((c) => (
-                      <AppText key={c.key} variant="sm" weight="bold" style={{ flex: c.flex || 1, textAlign: c.align || 'left' }}>
+                      <AppText key={c.key} variant="md" style={{ flex: c.flex || 1, textAlign: c.align || 'left' }}>
                         {c.title}
                       </AppText>
                     ))}
@@ -586,13 +586,13 @@ export default function SoSachScreen() {
                 {/* Signature Block */}
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 30, paddingHorizontal: 20 }}>
                   <View style={{ alignItems: 'center' }}>
-                    <AppText variant="sm" weight="bold" color="#050505">NGƯỜI LẬP SỔ</AppText>
-                    <AppText variant="sm" color="#65676B" style={{ fontStyle: 'italic' }}>(Ký, họ tên)</AppText>
+                    <AppText variant="md" color="#050505">NGƯỜI LẬP SỔ</AppText>
+                    <AppText variant="md" color="#65676B" style={{ fontStyle: 'italic' }}>(Ký, họ tên)</AppText>
                   </View>
                   <View style={{ alignItems: 'center' }}>
-                    <AppText variant="sm" color="#65676B" style={{ fontStyle: 'italic' }}>Ngày 25 tháng 07 năm 2026</AppText>
-                    <AppText variant="sm" weight="bold" color="#050505" style={{ marginTop: 2 }}>CHỦ HỘ KINH DOANH</AppText>
-                    <AppText variant="sm" color="#65676B" style={{ fontStyle: 'italic' }}>(Ký, họ tên, đóng dấu)</AppText>
+                    <AppText variant="md" color="#65676B" style={{ fontStyle: 'italic' }}>Ngày 25 tháng 07 năm 2026</AppText>
+                    <AppText variant="md" color="#050505" style={{ marginTop: 2 }}>CHỦ HỘ KINH DOANH</AppText>
+                    <AppText variant="md" color="#65676B" style={{ fontStyle: 'italic' }}>(Ký, họ tên, đóng dấu)</AppText>
                   </View>
                 </View>
               </ScrollView>

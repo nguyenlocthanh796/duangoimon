@@ -31,6 +31,7 @@ export default function ProductGrid({
   panelWidth,
   onProductPress,
   onQuickAdd,
+  onQuickSubtract,
   getItemCartCount,
   menuLayoutMode = 'grid',
 }: ProductGridProps) {
@@ -56,6 +57,7 @@ export default function ProductGrid({
       const inCart = getItemCartCount(item.id);
 
       if (isListMode) {
+        const hasModifiers = !!(item.sizes?.length || item.toppings?.length);
         // 📋 List Row View Style
         return (
           <TouchableOpacity
@@ -76,33 +78,61 @@ export default function ProductGrid({
             }}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 }}>
-              {item.image ? (
-                <Image
-                  source={{ uri: item.image }}
-                  style={{ width: 44, height: 44, borderRadius: 8 }}
-                  contentFit="cover"
-                />
-              ) : (
-                <View
-                  style={{
-                    width: 44,
-                    height: 44,
-                    borderRadius: 8,
-                    backgroundColor: colors.brand.primaryBg,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Icon name="food-fork-drink" size={22} color={colors.brand.primary} />
-                </View>
-              )}
+              <View style={{ position: 'relative' }}>
+                {item.image ? (
+                  <Image
+                    source={{ uri: item.image }}
+                    style={{ width: 44, height: 44, borderRadius: 8 }}
+                    contentFit="cover"
+                  />
+                ) : (
+                  <View
+                    style={{
+                      width: 44,
+                      height: 44,
+                      borderRadius: 8,
+                      backgroundColor: colors.brand.primaryBg,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Icon name="food-fork-drink" size={22} color={colors.brand.primary} />
+                  </View>
+                )}
+
+                {/* Has Modifiers Sleek Indicator Dot */}
+                {hasModifiers && (
+                  <View
+                    style={{
+                      position: 'absolute',
+                      top: -2,
+                      right: -2,
+                      width: 10,
+                      height: 10,
+                      borderRadius: 5,
+                      backgroundColor: '#F97316',
+                      borderWidth: 1.5,
+                      borderColor: '#FFFFFF',
+                    }}
+                  />
+                )}
+              </View>
 
               <View style={{ flex: 1 }}>
-                <AppText variant="md" weight="bold" color={colors.text.primary} numberOfLines={1}>
+                <AppText variant="md" color={colors.text.primary} numberOfLines={1}>
                   {item.name}
                 </AppText>
-                <AppText variant="sm" color={colors.text.muted} numberOfLines={1}>
-                  {item.category || 'Món ăn'} · Mã: #{item.id.slice(-4).toUpperCase()}
+                <AppText variant="xs" color="#64748B" numberOfLines={1}>
+                  {(() => {
+                    const parts: string[] = [];
+                    if (item.sizes?.length) {
+                      parts.push(`Size M, ${item.sizes.map((s) => s.name).join(', ')}`);
+                    }
+                    if (item.toppings?.length) {
+                      parts.push(`${item.toppings.length} Topping`);
+                    }
+                    return parts.length ? parts.join(' · ') : 'Giá cố định';
+                  })()}
                 </AppText>
               </View>
             </View>
@@ -112,34 +142,82 @@ export default function ProductGrid({
                 {formatPrice(item.price)}
               </AppText>
 
-              {inCart > 0 && (
-                <View
+              {inCart > 0 ? (
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  {/* Minus / Trash Button */}
+                  <TouchableOpacity
+                    onPress={() => onQuickSubtract?.(item)}
+                    activeOpacity={0.7}
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 16,
+                      backgroundColor: inCart === 1 ? '#FEE2E2' : '#F1F5F9',
+                      borderWidth: 1,
+                      borderColor: inCart === 1 ? '#FCA5A5' : '#E2E8F0',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Icon
+                      name={inCart === 1 ? 'trash-can-outline' : 'minus'}
+                      size={16}
+                      color={inCart === 1 ? '#DC2626' : '#475569'}
+                    />
+                  </TouchableOpacity>
+
+                  {/* Quantity Badge */}
+                  <View
+                    style={{
+                      backgroundColor: colors.brand.primary,
+                      paddingHorizontal: 8,
+                      height: 28,
+                      borderRadius: 14,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <AppText variant="sm" weight="bold" color={colors.text.inverse}>
+                      x{inCart}
+                    </AppText>
+                  </View>
+
+                  {/* Plus Button */}
+                  <TouchableOpacity
+                    onPress={() => (onQuickAdd ? onQuickAdd(item) : onProductPress(item))}
+                    activeOpacity={0.7}
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 16,
+                      backgroundColor: colors.brand.primaryBg,
+                      borderWidth: 1,
+                      borderColor: colors.border.brand,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Icon name="plus" size={16} color={colors.brand.primary} />
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  onPress={() => (onQuickAdd ? onQuickAdd(item) : onProductPress(item))}
+                  activeOpacity={0.7}
                   style={{
-                    backgroundColor: colors.brand.primary,
-                    paddingHorizontal: 8,
-                    paddingVertical: 2,
-                    borderRadius: 999,
+                    width: 32,
+                    height: 32,
+                    borderRadius: 16,
+                    backgroundColor: colors.brand.primaryBg,
+                    borderWidth: 1,
+                    borderColor: colors.border.brand,
+                    alignItems: 'center',
+                    justifyContent: 'center',
                   }}
                 >
-                  <AppText variant="sm" weight="bold" color={colors.text.inverse}>
-                    x{inCart}
-                  </AppText>
-                </View>
+                  <Icon name="plus" size={16} color={colors.brand.primary} />
+                </TouchableOpacity>
               )}
-
-              <TouchableOpacity
-                onPress={() => (onQuickAdd ? onQuickAdd(item) : onProductPress(item))}
-                style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 16,
-                  backgroundColor: colors.brand.primaryBg,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Icon name="plus" size={18} color={colors.brand.primary} />
-              </TouchableOpacity>
             </View>
           </TouchableOpacity>
         );
@@ -200,6 +278,7 @@ export default function ProductGrid({
       columnWrapperStyle={isListMode ? undefined : { gap: CARD_GAP, justifyContent: 'center' }}
       contentContainerStyle={{
         paddingHorizontal: hPad,
+        paddingTop: 4,
         paddingBottom: isWide ? 24 : 120,
         gap: isListMode ? 0 : CARD_GAP,
       }}
