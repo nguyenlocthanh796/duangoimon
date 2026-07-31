@@ -22,6 +22,8 @@ import {
 } from '@expo-google-fonts/be-vietnam-pro';
 import * as SplashScreen from 'expo-splash-screen';
 import { POSSettingsProvider } from '../lib/context/POSSettingsContext';
+import { ToastProvider } from '../lib/context/ToastContext';
+import DynamicIslandToast from '../lib/components/ui/DynamicIslandToast';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -108,7 +110,10 @@ export default function RootLayout() {
       <ThemeProvider>
         <AuthProvider>
           <SidebarProvider>
-            <AppWithTheme />
+            <ToastProvider>
+              <AppWithTheme />
+              <DynamicIslandToast />
+            </ToastProvider>
           </SidebarProvider>
         </AuthProvider>
       </ThemeProvider>

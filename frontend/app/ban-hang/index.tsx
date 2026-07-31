@@ -17,6 +17,7 @@ import { api } from '../../lib/api';
 import { colors, font, shape } from '../../lib/theme';
 import { formatPrice } from '../../lib/utils/format';
 import { useSidebar } from '../../lib/context/SidebarContext';
+import { useToast } from '../../lib/context/ToastContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import { useTableOrder } from '../../lib/hooks/useTableOrder';
 import { usePOSSettings } from '../../lib/hooks/usePOSSettings';
@@ -50,7 +51,7 @@ export default function TableSelection() {
     total?: string;
     methodLabel?: string;
   }>();
-  const [toast, setToast] = useState<{ visible: boolean; message: string; subMessage?: string } | null>(null);
+  const { showToast } = useToast();
 
   useEffect(() => {
     if (params.payment_success === 'true') {
@@ -61,10 +62,11 @@ export default function TableSelection() {
       invalidateCache();
       setSelectedTable(null);
 
-      setToast({
-        visible: true,
+      showToast({
         message: `Thanh toán thành công ${successTable}`,
         subMessage: `Tổng: ${formatPrice(Number(successTotal))} đ · ${successMethod}`,
+        type: 'success',
+        duration: 2000,
       });
 
       // Clear parameters from url so they don't pop up again
@@ -76,12 +78,6 @@ export default function TableSelection() {
       });
 
       loadData(false, false);
-
-      const timer = setTimeout(() => {
-        setToast(null);
-      }, 4000);
-
-      return () => clearTimeout(timer);
     }
   }, [params.payment_success]);
 
@@ -525,62 +521,6 @@ export default function TableSelection() {
     );
   };
 
-  const renderToast = () => {
-    if (!toast || !toast.visible) return null;
-    return (
-      <View
-        style={{
-          position: 'absolute',
-          top: isWide ? 16 : insets.top + 16,
-          right: isWide ? 24 : 16,
-          left: isWide ? undefined : 16,
-          width: isWide ? 380 : undefined,
-          backgroundColor: '#FFFFFF',
-          borderRadius: 12,
-          paddingHorizontal: 16,
-          paddingVertical: 14,
-          shadowColor: '#000000',
-          shadowOffset: { width: 0, height: 6 },
-          shadowOpacity: 0.15,
-          shadowRadius: 10,
-          elevation: 6,
-          flexDirection: 'row',
-          alignItems: 'center',
-          gap: 12,
-          borderWidth: 1.5,
-          borderColor: '#BBF7D0',
-          zIndex: 9999,
-        }}
-      >
-        <View
-          style={{
-            width: 36,
-            height: 36,
-            borderRadius: 18,
-            backgroundColor: '#F0FDF4',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Icon name="check-circle" size={24} color="#16A34A" />
-        </View>
-        <View style={{ flex: 1 }}>
-          <AppText variant="md" color={colors.text.primary}>
-            {toast.message}
-          </AppText>
-          {toast.subMessage && (
-            <AppText variant="sm" color={colors.text.muted} style={{ marginTop: 2 }}>
-              {toast.subMessage}
-            </AppText>
-          )}
-        </View>
-        <TouchableOpacity onPress={() => setToast(null)}>
-          <Icon name="close" size={20} color={colors.icon.muted} />
-        </TouchableOpacity>
-      </View>
-    );
-  };
-
   return (
     <SafeAreaView
       edges={isWide ? ['top', 'left', 'right', 'bottom'] : ['left', 'right']}
@@ -723,7 +663,6 @@ export default function TableSelection() {
           />
         </Suspense>
       )}
-      {renderToast()}
     </SafeAreaView>
   );
 }
