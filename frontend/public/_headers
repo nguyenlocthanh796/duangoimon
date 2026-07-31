@@ -1,0 +1,6 @@
+# Font static assets
+/assets/node_modules/@expo-google-fonts
+  Content-Type: font/ttf
+
+/assets/node_modules/@expo/vector-icons
+  Content-Type: font/ttf

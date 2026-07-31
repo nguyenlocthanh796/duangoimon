@@ -84,20 +84,24 @@ function AppWithTheme() {
 }
 
 export default function RootLayout() {
-  const [fontsLoaded] = useFonts({
-    BeVietnamPro_400Regular,
-    BeVietnamPro_400Regular_Italic,
-    BeVietnamPro_500Medium,
-    BeVietnamPro_600SemiBold,
-    BeVietnamPro_700Bold,
-    'material-community': require('../assets/fonts/MaterialCommunityIcons.ttf'),
-  });
+  const isWeb = Platform.OS === 'web';
+
+  // On web, use Google Fonts CDN from index.html <link> – skip local TTF load
+  // (CF Pages serves TTF files with wrong Content-Type)
+  const [fontsLoaded, fontsError] = isWeb
+    ? [true, undefined]
+    : useFonts({
+        BeVietnamPro_400Regular,
+        BeVietnamPro_400Regular_Italic,
+        BeVietnamPro_500Medium,
+        BeVietnamPro_600SemiBold,
+        BeVietnamPro_700Bold,
+        'material-community': require('../assets/fonts/MaterialCommunityIcons.ttf'),
+      });
 
   useEffect(() => {
-    if (fontsLoaded) SplashScreen.hideAsync();
-  }, [fontsLoaded]);
-
-  if (!fontsLoaded) return null;
+    if (fontsLoaded || fontsError) SplashScreen.hideAsync();
+  }, [fontsLoaded, fontsError]);
 
   const appContent = (
     <POSSettingsProvider>

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useRouter, useSegments } from 'expo-router';
+import { useRouter, useSegments, usePathname } from 'expo-router';
 import { logger } from '../logger';
-import { ActivityIndicator, View, StyleSheet } from 'react-native';
+import { ActivityIndicator, View, StyleSheet, Platform } from 'react-native';
 import { decodeJwt } from '../auth-helpers';
 import { api } from '../api';
 import { getToken as getSecureToken, setToken as setSecureToken, getUser as getSecureUser, setUser as setSecureUser, clearToken as clearSecureToken } from '../secure-storage';
@@ -27,6 +27,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const router = useRouter();
   const segments = useSegments();
+  const pathname = usePathname();
 
   // On mount, read token and user from secure storage
   useEffect(() => {
@@ -115,55 +116,63 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     router.replace('/login');
   };
 
-  // Route guard
+  // Route guard — debounce with a ref to avoid race during navigation transitions
+  const lastNavRef = React.useRef(0);
   useEffect(() => {
     if (!isInitialized) return;
 
     const rootSegment = segments[0];
     const VALID_ROLES = ['admin', 'manager', 'cashier', 'accountant', 'kitchen'];
 
+    // Skip if segments are empty/missing during navigation transition
+    // This prevents admin/manager from being wrongly redirected to /quan-ly
+    // when router.replace is in progress (e.g. after payment completion)
+    if (rootSegment === undefined || rootSegment === null) return;
+
     if (!token) {
       if (rootSegment !== 'login') {
+        lastNavRef.current = Date.now();
         router.replace('/login');
       }
-    } else {
-      // 1. Default-deny policy: check for unrecognized roles
-      if (!userRole || !VALID_ROLES.includes(userRole)) {
-        logger.warn('auth', `Unrecognized or missing role: "${userRole}". Force logging out.`);
-        logout();
-        return;
-      }
+      return;
+    }
 
-      // 2. Redirect on login page or index root
-      if (rootSegment === 'login' || !rootSegment) {
-        if (userRole === 'admin' || userRole === 'manager') {
-          router.replace('/quan-ly');
-        } else if (userRole === 'cashier') {
+    // 1. Default-deny policy: check for unrecognized roles
+    if (!userRole || !VALID_ROLES.includes(userRole)) {
+      logger.warn('auth', `Unrecognized or missing role: "${userRole}". Force logging out.`);
+      logout();
+      return;
+    }
+
+    // 2. Redirect on login page or index root
+    if (rootSegment === 'login' || !rootSegment) {
+      if (userRole === 'admin' || userRole === 'manager') {
+        router.replace('/quan-ly');
+      } else if (userRole === 'cashier') {
+        router.replace('/ban-hang');
+      } else if (userRole === 'accountant') {
+        router.replace('/ke-toan');
+      } else if (userRole === 'kitchen') {
+        router.replace('/ban-hang/kitchen');
+      }
+    } else {
+      // 3. Subroute access authorization restrictions
+      const segs = segments as string[];
+      if (userRole === 'cashier') {
+        if (rootSegment !== 'ban-hang') {
           router.replace('/ban-hang');
-        } else if (userRole === 'accountant') {
+        }
+      } else if (userRole === 'accountant') {
+        if (rootSegment !== 'ke-toan' && rootSegment !== 'quan-ly') {
           router.replace('/ke-toan');
-        } else if (userRole === 'kitchen') {
+        }
+      } else if (userRole === 'kitchen') {
+        // kitchen can ONLY access /ban-hang/kitchen routes
+        if (rootSegment !== 'ban-hang' || segs.length < 2 || segs[1] !== 'kitchen') {
           router.replace('/ban-hang/kitchen');
         }
-      } else {
-        // 3. Subroute access authorization restrictions
-        const segs = segments as string[];
-        if (userRole === 'cashier') {
-          if (rootSegment !== 'ban-hang') {
-            router.replace('/ban-hang');
-          }
-        } else if (userRole === 'accountant') {
-          if (rootSegment !== 'ke-toan' && rootSegment !== 'quan-ly') {
-            router.replace('/ke-toan');
-          }
-        } else if (userRole === 'kitchen') {
-          // kitchen can ONLY access /ban-hang/kitchen routes
-          if (rootSegment !== 'ban-hang' || segs.length < 2 || segs[1] !== 'kitchen') {
-            router.replace('/ban-hang/kitchen');
-          }
-        }
-        // admin and manager roles have access to all routes (unrestricted)
       }
+      // admin and manager roles have access to all routes (unrestricted)
     }
   }, [isInitialized, token, userRole, segments]);
 
