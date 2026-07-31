@@ -10,6 +10,7 @@ import { formatPrice, formatPriceFull } from '../../lib/utils/format';
 import { useSidebar } from '../../lib/context/SidebarContext';
 import { useResponsive } from '../../lib/hooks/useResponsive';
 import { usePayment, PAY_METHODS, QUICK_AMOUNTS, getSmartCashSuggestions } from '../../lib/hooks/usePayment';
+import { useToast } from '../../lib/context/ToastContext';
 import Numpad from '../../lib/components/payment/Numpad';
 import PaymentSuccessScreen from '../../lib/components/payment/PaymentSuccessScreen';
 import { generateReceiptHTML } from '../../lib/components/payment/receipt';
@@ -51,12 +52,22 @@ export default function PaymentScreen() {
     orderId: orderId || '',
   });
 
+  const { showToast } = useToast();
+
   useEffect(() => {
     if (pm.paid) {
       if (autoPrint) {
         pm.handlePrint();
       }
       const methodLabel = pm.method === 'tien_mat' ? 'Tiền mặt' : pm.method === 'qr' ? 'QR Code' : pm.method === 'chuyen_khoan' ? 'Chuyển khoản' : 'Thẻ';
+      
+      showToast({
+        message: `Thanh toán thành công ${tableName || ''}`,
+        subMessage: `Tổng: ${formatPrice(total)} đ · ${methodLabel}`,
+        type: 'success',
+        duration: 2000,
+      });
+
       router.replace({
         pathname: '/ban-hang',
         params: {
@@ -67,7 +78,7 @@ export default function PaymentScreen() {
         }
       });
     }
-  }, [pm.paid, tableName, total, pm.method, autoPrint]);
+  }, [pm.paid, tableName, total, pm.method, autoPrint, showToast]);
 
   if (pm.paid) {
     return (

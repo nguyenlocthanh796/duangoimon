@@ -53,33 +53,35 @@ export default function TableSelection() {
   }>();
   const { showToast } = useToast();
 
-  useEffect(() => {
-    if (params.payment_success === 'true') {
-      const successTable = params.tableName || '';
-      const successTotal = params.total || '0';
-      const successMethod = params.methodLabel || 'Tiền mặt';
+  useFocusEffect(
+    useCallback(() => {
+      if (params.payment_success === 'true') {
+        const successTable = params.tableName || '';
+        const successTotal = params.total || '0';
+        const successMethod = params.methodLabel || 'Tiền mặt';
 
-      invalidateCache();
-      setSelectedTable(null);
+        invalidateCache();
+        setSelectedTable(null);
 
-      showToast({
-        message: `Thanh toán thành công ${successTable}`,
-        subMessage: `Tổng: ${formatPrice(Number(successTotal))} đ · ${successMethod}`,
-        type: 'success',
-        duration: 2000,
-      });
+        showToast({
+          message: `Thanh toán thành công ${successTable}`,
+          subMessage: `Tổng: ${formatPrice(Number(successTotal))} đ · ${successMethod}`,
+          type: 'success',
+          duration: 2000,
+        });
 
-      // Clear parameters from url so they don't pop up again
-      router.setParams({
-        payment_success: undefined,
-        tableName: undefined,
-        total: undefined,
-        methodLabel: undefined,
-      });
+        // Clear parameters from url so they don't pop up again
+        router.setParams({
+          payment_success: undefined,
+          tableName: undefined,
+          total: undefined,
+          methodLabel: undefined,
+        });
 
-      loadData(false, false);
-    }
-  }, [params.payment_success]);
+        loadData(false, false);
+      }
+    }, [params.payment_success, showToast])
+  );
 
   const [selectedTable, setSelectedTable] = useState<{ id: string; name: string } | null>(null);
   const [tables, setTables] = useState<Table[]>([]);
