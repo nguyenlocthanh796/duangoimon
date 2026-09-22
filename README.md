@@ -1,81 +1,133 @@
-# 👑 OngChu POS — Hệ Thống Quản Lý Bán Hàng F&B Thực Chiến Vị Chủ Quán
+# OngChu POS — Lean F&B Point of Sale Platform
 
 <p align="center">
-  <a href="https://ongchu.cloud"><img src="screenshots/00_login_kich_hoat.png" alt="OngChu POS Banner" width="800"/></a>
+  <img src="screenshots/pos_menu_unified_clean.png" alt="OngChu POS Interface Overview" width="920"/>
 </p>
 
 <p align="center">
-  <a href="https://ongchu.cloud"><img src="https://img.shields.io/badge/Website-ongchu.cloud-b45309?style=for-the-badge" alt="Website"/></a>
-  <a href="https://app.ongchu.cloud"><img src="https://img.shields.io/badge/Web_POS-Truy_Cap_Ngay-1c1917?style=for-the-badge" alt="Web App"/></a>
-  <a href="https://github.com/ongchu-pos/ongchu-pos/releases"><img src="https://img.shields.io/badge/Downloads-Windows_%7C_Android-15803d?style=for-the-badge" alt="Releases"/></a>
-  <img src="https://img.shields.io/badge/License-CC--BY--4.0-blue?style=for-the-badge" alt="License"/>
+  <a href="https://ongchu.cloud"><img src="https://img.shields.io/badge/Platform-Web%20%7C%20Windows%20%7C%20Android-1c1917?style=flat-square" alt="Platform"/></a>
+  <a href="https://app.ongchu.cloud"><img src="https://img.shields.io/badge/Production%20App-app.ongchu.cloud-b45309?style=flat-square" alt="Live App"/></a>
+  <a href="https://github.com/nguyenlocthanh796/duangoimon/releases"><img src="https://img.shields.io/badge/Release-v2.0.0-15803d?style=flat-square" alt="Release"/></a>
+  <img src="https://img.shields.io/badge/Architecture-Dual--Theme%20Universal-44403c?style=flat-square" alt="Architecture"/>
+  <img src="https://img.shields.io/badge/License-Commercial%20%2F%20Proprietary-blue?style=flat-square" alt="License"/>
 </p>
 
 ---
 
-## 📖 Giới Thiệu
-**OngChu POS** là hệ thống quản trị và bán hàng F&B chuyên sâu dành cho Quán Cafe, Trà Sữa, Quán Ăn, Nhà Hàng và Chuỗi F&B. Dự án được thiết kế xoay quanh triết lý **"Cái Tâm Vị Chủ Quán"** — cắt giảm 100% thủ tục rườm rà, tập trung tuyệt đối vào tốc độ phục vụ, an toàn dòng tiền và chống gian lận nội bộ.
+## 1. Executive Summary
 
-- **🌐 Nền tảng Web POS**: [https://app.ongchu.cloud](https://app.ongchu.cloud) (Mở trình duyệt là bán hàng ngay).
-- **💻 Bản Desktop Windows**: Siêu nhẹ ~12MB, không tốn RAM.
-- **📱 Bản Mobile & Tablet**: Hoạt động mượt mà 60 FPS trên Android và iOS.
+**OngChu POS** is an enterprise-grade, ultra-lightweight Point-of-Sale and management ecosystem built specifically for F&B businesses, including Cafes, Milk Tea Shops, Restaurants, Quick-Service Counters, and Multi-Branch Chains.
+
+Designed around the **"Zero-Gov / Lean Operator"** philosophy, the system eliminates administrative friction while enforcing absolute cash security, real-time audit trails, and sub-second touch latency.
+
+- **Web POS**: [https://app.ongchu.cloud](https://app.ongchu.cloud) (Instant deployment, zero installation required)
+- **Windows Native**: Ultra-light ~12MB standalone binary with minimal RAM footprint (<20MB)
+- **Mobile & Tablet**: High-performance 60 FPS Native engine across iOS and Android
 
 ---
 
-## 🌟 6 Trụ Cột Đột Phá
+## 2. Core Operational Pillars
 
-| # | Trụ Cột | Chi Tiết Nghiệp Vụ |
+| Pillar | Technical Implementation | Operational Value |
 |---|---|---|
-| 🛒 | **Bán Hàng 1-Chạm** | Gọi món, chuyển bàn, gộp bàn, tách hóa đơn, in tạm tính chỉ trong < 3 giây. |
-| 🥬 | **Sổ Quỹ Chi Chợ 3s** | Nhập tiền mua đá, rau, thịt, ứng lương tức thì ngay trên POS. Tự động trừ vào két tiền ca. |
-| 💵 | **Giao Ca Đếm Két 30s** | Đối soát tiền mặt thực tế và doanh thu hệ thống. Tự động phát hiện lệch két và cảnh báo. |
-| 📊 | **3 Con Số Vàng P&L** | Báo cáo lợi nhuận thực: (1) Tiền mặt trong két, (2) Tiền chuyển khoản ngân hàng, (3) Lợi nhuận ròng. |
-| 🖨️ | **In Nhiệt ESC/POS Direct** | Kết nối trực tiếp máy in mạng LAN K80/K58 (Port 9100) và két tiền RJ11 không cần cài driver. |
-| 🚨 | **Báo Động Gian Lận Realtime** | Gửi tin nhắn tức thì về Telegram Chủ Quán khi hủy món sau in tạm tính, sửa hóa đơn hoặc mở két tay. |
+| **1-Touch Ordering** | Multi-table state machine with instant seat/order switching | Order processing and bill split execution under 3 seconds |
+| **Instant Petty Cash (`/so-quy`)** | Real-time petty expense journal with auto-ledgering | Direct cash-out tracking (ice, fresh produce, salary advances) |
+| **Cash Drawer Audit (`/giao-ca`)** | Exact cash counting and shift balance reconciliation | Instant variance detection and automatic shift handover reporting |
+| **3 Golden Numbers P&L (`/bao-cao-loi-nhuan`)** | Real-time formula: `Drawer Cash` + `Bank VietQR` = `Net Profit` | Zero-latency financial clarity without complex accounting delays |
+| **Direct ESC/POS Thermal Printing** | Native Raw TCP Socket (Port 9100) with RJ11 pulse triggers | Driverless LAN printing (K80/K58) and automated paper cutting |
+| **Active Anti-Fraud Engine** | Real-time Telegram goroutine alerts on high-risk events | Instant notification for voided items, high discounts (>20%), and manual drawer kicks |
 
 ---
 
-## 📸 Giao Diện Trực Quan
+## 3. Product Gallery
 
 <div align="center">
   <table>
     <tr>
-      <td width="50%"><img src="screenshots/03_pos_so_do_ban.png" alt="Sơ đồ bàn"/><br/><b>Sơ đồ bàn & Đặt món trực quan</b></td>
-      <td width="50%"><img src="screenshots/11_thanh_toan_tien_mat_numpad.png" alt="Thanh toán Numpad"/><br/><b>Thanh toán tiền mặt & Numpad đếm tiền</b></td>
+      <td width="50%" align="center">
+        <img src="screenshots/03_pos_so_do_ban.png" alt="Table Management" width="100%"/><br/>
+        <sub><b>Table Layout & Area Zoning</b></sub>
+      </td>
+      <td width="50%" align="center">
+        <img src="screenshots/05_pos_thuc_don_mon_an.png" alt="Menu Catalog" width="100%"/><br/>
+        <sub><b>Menu Ordering & Instant Customization</b></sub>
+      </td>
     </tr>
     <tr>
-      <td width="50%"><img src="screenshots/13_kds_tong_quan.png" alt="Màn hình Bếp KDS"/><br/><b>Màn hình điều phối Bếp / Pha chế (KDS)</b></td>
-      <td width="50%"><img src="screenshots/21_bao_cao_3_con_so_vang.png" alt="Báo cáo Lợi nhuận"/><br/><b>Báo cáo 3 con số vàng Lợi Nhuận Thực</b></td>
+      <td width="50%" align="center">
+        <img src="screenshots/11_thanh_toan_tien_mat_numpad.png" alt="Cash Payment Numpad" width="100%"/><br/>
+        <sub><b>Rapid Cash Numpad & Change Calculation</b></sub>
+      </td>
+      <td width="50%" align="center">
+        <img src="screenshots/12_thanh_toan_vietqr_napas247.png" alt="Dynamic VietQR Payment" width="100%"/><br/>
+        <sub><b>Dynamic VietQR & MB Soundbox Integration</b></sub>
+      </td>
+    </tr>
+    <tr>
+      <td width="50%" align="center">
+        <img src="screenshots/13_kds_tong_quan.png" alt="Kitchen Display System" width="100%"/><br/>
+        <sub><b>Kitchen / Barista Display System (KDS)</b></sub>
+      </td>
+      <td width="50%" align="center">
+        <img src="screenshots/21_bao_cao_3_con_so_vang.png" alt="P&L Report" width="100%"/><br/>
+        <sub><b>3 Golden Numbers P&L Real-Time Analytics</b></sub>
+      </td>
+    </tr>
+    <tr>
+      <td width="50%" align="center">
+        <img src="screenshots/18_so_quy_tao_phieu_chi_3s.png" alt="Petty Cash Voucher" width="100%"/><br/>
+        <sub><b>3-Second Petty Cash Flow Ledger</b></sub>
+      </td>
+      <td width="50%" align="center">
+        <img src="screenshots/20_giao_ca_tong_ket_ca.png" alt="Shift Closing Summary" width="100%"/><br/>
+        <sub><b>Shift Closing & Drawer Reconciliation</b></sub>
+      </td>
     </tr>
   </table>
 </div>
 
 ---
 
-## 📥 Tải Bản Cài Đặt (Releases)
+## 4. Platform Distribution & Downloads
 
-| Nền Tảng | Định Dạng | Tải Về | Hướng Dẫn |
+| Platform | Format | Release Link | Notes |
 |---|---|---|---|
-| **Windows Desktop** | `.exe` (~12MB) | [Tải Bản Windows](https://github.com/nguyenlocthanh796/duangoimon/releases/latest) | Chạy trực tiếp, không cần cài đặt |
-| **Android Tablet & Phone** | `.apk` (~25MB) | [Tải Bản Android](https://github.com/nguyenlocthanh796/duangoimon/releases/latest) | Cài đặt cho máy POS cầm tay / Tablet |
-| **Trình Duyệt Web** | Web PWA | [Mở Web POS](https://app.ongchu.cloud) | Tương thích Chrome, Safari, Edge, Cốc Cốc |
+| **Windows Desktop** | `.exe` (~12MB) | [Download Windows App](https://github.com/nguyenlocthanh796/duangoimon/releases/latest) | Standalone portable executable, no runtime required |
+| **Android Tablet & Phone** | `.apk` (~25MB) | [Download Android APK](https://github.com/nguyenlocthanh796/duangoimon/releases/latest) | Compatible with POS handheld terminals, Android 8.0+ |
+| **Universal Web App** | PWA | [Launch Web POS](https://app.ongchu.cloud) | Instant cloud sync, offline-ready local cache |
 
 ---
 
-## 📚 Tài Liệu Hướng Dẫn Vận Hành
-- [01. Hướng Dẫn Bán Hàng & Gọi Món](docs/01_huong_dan_ban_hang.md)
-- [02. Hướng Dẫn Sổ Quỹ Chi Chợ 3 Giây](docs/02_so_quy_chi_cho.md)
-- [03. Hướng Dẫn Giao Ca Đếm Két 30 Giây](docs/03_giao_ca_dem_ket.md)
-- [04. Kết Nối Máy In Hóa Đơn ESC/POS & Két Tiền](docs/04_ket_noi_may_in.md)
-- [05. Cấu Hình Bot Telegram Báo Động Gian Lận](docs/05_chong_gian_lan_telegram.md)
+## 5. Operational Documentation (SOP)
+
+Detailed operating procedures for cashiers, managers, and store owners:
+
+- [Standard Operating Procedure: POS Sales & Order Management](docs/01_huong_dan_ban_hang.md)
+- [Petty Cash Management: 3-Second Market Expense Ledger](docs/02_so_quy_chi_cho.md)
+- [Shift Reconciliation: 30-Second Cash Drawer Audit](docs/03_giao_ca_dem_ket.md)
+- [Hardware Integration: ESC/POS Thermal Printers & Cash Drawers](docs/04_ket_noi_may_in.md)
+- [Security Controls: Telegram Anti-Fraud Configuration](docs/05_chong_gian_lan_telegram.md)
 
 ---
 
-## 🤝 Đóng Góp & Hỗ Trợ
-- **Báo lỗi (Bug Report)**: [Mở Issue Báo Lỗi](https://github.com/nguyenlocthanh796/duangoimon/issues/new?template=bug_report.md)
-- **Đề xuất tính năng (Feature Request)**: [Góp Ý Tính Năng](https://github.com/nguyenlocthanh796/duangoimon/issues/new?template=feature_request.md)
-- **Website Chính Thức**: [https://ongchu.cloud](https://ongchu.cloud)
-- **Hotline / Zalo**: `0392.387.165`
+## 6. Enterprise Security & Architecture Standards
+
+1. **Zero-Source Deployment**: Production environments execute exclusively stripped, hardened binaries. No application source code or raw database files are exposed on public hosts.
+2. **Deterministic Multi-Tenancy**: Complete logical separation of store configurations, catalog metadata, inventory ledgers, and transaction histories.
+3. **Double-Entry Cash Controls**: Cash movements are strictly immutable, requiring explicit manager PIN verification and audit reason logging for all post-print modifications.
+4. **Hardware-Direct Thermal Printing**: Bypass OS print spoolers with direct TCP socket communication, ensuring immediate receipt generation and cash drawer triggers.
 
 ---
-*Bản quyền tài liệu thuộc về OngChu POS Ecosystem (2026).*
+
+## 7. Support & Community
+
+- **Issue Tracker**: [Submit Bug Report](https://github.com/nguyenlocthanh796/duangoimon/issues/new?template=bug_report.md)
+- **Feature Requests**: [Submit Proposal](https://github.com/nguyenlocthanh796/duangoimon/issues/new?template=feature_request.md)
+- **Official Website**: [https://ongchu.cloud](https://ongchu.cloud)
+- **Technical Hotline & Zalo**: `0392.387.165`
+
+---
+
+<p align="center">
+  <sub>Copyright © 2026 OngChu POS Ecosystem. All rights reserved.</sub>
+</p>
