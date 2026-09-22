@@ -1,7 +1,7 @@
 # OngChu POS — Lean F&B Point of Sale Platform
 
 <p align="center">
-  <img src="screenshots/pos_menu_unified_clean.png" alt="OngChu POS Interface Overview" width="920"/>
+  <img src="screenshots/hero_banner_trio.png" alt="OngChu POS Tri-Screen Showcase" width="860"/>
 </p>
 
 <p align="center">
@@ -39,48 +39,44 @@ Designed around the **"Zero-Gov / Lean Operator"** philosophy, the system elimin
 
 ---
 
-## 3. Product Gallery
+## 3. Visual Interface Showcase
 
 <div align="center">
   <table>
     <tr>
-      <td width="50%" align="center">
-        <img src="screenshots/03_pos_so_do_ban.png" alt="Table Management" width="100%"/><br/>
-        <sub><b>Table Layout & Area Zoning</b></sub>
+      <td width="25%" align="center">
+        <img src="screenshots/03_pos_so_do_ban.png" alt="Table Layout" width="100%"/><br/>
+        <sub><b>Table Matrix</b></sub>
       </td>
-      <td width="50%" align="center">
-        <img src="screenshots/05_pos_thuc_don_mon_an.png" alt="Menu Catalog" width="100%"/><br/>
-        <sub><b>Menu Ordering & Instant Customization</b></sub>
+      <td width="25%" align="center">
+        <img src="screenshots/05_pos_thuc_don_mon_an.png" alt="Menu Ordering" width="100%"/><br/>
+        <sub><b>Menu Ordering</b></sub>
       </td>
-    </tr>
-    <tr>
-      <td width="50%" align="center">
-        <img src="screenshots/11_thanh_toan_tien_mat_numpad.png" alt="Cash Payment Numpad" width="100%"/><br/>
-        <sub><b>Rapid Cash Numpad & Change Calculation</b></sub>
+      <td width="25%" align="center">
+        <img src="screenshots/11_thanh_toan_tien_mat_numpad.png" alt="Cash Numpad" width="100%"/><br/>
+        <sub><b>Cash Numpad</b></sub>
       </td>
-      <td width="50%" align="center">
-        <img src="screenshots/12_thanh_toan_vietqr_napas247.png" alt="Dynamic VietQR Payment" width="100%"/><br/>
-        <sub><b>Dynamic VietQR & MB Soundbox Integration</b></sub>
+      <td width="25%" align="center">
+        <img src="screenshots/12_thanh_toan_vietqr_napas247.png" alt="Dynamic VietQR" width="100%"/><br/>
+        <sub><b>VietQR Payment</b></sub>
       </td>
     </tr>
     <tr>
-      <td width="50%" align="center">
-        <img src="screenshots/13_kds_tong_quan.png" alt="Kitchen Display System" width="100%"/><br/>
-        <sub><b>Kitchen / Barista Display System (KDS)</b></sub>
+      <td width="25%" align="center">
+        <img src="screenshots/13_kds_tong_quan.png" alt="KDS Station" width="100%"/><br/>
+        <sub><b>KDS Kitchen</b></sub>
       </td>
-      <td width="50%" align="center">
+      <td width="25%" align="center">
+        <img src="screenshots/18_so_quy_tao_phieu_chi_3s.png" alt="Petty Cash" width="100%"/><br/>
+        <sub><b>Petty Cash Ledger</b></sub>
+      </td>
+      <td width="25%" align="center">
+        <img src="screenshots/20_giao_ca_tong_ket_ca.png" alt="Shift Closing" width="100%"/><br/>
+        <sub><b>Shift Audit</b></sub>
+      </td>
+      <td width="25%" align="center">
         <img src="screenshots/21_bao_cao_3_con_so_vang.png" alt="P&L Report" width="100%"/><br/>
-        <sub><b>3 Golden Numbers P&L Real-Time Analytics</b></sub>
-      </td>
-    </tr>
-    <tr>
-      <td width="50%" align="center">
-        <img src="screenshots/18_so_quy_tao_phieu_chi_3s.png" alt="Petty Cash Voucher" width="100%"/><br/>
-        <sub><b>3-Second Petty Cash Flow Ledger</b></sub>
-      </td>
-      <td width="50%" align="center">
-        <img src="screenshots/20_giao_ca_tong_ket_ca.png" alt="Shift Closing Summary" width="100%"/><br/>
-        <sub><b>Shift Closing & Drawer Reconciliation</b></sub>
+        <sub><b>P&L 3 Numbers</b></sub>
       </td>
     </tr>
   </table>
