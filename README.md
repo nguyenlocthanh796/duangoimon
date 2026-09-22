@@ -56,8 +56,8 @@
 
 | Nền Tảng | Định Dạng | Tải Về | Hướng Dẫn |
 |---|---|---|---|
-| **Windows Desktop** | `.exe` (~12MB) | [Tải Bản Windows](https://github.com/ongchu-pos/ongchu-pos/releases/latest) | Chạy trực tiếp, không cần cài đặt |
-| **Android Tablet & Phone** | `.apk` (~25MB) | [Tải Bản Android](https://github.com/ongchu-pos/ongchu-pos/releases/latest) | Cài đặt cho máy POS cầm tay / Tablet |
+| **Windows Desktop** | `.exe` (~12MB) | [Tải Bản Windows](https://github.com/nguyenlocthanh796/duangoimon/releases/latest) | Chạy trực tiếp, không cần cài đặt |
+| **Android Tablet & Phone** | `.apk` (~25MB) | [Tải Bản Android](https://github.com/nguyenlocthanh796/duangoimon/releases/latest) | Cài đặt cho máy POS cầm tay / Tablet |
 | **Trình Duyệt Web** | Web PWA | [Mở Web POS](https://app.ongchu.cloud) | Tương thích Chrome, Safari, Edge, Cốc Cốc |
 
 ---
@@ -72,8 +72,8 @@
 ---
 
 ## 🤝 Đóng Góp & Hỗ Trợ
-- **Báo lỗi (Bug Report)**: [Mở Issue Báo Lỗi](https://github.com/ongchu-pos/ongchu-pos/issues/new?template=bug_report.md)
-- **Đề xuất tính năng (Feature Request)**: [Góp Ý Tính Năng](https://github.com/ongchu-pos/ongchu-pos/issues/new?template=feature_request.md)
+- **Báo lỗi (Bug Report)**: [Mở Issue Báo Lỗi](https://github.com/nguyenlocthanh796/duangoimon/issues/new?template=bug_report.md)
+- **Đề xuất tính năng (Feature Request)**: [Góp Ý Tính Năng](https://github.com/nguyenlocthanh796/duangoimon/issues/new?template=feature_request.md)
 - **Website Chính Thức**: [https://ongchu.cloud](https://ongchu.cloud)
 - **Hotline / Zalo**: `0392.387.165`
 
