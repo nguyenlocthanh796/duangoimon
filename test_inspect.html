@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { height: 905px; width: 404px; }
+.backdrop {
+  height: 100%; width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 16px; background: rgba(0,0,0,0.5);
+}
+.keyboardWrap {
+  display: flex; flex-direction: column; width: 100%; max-width: 500px; align-items: center;
+}
+.cardBase {
+  display: flex; flex-direction: column; width: 100%; border-radius: 16px; max-height: 85%; border: 1px solid #ccc; overflow: hidden; background: white;
+}
+.headerRow {
+  display: flex; height: 50px; flex-shrink: 0; border-bottom: 1px solid #eee;
+}
+.scrollBody {
+  display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 1; flex-grow: 0; min-height: 0;
+}
+.scrollContent {
+  padding: 16px; display: flex; flex-direction: column; gap: 14px;
+}
+.pinInputBox {
+  height: 52px; border: 1px solid blue;
+}
+.footerRow {
+  display: flex; height: 68px; flex-shrink: 0; border-top: 1px solid #eee;
+}
+</style>
+</head>
+<body>
+<div class='backdrop' id='bd'>
+  <div class='keyboardWrap' id='kw'>
+    <div class='cardBase' id='cb'>
+      <div class='headerRow' id='hr'>Header</div>
+      <div class='scrollBody' id='sb'>
+        <div class='scrollContent' id='sc'>
+          <p style='font-size: 16px; line-height: 22px;'>Nhập 4 số PIN mới cho tài khoản Chủ Quán (Quyền tối cao):</p>
+          <div class='pinInputBox' id='ib'></div>
+        </div>
+      </div>
+      <div class='footerRow' id='fr'>Footer</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

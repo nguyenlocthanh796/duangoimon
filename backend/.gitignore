@@ -1,0 +1,23 @@
+﻿# Backend Go Binaries
+bin/
+dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Databases & Data (Zero-DB Deployment Guard)
+*.db
+*.db-shm
+*.db-wal
+*.db-journal
+*.sqlite
+*.sqlite3
+*.sql
+*.bak
+data/
+tenants/
+*.log

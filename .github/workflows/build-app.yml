@@ -1,0 +1,80 @@
+﻿name: Build Mobile Apps (Android APK & iOS IPA)
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Nền tảng cần build (all, android, ios)'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - android
+          - ios
+      profile:
+        description: 'Hồ sơ build EAS (preview = APK/IPA test, production = App Store / Google Play)'
+        required: true
+        default: 'preview'
+        type: choice
+        options:
+          - preview
+          - production
+          - simulator
+
+jobs:
+  build-android:
+    if: inputs.platform == 'all' || inputs.platform == 'android'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: frontend/package.json
+
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Setup EAS CLI
+        run: npm install -g eas-cli
+
+      - name: Build Android APK via EAS
+        working-directory: ./frontend
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          eas build --platform android --profile ${{ inputs.profile || 'preview' }} --non-interactive
+
+  build-ios:
+    if: inputs.platform == 'all' || inputs.platform == 'ios'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: frontend/package.json
+
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Setup EAS CLI
+        run: npm install -g eas-cli
+
+      - name: Build iOS IPA via EAS
+        working-directory: ./frontend
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          eas build --platform ios --profile ${{ inputs.profile || 'preview' }} --non-interactive

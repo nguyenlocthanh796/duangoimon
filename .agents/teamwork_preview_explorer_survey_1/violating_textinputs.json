@@ -1,0 +1,681 @@
+[
+  {
+    "file": "app\\bao-cao-loi-nhuan\\_components\\ReportCustomDateModal.tsx",
+    "line": 142,
+    "current_fs": 14.0,
+    "style_prop": "[\n                  s.dateInput,\n                  {\n                    color: theme.text.primary,\n                    borderColor: theme.border.subtle,\n                    backgroundColor: theme.surface.header,",
+    "snippet": "140:                 T\u1eeb ng\u00e0y (YYYY-MM-DD):\n141:               </AppText>\n142:               <TextInput\n143:                 value={customStartDate}\n144:                 onChangeText={onSetCustomStartDate}\n145:                 placeholder=\"2026-09-01\"\n146:                 placeholderTextColor={theme.text.muted}\n147:                 style={[\n148:                   s.dateInput,\n149:                   {"
+  },
+  {
+    "file": "app\\bao-cao-loi-nhuan\\_components\\ReportCustomDateModal.tsx",
+    "line": 162,
+    "current_fs": 14.0,
+    "style_prop": "[\n                  s.dateInput,\n                  {\n                    color: theme.text.primary,\n                    borderColor: theme.border.subtle,\n                    backgroundColor: theme.surface.header,",
+    "snippet": "160:                 \u0110\u1ebfn ng\u00e0y (YYYY-MM-DD):\n161:               </AppText>\n162:               <TextInput\n163:                 value={customEndDate}\n164:                 onChangeText={onSetCustomEndDate}\n165:                 placeholder=\"2026-09-02\"\n166:                 placeholderTextColor={theme.text.muted}\n167:                 style={[\n168:                   s.dateInput,\n169:                   {"
+  },
+  {
+    "file": "app\\bao-cao-loi-nhuan\\_components\\ReportInvoicesTab.tsx",
+    "line": 51,
+    "current_fs": 14.0,
+    "style_prop": "[s.searchInput, { color: theme.text.primary",
+    "snippet": "49:         <View style={[s.searchInputRow, { backgroundColor: theme.surface.header, borderRadius: 12, borderWidth: StyleSheet.hairlineWidth, borderColor: theme.border.subtle, paddingHorizontal: 10, paddingVertical: 2 }]}>\n50:           <Icon name=\"magnify\" size={20} color={theme.text.muted} style={{ marginRight: 6 }} />\n51:           <TextInput\n52:             value={invoiceSearch}\n53:             onChangeText={onSetInvoiceSearch}\n54:             placeholder=\"T\u00ecm theo m\u00e3 H\u0110, B\u00e0n, Thu ng\u00e2n...\"\n55:             placeholderTextColor={theme.text.muted}\n56:             style={[s.searchInput, { color: theme.text.primary }]}\n57:           />\n58:           {invoiceSearch ? ("
+  },
+  {
+    "file": "app\\cai-dat\\_components\\OperationsTab.tsx",
+    "line": 656,
+    "current_fs": 12.0,
+    "style_prop": "[\n              s.input,\n              {\n                flex: 1.2,\n                backgroundColor: theme.surface.app,\n                borderColor: theme.border.default,\n                color: theme.text.primary,\n                fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',\n                fontSize: 12,\n                height: 38,",
+    "snippet": "654:             </AppText>\n655:           </View>\n656:           <TextInput\n657:             style={[\n658:               s.input,\n659:               {\n660:                 flex: 1.2,\n661:                 backgroundColor: theme.surface.app,\n662:                 borderColor: theme.border.default,\n663:                 color: theme.text.primary,"
+  },
+  {
+    "file": "app\\cai-dat\\_components\\OwnerAccountTab.tsx",
+    "line": 590,
+    "current_fs": null,
+    "style_prop": "[\n                  s.inputBox,\n                  {\n                    height: 42,\n                    backgroundColor: theme.surface.card,\n                    borderColor: theme.border.default,\n                    color: theme.text.primary,",
+    "snippet": "588:                 Nh\u1eadp PIN Ch\u1ee7 Qu\u00e1n ({ownerPin}) ho\u1eb7c M\u00e3 C\u1ee9u H\u1ed9 SaaS:\n589:               </AppText>\n590:               <TextInput\n591:                 value={unbindCode}\n592:                 onChangeText={setUnbindCode}\n593:                 placeholder=\"Nh\u1eadp PIN ho\u1eb7c SAASxxxxxx...\"\n594:                 placeholderTextColor={theme.text.muted}\n595:                 autoCapitalize=\"characters\"\n596:                 style={[\n597:                   s.inputBox,"
+  },
+  {
+    "file": "app\\cai-dat\\_components\\OwnerAccountTab.tsx",
+    "line": 706,
+    "current_fs": null,
+    "style_prop": "[\n                    s.inputBox,\n                    {\n                      height: 42,\n                      backgroundColor: theme.surface.input,\n                      borderColor: theme.status.dangerBorder,\n                      color: theme.brand.danger,\n                      fontWeight: '600',",
+    "snippet": "704:                   1. Nh\u1eadp c\u1ee5m t\u1eeb x\u00e1c nh\u1eadn: <AppText variant=\"xs\" weight=\"bold\" color={theme.brand.danger}>XOA TAI KHOAN</AppText>\n705:                 </AppText>\n706:                 <TextInput\n707:                   value={deleteConfirmText}\n708:                   onChangeText={setDeleteConfirmText}\n709:                   placeholder=\"XOA TAI KHOAN\"\n710:                   placeholderTextColor={theme.brand.danger}\n711:                   autoCapitalize=\"characters\"\n712:                   style={[\n713:                     s.inputBox,"
+  },
+  {
+    "file": "app\\cai-dat\\_components\\OwnerAccountTab.tsx",
+    "line": 729,
+    "current_fs": null,
+    "style_prop": "[\n                    s.inputBox,\n                    {\n                      height: 42,\n                      backgroundColor: theme.surface.input,\n                      borderColor: theme.status.dangerBorder,\n                      color: theme.brand.danger,\n                      fontWeight: '600',",
+    "snippet": "727:                   2. Nh\u1eadp m\u00e3 PIN Ch\u1ee7 Qu\u00e1n ({ownerPin}):\n728:                 </AppText>\n729:                 <TextInput\n730:                   value={deletePin}\n731:                   onChangeText={setDeletePin}\n732:                   placeholder=\"PIN Ch\u1ee7 Qu\u00e1n...\"\n733:                   placeholderTextColor={theme.brand.danger}\n734:                   keyboardType=\"numeric\"\n735:                   secureTextEntry\n736:                   maxLength={6}"
+  },
+  {
+    "file": "app\\giao-ca\\index.tsx",
+    "line": 272,
+    "current_fs": null,
+    "style_prop": "[\n                  s.modalInput,\n                  {\n                    backgroundColor: theme.surface.header,\n                    color: theme.text.primary,\n                    borderColor: theme.border.subtle,",
+    "snippet": "270:                 THU NG\u00c2N TR\u1ef0C CA:\n271:               </AppText>\n272:               <TextInput\n273:                 value={cashierName}\n274:                 onChangeText={setCashierName}\n275:                 placeholder=\"T\u00ean thu ng\u00e2n...\"\n276:                 placeholderTextColor={theme.text.muted}\n277:                 style={[\n278:                   s.modalInput,\n279:                   {"
+  },
+  {
+    "file": "app\\giao-ca\\index.tsx",
+    "line": 293,
+    "current_fs": null,
+    "style_prop": null,
+    "snippet": "291:                 TI\u1ec0N L\u1eba \u0110\u1ea6U CA (K\u00c9T BAN \u0110\u1ea6U):\n292:               </AppText>\n293:               <TextInput\n294:                 value={startingCash > 0 ? startingCash.toLocaleString('vi-VN') : ''}\n295:                 onChangeText={(val) => setStartingCashStr(val.replace(/\\D/g, ''))}\n296:                 keyboardType=\"numeric\"\n297:                 placeholder=\"0 \u0111\"\n298:                 placeholderTextColor={theme.text.muted}\n299:                 style={[\n300:                   s.modalInput,"
+  },
+  {
+    "file": "app\\giao-ca\\index.tsx",
+    "line": 777,
+    "current_fs": null,
+    "style_prop": null,
+    "snippet": "775:                       Ti\u1ec1n \u0111\u1ebfm:\n776:                     </AppText>\n777:                     <TextInput\n778:                       value={actualCashStr ? Number(actualCashStr).toLocaleString('vi-VN') : ''}\n779:                       onChangeText={(val) => {\n780:                         const raw = val.replace(/\\D/g, '');\n781:                         setActualCashStr(raw);\n782:                       }}\n783:                       keyboardType=\"numeric\"\n784:                       editable={!isClosed}"
+  },
+  {
+    "file": "app\\giao-ca\\index.tsx",
+    "line": 1242,
+    "current_fs": null,
+    "style_prop": null,
+    "snippet": "1240:                   HO\u1eb6C NH\u1eacP NHANH T\u1ed4NG TI\u1ec0N M\u1eb6T:\n1241:                 </AppText>\n1242:                 <TextInput\n1243:                   value={actualCashStr ? Number(actualCashStr).toLocaleString('vi-VN') : ''}\n1244:                   onChangeText={(val) => {\n1245:                     const raw = val.replace(/\\D/g, '');\n1246:                     setActualCashStr(raw);\n1247:                   }}\n1248:                   keyboardType=\"numeric\"\n1249:                   editable={!isClosed}"
+  },
+  {
+    "file": "app\\hoa-don\\index.tsx",
+    "line": 899,
+    "current_fs": 14.0,
+    "style_prop": "[s.searchInput, { color: theme.text.primary",
+    "snippet": "897:               <View style={[s.searchBar, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, borderWidth: StyleSheet.hairlineWidth, borderRadius: 12 }]}>\n898:                 <Icon name=\"magnify\" size={18} color={theme.text.muted} />\n899:                 <TextInput\n900:                   placeholder=\"T\u00ecm theo m\u00e3 HD, t\u00ean b\u00e0n, m\u00f3n \u0103n...\"\n901:                   placeholderTextColor={theme.text.muted}\n902:                   value={searchQuery}\n903:                   onChangeText={setSearchQuery}\n904:                   style={[s.searchInput, { color: theme.text.primary }]}\n905:                 />\n906:                 {searchQuery ? ("
+  },
+  {
+    "file": "app\\huong-dan\\index.tsx",
+    "line": 986,
+    "current_fs": 14.0,
+    "style_prop": "[s.searchInput, { color: theme.text.primary",
+    "snippet": "984:         <View style={[s.searchBar, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle }]}>\n985:           <Icon name=\"magnify\" size={18} color={theme.text.muted} />\n986:           <TextInput\n987:             value={searchQuery}\n988:             onChangeText={setSearchQuery}\n989:             placeholder=\"T\u00ecm ki\u1ebfm h\u01b0\u1edbng d\u1eabn v\u1eadn h\u00e0nh...\"\n990:             placeholderTextColor={theme.text.subtle}\n991:             style={[s.searchInput, { color: theme.text.primary }]}\n992:           />\n993:           {searchQuery.length > 0 && ("
+  },
+  {
+    "file": "app\\khach-hang\\components\\CustomerFormModal.tsx",
+    "line": 72,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { color: theme.text.primary, borderColor: theme.border.default, backgroundColor: theme.surface.header",
+    "snippet": "70:             <View>\n71:               <AppText variant=\"xs\" color={theme.text.muted}>H\u1ecd v\u00e0 T\u00ean (*):</AppText>\n72:               <TextInput\n73:                 value={formName}\n74:                 onChangeText={setFormName}\n75:                 placeholder=\"V\u00ed d\u1ee5: Anh Nam, Ch\u1ecb Linh...\"\n76:                 placeholderTextColor={theme.text.muted}\n77:                 style={[s.input, { color: theme.text.primary, borderColor: theme.border.default, backgroundColor: theme.surface.header }]}\n78:               />\n79:             </View>"
+  },
+  {
+    "file": "app\\khach-hang\\components\\CustomerFormModal.tsx",
+    "line": 83,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { color: theme.text.primary, borderColor: theme.border.default, backgroundColor: theme.surface.header",
+    "snippet": "81:             <View>\n82:               <AppText variant=\"xs\" color={theme.text.muted}>S\u1ed1 \u0110i\u1ec7n Tho\u1ea1i (*):</AppText>\n83:               <TextInput\n84:                 value={formPhone}\n85:                 onChangeText={setFormPhone}\n86:                 keyboardType=\"phone-pad\"\n87:                 placeholder=\"0901234567\"\n88:                 placeholderTextColor={theme.text.muted}\n89:                 style={[s.input, { color: theme.text.primary, borderColor: theme.border.default, backgroundColor: theme.surface.header }]}\n90:               />"
+  },
+  {
+    "file": "app\\khach-hang\\components\\CustomerFormModal.tsx",
+    "line": 95,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { color: theme.text.primary, borderColor: theme.border.default, backgroundColor: theme.surface.header",
+    "snippet": "93:             <View>\n94:               <AppText variant=\"xs\" color={theme.text.muted}>N\u1ee3 Ban \u0110\u1ea7u (VND):</AppText>\n95:               <TextInput\n96:                 value={formInitialDebt}\n97:                 onChangeText={setFormInitialDebt}\n98:                 keyboardType=\"numeric\"\n99:                 placeholder=\"0\"\n100:                 placeholderTextColor={theme.text.muted}\n101:                 style={[s.input, { color: theme.text.primary, borderColor: theme.border.default, backgroundColor: theme.surface.header }]}\n102:               />"
+  },
+  {
+    "file": "app\\khach-hang\\components\\CustomerFormModal.tsx",
+    "line": 107,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { color: theme.text.primary, borderColor: theme.border.default, backgroundColor: theme.surface.header",
+    "snippet": "105:             <View>\n106:               <AppText variant=\"xs\" color={theme.text.muted}>Ghi Ch\u00fa:</AppText>\n107:               <TextInput\n108:                 value={formNotes}\n109:                 onChangeText={setFormNotes}\n110:                 placeholder=\"Kh\u00e1ch quen v\u0103n ph\u00f2ng, \u00edt \u0111\u01b0\u1eddng...\"\n111:                 placeholderTextColor={theme.text.muted}\n112:                 style={[s.input, { color: theme.text.primary, borderColor: theme.border.default, backgroundColor: theme.surface.header }]}\n113:               />\n114:             </View>"
+  },
+  {
+    "file": "app\\khach-hang\\components\\CustomerListView.tsx",
+    "line": 248,
+    "current_fs": 14.0,
+    "style_prop": "[s.searchInput, { color: theme.text.primary",
+    "snippet": "246:             <View style={[s.searchBox, { backgroundColor: theme.surface.card, borderColor: theme.border.subtle }]}>\n247:               <Icon name=\"magnify\" size={18} color={theme.text.muted} />\n248:               <TextInput\n249:                 value={searchQuery}\n250:                 onChangeText={onSearchChange}\n251:                 placeholder=\"T\u00ecm t\u00ean ho\u1eb7c S\u0110T kh\u00e1ch...\"\n252:                 placeholderTextColor={theme.text.muted}\n253:                 style={[s.searchInput, { color: theme.text.primary }]}\n254:               />\n255:               {searchQuery.length > 0 && ("
+  },
+  {
+    "file": "app\\khach-hang\\components\\SettleDebtModal.tsx",
+    "line": 147,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { color: theme.text.primary, borderColor: theme.border.default, backgroundColor: theme.surface.header",
+    "snippet": "145:           <View style={{ marginTop: 12 }}>\n146:             <AppText variant=\"xs\" color={theme.text.muted}>S\u1ed1 ti\u1ec1n thu (VND):</AppText>\n147:             <TextInput\n148:               value={settleAmount}\n149:               onChangeText={setSettleAmount}\n150:               keyboardType=\"numeric\"\n151:               style={[s.input, { color: theme.text.primary, borderColor: theme.border.default, backgroundColor: theme.surface.header }]}\n152:             />\n153:           </View>\n154: "
+  },
+  {
+    "file": "app\\khach-hang\\components\\SettleDebtModal.tsx",
+    "line": 158,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { color: theme.text.primary, borderColor: theme.border.default, backgroundColor: theme.surface.header, height: 38",
+    "snippet": "156:           <View style={{ marginTop: 10 }}>\n157:             <AppText variant=\"xs\" color={theme.text.muted}>Ghi ch\u00fa thu n\u1ee3:</AppText>\n158:             <TextInput\n159:               value={settleNote}\n160:               onChangeText={setSettleNote}\n161:               placeholder=\"Ghi ch\u00fa (t\u00f9y ch\u1ecdn)...\"\n162:               placeholderTextColor={theme.text.muted}\n163:               style={[s.input, { color: theme.text.primary, borderColor: theme.border.default, backgroundColor: theme.surface.header, height: 38 }]}\n164:             />\n165:           </View>"
+  },
+  {
+    "file": "app\\kho-hang\\index.tsx",
+    "line": 406,
+    "current_fs": 14.0,
+    "style_prop": "[s.searchInput, { color: theme.text.primary",
+    "snippet": "404:       >\n405:         <Icon name=\"magnify\" size={18} color={theme.text.muted} />\n406:         <TextInput\n407:           placeholder=\"T\u00ecm theo t\u00ean nguy\u00ean v\u1eadt li\u1ec7u, SKU, nh\u00e0 cung c\u1ea5p...\"\n408:           placeholderTextColor={theme.text.muted}\n409:           value={searchQuery}\n410:           onChangeText={setSearchQuery}\n411:           style={[s.searchInput, { color: theme.text.primary }]}\n412:         />\n413:         {searchQuery ? ("
+  },
+  {
+    "file": "app\\kho-hang\\index.tsx",
+    "line": 1107,
+    "current_fs": null,
+    "style_prop": null,
+    "snippet": "1105:                 S\u1ed1 l\u01b0\u1ee3ng mua th\u00eam ({restockItem?.unit})\n1106:               </AppText>\n1107:               <TextInput\n1108:                 value={restockQtyStr}\n1109:                 onChangeText={(v) => {\n1110:                   setRestockQtyStr(v);\n1111:                   const q = parseInt(v.replace(/\\D/g, ''), 10) || 0;\n1112:                   setRestockTotalCostStr(String(q * (restockItem?.costPrice || 0)));\n1113:                 }}\n1114:                 keyboardType=\"numeric\""
+  },
+  {
+    "file": "app\\kho-hang\\index.tsx",
+    "line": 1124,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.default, color: theme.text.primary",
+    "snippet": "1122:                 T\u1ed5ng ti\u1ec1n thanh to\u00e1n (VND)\n1123:               </AppText>\n1124:               <TextInput\n1125:                 value={restockTotalCostStr}\n1126:                 onChangeText={setRestockTotalCostStr}\n1127:                 keyboardType=\"numeric\"\n1128:                 style={[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.default, color: theme.text.primary }]}\n1129:               />\n1130:               {restockTotalCostStr ? (\n1131:                 <AppText variant=\"xs\" color={theme.brand.primary} tabularNums style={{ marginTop: 4 }}>"
+  },
+  {
+    "file": "app\\kho-hang\\index.tsx",
+    "line": 1285,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.default, color: theme.text.primary",
+    "snippet": "1283:                 ))}\n1284:               </View>\n1285:               <TextInput\n1286:                 value={adjustNote}\n1287:                 onChangeText={setAdjustNote}\n1288:                 placeholder=\"Ghi ch\u00fa th\u00eam...\"\n1289:                 placeholderTextColor={theme.text.muted}\n1290:                 style={[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.default, color: theme.text.primary }]}\n1291:               />\n1292:             </View>"
+  },
+  {
+    "file": "app\\kho-hang\\index.tsx",
+    "line": 1467,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.card, borderColor: theme.border.default, color: theme.text.primary",
+    "snippet": "1465:                   </TouchableOpacity>\n1466:                 </View>\n1467:                 <TextInput\n1468:                   value={formSku}\n1469:                   onChangeText={setFormSku}\n1470:                   placeholder=\"VD: NL-CF\"\n1471:                   placeholderTextColor={theme.text.muted}\n1472:                   style={[s.input, { backgroundColor: theme.surface.card, borderColor: theme.border.default, color: theme.text.primary }]}\n1473:                 />\n1474:               </View>"
+  },
+  {
+    "file": "app\\kho-hang\\index.tsx",
+    "line": 1480,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.card, borderColor: theme.border.default, color: theme.text.primary",
+    "snippet": "1478:                   \u0110\u01a1n V\u1ecb T\u00ednh\n1479:                 </AppText>\n1480:                 <TextInput\n1481:                   value={formUnit}\n1482:                   onChangeText={setFormUnit}\n1483:                   placeholder=\"kg, lon, h\u1ed9p...\"\n1484:                   placeholderTextColor={theme.text.muted}\n1485:                   style={[s.input, { backgroundColor: theme.surface.card, borderColor: theme.border.default, color: theme.text.primary }]}\n1486:                 />\n1487:               </View>"
+  },
+  {
+    "file": "app\\kho-hang\\index.tsx",
+    "line": 1537,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.card, borderColor: theme.border.default, color: theme.text.primary",
+    "snippet": "1535:                   T\u1ed3n Ban \u0110\u1ea7u ({formUnit || '\u0111\u01a1n v\u1ecb'})\n1536:                 </AppText>\n1537:                 <TextInput\n1538:                   value={formCurrentStock}\n1539:                   onChangeText={setFormCurrentStock}\n1540:                   keyboardType=\"numeric\"\n1541:                   style={[s.input, { backgroundColor: theme.surface.card, borderColor: theme.border.default, color: theme.text.primary }]}\n1542:                 />\n1543:               </View>\n1544: "
+  },
+  {
+    "file": "app\\kho-hang\\index.tsx",
+    "line": 1549,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.card, borderColor: theme.border.default, color: theme.text.primary",
+    "snippet": "1547:                   Ng\u01b0\u1ee1ng B\u00e1o H\u1ebft\n1548:                 </AppText>\n1549:                 <TextInput\n1550:                   value={formMinStockAlert}\n1551:                   onChangeText={setFormMinStockAlert}\n1552:                   keyboardType=\"numeric\"\n1553:                   style={[s.input, { backgroundColor: theme.surface.card, borderColor: theme.border.default, color: theme.text.primary }]}\n1554:                 />\n1555:               </View>\n1556:             </View>"
+  },
+  {
+    "file": "app\\kho-hang\\index.tsx",
+    "line": 1563,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.card, borderColor: theme.border.default, color: theme.text.primary",
+    "snippet": "1561:                   \u0110\u01a1n Gi\u00e1 Nh\u1eadp (VND)\n1562:                 </AppText>\n1563:                 <TextInput\n1564:                   value={formCostPrice}\n1565:                   onChangeText={setFormCostPrice}\n1566:                   keyboardType=\"numeric\"\n1567:                   style={[s.input, { backgroundColor: theme.surface.card, borderColor: theme.border.default, color: theme.text.primary }]}\n1568:                 />\n1569:                 {formCostPrice ? (\n1570:                   <AppText variant=\"xxs\" color={theme.brand.primary} tabularNums style={{ marginTop: 4 }}>"
+  },
+  {
+    "file": "app\\kho-hang\\index.tsx",
+    "line": 1580,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.card, borderColor: theme.border.default, color: theme.text.primary",
+    "snippet": "1578:                   Nh\u00e0 Cung C\u1ea5p\n1579:                 </AppText>\n1580:                 <TextInput\n1581:                   value={formSupplier}\n1582:                   onChangeText={setFormSupplier}\n1583:                   placeholder=\"VD: Vinamilk, Cozy...\"\n1584:                   placeholderTextColor={theme.text.muted}\n1585:                   style={[s.input, { backgroundColor: theme.surface.card, borderColor: theme.border.default, color: theme.text.primary }]}\n1586:                 />\n1587:               </View>"
+  },
+  {
+    "file": "app\\login\\index.tsx",
+    "line": 497,
+    "current_fs": null,
+    "style_prop": null,
+    "snippet": "495:             <View style={[s.modalInputWrapper, { borderColor: theme.border.default }]}>\n496:               <Icon name=\"key-outline\" size={18} color={theme.brand.primary} />\n497:               <TextInput\n498:                 value={unbindCode}\n499:                 onChangeText={(t) => {\n500:                   setUnbindCode(t);\n501:                   if (unbindError) setUnbindError('');\n502:                 }}\n503:                 placeholder=\"Nh\u1eadp PIN Ch\u1ee7 Qu\u00e1n...\"\n504:                 placeholderTextColor={theme.text.muted}"
+  },
+  {
+    "file": "app\\login\\index.tsx",
+    "line": 594,
+    "current_fs": null,
+    "style_prop": null,
+    "snippet": "592:               <View style={[s.modalInputWrapper, { borderColor: masterKeyInput.trim().length === 64 ? theme.brand.success : theme.border.default }]}>\n593:                 <Icon name=\"shield-key-outline\" size={18} color={theme.brand.primary} />\n594:                 <TextInput\n595:                   value={masterKeyInput}\n596:                   onChangeText={(t) => {\n597:                     setMasterKeyInput(t);\n598:                     if (masterKeyError) setMasterKeyError('');\n599:                   }}\n600:                   placeholder=\"Nh\u1eadp kh\u00f3a b\u00ed m\u1eadt 64 k\u00fd t\u1ef1...\"\n601:                   placeholderTextColor={theme.text.muted}"
+  },
+  {
+    "file": "app\\login\\_components\\SaaSAccountForm.tsx",
+    "line": 59,
+    "current_fs": null,
+    "style_prop": null,
+    "snippet": "57:   const [focusedField, setFocusedField] = useState<'tenant' | 'user' | 'pass' | 'masterKey' | null>(null);\n58: \n59:   const tenantInputRef = React.useRef<TextInput>(null);\n60:   const userInputRef = React.useRef<TextInput>(null);\n61:   const passInputRef = React.useRef<TextInput>(null);\n62:   const masterKeyInputRef = React.useRef<TextInput>(null);\n63: \n64:   const isProjectAdmin =\n65:     username.trim().toLowerCase() === 'admin' ||\n66:     username.trim().toLowerCase() === 'saas' ||"
+  },
+  {
+    "file": "app\\login\\_components\\SaaSAccountForm.tsx",
+    "line": 60,
+    "current_fs": null,
+    "style_prop": null,
+    "snippet": "58: \n59:   const tenantInputRef = React.useRef<TextInput>(null);\n60:   const userInputRef = React.useRef<TextInput>(null);\n61:   const passInputRef = React.useRef<TextInput>(null);\n62:   const masterKeyInputRef = React.useRef<TextInput>(null);\n63: \n64:   const isProjectAdmin =\n65:     username.trim().toLowerCase() === 'admin' ||\n66:     username.trim().toLowerCase() === 'saas' ||\n67:     username.trim().toLowerCase() === 'saas_master' ||"
+  },
+  {
+    "file": "app\\login\\_components\\SaaSAccountForm.tsx",
+    "line": 61,
+    "current_fs": null,
+    "style_prop": null,
+    "snippet": "59:   const tenantInputRef = React.useRef<TextInput>(null);\n60:   const userInputRef = React.useRef<TextInput>(null);\n61:   const passInputRef = React.useRef<TextInput>(null);\n62:   const masterKeyInputRef = React.useRef<TextInput>(null);\n63: \n64:   const isProjectAdmin =\n65:     username.trim().toLowerCase() === 'admin' ||\n66:     username.trim().toLowerCase() === 'saas' ||\n67:     username.trim().toLowerCase() === 'saas_master' ||\n68:     username.trim().toLowerCase() === 'chuduan' ||"
+  },
+  {
+    "file": "app\\login\\_components\\SaaSAccountForm.tsx",
+    "line": 62,
+    "current_fs": null,
+    "style_prop": null,
+    "snippet": "60:   const userInputRef = React.useRef<TextInput>(null);\n61:   const passInputRef = React.useRef<TextInput>(null);\n62:   const masterKeyInputRef = React.useRef<TextInput>(null);\n63: \n64:   const isProjectAdmin =\n65:     username.trim().toLowerCase() === 'admin' ||\n66:     username.trim().toLowerCase() === 'saas' ||\n67:     username.trim().toLowerCase() === 'saas_master' ||\n68:     username.trim().toLowerCase() === 'chuduan' ||\n69:     username.trim().toLowerCase() === 'nguyenlocthanh291097' ||"
+  },
+  {
+    "file": "app\\login\\_components\\SaaSAccountForm.tsx",
+    "line": 277,
+    "current_fs": null,
+    "style_prop": null,
+    "snippet": "275:               style={s.inputIcon}\n276:             />\n277:             <TextInput\n278:               ref={tenantInputRef}\n279:               value={tenantCode}\n280:               onChangeText={(t) => {\n281:                 setTenantCode(t);\n282:                 if (errorMessage) setErrorMessage('');\n283:               }}\n284:               onFocus={() => setFocusedField('tenant')}"
+  },
+  {
+    "file": "app\\login\\_components\\SaaSAccountForm.tsx",
+    "line": 313,
+    "current_fs": null,
+    "style_prop": null,
+    "snippet": "311:               style={s.inputIcon}\n312:             />\n313:             <TextInput\n314:               ref={userInputRef}\n315:               value={username}\n316:               onChangeText={(t) => {\n317:                 setUsername(t);\n318:                 if (errorMessage) setErrorMessage('');\n319:               }}\n320:               onFocus={() => setFocusedField('user')}"
+  },
+  {
+    "file": "app\\login\\_components\\SaaSAccountForm.tsx",
+    "line": 349,
+    "current_fs": null,
+    "style_prop": null,
+    "snippet": "347:               style={s.inputIcon}\n348:             />\n349:             <TextInput\n350:               ref={passInputRef}\n351:               value={password}\n352:               onChangeText={(t) => {\n353:                 setPassword(t);\n354:                 if (errorMessage) setErrorMessage('');\n355:               }}\n356:               onFocus={() => setFocusedField('pass')}"
+  },
+  {
+    "file": "app\\login\\_components\\SaaSAccountForm.tsx",
+    "line": 443,
+    "current_fs": 14.0,
+    "style_prop": "{\n                      flex: 1,\n                      height: 42,\n                      backgroundColor: theme.surface.card,\n                      borderColor: theme.border.subtle,\n                      borderWidth: 1,\n                      borderRadius: 8,\n                      paddingHorizontal: 12,\n                      color: theme.text.primary,\n                      fontSize: 14,",
+    "snippet": "441:                 </AppText>\n442:                 <View style={{ flexDirection: 'row', gap: 6, alignItems: 'center' }}>\n443:                   <TextInput\n444:                     value={lookupPhone}\n445:                     onChangeText={setLookupPhone}\n446:                     placeholder=\"VD: 039287165, 0908123456...\"\n447:                     placeholderTextColor={theme.text.muted}\n448:                     keyboardType=\"phone-pad\"\n449:                     style={{\n450:                       flex: 1,"
+  },
+  {
+    "file": "app\\login\\_components\\SaaSAccountForm.tsx",
+    "line": 614,
+    "current_fs": null,
+    "style_prop": null,
+    "snippet": "612:               >\n613:                 <Icon name=\"shield-key-outline\" size={20} color={theme.brand.accent} style={s.inputIcon} />\n614:                 <TextInput\n615:                   ref={masterKeyInputRef}\n616:                   value={masterKey}\n617:                   onChangeText={(t) => {\n618:                     setMasterKey(t);\n619:                     if (errorMessage) setErrorMessage('');\n620:                   }}\n621:                   onFocus={() => setFocusedField('masterKey')}"
+  },
+  {
+    "file": "app\\login\\_components\\StaffPinPad.tsx",
+    "line": 473,
+    "current_fs": null,
+    "style_prop": null,
+    "snippet": "471:           >\n472:             <Icon name=\"shield-key-outline\" size={20} color={theme.brand.primary} style={{ marginRight: 8 }} />\n473:             <TextInput\n474:               value={masterKeyInput}\n475:               onChangeText={(t) => {\n476:                 setMasterKeyInput(t);\n477:                 if (masterKeyError) setMasterKeyError('');\n478:               }}\n479:               placeholder=\"Nh\u1eadp ho\u1eb7c d\u00e1n chu\u1ed7i 64 k\u00fd t\u1ef1...\"\n480:               placeholderTextColor={theme.text.muted}"
+  },
+  {
+    "file": "app\\quan-ly-ban\\index.tsx",
+    "line": 949,
+    "current_fs": 14.0,
+    "style_prop": "[s.searchInput, { color: theme.text.primary",
+    "snippet": "947:                   >\n948:                     <Icon name=\"magnify\" size={18} color={theme.text.muted} />\n949:                     <TextInput\n950:                       value={searchQuery}\n951:                       onChangeText={setSearchQuery}\n952:                       placeholder=\"T\u00ecm t\u00ean b\u00e0n, khu v\u1ef1c...\"\n953:                       placeholderTextColor={theme.text.muted}\n954:                       style={[s.searchInput, { color: theme.text.primary }]}\n955:                       autoFocus\n956:                     />"
+  },
+  {
+    "file": "app\\quan-ly-ban\\index.tsx",
+    "line": 1446,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.default, color: theme.text.primary",
+    "snippet": "1444:                 T\u00ean B\u00e0n (VD: B\u00e0n 09, VIP 02, S\u00e2n V\u01b0\u1eddn 01)\n1445:               </AppText>\n1446:               <TextInput\n1447:                 value={tableNameInput}\n1448:                 onChangeText={setTableNameInput}\n1449:                 placeholder=\"VD: B\u00e0n 09\"\n1450:                 placeholderTextColor={theme.text.muted}\n1451:                 style={[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.default, color: theme.text.primary }]}\n1452:               />\n1453:             </View>"
+  },
+  {
+    "file": "app\\quan-ly-ban\\index.tsx",
+    "line": 1608,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.default, color: theme.text.primary",
+    "snippet": "1606:                 T\u00ean Khu V\u1ef1c (VD: T\u1ea7ng Tr\u1ec7t, Ban C\u00f4ng, VIP 1)\n1607:               </AppText>\n1608:               <TextInput\n1609:                 value={areaNameInput}\n1610:                 onChangeText={setAreaNameInput}\n1611:                 placeholder=\"VD: Ban C\u00f4ng S\u00e2n Th\u01b0\u1ee3ng\"\n1612:                 placeholderTextColor={theme.text.muted}\n1613:                 style={[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.default, color: theme.text.primary }]}\n1614:                 autoFocus\n1615:               />"
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 1160,
+    "current_fs": 13.0,
+    "style_prop": "{\n                        flex: 1,\n                        color: theme.text.primary,\n                        fontSize: 13,\n                        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',\n                        padding: 0,",
+    "snippet": "1158:                     ]}\n1159:                   >\n1160:                     <TextInput\n1161:                       value={redeemKeyInput}\n1162:                       onChangeText={setRedeemKeyInput}\n1163:                       placeholder=\"VD: OC-PRO-30D-8F2A-99B1\"\n1164:                       placeholderTextColor={theme.text.muted}\n1165:                       autoCapitalize=\"characters\"\n1166:                       style={{\n1167:                         flex: 1,"
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 1543,
+    "current_fs": 14.0,
+    "style_prop": "[\n                          s.formInput,\n                          {\n                            backgroundColor: theme.surface.header,\n                            borderColor: theme.border.subtle,\n                            color: theme.text.primary,",
+    "snippet": "1541:                         T\u00ean chi nh\u00e1nh *\n1542:                       </AppText>\n1543:                       <TextInput\n1544:                         value={newBranchName}\n1545:                         onChangeText={setNewBranchName}\n1546:                         placeholder=\"VD: Chi Nh\u00e1nh 4 - B\u00ecnh Th\u1ea1nh\"\n1547:                         placeholderTextColor={theme.text.muted}\n1548:                         style={[\n1549:                           s.formInput,\n1550:                           {"
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 1563,
+    "current_fs": 14.0,
+    "style_prop": "[\n                          s.formInput,\n                          {\n                            backgroundColor: theme.surface.header,\n                            borderColor: theme.border.subtle,\n                            color: theme.text.primary,",
+    "snippet": "1561:                         \u0110\u1ecba ch\u1ec9\n1562:                       </AppText>\n1563:                       <TextInput\n1564:                         value={newBranchAddress}\n1565:                         onChangeText={setNewBranchAddress}\n1566:                         placeholder=\"VD: 88 X\u00f4 Vi\u1ebft Ngh\u1ec7 T\u0129nh, Q. B\u00ecnh Th\u1ea1nh\"\n1567:                         placeholderTextColor={theme.text.muted}\n1568:                         style={[\n1569:                           s.formInput,\n1570:                           {"
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 1584,
+    "current_fs": 14.0,
+    "style_prop": "[\n                            s.formInput,\n                            {\n                              backgroundColor: theme.surface.header,\n                              borderColor: theme.border.subtle,\n                              color: theme.text.primary,",
+    "snippet": "1582:                           Hotline / S\u1ed1 \u0111i\u1ec7n tho\u1ea1i\n1583:                         </AppText>\n1584:                         <TextInput\n1585:                           value={newBranchPhone}\n1586:                           onChangeText={setNewBranchPhone}\n1587:                           placeholder=\"VD: 028 3512 3344\"\n1588:                           placeholderTextColor={theme.text.muted}\n1589:                           keyboardType=\"phone-pad\"\n1590:                           style={[\n1591:                             s.formInput,"
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 1605,
+    "current_fs": 14.0,
+    "style_prop": "[\n                            s.formInput,\n                            {\n                              backgroundColor: theme.surface.header,\n                              borderColor: theme.border.subtle,\n                              color: theme.text.primary,",
+    "snippet": "1603:                           Ng\u01b0\u1eddi qu\u1ea3n l\u00fd chi nh\u00e1nh\n1604:                         </AppText>\n1605:                         <TextInput\n1606:                           value={newBranchManager}\n1607:                           onChangeText={setNewBranchManager}\n1608:                           placeholder=\"VD: Anh Nam\"\n1609:                           placeholderTextColor={theme.text.muted}\n1610:                           style={[\n1611:                             s.formInput,\n1612:                             {"
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 2858,
+    "current_fs": 14.0,
+    "style_prop": "[s.searchInput, { color: theme.text.primary",
+    "snippet": "2856:             <View style={[s.searchBox, { backgroundColor: theme.surface.card, borderColor: theme.border.subtle }]}>\n2857:               <Icon name=\"magnify\" size={18} color={theme.text.muted} />\n2858:               <TextInput\n2859:                 value={searchQuery}\n2860:                 onChangeText={setSearchQuery}\n2861:                 placeholder=\"T\u00ecm t\u00ean qu\u00e1n, S\u0110T, m\u00e3 subdomain...\"\n2862:                 placeholderTextColor={theme.text.muted}\n2863:                 style={[s.searchInput, { color: theme.text.primary }]}\n2864:               />\n2865:               {searchQuery.length > 0 && ("
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 3082,
+    "current_fs": 14.0,
+    "style_prop": "[s.formInput, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle",
+    "snippet": "3080:             <View style={s.fieldGroup}>\n3081:               <AppText variant=\"xs\" color={theme.text.muted}>T\u00ean qu\u00e1n / Th\u01b0\u01a1ng hi\u1ec7u (*)</AppText>\n3082:               <TextInput\n3083:                 value={formName}\n3084:                 onChangeText={setFormName}\n3085:                 placeholder=\"V\u00ed d\u1ee5: C\u00e0 Ph\u00ea Tr\u1ee9ng H\u00e0 N\u1ed9i\"\n3086:                 placeholderTextColor={theme.text.muted}\n3087:                 style={[s.formInput, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]}\n3088:               />\n3089:             </View>"
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 3094,
+    "current_fs": null,
+    "style_prop": null,
+    "snippet": "3092:             <View style={s.fieldGroup}>\n3093:               <AppText variant=\"xs\" color={theme.text.muted}>M\u00e3 qu\u00e1n / T\u00ean mi\u1ec1n con (*)</AppText>\n3094:               <TextInput\n3095:                 value={formSubdomain}\n3096:                 onChangeText={(t) => setFormSubdomain(t.toLowerCase().replace(/[^a-z0-9_-]/g, ''))}\n3097:                 placeholder=\"V\u00ed d\u1ee5: caphetrung\"\n3098:                 placeholderTextColor={theme.text.muted}\n3099:                 autoCapitalize=\"none\"\n3100:                 style={[s.formInput, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]}\n3101:               />"
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 3107,
+    "current_fs": 14.0,
+    "style_prop": "[s.formInput, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle",
+    "snippet": "3105:             <View style={s.fieldGroup}>\n3106:               <AppText variant=\"xs\" color={theme.text.muted}>S\u1ed1 \u0111i\u1ec7n tho\u1ea1i ch\u1ee7 qu\u00e1n</AppText>\n3107:               <TextInput\n3108:                 value={formPhone}\n3109:                 onChangeText={setFormPhone}\n3110:                 placeholder=\"V\u00ed d\u1ee5: 0912 345 678\"\n3111:                 keyboardType=\"phone-pad\"\n3112:                 placeholderTextColor={theme.text.muted}\n3113:                 style={[s.formInput, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]}\n3114:               />"
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 3120,
+    "current_fs": 14.0,
+    "style_prop": "[s.formInput, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle",
+    "snippet": "3118:             <View style={s.fieldGroup}>\n3119:               <AppText variant=\"xs\" color={theme.text.muted}>H\u1ecd & T\u00ean Ch\u1ee7 Qu\u00e1n</AppText>\n3120:               <TextInput\n3121:                 value={formOwnerName}\n3122:                 onChangeText={setFormOwnerName}\n3123:                 placeholder=\"V\u00ed d\u1ee5: Anh Tu\u1ea5n\"\n3124:                 placeholderTextColor={theme.text.muted}\n3125:                 style={[s.formInput, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]}\n3126:               />\n3127:             </View>"
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 3394,
+    "current_fs": 15.0,
+    "style_prop": "[\n                              s.formInput,\n                              {\n                                backgroundColor: theme.surface.header,\n                                color: theme.text.primary,\n                                borderColor: theme.border.subtle,\n                                fontSize: 15,",
+    "snippet": "3392:                             GI\u00c1 (\u0110/TH\u00c1NG):\n3393:                           </AppText>\n3394:                           <TextInput\n3395:                             value={editPrice}\n3396:                             onChangeText={setEditPrice}\n3397:                             keyboardType=\"numeric\"\n3398:                             placeholder=\"0\"\n3399:                             placeholderTextColor={theme.text.muted}\n3400:                             style={[\n3401:                               s.formInput,"
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 3457,
+    "current_fs": 14.0,
+    "style_prop": "[\n                              s.formInput,\n                              {\n                                backgroundColor: theme.surface.header,\n                                color: theme.text.primary,\n                                borderColor: theme.border.subtle,\n                                fontSize: 14,",
+    "snippet": "3455:                             TR\u1ea6N CHI NH\u00c1NH:\n3456:                           </AppText>\n3457:                           <TextInput\n3458:                             value={editMaxBranches}\n3459:                             onChangeText={setEditMaxBranches}\n3460:                             placeholder=\"1 ho\u1eb7c unlimited\"\n3461:                             placeholderTextColor={theme.text.muted}\n3462:                             style={[\n3463:                               s.formInput,\n3464:                               {"
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 3502,
+    "current_fs": 14.0,
+    "style_prop": "[\n                              s.formInput,\n                              {\n                                backgroundColor: theme.surface.header,\n                                color: theme.text.primary,\n                                borderColor: theme.border.subtle,\n                                fontSize: 14,",
+    "snippet": "3500:                             TR\u1ea6N M\u00c1Y POS:\n3501:                           </AppText>\n3502:                           <TextInput\n3503:                             value={editMaxDevices}\n3504:                             onChangeText={setEditMaxDevices}\n3505:                             placeholder=\"3 ho\u1eb7c unlimited\"\n3506:                             placeholderTextColor={theme.text.muted}\n3507:                             style={[\n3508:                               s.formInput,\n3509:                               {"
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 3887,
+    "current_fs": 13.0,
+    "style_prop": "[\n                        s.formInput,\n                        {\n                          backgroundColor: theme.surface.header,\n                          color: theme.text.primary,\n                          borderColor: theme.border.subtle,\n                          fontSize: 13,",
+    "snippet": "3885:                       3. GHI CH\u00da:\n3886:                     </AppText>\n3887:                     <TextInput\n3888:                       value={genNote}\n3889:                       onChangeText={setGenNote}\n3890:                       placeholder=\"T\u1eb7ng qu\u00e1n, khuy\u1ebfn m\u00e3i...\"\n3891:                       placeholderTextColor={theme.text.muted}\n3892:                       style={[\n3893:                         s.formInput,\n3894:                         {"
+  },
+  {
+    "file": "app\\so-quy\\_components\\QuickCashFormContent.tsx",
+    "line": 281,
+    "current_fs": null,
+    "style_prop": null,
+    "snippet": "279:           </AppText>\n280:           <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>\n281:             <TextInput\n282:               value={amountStr ? parseInt(amountStr.replace(/\\D/g, ''), 10).toLocaleString('vi-VN') : ''}\n283:               onChangeText={(text) => {\n284:                 const clean = text.replace(/\\D/g, '');\n285:                 setAmountStr(clean);\n286:               }}\n287:               keyboardType=\"numeric\"\n288:               placeholder=\"0\""
+  },
+  {
+    "file": "app\\thanh-toan\\_components\\EInvoiceModal.tsx",
+    "line": 169,
+    "current_fs": 14.0,
+    "style_prop": "[\n                  s.input,\n                  {\n                    backgroundColor: theme.surface.header,\n                    borderColor:\n                      isValidTax === true\n                        ? theme.brand.success\n                        : isValidTax === false\n                        ? theme.brand.danger\n                        : theme.border.default,\n                    color: theme.text.primary,",
+    "snippet": "167:                 )}\n168:               </View>\n169:               <TextInput\n170:                 value={taxCode}\n171:                 onChangeText={handleTaxCodeChange}\n172:                 placeholder=\"10 ho\u1eb7c 13 s\u1ed1 (V\u00ed d\u1ee5: 0316892345)\"\n173:                 placeholderTextColor={theme.text.subtle}\n174:                 keyboardType=\"numeric\"\n175:                 style={[\n176:                   s.input,"
+  },
+  {
+    "file": "app\\thanh-toan\\_components\\EInvoiceModal.tsx",
+    "line": 196,
+    "current_fs": 14.0,
+    "style_prop": "[\n                  s.input,\n                  {\n                    backgroundColor: theme.surface.header,\n                    borderColor: theme.border.default,\n                    color: theme.text.primary,",
+    "snippet": "194:                 T\u00ean c\u00f4ng ty / Ng\u01b0\u1eddi mua *\n195:               </AppText>\n196:               <TextInput\n197:                 value={buyerName}\n198:                 onChangeText={setBuyerName}\n199:                 placeholder=\"C\u00f4ng ty TNHH... ho\u1eb7c H\u1ecd t\u00ean ng\u01b0\u1eddi mua\"\n200:                 placeholderTextColor={theme.text.subtle}\n201:                 style={[\n202:                   s.input,\n203:                   {"
+  },
+  {
+    "file": "app\\thanh-toan\\_components\\EInvoiceModal.tsx",
+    "line": 217,
+    "current_fs": 14.0,
+    "style_prop": "[\n                  s.input,\n                  {\n                    backgroundColor: theme.surface.header,\n                    borderColor: theme.border.default,\n                    color: theme.text.primary,",
+    "snippet": "215:                 \u0110\u1ecba ch\u1ec9 xu\u1ea5t h\u00f3a \u0111\u01a1n\n216:               </AppText>\n217:               <TextInput\n218:                 value={buyerAddress}\n219:                 onChangeText={setBuyerAddress}\n220:                 placeholder=\"S\u1ed1 nh\u00e0, \u0111\u01b0\u1eddng, ph\u01b0\u1eddng, qu\u1eadn/huy\u1ec7n...\"\n221:                 placeholderTextColor={theme.text.subtle}\n222:                 style={[\n223:                   s.input,\n224:                   {"
+  },
+  {
+    "file": "app\\thanh-toan\\_components\\EInvoiceModal.tsx",
+    "line": 238,
+    "current_fs": 14.0,
+    "style_prop": "[\n                  s.input,\n                  {\n                    backgroundColor: theme.surface.header,\n                    borderColor: theme.border.default,\n                    color: theme.text.primary,",
+    "snippet": "236:                 Email nh\u1eadn H\u0110\u0110T (T\u00f9y ch\u1ecdn)\n237:               </AppText>\n238:               <TextInput\n239:                 value={buyerEmail}\n240:                 onChangeText={setBuyerEmail}\n241:                 placeholder=\"ketoan@congty.vn\"\n242:                 placeholderTextColor={theme.text.subtle}\n243:                 keyboardType=\"email-address\"\n244:                 autoCapitalize=\"none\"\n245:                 style={["
+  },
+  {
+    "file": "app\\thuc-don\\_components\\CategoryManagementTab.tsx",
+    "line": 310,
+    "current_fs": 14.0,
+    "style_prop": "[\n                  s.input,\n                  {\n                    backgroundColor: theme.surface.header,\n                    borderColor: theme.border.default,\n                    color: theme.text.primary,",
+    "snippet": "308:                 T\u00ean danh m\u1ee5c m\u00f3n\n309:               </AppText>\n310:               <TextInput\n311:                 value={categoryName}\n312:                 onChangeText={setCategoryName}\n313:                 placeholder=\"VD: C\u00e0 Ph\u00ea, Tr\u00e0 S\u1eefa, B\u00e1nh Ng\u1ecdt...\"\n314:                 placeholderTextColor={theme.text.muted}\n315:                 style={[\n316:                   s.input,\n317:                   {"
+  },
+  {
+    "file": "app\\thuc-don\\_components\\ProductFormModal.tsx",
+    "line": 1127,
+    "current_fs": 14.0,
+    "style_prop": "[\n                    s.input,\n                    {\n                      flex: 1,\n                      height: 42,\n                      backgroundColor: theme.surface.header,\n                      borderColor: theme.border.default,\n                      color: theme.text.primary,\n                      fontSize: 14,",
+    "snippet": "1125:               {/* \u00d4 T\u1ef1 G\u00f5 \u0110\u01a1n V\u1ecb Kh\u00e1c */}\n1126:               <View style={s.customUnitRow}>\n1127:                 <TextInput\n1128:                   value={customUnitInput}\n1129:                   onChangeText={setCustomUnitInput}\n1130:                   placeholder=\"Ho\u1eb7c g\u00f5 \u0111\u01a1n v\u1ecb kh\u00e1c...\"\n1131:                   placeholderTextColor={theme.text.muted}\n1132:                   style={[\n1133:                     s.input,\n1134:                     {"
+  },
+  {
+    "file": "app\\thuc-don\\_components\\ToppingManagementTab.tsx",
+    "line": 293,
+    "current_fs": 14.0,
+    "style_prop": "[\n                    s.input,\n                    {\n                      color: theme.text.primary,\n                      backgroundColor: theme.surface.header,\n                      borderColor: theme.border.default,",
+    "snippet": "291:                   T\u00ean Topping:\n292:                 </AppText>\n293:                 <TextInput\n294:                   value={toppingName}\n295:                   onChangeText={setToppingName}\n296:                   placeholder=\"V\u00ed d\u1ee5: Tr\u00e2n Ch\u00e2u Tr\u1eafng 3Q\"\n297:                   placeholderTextColor={theme.text.muted}\n298:                   style={[\n299:                     s.input,\n300:                     {"
+  },
+  {
+    "file": "app\\thuc-don\\_components\\ToppingManagementTab.tsx",
+    "line": 313,
+    "current_fs": null,
+    "style_prop": null,
+    "snippet": "311:                   Gi\u00e1 Ph\u1ee5 Thu (VN\u0110):\n312:                 </AppText>\n313:                 <TextInput\n314:                   value={toppingPriceStr}\n315:                   onChangeText={(val) => {\n316:                     const num = val.replace(/\\D/g, '');\n317:                     setToppingPriceStr(num);\n318:                   }}\n319:                   placeholder=\"6000\"\n320:                   keyboardType=\"numeric\""
+  },
+  {
+    "file": "lib\\components\\nhan-su\\BonusDeductionModal.tsx",
+    "line": 100,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.brand.success",
+    "snippet": "98:                 </AppText>\n99:               </View>\n100:               <TextInput\n101:                 value={bonusStr}\n102:                 onChangeText={setBonusStr}\n103:                 placeholder=\"0\"\n104:                 placeholderTextColor={theme.text.muted}\n105:                 keyboardType=\"numeric\"\n106:                 style={[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.brand.success }]}\n107:               />"
+  },
+  {
+    "file": "lib\\components\\nhan-su\\BonusDeductionModal.tsx",
+    "line": 118,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.brand.danger",
+    "snippet": "116:                 </AppText>\n117:               </View>\n118:               <TextInput\n119:                 value={deductionStr}\n120:                 onChangeText={setDeductionStr}\n121:                 placeholder=\"0\"\n122:                 placeholderTextColor={theme.text.muted}\n123:                 keyboardType=\"numeric\"\n124:                 style={[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.brand.danger }]}\n125:               />"
+  },
+  {
+    "file": "lib\\components\\nhan-su\\BonusDeductionModal.tsx",
+    "line": 133,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary",
+    "snippet": "131:                 L\u00fd do\n132:               </AppText>\n133:               <TextInput\n134:                 value={reasonStr}\n135:                 onChangeText={setReasonStr}\n136:                 placeholder=\"VD: Th\u01b0\u1edfng chuy\u00ean c\u1ea7n th\u00e1ng, ph\u1ea1t \u0111i mu\u1ed9n 2 bu\u1ed5i...\"\n137:                 placeholderTextColor={theme.text.muted}\n138:                 style={[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]}\n139:               />\n140:             </View>"
+  },
+  {
+    "file": "lib\\components\\nhan-su\\ClockInOutModal.tsx",
+    "line": 170,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary",
+    "snippet": "168:                     Gi\u1edd v\u00e0o (HH:mm)\n169:                   </AppText>\n170:                   <TextInput\n171:                     value={timeInput}\n172:                     onChangeText={setTimeInput}\n173:                     placeholder=\"08:00\"\n174:                     placeholderTextColor={theme.text.muted}\n175:                     style={[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]}\n176:                   />\n177:                 </View>"
+  },
+  {
+    "file": "lib\\components\\nhan-su\\ClockInOutModal.tsx",
+    "line": 202,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary",
+    "snippet": "200:                     Gi\u1edd ra (HH:mm)\n201:                   </AppText>\n202:                   <TextInput\n203:                     value={timeInput}\n204:                     onChangeText={setTimeInput}\n205:                     placeholder=\"12:00\"\n206:                     placeholderTextColor={theme.text.muted}\n207:                     style={[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]}\n208:                   />\n209:                 </View>"
+  },
+  {
+    "file": "lib\\components\\nhan-su\\ClockInOutModal.tsx",
+    "line": 216,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary",
+    "snippet": "214:                     Ghi ch\u00fa ca l\u00e0m (t\u00f9y ch\u1ecdn)\n215:                   </AppText>\n216:                   <TextInput\n217:                     value={noteInput}\n218:                     onChangeText={setNoteInput}\n219:                     placeholder=\"B\u00e0n giao ca cho \u0111\u1ed3ng nghi\u1ec7p...\"\n220:                     placeholderTextColor={theme.text.muted}\n221:                     style={[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]}\n222:                   />\n223:                 </View>"
+  },
+  {
+    "file": "lib\\components\\nhan-su\\PayrollHistoryModal.tsx",
+    "line": 81,
+    "current_fs": 14.0,
+    "style_prop": "[s.searchInput, { color: theme.text.primary",
+    "snippet": "79:           >\n80:             <Icon name=\"magnify\" size={18} color={theme.text.muted} />\n81:             <TextInput\n82:               placeholder=\"T\u00ecm theo t\u00ean, k\u1ef3 l\u01b0\u01a1ng...\"\n83:               placeholderTextColor={theme.text.muted}\n84:               value={searchQuery}\n85:               onChangeText={setSearchQuery}\n86:               style={[s.searchInput, { color: theme.text.primary }]}\n87:             />\n88:             {searchQuery ? ("
+  },
+  {
+    "file": "lib\\components\\nhan-su\\PaySalaryModal.tsx",
+    "line": 228,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary",
+    "snippet": "226:                 Ghi ch\u00fa\n227:               </AppText>\n228:               <TextInput\n229:                 value={noteStr}\n230:                 onChangeText={setNoteStr}\n231:                 placeholder=\"VD: \u0110\u00e3 chi \u0111\u1ee7 l\u01b0\u01a1ng k\u1ef3 1...\"\n232:                 placeholderTextColor={theme.text.muted}\n233:                 style={[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]}\n234:               />\n235:             </View>"
+  },
+  {
+    "file": "lib\\components\\nhan-su\\QuickShiftLogModal.tsx",
+    "line": 201,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary",
+    "snippet": "199:                   Gi\u1edd l\u00e0m vi\u1ec7c *\n200:                 </AppText>\n201:                 <TextInput\n202:                   value={hoursInput}\n203:                   onChangeText={setHoursInput}\n204:                   placeholder=\"4\"\n205:                   placeholderTextColor={theme.text.muted}\n206:                   keyboardType=\"numeric\"\n207:                   style={[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]}\n208:                 />"
+  },
+  {
+    "file": "lib\\components\\nhan-su\\QuickShiftLogModal.tsx",
+    "line": 215,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary",
+    "snippet": "213:                   Gi\u1edd t\u0103ng ca (OT)\n214:                 </AppText>\n215:                 <TextInput\n216:                   value={otHoursInput}\n217:                   onChangeText={setOtHoursInput}\n218:                   placeholder=\"0\"\n219:                   placeholderTextColor={theme.text.muted}\n220:                   keyboardType=\"numeric\"\n221:                   style={[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]}\n222:                 />"
+  },
+  {
+    "file": "lib\\components\\nhan-su\\QuickShiftLogModal.tsx",
+    "line": 231,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary",
+    "snippet": "229:                 Ng\u00e0y l\u00e0m vi\u1ec7c\n230:               </AppText>\n231:               <TextInput\n232:                 value={dateInput}\n233:                 onChangeText={setDateInput}\n234:                 placeholder=\"2026-09-06\"\n235:                 placeholderTextColor={theme.text.muted}\n236:                 style={[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]}\n237:               />\n238:             </View>"
+  },
+  {
+    "file": "lib\\components\\nhan-su\\QuickShiftLogModal.tsx",
+    "line": 245,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary",
+    "snippet": "243:                 Ghi ch\u00fa\n244:               </AppText>\n245:               <TextInput\n246:                 value={noteInput}\n247:                 onChangeText={setNoteInput}\n248:                 placeholder=\"VD: Tr\u1ef1c thay ca, \u0111\u00f4ng kh\u00e1ch cu\u1ed1i tu\u1ea7n...\"\n249:                 placeholderTextColor={theme.text.muted}\n250:                 style={[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]}\n251:               />\n252:             </View>"
+  },
+  {
+    "file": "lib\\components\\nhan-su\\SalaryAdvanceModal.tsx",
+    "line": 130,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary",
+    "snippet": "128:                 S\u1ed1 ti\u1ec1n \u1ee9ng (VND) *\n129:               </AppText>\n130:               <TextInput\n131:                 value={amountStr}\n132:                 onChangeText={setAmountStr}\n133:                 placeholder=\"500000\"\n134:                 placeholderTextColor={theme.text.muted}\n135:                 keyboardType=\"numeric\"\n136:                 style={[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]}\n137:               />"
+  },
+  {
+    "file": "lib\\components\\nhan-su\\SalaryAdvanceModal.tsx",
+    "line": 191,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary",
+    "snippet": "189:                 L\u00fd do\n190:               </AppText>\n191:               <TextInput\n192:                 value={noteStr}\n193:                 onChangeText={setNoteStr}\n194:                 placeholder=\"\u1ee8ng \u0111\u00f3ng ti\u1ec1n tr\u1ecd, vi\u1ec7c gia \u0111\u00ecnh...\"\n195:                 placeholderTextColor={theme.text.muted}\n196:                 style={[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]}\n197:               />\n198:             </View>"
+  },
+  {
+    "file": "lib\\components\\nhan-su\\StaffFormModal.tsx",
+    "line": 156,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary",
+    "snippet": "154:                 H\u1ecd v\u00e0 t\u00ean *\n155:               </AppText>\n156:               <TextInput\n157:                 value={formName}\n158:                 onChangeText={setFormName}\n159:                 placeholder=\"VD: Nguy\u1ec5n V\u0103n A\"\n160:                 placeholderTextColor={theme.text.muted}\n161:                 style={[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]}\n162:               />\n163:             </View>"
+  },
+  {
+    "file": "lib\\components\\nhan-su\\StaffFormModal.tsx",
+    "line": 170,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary",
+    "snippet": "168:                 S\u1ed1 \u0111i\u1ec7n tho\u1ea1i\n169:               </AppText>\n170:               <TextInput\n171:                 value={formPhone}\n172:                 onChangeText={setFormPhone}\n173:                 placeholder=\"VD: 0901234567\"\n174:                 placeholderTextColor={theme.text.muted}\n175:                 keyboardType=\"phone-pad\"\n176:                 style={[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]}\n177:               />"
+  },
+  {
+    "file": "lib\\components\\nhan-su\\StaffFormModal.tsx",
+    "line": 199,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary",
+    "snippet": "197:                 </TouchableOpacity>\n198:               </View>\n199:               <TextInput\n200:                 value={formPinCode}\n201:                 onChangeText={setFormPinCode}\n202:                 placeholder=\"VD: 1111, 2222...\"\n203:                 placeholderTextColor={theme.text.muted}\n204:                 keyboardType=\"numeric\"\n205:                 maxLength={6}\n206:                 style={[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]}"
+  },
+  {
+    "file": "lib\\components\\nhan-su\\StaffFormModal.tsx",
+    "line": 301,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary",
+    "snippet": "299:                   : 'L\u01b0\u01a1ng c\u01a1 b\u1ea3n th\u00e1ng (VND/th\u00e1ng)'}\n300:               </AppText>\n301:               <TextInput\n302:                 value={formWageRate}\n303:                 onChangeText={setFormWageRate}\n304:                 placeholder={formWageType === 'hourly' ? '25000' : formWageType === 'per_shift' ? '180000' : '8000000'}\n305:                 placeholderTextColor={theme.text.muted}\n306:                 keyboardType=\"numeric\"\n307:                 style={[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]}\n308:               />"
+  },
+  {
+    "file": "lib\\components\\nhan-su\\StaffFormModal.tsx",
+    "line": 316,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary",
+    "snippet": "314:                 Ph\u1ee5 c\u1ea5p (VND)\n315:               </AppText>\n316:               <TextInput\n317:                 value={formAllowance}\n318:                 onChangeText={setFormAllowance}\n319:                 placeholder=\"0\"\n320:                 placeholderTextColor={theme.text.muted}\n321:                 keyboardType=\"numeric\"\n322:                 style={[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]}\n323:               />"
+  },
+  {
+    "file": "lib\\components\\nhan-su\\StaffFormModal.tsx",
+    "line": 331,
+    "current_fs": 14.0,
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary",
+    "snippet": "329:                 H\u1ec7 s\u1ed1 OT\n330:               </AppText>\n331:               <TextInput\n332:                 value={formOtMultiplier}\n333:                 onChangeText={setFormOtMultiplier}\n334:                 placeholder=\"1.5\"\n335:                 placeholderTextColor={theme.text.muted}\n336:                 keyboardType=\"numeric\"\n337:                 style={[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]}\n338:               />"
+  },
+  {
+    "file": "lib\\components\\nhan-su\\StaffListTab.tsx",
+    "line": 79,
+    "current_fs": 14.0,
+    "style_prop": "[s.searchInput, { color: theme.text.primary",
+    "snippet": "77:         >\n78:           <Icon name=\"magnify\" size={18} color={theme.text.muted} />\n79:           <TextInput\n80:             placeholder=\"T\u00ecm theo t\u00ean, S\u0110T nh\u00e2n vi\u00ean...\"\n81:             placeholderTextColor={theme.text.muted}\n82:             value={searchQuery}\n83:             onChangeText={setSearchQuery}\n84:             style={[s.searchInput, { color: theme.text.primary }]}\n85:           />\n86:           {searchQuery ? ("
+  },
+  {
+    "file": "lib\\components\\pos\\DiscountModal.tsx",
+    "line": 523,
+    "current_fs": 14.0,
+    "style_prop": "[s.seamlessVoucherInput, { color: theme.text.primary",
+    "snippet": "521:               <View style={[s.seamlessVoucherRow, { backgroundColor: theme.surface.card, borderBottomColor: theme.border.default }]}>\n522:                 <Icon name=\"barcode-scan\" size={20} color={theme.brand.primary} style={{ marginRight: 8 }} />\n523:                 <TextInput\n524:                   value={voucherInput}\n525:                   onChangeText={setVoucherInput}\n526:                   placeholder=\"Nh\u1eadp m\u00e3 voucher (VD: SUMMER2026)...\"\n527:                   placeholderTextColor={theme.text.muted}\n528:                   autoCapitalize=\"characters\"\n529:                   autoCorrect={false}\n530:                   style={[s.seamlessVoucherInput, { color: theme.text.primary }]}"
+  },
+  {
+    "file": "lib\\components\\pos\\DiscountModal.tsx",
+    "line": 794,
+    "current_fs": null,
+    "style_prop": null,
+    "snippet": "792:                     {discountType === 'percent' ? 'M\u1ee9c gi\u1ea3m (%):' : 'S\u1ed1 ti\u1ec1n (\u0111):'}\n793:                   </AppText>\n794:                   <TextInput\n795:                     value={valStr}\n796:                     onChangeText={(t) => {\n797:                       setSelectedCampaignId(null);\n798:                       setValStr(t);\n799:                     }}\n800:                     keyboardType=\"numeric\"\n801:                     placeholder=\"0\""
+  },
+  {
+    "file": "lib\\components\\pos\\DiscountModal.tsx",
+    "line": 812,
+    "current_fs": null,
+    "style_prop": null,
+    "snippet": "810:                     L\u00fd do / Note:\n811:                   </AppText>\n812:                   <TextInput\n813:                     value={note}\n814:                     onChangeText={(t) => {\n815:                       setSelectedCampaignId(null);\n816:                       setNote(t);\n817:                     }}\n818:                     placeholder=\"VD: Kh\u00e1ch VIP, Khai tr\u01b0\u01a1ng...\"\n819:                     placeholderTextColor={theme.text.muted}"
+  },
+  {
+    "file": "lib\\components\\pos\\TableOverviewBanner.tsx",
+    "line": 80,
+    "current_fs": null,
+    "style_prop": null,
+    "snippet": "78:         <View style={[s.searchBoxFull, { backgroundColor: theme.surface.header, borderColor: theme.brand.accent }]}>\n79:           <Icon name=\"magnify\" size={18} color={theme.brand.accent} />\n80:           <TextInput\n81:             value={searchQuery}\n82:             onChangeText={onSearchQueryChange}\n83:             placeholder=\"T\u00ecm b\u00e0n...\"\n84:             placeholderTextColor={theme.text.muted}\n85:             autoFocus\n86:             onBlur={() => {\n87:               if (searchQuery.trim() === '') {"
+  },
+  {
+    "file": "lib\\components\\pos\\TablePickerModal.tsx",
+    "line": 300,
+    "current_fs": null,
+    "style_prop": null,
+    "snippet": "298:               <View style={[s.searchBoxFull, { backgroundColor: theme.surface.card, borderColor: theme.brand.accent }]}>\n299:                 <Icon name=\"magnify\" size={18} color={theme.brand.accent} />\n300:                 <TextInput\n301:                   value={searchQuery}\n302:                   onChangeText={setSearchQuery}\n303:                   placeholder=\"T\u00ecm b\u00e0n, khu v\u1ef1c...\"\n304:                   placeholderTextColor={theme.text.muted}\n305:                   autoFocus\n306:                   onBlur={() => {\n307:                     if (searchQuery.trim() === '') {"
+  },
+  {
+    "file": "lib\\components\\pos-home\\ProductCatalogPane.tsx",
+    "line": 65,
+    "current_fs": null,
+    "style_prop": null,
+    "snippet": "63:           <View style={[s.searchBoxFull, { backgroundColor: theme.surface.header, borderColor: theme.brand.accent }]}>\n64:             <Icon name=\"magnify\" size={18} color={theme.brand.accent} />\n65:             <TextInput\n66:               value={searchQuery}\n67:               onChangeText={onSetSearchQuery}\n68:               placeholder=\"T\u00ecm m\u00f3n, SKU...\"\n69:               placeholderTextColor={theme.text.muted}\n70:               autoFocus\n71:               onBlur={() => {\n72:                 if (searchQuery.trim() === '') {"
+  },
+  {
+    "file": "lib\\components\\ui\\AppOmniSearch.tsx",
+    "line": 74,
+    "current_fs": null,
+    "style_prop": null,
+    "snippet": "72:   const insets = useSafeAreaInsets();\n73:   const router = useRouter();\n74:   const inputRef = useRef<TextInput>(null);\n75: \n76:   const [query, setQuery] = useState('');\n77: \n78:   const orderHistory = useOrderHistory();\n79:   const menuItems = useMenuItems();\n80:   const inventoryItems = useInventoryItems();\n81: "
+  },
+  {
+    "file": "lib\\components\\ui\\AppOmniSearch.tsx",
+    "line": 223,
+    "current_fs": null,
+    "style_prop": "[s.input, { color: theme.text.primary",
+    "snippet": "221:           <View style={[s.searchHeader, { borderBottomColor: theme.border.subtle }]}>\n222:             <Icon name=\"magnify\" size={20} color={theme.brand.primary} style={{ marginRight: 8 }} />\n223:             <TextInput\n224:               ref={inputRef}\n225:               value={query}\n226:               onChangeText={setQuery}\n227:               placeholder={\n228:                 scope === 'hoa-don'\n229:                   ? 'T\u00ecm m\u00e3 HD, t\u00ean b\u00e0n, m\u00f3n \u0103n, thu ng\u00e2n...'\n230:                   : scope === 'kho-hang'"
+  }
+]

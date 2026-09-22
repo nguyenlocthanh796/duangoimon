@@ -1,0 +1,3685 @@
+{
+  "themeTokensAnalysis": {},
+  "appScreens": {
+    "frontend/app/bao-cao-loi-nhuan/_components/ReportOverviewTab.tsx": [
+      {
+        "file": "frontend/app/bao-cao-loi-nhuan/_components/ReportOverviewTab.tsx",
+        "line": 976,
+        "color": "#E0F2FE",
+        "lineContent": "<View style={[s.tagBadge, { backgroundColor: isDark ? 'rgba(56, 189, 248, 0.15)' : '#E0F2FE' }]}>"
+      }
+    ],
+    "frontend/app/cai-dat/_components/BankVietQRTab.tsx": [
+      {
+        "file": "frontend/app/cai-dat/_components/BankVietQRTab.tsx",
+        "line": 495,
+        "color": "#FFFFFF",
+        "lineContent": "backgroundColor: '#FFFFFF',"
+      }
+    ],
+    "frontend/app/cai-dat/_components/BranchesTab.tsx": [
+      {
+        "file": "frontend/app/cai-dat/_components/BranchesTab.tsx",
+        "line": 242,
+        "color": "#FEE2E2",
+        "lineContent": ": '#FEE2E2'"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/BranchesTab.tsx",
+        "line": 276,
+        "color": "#E2E8F0",
+        "lineContent": "{ backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : '#E2E8F0' },"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/BranchesTab.tsx",
+        "line": 585,
+        "color": "#D1FAE5",
+        "lineContent": ": '#D1FAE5',"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/BranchesTab.tsx",
+        "line": 589,
+        "color": "#059669",
+        "lineContent": "<Icon name=\"cellphone-link\" size={12} color=\"#059669\" />"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/BranchesTab.tsx",
+        "line": 590,
+        "color": "#059669",
+        "lineContent": "<AppText variant=\"xxs\" weight=\"medium\" color=\"#059669\">"
+      }
+    ],
+    "frontend/app/cai-dat/_components/LiveBillPreview.tsx": [
+      {
+        "file": "frontend/app/cai-dat/_components/LiveBillPreview.tsx",
+        "line": 56,
+        "color": "#141E30",
+        "lineContent": "backgroundColor: isDark ? '#141E30' : '#FFFFFF',"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/LiveBillPreview.tsx",
+        "line": 56,
+        "color": "#FFFFFF",
+        "lineContent": "backgroundColor: isDark ? '#141E30' : '#FFFFFF',"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/LiveBillPreview.tsx",
+        "line": 232,
+        "color": "#FFF",
+        "lineContent": "<View key={idx} style={{ width: w, height: 28, backgroundColor: isDark ? '#FFF' : '#000', marginHorizontal: 1 }} />"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/LiveBillPreview.tsx",
+        "line": 232,
+        "color": "#000",
+        "lineContent": "<View key={idx} style={{ width: w, height: 28, backgroundColor: isDark ? '#FFF' : '#000', marginHorizontal: 1 }} />"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/LiveBillPreview.tsx",
+        "line": 254,
+        "color": "#1E293B",
+        "lineContent": "<View key={i} style={[s.tearTooth, { borderTopColor: isDark ? '#1E293B' : '#CBD5E1' }]} />"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/LiveBillPreview.tsx",
+        "line": 254,
+        "color": "#CBD5E1",
+        "lineContent": "<View key={i} style={[s.tearTooth, { borderTopColor: isDark ? '#1E293B' : '#CBD5E1' }]} />"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/LiveBillPreview.tsx",
+        "line": 283,
+        "color": "#000",
+        "lineContent": "shadowColor: '#000',"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/LiveBillPreview.tsx",
+        "line": 333,
+        "color": "#FFFFFF",
+        "lineContent": "backgroundColor: '#FFFFFF',"
+      }
+    ],
+    "frontend/app/cai-dat/_components/OperationsTab.tsx": [
+      {
+        "file": "frontend/app/cai-dat/_components/OperationsTab.tsx",
+        "line": 99,
+        "color": "#3B82F6",
+        "lineContent": "{ role: 'cashier' as const, name: 'Thu Ngân', pin: '2222', icon: 'cash-register', color: '#3B82F6' },"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OperationsTab.tsx",
+        "line": 100,
+        "color": "#0D9488",
+        "lineContent": "{ role: 'server' as const, name: 'Phục Vụ', pin: '1111', icon: 'tray-full', color: '#0D9488' },"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OperationsTab.tsx",
+        "line": 101,
+        "color": "#8B5CF6",
+        "lineContent": "{ role: 'manager' as const, name: 'Quản Lý', pin: '8888', icon: 'badge-account-horizontal', color: '#8B5CF6' },"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OperationsTab.tsx",
+        "line": 151,
+        "color": "#FFFFFF",
+        "lineContent": "thumbColor=\"#FFFFFF\""
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OperationsTab.tsx",
+        "line": 172,
+        "color": "#F59E0B18",
+        "lineContent": "backgroundColor: '#F59E0B18',"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OperationsTab.tsx",
+        "line": 177,
+        "color": "#F59E0B",
+        "lineContent": "<Icon name=\"crown\" size={18} color=\"#F59E0B\" />"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OperationsTab.tsx",
+        "line": 737,
+        "color": "#F59E0B",
+        "lineContent": "{ flex: 1, borderColor: '#F59E0B', backgroundColor: theme.surface.header },"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OperationsTab.tsx",
+        "line": 740,
+        "color": "#F59E0B",
+        "lineContent": "<Icon name=\"crown-outline\" size={16} color=\"#F59E0B\" />"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OperationsTab.tsx",
+        "line": 741,
+        "color": "#F59E0B",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#F59E0B\">"
+      }
+    ],
+    "frontend/app/cai-dat/_components/OwnerAccountTab.tsx": [
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 322,
+        "color": "#3B82F618",
+        "lineContent": "<View style={[s.iconBox, { backgroundColor: '#3B82F618' }]}>"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 323,
+        "color": "#3B82F6",
+        "lineContent": "<Icon name=\"lock-reset\" size={20} color=\"#3B82F6\" />"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 410,
+        "color": "#10B98118",
+        "lineContent": "<View style={[s.iconBox, { backgroundColor: '#10B98118' }]}>"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 411,
+        "color": "#10B981",
+        "lineContent": "<Icon name=\"dialpad\" size={20} color=\"#10B981\" />"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 437,
+        "color": "#F59E0B",
+        "lineContent": "<Icon name=\"crown\" size={16} color=\"#F59E0B\" />"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 491,
+        "color": "#8B5CF6",
+        "lineContent": "<Icon name=\"shield-account\" size={16} color=\"#8B5CF6\" />"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 496,
+        "color": "#8B5CF6",
+        "lineContent": "<AppText variant=\"xs\" color=\"#8B5CF6\">"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 523,
+        "color": "#8B5CF6",
+        "lineContent": "style={[s.pinSaveBtn, { backgroundColor: '#8B5CF6' }]}"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 525,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#FFFFFF\">"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 537,
+        "color": "#EF444418",
+        "lineContent": "<View style={[s.iconBox, { backgroundColor: '#EF444418' }]}>"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 538,
+        "color": "#EF4444",
+        "lineContent": "<Icon name=\"cellphone-link-off\" size={20} color=\"#EF4444\" />"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 625,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#FFFFFF\">"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 646,
+        "color": "#FEE2E2",
+        "lineContent": "<View style={[s.iconBox, { backgroundColor: '#FEE2E2' }]}>"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 647,
+        "color": "#DC2626",
+        "lineContent": "<Icon name=\"account-remove-outline\" size={20} color=\"#DC2626\" />"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 650,
+        "color": "#DC2626",
+        "lineContent": "<AppText variant=\"sm\" weight=\"medium\" color=\"#DC2626\">"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 674,
+        "color": "#FEF2F2",
+        "lineContent": "backgroundColor: '#FEF2F2',"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 676,
+        "color": "#FCA5A5",
+        "lineContent": "borderColor: '#FCA5A5',"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 681,
+        "color": "#DC2626",
+        "lineContent": "<Icon name=\"delete-forever-outline\" size={18} color=\"#DC2626\" />"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 682,
+        "color": "#DC2626",
+        "lineContent": "<AppText variant=\"sm\" weight=\"medium\" color=\"#DC2626\">"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 691,
+        "color": "#FEF2F2",
+        "lineContent": "backgroundColor: '#FEF2F2',"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 692,
+        "color": "#DC2626",
+        "lineContent": "borderColor: '#DC2626',"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 697,
+        "color": "#991B1B",
+        "lineContent": "<AppText variant=\"xs\" weight=\"bold\" color=\"#991B1B\">"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 702,
+        "color": "#7F1D1D",
+        "lineContent": "<AppText variant=\"xs\" color=\"#7F1D1D\">"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 703,
+        "color": "#991B1B",
+        "lineContent": "1. Nhập cụm từ xác nhận: <AppText variant=\"xs\" weight=\"bold\" color=\"#991B1B\">XOA TAI KHOAN</AppText>"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 709,
+        "color": "#F87171",
+        "lineContent": "placeholderTextColor=\"#F87171\""
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 715,
+        "color": "#FFFFFF",
+        "lineContent": "backgroundColor: '#FFFFFF',"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 716,
+        "color": "#FCA5A5",
+        "lineContent": "borderColor: '#FCA5A5',"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 717,
+        "color": "#991B1B",
+        "lineContent": "color: '#991B1B',"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 725,
+        "color": "#7F1D1D",
+        "lineContent": "<AppText variant=\"xs\" color=\"#7F1D1D\">"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 732,
+        "color": "#F87171",
+        "lineContent": "placeholderTextColor=\"#F87171\""
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 740,
+        "color": "#FFFFFF",
+        "lineContent": "backgroundColor: '#FFFFFF',"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 741,
+        "color": "#FCA5A5",
+        "lineContent": "borderColor: '#FCA5A5',"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 742,
+        "color": "#991B1B",
+        "lineContent": "color: '#991B1B',"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 782,
+        "color": "#DC2626",
+        "lineContent": "backgroundColor: '#DC2626',"
+      },
+      {
+        "file": "frontend/app/cai-dat/_components/OwnerAccountTab.tsx",
+        "line": 786,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"xs\" weight=\"bold\" color=\"#FFFFFF\">"
+      }
+    ],
+    "frontend/app/cfd/index.tsx": [
+      {
+        "file": "frontend/app/cfd/index.tsx",
+        "line": 359,
+        "color": "#FFFFFF",
+        "lineContent": "{ backgroundColor: '#FFFFFF', borderColor: theme.border.subtle },"
+      }
+    ],
+    "frontend/app/hoa-don/index.tsx": [
+      {
+        "file": "frontend/app/hoa-don/index.tsx",
+        "line": 1619,
+        "color": "#000",
+        "lineContent": "shadowColor: '#000',"
+      }
+    ],
+    "frontend/app/kds/index.tsx": [
+      {
+        "file": "frontend/app/kds/index.tsx",
+        "line": 1074,
+        "color": "#000",
+        "lineContent": "shadowColor: '#000',"
+      }
+    ],
+    "frontend/app/khach-hang/components/CustomerDetailView.tsx": [
+      {
+        "file": "frontend/app/khach-hang/components/CustomerDetailView.tsx",
+        "line": 70,
+        "color": "#D97706",
+        "lineContent": "color={hasDebt ? theme.brand.danger : isVIP ? '#D97706' : theme.brand.primary}"
+      },
+      {
+        "file": "frontend/app/khach-hang/components/CustomerDetailView.tsx",
+        "line": 83,
+        "color": "#D97706",
+        "lineContent": "<Icon name=\"crown\" size={12} color=\"#D97706\" />"
+      },
+      {
+        "file": "frontend/app/khach-hang/components/CustomerDetailView.tsx",
+        "line": 84,
+        "color": "#D97706",
+        "lineContent": "<AppText variant=\"xxs\" weight=\"medium\" color=\"#D97706\">VIP</AppText>"
+      },
+      {
+        "file": "frontend/app/khach-hang/components/CustomerDetailView.tsx",
+        "line": 399,
+        "color": "#FFFFFF",
+        "lineContent": "<Icon name=\"cash-check\" size={18} color=\"#FFFFFF\" />"
+      },
+      {
+        "file": "frontend/app/khach-hang/components/CustomerDetailView.tsx",
+        "line": 400,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#FFFFFF\">"
+      }
+    ],
+    "frontend/app/khach-hang/components/CustomerListView.tsx": [
+      {
+        "file": "frontend/app/khach-hang/components/CustomerListView.tsx",
+        "line": 159,
+        "color": "#D97706",
+        "lineContent": "mainTab === 'loyalty_vip' && [s.primaryTabItemActive, { borderBottomColor: '#D97706' }],"
+      },
+      {
+        "file": "frontend/app/khach-hang/components/CustomerListView.tsx",
+        "line": 165,
+        "color": "#D97706",
+        "lineContent": "color={mainTab === 'loyalty_vip' ? '#D97706' : theme.text.muted}"
+      },
+      {
+        "file": "frontend/app/khach-hang/components/CustomerListView.tsx",
+        "line": 170,
+        "color": "#D97706",
+        "lineContent": "color={mainTab === 'loyalty_vip' ? '#D97706' : theme.text.primary}"
+      },
+      {
+        "file": "frontend/app/khach-hang/components/CustomerListView.tsx",
+        "line": 175,
+        "color": "#D97706",
+        "lineContent": "<AppText variant=\"xxs\" weight=\"medium\" color={mainTab === 'loyalty_vip' ? '#D97706' : theme.text.muted} tabularNums>"
+      },
+      {
+        "file": "frontend/app/khach-hang/components/CustomerListView.tsx",
+        "line": 390,
+        "color": "#D97706",
+        "lineContent": "color={hasDebt ? theme.brand.danger : isVIP ? '#D97706' : theme.brand.primary}"
+      },
+      {
+        "file": "frontend/app/khach-hang/components/CustomerListView.tsx",
+        "line": 402,
+        "color": "#D97706",
+        "lineContent": "{isVIP && <Icon name=\"crown\" size={13} color=\"#D97706\" />}"
+      },
+      {
+        "file": "frontend/app/khach-hang/components/CustomerListView.tsx",
+        "line": 492,
+        "color": "#FFFFFF",
+        "lineContent": "<Icon name=\"alert-circle\" size={14} color=\"#FFFFFF\" />"
+      },
+      {
+        "file": "frontend/app/khach-hang/components/CustomerListView.tsx",
+        "line": 493,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#FFFFFF\" tabularNums>"
+      },
+      {
+        "file": "frontend/app/khach-hang/components/CustomerListView.tsx",
+        "line": 532,
+        "color": "#D97706",
+        "lineContent": "{cust.name.includes('VIP') && <Icon name=\"crown\" size={12} color=\"#D97706\" />}"
+      },
+      {
+        "file": "frontend/app/khach-hang/components/CustomerListView.tsx",
+        "line": 565,
+        "color": "#FFFFFF",
+        "lineContent": "<Icon name=\"cash-check\" size={14} color=\"#FFFFFF\" />"
+      },
+      {
+        "file": "frontend/app/khach-hang/components/CustomerListView.tsx",
+        "line": 566,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"xxs\" weight=\"medium\" color=\"#FFFFFF\">"
+      },
+      {
+        "file": "frontend/app/khach-hang/components/CustomerListView.tsx",
+        "line": 665,
+        "color": "#D97706",
+        "lineContent": "<View style={[s.loyaltyHeroCard, { backgroundColor: 'rgba(245, 158, 11, 0.08)', borderColor: '#D97706' }]}>"
+      },
+      {
+        "file": "frontend/app/khach-hang/components/CustomerListView.tsx",
+        "line": 668,
+        "color": "#D97706",
+        "lineContent": "<Icon name=\"crown\" size={24} color=\"#D97706\" />"
+      },
+      {
+        "file": "frontend/app/khach-hang/components/CustomerListView.tsx",
+        "line": 671,
+        "color": "#D97706",
+        "lineContent": "<AppText variant=\"sm\" weight=\"medium\" color=\"#D97706\">"
+      },
+      {
+        "file": "frontend/app/khach-hang/components/CustomerListView.tsx",
+        "line": 691,
+        "color": "#D97706",
+        "lineContent": "const rankColor = rank === 0 ? '#D97706' : rank === 1 ? '#64748B' : '#B45309';"
+      },
+      {
+        "file": "frontend/app/khach-hang/components/CustomerListView.tsx",
+        "line": 691,
+        "color": "#64748B",
+        "lineContent": "const rankColor = rank === 0 ? '#D97706' : rank === 1 ? '#64748B' : '#B45309';"
+      },
+      {
+        "file": "frontend/app/khach-hang/components/CustomerListView.tsx",
+        "line": 691,
+        "color": "#B45309",
+        "lineContent": "const rankColor = rank === 0 ? '#D97706' : rank === 1 ? '#64748B' : '#B45309';"
+      },
+      {
+        "file": "frontend/app/khach-hang/components/CustomerListView.tsx",
+        "line": 734,
+        "color": "#D97706",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color={idx < 3 ? '#D97706' : theme.text.muted} tabularNums>"
+      },
+      {
+        "file": "frontend/app/khach-hang/components/CustomerListView.tsx",
+        "line": 744,
+        "color": "#D97706",
+        "lineContent": "{cust.name.includes('VIP') && <Icon name=\"crown\" size={13} color=\"#D97706\" />}"
+      }
+    ],
+    "frontend/app/khach-hang/components/SettleDebtModal.tsx": [
+      {
+        "file": "frontend/app/khach-hang/components/SettleDebtModal.tsx",
+        "line": 174,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#FFFFFF\">"
+      }
+    ],
+    "frontend/app/login/index.tsx": [
+      {
+        "file": "frontend/app/login/index.tsx",
+        "line": 182,
+        "color": "#FFFFFF",
+        "lineContent": "<Icon name=\"crown\" size={20} color=\"#FFFFFF\" />"
+      },
+      {
+        "file": "frontend/app/login/index.tsx",
+        "line": 540,
+        "color": "#FFFFFF",
+        "lineContent": "<ActivityIndicator size=\"small\" color=\"#FFFFFF\" />"
+      },
+      {
+        "file": "frontend/app/login/index.tsx",
+        "line": 543,
+        "color": "#FFFFFF",
+        "lineContent": "<Icon name=\"link-variant-off\" size={16} color=\"#FFFFFF\" />"
+      },
+      {
+        "file": "frontend/app/login/index.tsx",
+        "line": 544,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#FFFFFF\">"
+      },
+      {
+        "file": "frontend/app/login/index.tsx",
+        "line": 681,
+        "color": "#FFFFFF",
+        "lineContent": "<ActivityIndicator size=\"small\" color=\"#FFFFFF\" />"
+      },
+      {
+        "file": "frontend/app/login/index.tsx",
+        "line": 684,
+        "color": "#FFFFFF",
+        "lineContent": "<Icon name=\"shield-check\" size={16} color=\"#FFFFFF\" />"
+      },
+      {
+        "file": "frontend/app/login/index.tsx",
+        "line": 685,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#FFFFFF\">"
+      },
+      {
+        "file": "frontend/app/login/index.tsx",
+        "line": 742,
+        "color": "#000",
+        "lineContent": "shadowColor: '#000',"
+      },
+      {
+        "file": "frontend/app/login/index.tsx",
+        "line": 832,
+        "color": "#000",
+        "lineContent": "shadowColor: '#000',"
+      }
+    ],
+    "frontend/app/login/_components/SaaSBrandHero.tsx": [
+      {
+        "file": "frontend/app/login/_components/SaaSBrandHero.tsx",
+        "line": 45,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"lg\" weight=\"bold\" color=\"#FFFFFF\">"
+      },
+      {
+        "file": "frontend/app/login/_components/SaaSBrandHero.tsx",
+        "line": 58,
+        "color": "#14B8A6",
+        "lineContent": "<Icon name=\"lightning-bolt\" size={20} color=\"#14B8A6\" />"
+      },
+      {
+        "file": "frontend/app/login/_components/SaaSBrandHero.tsx",
+        "line": 61,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"sm\" weight=\"medium\" color=\"#FFFFFF\">"
+      },
+      {
+        "file": "frontend/app/login/_components/SaaSBrandHero.tsx",
+        "line": 72,
+        "color": "#10B981",
+        "lineContent": "<Icon name=\"printer\" size={20} color=\"#10B981\" />"
+      },
+      {
+        "file": "frontend/app/login/_components/SaaSBrandHero.tsx",
+        "line": 75,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"sm\" weight=\"medium\" color=\"#FFFFFF\">"
+      },
+      {
+        "file": "frontend/app/login/_components/SaaSBrandHero.tsx",
+        "line": 86,
+        "color": "#F59E0B",
+        "lineContent": "<Icon name=\"cash-register\" size={20} color=\"#F59E0B\" />"
+      },
+      {
+        "file": "frontend/app/login/_components/SaaSBrandHero.tsx",
+        "line": 89,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"sm\" weight=\"medium\" color=\"#FFFFFF\">"
+      },
+      {
+        "file": "frontend/app/login/_components/SaaSBrandHero.tsx",
+        "line": 103,
+        "color": "#10B981",
+        "lineContent": "<View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: '#10B981' }} />"
+      },
+      {
+        "file": "frontend/app/login/_components/SaaSBrandHero.tsx",
+        "line": 104,
+        "color": "#10B981",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#10B981\">"
+      },
+      {
+        "file": "frontend/app/login/_components/SaaSBrandHero.tsx",
+        "line": 113,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"sm\" weight=\"medium\" color=\"#FFFFFF\" style={{ marginTop: 8 }}>"
+      }
+    ],
+    "frontend/app/login/_components/StaffPinPad.tsx": [
+      {
+        "file": "frontend/app/login/_components/StaffPinPad.tsx",
+        "line": 581,
+        "color": "#141E30",
+        "lineContent": "? (isDark ? '#141E30' : '#F1F5F9')"
+      },
+      {
+        "file": "frontend/app/login/_components/StaffPinPad.tsx",
+        "line": 581,
+        "color": "#F1F5F9",
+        "lineContent": "? (isDark ? '#141E30' : '#F1F5F9')"
+      },
+      {
+        "file": "frontend/app/login/_components/StaffPinPad.tsx",
+        "line": 599,
+        "color": "#1F293D",
+        "lineContent": "? (isDark ? '#1F293D' : '#E2E8F0')"
+      },
+      {
+        "file": "frontend/app/login/_components/StaffPinPad.tsx",
+        "line": 599,
+        "color": "#E2E8F0",
+        "lineContent": "? (isDark ? '#1F293D' : '#E2E8F0')"
+      },
+      {
+        "file": "frontend/app/login/_components/StaffPinPad.tsx",
+        "line": 629,
+        "color": "#1F293D",
+        "lineContent": "? (isDark ? '#1F293D' : '#E2E8F0')"
+      },
+      {
+        "file": "frontend/app/login/_components/StaffPinPad.tsx",
+        "line": 629,
+        "color": "#E2E8F0",
+        "lineContent": "? (isDark ? '#1F293D' : '#E2E8F0')"
+      }
+    ],
+    "frontend/app/saas-admin/index.tsx": [
+      {
+        "file": "frontend/app/saas-admin/index.tsx",
+        "line": 695,
+        "color": "#FFFFFF",
+        "lineContent": "<Icon name=\"shield-account\" size={15} color=\"#FFFFFF\" />"
+      },
+      {
+        "file": "frontend/app/saas-admin/index.tsx",
+        "line": 696,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#FFFFFF\">"
+      },
+      {
+        "file": "frontend/app/saas-admin/index.tsx",
+        "line": 1217,
+        "color": "#7C3AED",
+        "lineContent": "borderColor: '#7C3AED',"
+      },
+      {
+        "file": "frontend/app/saas-admin/index.tsx",
+        "line": 1226,
+        "color": "#7C3AED",
+        "lineContent": "<Icon name=\"shield-crown\" size={20} color=\"#7C3AED\" />"
+      },
+      {
+        "file": "frontend/app/saas-admin/index.tsx",
+        "line": 1227,
+        "color": "#7C3AED",
+        "lineContent": "<AppText variant=\"sm\" weight=\"medium\" color=\"#7C3AED\">"
+      },
+      {
+        "file": "frontend/app/saas-admin/index.tsx",
+        "line": 1240,
+        "color": "#FFFFFF",
+        "lineContent": "<Icon name=\"login-variant\" size={16} color=\"#FFFFFF\" />"
+      },
+      {
+        "file": "frontend/app/saas-admin/index.tsx",
+        "line": 1241,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"sm\" weight=\"medium\" color=\"#FFFFFF\">"
+      },
+      {
+        "file": "frontend/app/saas-admin/index.tsx",
+        "line": 1903,
+        "color": "#F59E0B",
+        "lineContent": "? '#F59E0B'"
+      },
+      {
+        "file": "frontend/app/saas-admin/index.tsx",
+        "line": 1905,
+        "color": "#8B5CF6",
+        "lineContent": "? '#8B5CF6'"
+      },
+      {
+        "file": "frontend/app/saas-admin/index.tsx",
+        "line": 1906,
+        "color": "#3B82F6",
+        "lineContent": ": '#3B82F6';"
+      },
+      {
+        "file": "frontend/app/saas-admin/index.tsx",
+        "line": 2259,
+        "color": "#3B82F6",
+        "lineContent": "<AppText variant=\"xs\" color=\"#3B82F6\" weight=\"medium\">"
+      },
+      {
+        "file": "frontend/app/saas-admin/index.tsx",
+        "line": 2472,
+        "color": "#7C3AED",
+        "lineContent": "style={[s.dockedBtn, { backgroundColor: '#7C3AED', flex: 2 }]}"
+      },
+      {
+        "file": "frontend/app/saas-admin/index.tsx",
+        "line": 2474,
+        "color": "#FFFFFF",
+        "lineContent": "<Icon name=\"shield-account\" size={16} color=\"#FFFFFF\" />"
+      },
+      {
+        "file": "frontend/app/saas-admin/index.tsx",
+        "line": 2475,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#FFFFFF\">"
+      },
+      {
+        "file": "frontend/app/saas-admin/index.tsx",
+        "line": 2829,
+        "color": "#7C3AED",
+        "lineContent": "style={[s.miniActionBtn, { backgroundColor: '#7C3AED' }]}"
+      },
+      {
+        "file": "frontend/app/saas-admin/index.tsx",
+        "line": 2831,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#FFFFFF\">"
+      },
+      {
+        "file": "frontend/app/saas-admin/index.tsx",
+        "line": 3003,
+        "color": "#7C3AED",
+        "lineContent": "style={[s.actionBtn, { borderColor: '#7C3AED', backgroundColor: 'rgba(124, 58, 237, 0.08)' }]}"
+      },
+      {
+        "file": "frontend/app/saas-admin/index.tsx",
+        "line": 3005,
+        "color": "#7C3AED",
+        "lineContent": "<Icon name=\"shield-account\" size={14} color=\"#7C3AED\" />"
+      },
+      {
+        "file": "frontend/app/saas-admin/index.tsx",
+        "line": 3006,
+        "color": "#7C3AED",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#7C3AED\">"
+      },
+      {
+        "file": "frontend/app/saas-admin/index.tsx",
+        "line": 4239,
+        "color": "#7C3AED",
+        "lineContent": "backgroundColor: '#7C3AED',"
+      },
+      {
+        "file": "frontend/app/saas-admin/index.tsx",
+        "line": 4470,
+        "color": "#7C3AED",
+        "lineContent": "backgroundColor: '#7C3AED',"
+      }
+    ],
+    "frontend/app/so-quy/_components/QuickCashFormContent.tsx": [
+      {
+        "file": "frontend/app/so-quy/_components/QuickCashFormContent.tsx",
+        "line": 82,
+        "color": "#000",
+        "lineContent": "shadowColor: '#000',"
+      },
+      {
+        "file": "frontend/app/so-quy/_components/QuickCashFormContent.tsx",
+        "line": 123,
+        "color": "#000",
+        "lineContent": "shadowColor: '#000',"
+      }
+    ],
+    "frontend/app/thuc-don/index.tsx": [
+      {
+        "file": "frontend/app/thuc-don/index.tsx",
+        "line": 1128,
+        "color": "#FFFFFF",
+        "lineContent": "thumbColor=\"#FFFFFF\""
+      },
+      {
+        "file": "frontend/app/thuc-don/index.tsx",
+        "line": 1206,
+        "color": "#FFFFFF",
+        "lineContent": "thumbColor=\"#FFFFFF\""
+      }
+    ],
+    "frontend/app/_layout.tsx": [
+      {
+        "file": "frontend/app/_layout.tsx",
+        "line": 147,
+        "color": "#0B0F19",
+        "lineContent": "backgroundColor: isDark ? '#0B0F19' : '#FFFFFF',"
+      },
+      {
+        "file": "frontend/app/_layout.tsx",
+        "line": 147,
+        "color": "#FFFFFF",
+        "lineContent": "backgroundColor: isDark ? '#0B0F19' : '#FFFFFF',"
+      },
+      {
+        "file": "frontend/app/_layout.tsx",
+        "line": 191,
+        "color": "#7C3AED",
+        "lineContent": "backgroundColor: '#7C3AED',"
+      },
+      {
+        "file": "frontend/app/_layout.tsx",
+        "line": 204,
+        "color": "#FFFFFF",
+        "lineContent": "<Icon name=\"shield-account\" size={18} color=\"#FFFFFF\" />"
+      },
+      {
+        "file": "frontend/app/_layout.tsx",
+        "line": 206,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#FFFFFF\" numberOfLines={1}>"
+      },
+      {
+        "file": "frontend/app/_layout.tsx",
+        "line": 223,
+        "color": "#FFFFFF",
+        "lineContent": "backgroundColor: '#FFFFFF',"
+      },
+      {
+        "file": "frontend/app/_layout.tsx",
+        "line": 233,
+        "color": "#7C3AED",
+        "lineContent": "<Icon name=\"exit-to-app\" size={14} color=\"#7C3AED\" />"
+      },
+      {
+        "file": "frontend/app/_layout.tsx",
+        "line": 234,
+        "color": "#7C3AED",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#7C3AED\">"
+      }
+    ]
+  },
+  "componentsUI": {
+    "frontend/lib/components/ui/AppHeader.tsx": [
+      {
+        "file": "frontend/lib/components/ui/AppHeader.tsx",
+        "line": 141,
+        "color": "#000",
+        "lineContent": "shadowColor: '#000',"
+      }
+    ],
+    "frontend/lib/components/ui/AppRailNav.tsx": [
+      {
+        "file": "frontend/lib/components/ui/AppRailNav.tsx",
+        "line": 474,
+        "color": "#FFFFFF",
+        "lineContent": "color=\"#FFFFFF\""
+      },
+      {
+        "file": "frontend/lib/components/ui/AppRailNav.tsx",
+        "line": 536,
+        "color": "#FFFFFF",
+        "lineContent": "color=\"#FFFFFF\""
+      },
+      {
+        "file": "frontend/lib/components/ui/AppRailNav.tsx",
+        "line": 770,
+        "color": "#FF6B00",
+        "lineContent": "pos: { color: '#FF6B00', bgLight: 'rgba(255, 107, 0, 0.12)', bgDark: 'rgba(255, 159, 10, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppRailNav.tsx",
+        "line": 771,
+        "color": "#0D9488",
+        "lineContent": "'quan-ly-ban': { color: '#0D9488', bgLight: 'rgba(13, 148, 136, 0.12)', bgDark: 'rgba(20, 184, 166, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppRailNav.tsx",
+        "line": 772,
+        "color": "#EF4444",
+        "lineContent": "kds: { color: '#EF4444', bgLight: 'rgba(239, 68, 68, 0.12)', bgDark: 'rgba(255, 69, 58, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppRailNav.tsx",
+        "line": 773,
+        "color": "#2563EB",
+        "lineContent": "'hoa-don': { color: '#2563EB', bgLight: 'rgba(37, 99, 235, 0.12)', bgDark: 'rgba(59, 130, 246, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppRailNav.tsx",
+        "line": 774,
+        "color": "#EA580C",
+        "lineContent": "'thuc-don': { color: '#EA580C', bgLight: 'rgba(234, 88, 12, 0.12)', bgDark: 'rgba(249, 115, 22, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppRailNav.tsx",
+        "line": 775,
+        "color": "#0284C7",
+        "lineContent": "'kho-hang': { color: '#0284C7', bgLight: 'rgba(2, 132, 199, 0.12)', bgDark: 'rgba(56, 189, 248, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppRailNav.tsx",
+        "line": 776,
+        "color": "#10B981",
+        "lineContent": "'so-quy': { color: '#10B981', bgLight: 'rgba(16, 185, 129, 0.12)', bgDark: 'rgba(52, 211, 153, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppRailNav.tsx",
+        "line": 777,
+        "color": "#14B8A6",
+        "lineContent": "'giao-ca': { color: '#14B8A6', bgLight: 'rgba(20, 184, 166, 0.12)', bgDark: 'rgba(45, 212, 191, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppRailNav.tsx",
+        "line": 778,
+        "color": "#8B5CF6",
+        "lineContent": "'bao-cao': { color: '#8B5CF6', bgLight: 'rgba(139, 92, 246, 0.12)', bgDark: 'rgba(167, 139, 250, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppRailNav.tsx",
+        "line": 779,
+        "color": "#6366F1",
+        "lineContent": "'nhan-su': { color: '#6366F1', bgLight: 'rgba(99, 102, 241, 0.12)', bgDark: 'rgba(129, 140, 248, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppRailNav.tsx",
+        "line": 780,
+        "color": "#EC4899",
+        "lineContent": "'khach-hang': { color: '#EC4899', bgLight: 'rgba(236, 72, 153, 0.12)', bgDark: 'rgba(244, 114, 182, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppRailNav.tsx",
+        "line": 781,
+        "color": "#475569",
+        "lineContent": "'cai-dat': { color: '#475569', bgLight: 'rgba(71, 85, 105, 0.12)', bgDark: 'rgba(148, 163, 184, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppRailNav.tsx",
+        "line": 782,
+        "color": "#10B981",
+        "lineContent": "cfd: { color: '#10B981', bgLight: 'rgba(16, 185, 129, 0.12)', bgDark: 'rgba(52, 211, 153, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppRailNav.tsx",
+        "line": 783,
+        "color": "#334155",
+        "lineContent": "'saas-admin': { color: '#334155', bgLight: 'rgba(51, 65, 85, 0.12)', bgDark: 'rgba(148, 163, 184, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppRailNav.tsx",
+        "line": 784,
+        "color": "#0EA5E9",
+        "lineContent": "'huong-dan': { color: '#0EA5E9', bgLight: 'rgba(14, 165, 233, 0.12)', bgDark: 'rgba(56, 189, 248, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppRailNav.tsx",
+        "line": 785,
+        "color": "#3B82F6",
+        "lineContent": "login: { color: '#3B82F6', bgLight: 'rgba(59, 130, 246, 0.12)', bgDark: 'rgba(96, 165, 250, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppRailNav.tsx",
+        "line": 793,
+        "color": "#64748B",
+        "lineContent": "color={isDark ? theme.text.subtle : '#64748B'}"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppRailNav.tsx",
+        "line": 891,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"xs\" weight=\"bold\" color=\"#FFFFFF\" tabularNums>"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppRailNav.tsx",
+        "line": 1123,
+        "color": "#000",
+        "lineContent": "shadowColor: '#000',"
+      }
+    ],
+    "frontend/lib/components/ui/AppSidebar.tsx": [
+      {
+        "file": "frontend/lib/components/ui/AppSidebar.tsx",
+        "line": 37,
+        "color": "#FF6B00",
+        "lineContent": "pos_home: { color: '#FF6B00', bgLight: 'rgba(255, 107, 0, 0.12)', bgDark: 'rgba(255, 159, 10, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppSidebar.tsx",
+        "line": 38,
+        "color": "#EF4444",
+        "lineContent": "kds_screen: { color: '#EF4444', bgLight: 'rgba(239, 68, 68, 0.12)', bgDark: 'rgba(255, 69, 58, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppSidebar.tsx",
+        "line": 39,
+        "color": "#2563EB",
+        "lineContent": "hoa_don: { color: '#2563EB', bgLight: 'rgba(37, 99, 235, 0.12)', bgDark: 'rgba(59, 130, 246, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppSidebar.tsx",
+        "line": 40,
+        "color": "#0D9488",
+        "lineContent": "quan_ly_ban: { color: '#0D9488', bgLight: 'rgba(13, 148, 136, 0.12)', bgDark: 'rgba(20, 184, 166, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppSidebar.tsx",
+        "line": 41,
+        "color": "#EA580C",
+        "lineContent": "thuc_don: { color: '#EA580C', bgLight: 'rgba(234, 88, 12, 0.12)', bgDark: 'rgba(249, 115, 22, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppSidebar.tsx",
+        "line": 42,
+        "color": "#0284C7",
+        "lineContent": "kho_hang: { color: '#0284C7', bgLight: 'rgba(2, 132, 199, 0.12)', bgDark: 'rgba(56, 189, 248, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppSidebar.tsx",
+        "line": 43,
+        "color": "#10B981",
+        "lineContent": "so_quy: { color: '#10B981', bgLight: 'rgba(16, 185, 129, 0.12)', bgDark: 'rgba(52, 211, 153, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppSidebar.tsx",
+        "line": 44,
+        "color": "#14B8A6",
+        "lineContent": "giao_ca: { color: '#14B8A6', bgLight: 'rgba(20, 184, 166, 0.12)', bgDark: 'rgba(45, 212, 191, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppSidebar.tsx",
+        "line": 45,
+        "color": "#8B5CF6",
+        "lineContent": "pnl_report: { color: '#8B5CF6', bgLight: 'rgba(139, 92, 246, 0.12)', bgDark: 'rgba(167, 139, 250, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppSidebar.tsx",
+        "line": 46,
+        "color": "#6366F1",
+        "lineContent": "nhan_su: { color: '#6366F1', bgLight: 'rgba(99, 102, 241, 0.12)', bgDark: 'rgba(129, 140, 248, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppSidebar.tsx",
+        "line": 47,
+        "color": "#EC4899",
+        "lineContent": "khach_hang: { color: '#EC4899', bgLight: 'rgba(236, 72, 153, 0.12)', bgDark: 'rgba(244, 114, 182, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppSidebar.tsx",
+        "line": 48,
+        "color": "#475569",
+        "lineContent": "cai_dat: { color: '#475569', bgLight: 'rgba(71, 85, 105, 0.12)', bgDark: 'rgba(148, 163, 184, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppSidebar.tsx",
+        "line": 49,
+        "color": "#10B981",
+        "lineContent": "cfd_screen: { color: '#10B981', bgLight: 'rgba(16, 185, 129, 0.12)', bgDark: 'rgba(52, 211, 153, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppSidebar.tsx",
+        "line": 50,
+        "color": "#334155",
+        "lineContent": "saas_admin: { color: '#334155', bgLight: 'rgba(51, 65, 85, 0.12)', bgDark: 'rgba(148, 163, 184, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppSidebar.tsx",
+        "line": 51,
+        "color": "#0EA5E9",
+        "lineContent": "huong_dan: { color: '#0EA5E9', bgLight: 'rgba(14, 165, 233, 0.12)', bgDark: 'rgba(56, 189, 248, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppSidebar.tsx",
+        "line": 52,
+        "color": "#D97706",
+        "lineContent": "lock_screen: { color: '#D97706', bgLight: 'rgba(217, 119, 6, 0.12)', bgDark: 'rgba(245, 158, 11, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppSidebar.tsx",
+        "line": 53,
+        "color": "#3B82F6",
+        "lineContent": "login_screen: { color: '#3B82F6', bgLight: 'rgba(59, 130, 246, 0.12)', bgDark: 'rgba(96, 165, 250, 0.22)' },"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppSidebar.tsx",
+        "line": 542,
+        "color": "#64748B",
+        "lineContent": "color={isDark ? theme.text.subtle : '#64748B'}"
+      },
+      {
+        "file": "frontend/lib/components/ui/AppSidebar.tsx",
+        "line": 612,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"xs\" weight=\"bold\" color=\"#FFFFFF\" tabularNums>"
+      }
+    ],
+    "frontend/lib/components/ui/AppToast.tsx": [
+      {
+        "file": "frontend/lib/components/ui/AppToast.tsx",
+        "line": 148,
+        "color": "#FFFFFF",
+        "lineContent": "color=\"#FFFFFF\""
+      },
+      {
+        "file": "frontend/lib/components/ui/AppToast.tsx",
+        "line": 181,
+        "color": "#000000",
+        "lineContent": "shadowColor: '#000000',"
+      }
+    ],
+    "frontend/lib/components/ui/BottomNavBar.tsx": [
+      {
+        "file": "frontend/lib/components/ui/BottomNavBar.tsx",
+        "line": 197,
+        "color": "#000",
+        "lineContent": "shadowColor: '#000',"
+      },
+      {
+        "file": "frontend/lib/components/ui/BottomNavBar.tsx",
+        "line": 366,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"labelSmall\" weight=\"bold\" color=\"#FFFFFF\" tabularNums>"
+      }
+    ],
+    "frontend/lib/components/ui/Button.tsx": [
+      {
+        "file": "frontend/lib/components/ui/Button.tsx",
+        "line": 54,
+        "color": "#FFFFFF",
+        "lineContent": "textColor = '#FFFFFF';"
+      },
+      {
+        "file": "frontend/lib/components/ui/Button.tsx",
+        "line": 60,
+        "color": "#FFFFFF",
+        "lineContent": "textColor = '#FFFFFF';"
+      }
+    ]
+  },
+  "componentsPOS": {
+    "frontend/lib/components/pos/CupStickerPreviewModal.tsx": [
+      {
+        "file": "frontend/lib/components/pos/CupStickerPreviewModal.tsx",
+        "line": 114,
+        "color": "#CCFBF1",
+        "lineContent": "{ backgroundColor: isDark ? 'rgba(13, 148, 136, 0.2)' : '#CCFBF1' },"
+      },
+      {
+        "file": "frontend/lib/components/pos/CupStickerPreviewModal.tsx",
+        "line": 170,
+        "color": "#0F172A",
+        "lineContent": "color=\"#0F172A\""
+      },
+      {
+        "file": "frontend/lib/components/pos/CupStickerPreviewModal.tsx",
+        "line": 179,
+        "color": "#475569",
+        "lineContent": "<AppText variant=\"xxs\" weight=\"medium\" color=\"#475569\" tabularNums>"
+      },
+      {
+        "file": "frontend/lib/components/pos/CupStickerPreviewModal.tsx",
+        "line": 183,
+        "color": "#0F172A",
+        "lineContent": "<AppText variant=\"xxs\" weight=\"bold\" color=\"#0F172A\" tabularNums>"
+      },
+      {
+        "file": "frontend/lib/components/pos/CupStickerPreviewModal.tsx",
+        "line": 192,
+        "color": "#0F172A",
+        "lineContent": "<AppText variant=\"sm\" weight=\"bold\" color=\"#0F172A\" numberOfLines={1}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/CupStickerPreviewModal.tsx",
+        "line": 201,
+        "color": "#0F172A",
+        "lineContent": "<AppText variant=\"xxs\" color=\"#0F172A\">"
+      },
+      {
+        "file": "frontend/lib/components/pos/CupStickerPreviewModal.tsx",
+        "line": 208,
+        "color": "#0F172A",
+        "lineContent": "<AppText variant=\"xxs\" color=\"#0F172A\">"
+      },
+      {
+        "file": "frontend/lib/components/pos/CupStickerPreviewModal.tsx",
+        "line": 218,
+        "color": "#1E293B",
+        "lineContent": "<AppText variant=\"xxs\" weight=\"medium\" color=\"#1E293B\" numberOfLines={1} style={{ marginTop: 2 }}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/CupStickerPreviewModal.tsx",
+        "line": 225,
+        "color": "#DC2626",
+        "lineContent": "<AppText variant=\"xxs\" color=\"#DC2626\" numberOfLines={1} style={{ marginTop: 2 }}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/CupStickerPreviewModal.tsx",
+        "line": 234,
+        "color": "#0F172A",
+        "lineContent": "<AppText variant=\"xs\" weight=\"bold\" color=\"#0F172A\" tabularNums>"
+      },
+      {
+        "file": "frontend/lib/components/pos/CupStickerPreviewModal.tsx",
+        "line": 341,
+        "color": "#FFFFFF",
+        "lineContent": "backgroundColor: '#FFFFFF',"
+      },
+      {
+        "file": "frontend/lib/components/pos/CupStickerPreviewModal.tsx",
+        "line": 344,
+        "color": "#CBD5E1",
+        "lineContent": "borderColor: '#CBD5E1',"
+      },
+      {
+        "file": "frontend/lib/components/pos/CupStickerPreviewModal.tsx",
+        "line": 347,
+        "color": "#000",
+        "lineContent": "shadowColor: '#000',"
+      },
+      {
+        "file": "frontend/lib/components/pos/CupStickerPreviewModal.tsx",
+        "line": 365,
+        "color": "#F1F5F9",
+        "lineContent": "backgroundColor: '#F1F5F9',"
+      },
+      {
+        "file": "frontend/lib/components/pos/CupStickerPreviewModal.tsx",
+        "line": 373,
+        "color": "#E2E8F0",
+        "lineContent": "borderColor: '#E2E8F0',"
+      },
+      {
+        "file": "frontend/lib/components/pos/CupStickerPreviewModal.tsx",
+        "line": 383,
+        "color": "#F1F5F9",
+        "lineContent": "backgroundColor: '#F1F5F9',"
+      },
+      {
+        "file": "frontend/lib/components/pos/CupStickerPreviewModal.tsx",
+        "line": 402,
+        "color": "#0F172A",
+        "lineContent": "backgroundColor: '#0F172A',"
+      }
+    ],
+    "frontend/lib/components/pos/FullScreenCartModal.tsx": [
+      {
+        "file": "frontend/lib/components/pos/FullScreenCartModal.tsx",
+        "line": 815,
+        "color": "#000",
+        "lineContent": "shadowColor: '#000',"
+      }
+    ],
+    "frontend/lib/components/pos/KdsTicketCard.tsx": [
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 84,
+        "color": "#1E293B",
+        "lineContent": "borderBottomColor: !isWide ? (isDark ? '#1E293B' : '#E2E8F0') : undefined,"
+      },
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 84,
+        "color": "#E2E8F0",
+        "lineContent": "borderBottomColor: !isWide ? (isDark ? '#1E293B' : '#E2E8F0') : undefined,"
+      },
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 110,
+        "color": "#FFEDD5",
+        "lineContent": "backgroundColor: isDark ? 'rgba(234, 88, 12, 0.18)' : '#FFEDD5',"
+      },
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 111,
+        "color": "#EA580C",
+        "lineContent": "borderColor: isDark ? '#EA580C' : '#FB923C',"
+      },
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 111,
+        "color": "#FB923C",
+        "lineContent": "borderColor: isDark ? '#EA580C' : '#FB923C',"
+      },
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 115,
+        "color": "#FB923C",
+        "lineContent": "<AppText variant=\"xxs\" weight=\"medium\" color={isDark ? '#FB923C' : '#C2410C'}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 115,
+        "color": "#C2410C",
+        "lineContent": "<AppText variant=\"xxs\" weight=\"medium\" color={isDark ? '#FB923C' : '#C2410C'}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 125,
+        "color": "#DCFCE7",
+        "lineContent": "backgroundColor: isDark ? 'rgba(16, 185, 129, 0.18)' : '#DCFCE7',"
+      },
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 126,
+        "color": "#10B981",
+        "lineContent": "borderColor: isDark ? '#10B981' : '#86EFAC',"
+      },
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 126,
+        "color": "#86EFAC",
+        "lineContent": "borderColor: isDark ? '#10B981' : '#86EFAC',"
+      },
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 130,
+        "color": "#34D399",
+        "lineContent": "<AppText variant=\"xxs\" weight=\"medium\" color={isDark ? '#34D399' : '#15803D'}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 130,
+        "color": "#15803D",
+        "lineContent": "<AppText variant=\"xxs\" weight=\"medium\" color={isDark ? '#34D399' : '#15803D'}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 160,
+        "color": "#1E293B",
+        "lineContent": "? (isDark ? '#1E293B' : '#0F172A')"
+      },
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 160,
+        "color": "#0F172A",
+        "lineContent": "? (isDark ? '#1E293B' : '#0F172A')"
+      },
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 161,
+        "color": "#ECFDF5",
+        "lineContent": ": (isDark ? 'rgba(52, 199, 89, 0.16)' : '#ECFDF5'),"
+      },
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 163,
+        "color": "#334155",
+        "lineContent": "? (isDark ? '#334155' : '#0F172A')"
+      },
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 163,
+        "color": "#0F172A",
+        "lineContent": "? (isDark ? '#334155' : '#0F172A')"
+      },
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 164,
+        "color": "#A7F3D0",
+        "lineContent": ": (isDark ? 'rgba(52, 199, 89, 0.4)' : '#A7F3D0'),"
+      },
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 172,
+        "color": "#FFFFFF",
+        "lineContent": "color={isOrderReady ? '#FFFFFF' : (isDark ? '#34D399' : '#059669')}"
+      },
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 172,
+        "color": "#34D399",
+        "lineContent": "color={isOrderReady ? '#FFFFFF' : (isDark ? '#34D399' : '#059669')}"
+      },
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 172,
+        "color": "#059669",
+        "lineContent": "color={isOrderReady ? '#FFFFFF' : (isDark ? '#34D399' : '#059669')}"
+      },
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 177,
+        "color": "#FFFFFF",
+        "lineContent": "color={isOrderReady ? '#FFFFFF' : (isDark ? '#34D399' : '#059669')}"
+      },
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 177,
+        "color": "#34D399",
+        "lineContent": "color={isOrderReady ? '#FFFFFF' : (isDark ? '#34D399' : '#059669')}"
+      },
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 177,
+        "color": "#059669",
+        "lineContent": "color={isOrderReady ? '#FFFFFF' : (isDark ? '#34D399' : '#059669')}"
+      },
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 282,
+        "color": "#CBD5E1",
+        "lineContent": "<AppText variant=\"xs\" weight=\"normal\" color={isDark ? '#CBD5E1' : '#475569'}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/KdsTicketCard.tsx",
+        "line": 282,
+        "color": "#475569",
+        "lineContent": "<AppText variant=\"xs\" weight=\"normal\" color={isDark ? '#CBD5E1' : '#475569'}>"
+      }
+    ],
+    "frontend/lib/components/pos/ManagerPinModal.tsx": [
+      {
+        "file": "frontend/lib/components/pos/ManagerPinModal.tsx",
+        "line": 321,
+        "color": "#000",
+        "lineContent": "shadowColor: '#000',"
+      }
+    ],
+    "frontend/lib/components/pos/ParkedOrdersModal.tsx": [
+      {
+        "file": "frontend/lib/components/pos/ParkedOrdersModal.tsx",
+        "line": 161,
+        "color": "#FEF3C7",
+        "lineContent": "backgroundColor: isDark ? 'rgba(245, 158, 11, 0.2)' : '#FEF3C7',"
+      }
+    ],
+    "frontend/lib/components/pos/QRScannerModal.tsx": [
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 62,
+        "color": "#10B981",
+        "lineContent": "const activeColor = flashSuccess ? '#10B981' : (primaryColor || '#0D9488');"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 62,
+        "color": "#0D9488",
+        "lineContent": "const activeColor = flashSuccess ? '#10B981' : (primaryColor || '#0D9488');"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 199,
+        "color": "#0D9488",
+        "lineContent": "<Icon name=\"barcode-scan\" size={56} color=\"#0D9488\" />"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 203,
+        "color": "#F8FAFC",
+        "lineContent": "color=\"#F8FAFC\""
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 215,
+        "color": "#0D9488",
+        "lineContent": "style={{ marginTop: 14, backgroundColor: '#0D9488' }}"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 224,
+        "color": "#14B8A6",
+        "lineContent": "<MemoizedReticle primaryColor=\"#14B8A6\" flashSuccess={flashSuccess} />"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 235,
+        "color": "#14B8A6",
+        "lineContent": "<Icon name=\"qrcode-scan\" size={14} color=\"#14B8A6\" />"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 237,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#FFFFFF\">"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 244,
+        "color": "#14B8A6",
+        "lineContent": "color=\"#14B8A6\""
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 263,
+        "color": "#14B8A6",
+        "lineContent": "<Icon name=\"cart-check\" size={14} color=\"#14B8A6\" />"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 264,
+        "color": "#14B8A6",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#14B8A6\" tabularNums>"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 268,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#FFFFFF\" tabularNums>"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 281,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"xs\" color=\"#FFFFFF\" numberOfLines={1}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 284,
+        "color": "#14B8A6",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#14B8A6\" tabularNums>"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 308,
+        "color": "#F59E0B",
+        "lineContent": "torch && { backgroundColor: 'rgba(245, 158, 11, 0.25)', borderColor: '#F59E0B' },"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 314,
+        "color": "#F59E0B",
+        "lineContent": "color={torch ? '#F59E0B' : '#FFFFFF'}"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 314,
+        "color": "#FFFFFF",
+        "lineContent": "color={torch ? '#F59E0B' : '#FFFFFF'}"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 329,
+        "color": "#0D9488",
+        "lineContent": "sessionItems.length > 0 && { backgroundColor: '#0D9488' },"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 335,
+        "color": "#FFFFFF",
+        "lineContent": "color=\"#FFFFFF\""
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 337,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#FFFFFF\" tabularNums style={{ marginLeft: 6 }}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 355,
+        "color": "#FFFFFF",
+        "lineContent": "<Icon name=\"keyboard-outline\" size={22} color=\"#FFFFFF\" />"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 386,
+        "color": "#14B8A6",
+        "lineContent": "<Icon name=\"keyboard-outline\" size={18} color=\"#14B8A6\" />"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 388,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"sm\" weight=\"medium\" color=\"#FFFFFF\">"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 443,
+        "color": "#FFFFFF",
+        "lineContent": "<Icon name=\"plus\" size={16} color=\"#FFFFFF\" />"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 444,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#FFFFFF\" style={{ marginLeft: 4 }}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 463,
+        "color": "#000000",
+        "lineContent": "backgroundColor: '#000000',"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 508,
+        "color": "#0B0F19",
+        "lineContent": "backgroundColor: '#0B0F19',"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 600,
+        "color": "#10B981",
+        "lineContent": "backgroundColor: '#10B981',"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 690,
+        "color": "#FFFFFF",
+        "lineContent": "color: '#FFFFFF',"
+      },
+      {
+        "file": "frontend/lib/components/pos/QRScannerModal.tsx",
+        "line": 708,
+        "color": "#0D9488",
+        "lineContent": "backgroundColor: '#0D9488',"
+      }
+    ],
+    "frontend/lib/components/pos/ReceiptPreviewModal.tsx": [
+      {
+        "file": "frontend/lib/components/pos/ReceiptPreviewModal.tsx",
+        "line": 497,
+        "color": "#EF4444",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#EF4444\" style={{ letterSpacing: 0.5 }}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/ReceiptPreviewModal.tsx",
+        "line": 503,
+        "color": "#38BDF8",
+        "lineContent": "<Icon name=\"cctv\" size={14} color=\"#38BDF8\" />"
+      },
+      {
+        "file": "frontend/lib/components/pos/ReceiptPreviewModal.tsx",
+        "line": 504,
+        "color": "#E2E8F0",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#E2E8F0\" numberOfLines={1}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/ReceiptPreviewModal.tsx",
+        "line": 510,
+        "color": "#94A3B8",
+        "lineContent": "<AppText variant=\"xs\" color=\"#94A3B8\" tabularNums>"
+      },
+      {
+        "file": "frontend/lib/components/pos/ReceiptPreviewModal.tsx",
+        "line": 532,
+        "color": "#64748B",
+        "lineContent": "<AppText variant=\"xs\" color=\"#64748B\">ĐỐI CHIẾU MỐC:</AppText>"
+      },
+      {
+        "file": "frontend/lib/components/pos/ReceiptPreviewModal.tsx",
+        "line": 533,
+        "color": "#38BDF8",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#38BDF8\" tabularNums>"
+      },
+      {
+        "file": "frontend/lib/components/pos/ReceiptPreviewModal.tsx",
+        "line": 538,
+        "color": "#64748B",
+        "lineContent": "<AppText variant=\"xs\" color=\"#64748B\">HÓA ĐƠN:</AppText>"
+      },
+      {
+        "file": "frontend/lib/components/pos/ReceiptPreviewModal.tsx",
+        "line": 539,
+        "color": "#F1F5F9",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#F1F5F9\" tabularNums>"
+      },
+      {
+        "file": "frontend/lib/components/pos/ReceiptPreviewModal.tsx",
+        "line": 544,
+        "color": "#64748B",
+        "lineContent": "<AppText variant=\"xs\" color=\"#64748B\">THAO TÁC:</AppText>"
+      },
+      {
+        "file": "frontend/lib/components/pos/ReceiptPreviewModal.tsx",
+        "line": 545,
+        "color": "#EF4444",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color={order.status === 'voided' ? '#EF4444' : '#10B981'}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/ReceiptPreviewModal.tsx",
+        "line": 545,
+        "color": "#10B981",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color={order.status === 'voided' ? '#EF4444' : '#10B981'}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/ReceiptPreviewModal.tsx",
+        "line": 558,
+        "color": "#10B981",
+        "lineContent": "<Icon name=\"shield-check\" size={14} color=\"#10B981\" />"
+      },
+      {
+        "file": "frontend/lib/components/pos/ReceiptPreviewModal.tsx",
+        "line": 559,
+        "color": "#10B981",
+        "lineContent": "<AppText variant=\"xs\" color=\"#10B981\" weight=\"medium\">"
+      },
+      {
+        "file": "frontend/lib/components/pos/ReceiptPreviewModal.tsx",
+        "line": 591,
+        "color": "#F59E0B",
+        "lineContent": "<View style={[s.milestoneDot, { backgroundColor: 'rgba(245, 158, 11, 0.12)', borderColor: '#F59E0B', borderWidth: 1 }]}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/ReceiptPreviewModal.tsx",
+        "line": 592,
+        "color": "#F59E0B",
+        "lineContent": "<Icon name=\"printer-outline\" size={13} color=\"#F59E0B\" />"
+      },
+      {
+        "file": "frontend/lib/components/pos/ReceiptPreviewModal.tsx",
+        "line": 660,
+        "color": "#FFFFFF",
+        "lineContent": "backgroundColor: isDark ? theme.surface.header : '#FFFFFF',"
+      },
+      {
+        "file": "frontend/lib/components/pos/ReceiptPreviewModal.tsx",
+        "line": 1188,
+        "color": "#0A0F1D",
+        "lineContent": "backgroundColor: '#0A0F1D',"
+      },
+      {
+        "file": "frontend/lib/components/pos/ReceiptPreviewModal.tsx",
+        "line": 1191,
+        "color": "#1E293B",
+        "lineContent": "borderColor: '#1E293B',"
+      },
+      {
+        "file": "frontend/lib/components/pos/ReceiptPreviewModal.tsx",
+        "line": 1202,
+        "color": "#1E293B",
+        "lineContent": "borderBottomColor: '#1E293B',"
+      },
+      {
+        "file": "frontend/lib/components/pos/ReceiptPreviewModal.tsx",
+        "line": 1203,
+        "color": "#070B14",
+        "lineContent": "backgroundColor: '#070B14',"
+      },
+      {
+        "file": "frontend/lib/components/pos/ReceiptPreviewModal.tsx",
+        "line": 1214,
+        "color": "#EF4444",
+        "lineContent": "backgroundColor: '#EF4444',"
+      },
+      {
+        "file": "frontend/lib/components/pos/ReceiptPreviewModal.tsx",
+        "line": 1238,
+        "color": "#38BDF8",
+        "lineContent": "borderColor: '#38BDF8',"
+      },
+      {
+        "file": "frontend/lib/components/pos/ReceiptPreviewModal.tsx",
+        "line": 1290,
+        "color": "#1E293B",
+        "lineContent": "borderTopColor: '#1E293B',"
+      },
+      {
+        "file": "frontend/lib/components/pos/ReceiptPreviewModal.tsx",
+        "line": 1291,
+        "color": "#070B14",
+        "lineContent": "backgroundColor: '#070B14',"
+      }
+    ],
+    "frontend/lib/components/pos/StockAlertBanner.tsx": [
+      {
+        "file": "frontend/lib/components/pos/StockAlertBanner.tsx",
+        "line": 42,
+        "color": "#FFFBEB",
+        "lineContent": "backgroundColor: isDark ? 'rgba(245, 158, 11, 0.12)' : '#FFFBEB',"
+      },
+      {
+        "file": "frontend/lib/components/pos/StockAlertBanner.tsx",
+        "line": 43,
+        "color": "#FCD34D",
+        "lineContent": "borderColor: isDark ? 'rgba(245, 158, 11, 0.3)' : '#FCD34D',"
+      },
+      {
+        "file": "frontend/lib/components/pos/StockAlertBanner.tsx",
+        "line": 49,
+        "color": "#D97706",
+        "lineContent": "<Icon name=\"alert-outline\" size={18} color=\"#D97706\" />"
+      },
+      {
+        "file": "frontend/lib/components/pos/StockAlertBanner.tsx",
+        "line": 60,
+        "color": "#B45309",
+        "lineContent": "<AppText variant=\"xs\" weight=\"bold\" color=\"#B45309\">"
+      },
+      {
+        "file": "frontend/lib/components/pos/StockAlertBanner.tsx",
+        "line": 66,
+        "color": "#B45309",
+        "lineContent": "color=\"#B45309\""
+      },
+      {
+        "file": "frontend/lib/components/pos/StockAlertBanner.tsx",
+        "line": 69,
+        "color": "#92400E",
+        "lineContent": "<AppText variant=\"xs\" color=\"#92400E\" numberOfLines={1}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/StockAlertBanner.tsx",
+        "line": 82,
+        "color": "#B45309",
+        "lineContent": "<Icon name=\"close\" size={16} color=\"#B45309\" />"
+      },
+      {
+        "file": "frontend/lib/components/pos/StockAlertBanner.tsx",
+        "line": 91,
+        "color": "#78350F",
+        "lineContent": "<AppText variant=\"xs\" color=\"#78350F\" style={{ flex: 1 }}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/StockAlertBanner.tsx",
+        "line": 94,
+        "color": "#B45309",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" tabularNums color=\"#B45309\">"
+      }
+    ],
+    "frontend/lib/components/pos/table-card/TableCard.tsx": [
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCard.tsx",
+        "line": 72,
+        "color": "#FEF9C3",
+        "lineContent": "? (isDark ? 'rgba(234, 179, 8, 0.22)' : '#FEF9C3')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCard.tsx",
+        "line": 74,
+        "color": "#FFEDD5",
+        "lineContent": "? (isDark ? 'rgba(234, 88, 12, 0.18)' : '#FFEDD5')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCard.tsx",
+        "line": 76,
+        "color": "#EFF6FF",
+        "lineContent": "? (isDark ? 'rgba(59, 130, 246, 0.12)' : '#EFF6FF')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCard.tsx",
+        "line": 82,
+        "color": "#EAB308",
+        "lineContent": "? (isDark ? '#EAB308' : '#D97706')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCard.tsx",
+        "line": 82,
+        "color": "#D97706",
+        "lineContent": "? (isDark ? '#EAB308' : '#D97706')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCard.tsx",
+        "line": 84,
+        "color": "#FB923C",
+        "lineContent": "? (isDark ? '#FB923C' : '#EA580C')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCard.tsx",
+        "line": 84,
+        "color": "#EA580C",
+        "lineContent": "? (isDark ? '#FB923C' : '#EA580C')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCard.tsx",
+        "line": 86,
+        "color": "#3B82F6",
+        "lineContent": "? (isDark ? '#3B82F6' : '#2563EB')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCard.tsx",
+        "line": 86,
+        "color": "#2563EB",
+        "lineContent": "? (isDark ? '#3B82F6' : '#2563EB')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCard.tsx",
+        "line": 87,
+        "color": "#E2E8F0",
+        "lineContent": ": (isDark ? 'rgba(255, 255, 255, 0.12)' : '#E2E8F0');"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCard.tsx",
+        "line": 133,
+        "color": "#EA580C",
+        "lineContent": "shadowColor: isOccupied ? '#EA580C' : '#000000',"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCard.tsx",
+        "line": 133,
+        "color": "#000000",
+        "lineContent": "shadowColor: isOccupied ? '#EA580C' : '#000000',"
+      }
+    ],
+    "frontend/lib/components/pos/table-card/TableCardCenter.tsx": [
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardCenter.tsx",
+        "line": 34,
+        "color": "#FDE047",
+        "lineContent": "? (isDark ? '#FDE047' : '#854D0E')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardCenter.tsx",
+        "line": 34,
+        "color": "#854D0E",
+        "lineContent": "? (isDark ? '#FDE047' : '#854D0E')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardCenter.tsx",
+        "line": 36,
+        "color": "#FDBA74",
+        "lineContent": "? (isDark ? '#FDBA74' : '#7C2D12')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardCenter.tsx",
+        "line": 36,
+        "color": "#7C2D12",
+        "lineContent": "? (isDark ? '#FDBA74' : '#7C2D12')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardCenter.tsx",
+        "line": 38,
+        "color": "#93C5FD",
+        "lineContent": "? (isDark ? '#93C5FD' : '#1E40AF')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardCenter.tsx",
+        "line": 38,
+        "color": "#1E40AF",
+        "lineContent": "? (isDark ? '#93C5FD' : '#1E40AF')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardCenter.tsx",
+        "line": 42,
+        "color": "#FDE047",
+        "lineContent": "? (isDark ? '#FDE047' : '#854D0E')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardCenter.tsx",
+        "line": 42,
+        "color": "#854D0E",
+        "lineContent": "? (isDark ? '#FDE047' : '#854D0E')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardCenter.tsx",
+        "line": 44,
+        "color": "#FB923C",
+        "lineContent": "? (isDark ? '#FB923C' : '#C2410C')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardCenter.tsx",
+        "line": 44,
+        "color": "#C2410C",
+        "lineContent": "? (isDark ? '#FB923C' : '#C2410C')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardCenter.tsx",
+        "line": 80,
+        "color": "#ECFDF5",
+        "lineContent": "<View style={[s.vacantChip, { backgroundColor: isDark ? 'rgba(16, 185, 129, 0.12)' : '#ECFDF5' }]}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardCenter.tsx",
+        "line": 81,
+        "color": "#34D399",
+        "lineContent": "<View style={[s.vacantDot, { backgroundColor: isDark ? '#34D399' : '#10B981' }]} />"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardCenter.tsx",
+        "line": 81,
+        "color": "#10B981",
+        "lineContent": "<View style={[s.vacantDot, { backgroundColor: isDark ? '#34D399' : '#10B981' }]} />"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardCenter.tsx",
+        "line": 82,
+        "color": "#34D399",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color={isDark ? '#34D399' : '#059669'}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardCenter.tsx",
+        "line": 82,
+        "color": "#059669",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color={isDark ? '#34D399' : '#059669'}>"
+      }
+    ],
+    "frontend/lib/components/pos/table-card/TableCardFooter.tsx": [
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardFooter.tsx",
+        "line": 27,
+        "color": "#FDE047",
+        "lineContent": "? (isDark ? '#FDE047' : '#854D0E')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardFooter.tsx",
+        "line": 27,
+        "color": "#854D0E",
+        "lineContent": "? (isDark ? '#FDE047' : '#854D0E')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardFooter.tsx",
+        "line": 29,
+        "color": "#F87171",
+        "lineContent": "? (isDark ? '#F87171' : '#DC2626')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardFooter.tsx",
+        "line": 29,
+        "color": "#DC2626",
+        "lineContent": "? (isDark ? '#F87171' : '#DC2626')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardFooter.tsx",
+        "line": 30,
+        "color": "#FB923C",
+        "lineContent": ": (isDark ? '#FB923C' : '#EA580C');"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardFooter.tsx",
+        "line": 30,
+        "color": "#EA580C",
+        "lineContent": ": (isDark ? '#FB923C' : '#EA580C');"
+      }
+    ],
+    "frontend/lib/components/pos/table-card/TableCardHeader.tsx": [
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardHeader.tsx",
+        "line": 30,
+        "color": "#FDE047",
+        "lineContent": "? (isDark ? '#FDE047' : '#854D0E')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardHeader.tsx",
+        "line": 30,
+        "color": "#854D0E",
+        "lineContent": "? (isDark ? '#FDE047' : '#854D0E')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardHeader.tsx",
+        "line": 32,
+        "color": "#FDBA74",
+        "lineContent": "? (isDark ? '#FDBA74' : '#7C2D12')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardHeader.tsx",
+        "line": 32,
+        "color": "#7C2D12",
+        "lineContent": "? (isDark ? '#FDBA74' : '#7C2D12')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardHeader.tsx",
+        "line": 34,
+        "color": "#93C5FD",
+        "lineContent": "? (isDark ? '#93C5FD' : '#1E40AF')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardHeader.tsx",
+        "line": 34,
+        "color": "#1E40AF",
+        "lineContent": "? (isDark ? '#93C5FD' : '#1E40AF')"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardHeader.tsx",
+        "line": 48,
+        "color": "#FEF08A",
+        "lineContent": "<View style={[s.statusBadge, { backgroundColor: isDark ? 'rgba(234, 179, 8, 0.25)' : '#FEF08A' }]}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardHeader.tsx",
+        "line": 49,
+        "color": "#FDE047",
+        "lineContent": "<AppText variant=\"xxs\" weight=\"bold\" color={isDark ? '#FDE047' : '#854D0E'}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardHeader.tsx",
+        "line": 49,
+        "color": "#854D0E",
+        "lineContent": "<AppText variant=\"xxs\" weight=\"bold\" color={isDark ? '#FDE047' : '#854D0E'}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardHeader.tsx",
+        "line": 55,
+        "color": "#EA580C",
+        "lineContent": "<View style={[s.statusBadge, { backgroundColor: isDark ? '#EA580C' : '#EA580C' }]}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardHeader.tsx",
+        "line": 55,
+        "color": "#EA580C",
+        "lineContent": "<View style={[s.statusBadge, { backgroundColor: isDark ? '#EA580C' : '#EA580C' }]}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardHeader.tsx",
+        "line": 56,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"xxs\" weight=\"bold\" color=\"#FFFFFF\" tabularNums>"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardHeader.tsx",
+        "line": 61,
+        "color": "#FB923C",
+        "lineContent": "<View style={[s.statusDotBadge, { backgroundColor: isDark ? '#FB923C' : '#EA580C' }]} />"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardHeader.tsx",
+        "line": 61,
+        "color": "#EA580C",
+        "lineContent": "<View style={[s.statusDotBadge, { backgroundColor: isDark ? '#FB923C' : '#EA580C' }]} />"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardHeader.tsx",
+        "line": 64,
+        "color": "#DBEAFE",
+        "lineContent": "<View style={[s.statusBadge, { backgroundColor: isDark ? 'rgba(59, 130, 246, 0.20)' : '#DBEAFE' }]}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardHeader.tsx",
+        "line": 65,
+        "color": "#93C5FD",
+        "lineContent": "<AppText variant=\"xxs\" weight=\"bold\" color={isDark ? '#93C5FD' : '#1E40AF'}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardHeader.tsx",
+        "line": 65,
+        "color": "#1E40AF",
+        "lineContent": "<AppText variant=\"xxs\" weight=\"bold\" color={isDark ? '#93C5FD' : '#1E40AF'}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/table-card/TableCardHeader.tsx",
+        "line": 70,
+        "color": "#E2E8F0",
+        "lineContent": "<View style={[s.vacantDot, { backgroundColor: isDark ? 'rgba(255, 255, 255, 0.15)' : '#E2E8F0' }]} />"
+      }
+    ],
+    "frontend/lib/components/pos/TableOverviewBanner.tsx": [
+      {
+        "file": "frontend/lib/components/pos/TableOverviewBanner.tsx",
+        "line": 157,
+        "color": "#FB923C",
+        "lineContent": "<View style={[s.areaOccupiedBadge, { backgroundColor: isDark ? '#FB923C' : '#EA580C' }]}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/TableOverviewBanner.tsx",
+        "line": 157,
+        "color": "#EA580C",
+        "lineContent": "<View style={[s.areaOccupiedBadge, { backgroundColor: isDark ? '#FB923C' : '#EA580C' }]}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/TableOverviewBanner.tsx",
+        "line": 158,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"xxs\" weight=\"bold\" color=\"#FFFFFF\" tabularNums>"
+      },
+      {
+        "file": "frontend/lib/components/pos/TableOverviewBanner.tsx",
+        "line": 175,
+        "color": "#EA580C",
+        "lineContent": "{ id: 'co_khach', label: `${occupiedTables.length} Ăn`, color: '#EA580C' },"
+      },
+      {
+        "file": "frontend/lib/components/pos/TableOverviewBanner.tsx",
+        "line": 176,
+        "color": "#10B981",
+        "lineContent": "{ id: 'trong', label: `${vacantTables.length} Trống`, color: '#10B981' },"
+      },
+      {
+        "file": "frontend/lib/components/pos/TableOverviewBanner.tsx",
+        "line": 178,
+        "color": "#EAB308",
+        "lineContent": "? [{ id: 'da_in_tam_tinh', label: `${prePrintedTables.length} Bill`, color: '#EAB308' }]"
+      },
+      {
+        "file": "frontend/lib/components/pos/TableOverviewBanner.tsx",
+        "line": 214,
+        "color": "#FACC15",
+        "lineContent": "? '#FACC15'"
+      },
+      {
+        "file": "frontend/lib/components/pos/TableOverviewBanner.tsx",
+        "line": 215,
+        "color": "#CA8A04",
+        "lineContent": ": '#CA8A04'"
+      }
+    ],
+    "frontend/lib/components/pos/TablePickerModal.tsx": [
+      {
+        "file": "frontend/lib/components/pos/TablePickerModal.tsx",
+        "line": 306,
+        "color": "#EA580C",
+        "lineContent": "{ id: 'co_khach', label: `${occupiedCount} Ăn`, color: '#EA580C' },"
+      },
+      {
+        "file": "frontend/lib/components/pos/TablePickerModal.tsx",
+        "line": 307,
+        "color": "#10B981",
+        "lineContent": "{ id: 'trong', label: `${vacantCount} Trống`, color: '#10B981' },"
+      }
+    ],
+    "frontend/lib/components/pos/TableSvgBackdrop.tsx": [
+      {
+        "file": "frontend/lib/components/pos/TableSvgBackdrop.tsx",
+        "line": 45,
+        "color": "#FACC15",
+        "lineContent": "? (isDark ? '#FACC15' : '#CA8A04')"
+      },
+      {
+        "file": "frontend/lib/components/pos/TableSvgBackdrop.tsx",
+        "line": 45,
+        "color": "#CA8A04",
+        "lineContent": "? (isDark ? '#FACC15' : '#CA8A04')"
+      },
+      {
+        "file": "frontend/lib/components/pos/TableSvgBackdrop.tsx",
+        "line": 47,
+        "color": "#FB923C",
+        "lineContent": "? (isDark ? '#FB923C' : '#EA580C')"
+      },
+      {
+        "file": "frontend/lib/components/pos/TableSvgBackdrop.tsx",
+        "line": 47,
+        "color": "#EA580C",
+        "lineContent": "? (isDark ? '#FB923C' : '#EA580C')"
+      },
+      {
+        "file": "frontend/lib/components/pos/TableSvgBackdrop.tsx",
+        "line": 49,
+        "color": "#F59E0B",
+        "lineContent": "? (isDark ? '#F59E0B' : '#D97706')"
+      },
+      {
+        "file": "frontend/lib/components/pos/TableSvgBackdrop.tsx",
+        "line": 49,
+        "color": "#D97706",
+        "lineContent": "? (isDark ? '#F59E0B' : '#D97706')"
+      },
+      {
+        "file": "frontend/lib/components/pos/TableSvgBackdrop.tsx",
+        "line": 50,
+        "color": "#34D399",
+        "lineContent": ": (isDark ? '#34D399' : '#059669');"
+      },
+      {
+        "file": "frontend/lib/components/pos/TableSvgBackdrop.tsx",
+        "line": 50,
+        "color": "#059669",
+        "lineContent": ": (isDark ? '#34D399' : '#059669');"
+      }
+    ],
+    "frontend/lib/components/pos/VietQROffline.tsx": [
+      {
+        "file": "frontend/lib/components/pos/VietQROffline.tsx",
+        "line": 134,
+        "color": "#FFFFFF",
+        "lineContent": "backgroundColor: '#FFFFFF', // High contrast white for QR scanning"
+      },
+      {
+        "file": "frontend/lib/components/pos/VietQROffline.tsx",
+        "line": 142,
+        "color": "#005BAA",
+        "lineContent": "<AppText variant=\"xs\" weight=\"bold\" color=\"#005BAA\">"
+      },
+      {
+        "file": "frontend/lib/components/pos/VietQROffline.tsx",
+        "line": 147,
+        "color": "#D97706",
+        "lineContent": "<Icon name=\"wifi-off\" size={12} color=\"#D97706\" />"
+      },
+      {
+        "file": "frontend/lib/components/pos/VietQROffline.tsx",
+        "line": 148,
+        "color": "#D97706",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#D97706\">"
+      },
+      {
+        "file": "frontend/lib/components/pos/VietQROffline.tsx",
+        "line": 162,
+        "color": "#FFFFFF",
+        "lineContent": "<Rect x={0} y={0} width={matrixDimension} height={matrixDimension} fill=\"#FFFFFF\" />"
+      },
+      {
+        "file": "frontend/lib/components/pos/VietQROffline.tsx",
+        "line": 163,
+        "color": "#0F172A",
+        "lineContent": "<Path d={svgPathData} fill=\"#0F172A\" />"
+      },
+      {
+        "file": "frontend/lib/components/pos/VietQROffline.tsx",
+        "line": 167,
+        "color": "#94A3B8",
+        "lineContent": "<Icon name=\"qrcode\" size={48} color=\"#94A3B8\" />"
+      },
+      {
+        "file": "frontend/lib/components/pos/VietQROffline.tsx",
+        "line": 168,
+        "color": "#64748B",
+        "lineContent": "<AppText variant=\"xs\" color=\"#64748B\">"
+      },
+      {
+        "file": "frontend/lib/components/pos/VietQROffline.tsx",
+        "line": 178,
+        "color": "#64748B",
+        "lineContent": "<AppText variant=\"xs\" color=\"#64748B\">"
+      },
+      {
+        "file": "frontend/lib/components/pos/VietQROffline.tsx",
+        "line": 181,
+        "color": "#0F172A",
+        "lineContent": "<AppText variant=\"sm\" weight=\"medium\" tabularNums color=\"#0F172A\">"
+      },
+      {
+        "file": "frontend/lib/components/pos/VietQROffline.tsx",
+        "line": 187,
+        "color": "#64748B",
+        "lineContent": "<AppText variant=\"xs\" color=\"#64748B\">"
+      },
+      {
+        "file": "frontend/lib/components/pos/VietQROffline.tsx",
+        "line": 190,
+        "color": "#0F172A",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#0F172A\" numberOfLines={1}>"
+      },
+      {
+        "file": "frontend/lib/components/pos/VietQROffline.tsx",
+        "line": 196,
+        "color": "#64748B",
+        "lineContent": "<AppText variant=\"xs\" color=\"#64748B\">"
+      },
+      {
+        "file": "frontend/lib/components/pos/VietQROffline.tsx",
+        "line": 199,
+        "color": "#0D9488",
+        "lineContent": "<AppText variant=\"sm\" weight=\"bold\" tabularNums color=\"#0D9488\">"
+      },
+      {
+        "file": "frontend/lib/components/pos/VietQROffline.tsx",
+        "line": 215,
+        "color": "#0D9488",
+        "lineContent": "<Icon name=\"content-copy\" size={14} color=\"#0D9488\" />"
+      },
+      {
+        "file": "frontend/lib/components/pos/VietQROffline.tsx",
+        "line": 216,
+        "color": "#0D9488",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#0D9488\">"
+      },
+      {
+        "file": "frontend/lib/components/pos/VietQROffline.tsx",
+        "line": 231,
+        "color": "#000",
+        "lineContent": "shadowColor: '#000',"
+      },
+      {
+        "file": "frontend/lib/components/pos/VietQROffline.tsx",
+        "line": 248,
+        "color": "#E0F2FE",
+        "lineContent": "backgroundColor: '#E0F2FE',"
+      },
+      {
+        "file": "frontend/lib/components/pos/VietQROffline.tsx",
+        "line": 257,
+        "color": "#FEF3C7",
+        "lineContent": "backgroundColor: '#FEF3C7',"
+      },
+      {
+        "file": "frontend/lib/components/pos/VietQROffline.tsx",
+        "line": 261,
+        "color": "#FFFFFF",
+        "lineContent": "backgroundColor: '#FFFFFF',"
+      },
+      {
+        "file": "frontend/lib/components/pos/VietQROffline.tsx",
+        "line": 269,
+        "color": "#F8FAFC",
+        "lineContent": "backgroundColor: '#F8FAFC',"
+      },
+      {
+        "file": "frontend/lib/components/pos/VietQROffline.tsx",
+        "line": 278,
+        "color": "#E2E8F0",
+        "lineContent": "borderTopColor: '#E2E8F0',"
+      },
+      {
+        "file": "frontend/lib/components/pos/VietQROffline.tsx",
+        "line": 294,
+        "color": "#F0FDFA",
+        "lineContent": "backgroundColor: '#F0FDFA',"
+      }
+    ]
+  },
+  "componentsOther": {
+    "frontend/lib/components/nhan-su/ClockInOutModal.tsx": [
+      {
+        "file": "frontend/lib/components/nhan-su/ClockInOutModal.tsx",
+        "line": 240,
+        "color": "#EA580C",
+        "lineContent": "{ backgroundColor: mode === 'in' ? theme.brand.primary : '#EA580C' },"
+      },
+      {
+        "file": "frontend/lib/components/nhan-su/ClockInOutModal.tsx",
+        "line": 243,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"sm\" weight=\"medium\" color={mode === 'in' ? theme.text.onBrand : '#FFFFFF'}>"
+      }
+    ],
+    "frontend/lib/components/nhan-su/PaySalaryModal.tsx": [
+      {
+        "file": "frontend/lib/components/nhan-su/PaySalaryModal.tsx",
+        "line": 247,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"sm\" weight=\"medium\" color=\"#FFFFFF\">"
+      }
+    ],
+    "frontend/lib/components/nhan-su/StaffAttendanceTab.tsx": [
+      {
+        "file": "frontend/lib/components/nhan-su/StaffAttendanceTab.tsx",
+        "line": 202,
+        "color": "#F97316",
+        "lineContent": "style={[s.actionBtn, { backgroundColor: '#F97316', borderColor: '#EA580C' }]}"
+      },
+      {
+        "file": "frontend/lib/components/nhan-su/StaffAttendanceTab.tsx",
+        "line": 202,
+        "color": "#EA580C",
+        "lineContent": "style={[s.actionBtn, { backgroundColor: '#F97316', borderColor: '#EA580C' }]}"
+      },
+      {
+        "file": "frontend/lib/components/nhan-su/StaffAttendanceTab.tsx",
+        "line": 204,
+        "color": "#FFFFFF",
+        "lineContent": "<Icon name=\"clock-out\" size={14} color=\"#FFFFFF\" />"
+      },
+      {
+        "file": "frontend/lib/components/nhan-su/StaffAttendanceTab.tsx",
+        "line": 205,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"xs\" weight=\"medium\" color=\"#FFFFFF\">"
+      }
+    ],
+    "frontend/lib/components/nhan-su/StaffPayrollDetailView.tsx": [
+      {
+        "file": "frontend/lib/components/nhan-su/StaffPayrollDetailView.tsx",
+        "line": 432,
+        "color": "#FFFFFF",
+        "lineContent": "<Icon name=\"check-circle-outline\" size={18} color=\"#FFFFFF\" />"
+      },
+      {
+        "file": "frontend/lib/components/nhan-su/StaffPayrollDetailView.tsx",
+        "line": 433,
+        "color": "#FFFFFF",
+        "lineContent": "<AppText variant=\"sm\" weight=\"medium\" color=\"#FFFFFF\" numberOfLines={1}>"
+      }
+    ],
+    "frontend/lib/components/pos-home/TabletCartPane.tsx": [
+      {
+        "file": "frontend/lib/components/pos-home/TabletCartPane.tsx",
+        "line": 278,
+        "color": "#DCFCE7",
+        "lineContent": "backgroundColor: discount ? (isDark ? 'rgba(16, 185, 129, 0.15)' : '#DCFCE7') : theme.surface.header,"
+      }
+    ]
+  },
+  "storeFiles": {
+    "frontend/lib/store/useAuthStore.ts": [
+      {
+        "file": "frontend/lib/store/useAuthStore.ts",
+        "line": 292,
+        "color": "#EC4899",
+        "lineContent": "color: '#EC4899',"
+      },
+      {
+        "file": "frontend/lib/store/useAuthStore.ts",
+        "line": 298,
+        "color": "#0D9488",
+        "lineContent": "color: '#0D9488', // Jade"
+      },
+      {
+        "file": "frontend/lib/store/useAuthStore.ts",
+        "line": 304,
+        "color": "#3B82F6",
+        "lineContent": "color: '#3B82F6', // Blue"
+      },
+      {
+        "file": "frontend/lib/store/useAuthStore.ts",
+        "line": 310,
+        "color": "#8B5CF6",
+        "lineContent": "color: '#8B5CF6', // Purple"
+      },
+      {
+        "file": "frontend/lib/store/useAuthStore.ts",
+        "line": 316,
+        "color": "#F59E0B",
+        "lineContent": "color: '#F59E0B', // Amber"
+      }
+    ],
+    "frontend/lib/store/useSaaSAdminStore.ts": [
+      {
+        "file": "frontend/lib/store/useSaaSAdminStore.ts",
+        "line": 106,
+        "color": "#64748B",
+        "lineContent": "badgeColor: '#64748B',"
+      },
+      {
+        "file": "frontend/lib/store/useSaaSAdminStore.ts",
+        "line": 117,
+        "color": "#0D9488",
+        "lineContent": "badgeColor: '#0D9488',"
+      },
+      {
+        "file": "frontend/lib/store/useSaaSAdminStore.ts",
+        "line": 128,
+        "color": "#3B82F6",
+        "lineContent": "badgeColor: '#3B82F6',"
+      },
+      {
+        "file": "frontend/lib/store/useSaaSAdminStore.ts",
+        "line": 139,
+        "color": "#8B5CF6",
+        "lineContent": "badgeColor: '#8B5CF6',"
+      }
+    ],
+    "frontend/lib/store/useStaffStore.ts": [
+      {
+        "file": "frontend/lib/store/useStaffStore.ts",
+        "line": 76,
+        "color": "#3B82F6",
+        "lineContent": "thu_ngan: { label: 'Thu Ngân', color: '#3B82F6', defaultWageType: 'hourly', defaultRate: 25000 },"
+      },
+      {
+        "file": "frontend/lib/store/useStaffStore.ts",
+        "line": 77,
+        "color": "#0D9488",
+        "lineContent": "phuc_vu: { label: 'Phục Vụ', color: '#0D9488', defaultWageType: 'hourly', defaultRate: 22000 },"
+      },
+      {
+        "file": "frontend/lib/store/useStaffStore.ts",
+        "line": 78,
+        "color": "#F59E0B",
+        "lineContent": "pha_che: { label: 'Pha Chế', color: '#F59E0B', defaultWageType: 'hourly', defaultRate: 28000 },"
+      },
+      {
+        "file": "frontend/lib/store/useStaffStore.ts",
+        "line": 79,
+        "color": "#8B5CF6",
+        "lineContent": "quan_ly: { label: 'Quản Lý', color: '#8B5CF6', defaultWageType: 'monthly', defaultRate: 8500000 },"
+      },
+      {
+        "file": "frontend/lib/store/useStaffStore.ts",
+        "line": 80,
+        "color": "#EC4899",
+        "lineContent": "bep: { label: 'Bếp Nấu', color: '#EC4899', defaultWageType: 'monthly', defaultRate: 9500000 },"
+      },
+      {
+        "file": "frontend/lib/store/useStaffStore.ts",
+        "line": 81,
+        "color": "#64748B",
+        "lineContent": "tap_vu: { label: 'Tạp Vụ', color: '#64748B', defaultWageType: 'hourly', defaultRate: 20000 },"
+      },
+      {
+        "file": "frontend/lib/store/useStaffStore.ts",
+        "line": 82,
+        "color": "#10B981",
+        "lineContent": "bao_ve: { label: 'Bảo Vệ', color: '#10B981', defaultWageType: 'per_shift', defaultRate: 200000 },"
+      }
+    ]
+  },
+  "testFiles": {
+    "frontend/tests/adversarial_apptext_audit.ts": [
+      {
+        "file": "frontend/tests/adversarial_apptext_audit.ts",
+        "line": 78,
+        "color": "#FFFFFF",
+        "lineContent": "// Ignore #FFFFFF or #000000 in badges/icons where white text on colored badge is required"
+      },
+      {
+        "file": "frontend/tests/adversarial_apptext_audit.ts",
+        "line": 78,
+        "color": "#000000",
+        "lineContent": "// Ignore #FFFFFF or #000000 in badges/icons where white text on colored badge is required"
+      },
+      {
+        "file": "frontend/tests/adversarial_apptext_audit.ts",
+        "line": 79,
+        "color": "#FFFFFF",
+        "lineContent": "if (hex.toUpperCase() === '#FFFFFF' || hex.toUpperCase() === '#FFF' || hex.toUpperCase() === '#000000' || hex.toUpperCase() === '#000') {"
+      },
+      {
+        "file": "frontend/tests/adversarial_apptext_audit.ts",
+        "line": 79,
+        "color": "#FFF",
+        "lineContent": "if (hex.toUpperCase() === '#FFFFFF' || hex.toUpperCase() === '#FFF' || hex.toUpperCase() === '#000000' || hex.toUpperCase() === '#000') {"
+      },
+      {
+        "file": "frontend/tests/adversarial_apptext_audit.ts",
+        "line": 79,
+        "color": "#000000",
+        "lineContent": "if (hex.toUpperCase() === '#FFFFFF' || hex.toUpperCase() === '#FFF' || hex.toUpperCase() === '#000000' || hex.toUpperCase() === '#000') {"
+      },
+      {
+        "file": "frontend/tests/adversarial_apptext_audit.ts",
+        "line": 79,
+        "color": "#000",
+        "lineContent": "if (hex.toUpperCase() === '#FFFFFF' || hex.toUpperCase() === '#FFF' || hex.toUpperCase() === '#000000' || hex.toUpperCase() === '#000') {"
+      }
+    ],
+    "frontend/tests/adversarial_m1_theme_stress.ts": [
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 131,
+        "color": "#FFFBEB",
+        "lineContent": "assert(lightTheme.status.pendingBg === '#FFFBEB', 'lightTheme.status.pendingBg === #FFFBEB');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 131,
+        "color": "#FFFBEB",
+        "lineContent": "assert(lightTheme.status.pendingBg === '#FFFBEB', 'lightTheme.status.pendingBg === #FFFBEB');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 132,
+        "color": "#D97706",
+        "lineContent": "assert(lightTheme.status.pendingText === '#D97706', 'lightTheme.status.pendingText === #D97706');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 132,
+        "color": "#D97706",
+        "lineContent": "assert(lightTheme.status.pendingText === '#D97706', 'lightTheme.status.pendingText === #D97706');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 133,
+        "color": "#FDE68A",
+        "lineContent": "assert(lightTheme.status.pendingBorder === '#FDE68A', 'lightTheme.status.pendingBorder === #FDE68A');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 133,
+        "color": "#FDE68A",
+        "lineContent": "assert(lightTheme.status.pendingBorder === '#FDE68A', 'lightTheme.status.pendingBorder === #FDE68A');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 136,
+        "color": "#F59E0B",
+        "lineContent": "assert(darkTheme.status.pendingText === '#F59E0B', 'darkTheme.status.pendingText === #F59E0B');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 136,
+        "color": "#F59E0B",
+        "lineContent": "assert(darkTheme.status.pendingText === '#F59E0B', 'darkTheme.status.pendingText === #F59E0B');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 139,
+        "color": "#EFF6FF",
+        "lineContent": "assert(lightTheme.status.cookingBg === '#EFF6FF', 'lightTheme.status.cookingBg === #EFF6FF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 139,
+        "color": "#EFF6FF",
+        "lineContent": "assert(lightTheme.status.cookingBg === '#EFF6FF', 'lightTheme.status.cookingBg === #EFF6FF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 140,
+        "color": "#2563EB",
+        "lineContent": "assert(lightTheme.status.cookingText === '#2563EB', 'lightTheme.status.cookingText === #2563EB');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 140,
+        "color": "#2563EB",
+        "lineContent": "assert(lightTheme.status.cookingText === '#2563EB', 'lightTheme.status.cookingText === #2563EB');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 141,
+        "color": "#BFDBFE",
+        "lineContent": "assert(lightTheme.status.cookingBorder === '#BFDBFE', 'lightTheme.status.cookingBorder === #BFDBFE');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 141,
+        "color": "#BFDBFE",
+        "lineContent": "assert(lightTheme.status.cookingBorder === '#BFDBFE', 'lightTheme.status.cookingBorder === #BFDBFE');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 144,
+        "color": "#3B82F6",
+        "lineContent": "assert(darkTheme.status.cookingText === '#3B82F6', 'darkTheme.status.cookingText === #3B82F6');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 144,
+        "color": "#3B82F6",
+        "lineContent": "assert(darkTheme.status.cookingText === '#3B82F6', 'darkTheme.status.cookingText === #3B82F6');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 147,
+        "color": "#ECFDF5",
+        "lineContent": "assert(lightTheme.status.readyBg === '#ECFDF5', 'lightTheme.status.readyBg === #ECFDF5');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 147,
+        "color": "#ECFDF5",
+        "lineContent": "assert(lightTheme.status.readyBg === '#ECFDF5', 'lightTheme.status.readyBg === #ECFDF5');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 148,
+        "color": "#059669",
+        "lineContent": "assert(lightTheme.status.readyText === '#059669', 'lightTheme.status.readyText === #059669');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 148,
+        "color": "#059669",
+        "lineContent": "assert(lightTheme.status.readyText === '#059669', 'lightTheme.status.readyText === #059669');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 149,
+        "color": "#A7F3D0",
+        "lineContent": "assert(lightTheme.status.readyBorder === '#A7F3D0', 'lightTheme.status.readyBorder === #A7F3D0');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 149,
+        "color": "#A7F3D0",
+        "lineContent": "assert(lightTheme.status.readyBorder === '#A7F3D0', 'lightTheme.status.readyBorder === #A7F3D0');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 152,
+        "color": "#10B981",
+        "lineContent": "assert(darkTheme.status.readyText === '#10B981', 'darkTheme.status.readyText === #10B981');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 152,
+        "color": "#10B981",
+        "lineContent": "assert(darkTheme.status.readyText === '#10B981', 'darkTheme.status.readyText === #10B981');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 155,
+        "color": "#FEF2F2",
+        "lineContent": "assert(lightTheme.status.dangerBg === '#FEF2F2', 'lightTheme.status.dangerBg === #FEF2F2');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 155,
+        "color": "#FEF2F2",
+        "lineContent": "assert(lightTheme.status.dangerBg === '#FEF2F2', 'lightTheme.status.dangerBg === #FEF2F2');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 156,
+        "color": "#DC2626",
+        "lineContent": "assert(lightTheme.status.dangerText === '#DC2626', 'lightTheme.status.dangerText === #DC2626');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 156,
+        "color": "#DC2626",
+        "lineContent": "assert(lightTheme.status.dangerText === '#DC2626', 'lightTheme.status.dangerText === #DC2626');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 157,
+        "color": "#FECACA",
+        "lineContent": "assert(lightTheme.status.dangerBorder === '#FECACA', 'lightTheme.status.dangerBorder === #FECACA');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 157,
+        "color": "#FECACA",
+        "lineContent": "assert(lightTheme.status.dangerBorder === '#FECACA', 'lightTheme.status.dangerBorder === #FECACA');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 160,
+        "color": "#EF4444",
+        "lineContent": "assert(darkTheme.status.dangerText === '#EF4444', 'darkTheme.status.dangerText === #EF4444');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 160,
+        "color": "#EF4444",
+        "lineContent": "assert(darkTheme.status.dangerText === '#EF4444', 'darkTheme.status.dangerText === #EF4444');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 163,
+        "color": "#FFF7ED",
+        "lineContent": "assert(lightTheme.status.warningBg === '#FFF7ED', 'lightTheme.status.warningBg === #FFF7ED');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 163,
+        "color": "#FFF7ED",
+        "lineContent": "assert(lightTheme.status.warningBg === '#FFF7ED', 'lightTheme.status.warningBg === #FFF7ED');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 164,
+        "color": "#C2410C",
+        "lineContent": "assert(lightTheme.status.warningText === '#C2410C', 'lightTheme.status.warningText === #C2410C');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 164,
+        "color": "#C2410C",
+        "lineContent": "assert(lightTheme.status.warningText === '#C2410C', 'lightTheme.status.warningText === #C2410C');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 165,
+        "color": "#FFEDD5",
+        "lineContent": "assert(lightTheme.status.warningBorder === '#FFEDD5', 'lightTheme.status.warningBorder === #FFEDD5');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 165,
+        "color": "#FFEDD5",
+        "lineContent": "assert(lightTheme.status.warningBorder === '#FFEDD5', 'lightTheme.status.warningBorder === #FFEDD5');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 168,
+        "color": "#FB923C",
+        "lineContent": "assert(darkTheme.status.warningText === '#FB923C', 'darkTheme.status.warningText === #FB923C');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 168,
+        "color": "#FB923C",
+        "lineContent": "assert(darkTheme.status.warningText === '#FB923C', 'darkTheme.status.warningText === #FB923C');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 176,
+        "color": "#FFFFFF",
+        "lineContent": "assert(lightTheme.text.onBrand === '#FFFFFF', 'lightTheme.text.onBrand === #FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 176,
+        "color": "#FFFFFF",
+        "lineContent": "assert(lightTheme.text.onBrand === '#FFFFFF', 'lightTheme.text.onBrand === #FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 177,
+        "color": "#FFFFFF",
+        "lineContent": "assert(darkTheme.text.onBrand === '#FFFFFF', 'darkTheme.text.onBrand === #FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 177,
+        "color": "#FFFFFF",
+        "lineContent": "assert(darkTheme.text.onBrand === '#FFFFFF', 'darkTheme.text.onBrand === #FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 178,
+        "color": "#FFFFFF",
+        "lineContent": "assert(lightTheme.text.inverse === '#FFFFFF', 'lightTheme.text.inverse === #FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 178,
+        "color": "#FFFFFF",
+        "lineContent": "assert(lightTheme.text.inverse === '#FFFFFF', 'lightTheme.text.inverse === #FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 179,
+        "color": "#FFFFFF",
+        "lineContent": "assert(darkTheme.text.inverse === '#FFFFFF', 'darkTheme.text.inverse === #FFFFFF (resolved contrast fix)');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 179,
+        "color": "#FFFFFF",
+        "lineContent": "assert(darkTheme.text.inverse === '#FFFFFF', 'darkTheme.text.inverse === #FFFFFF (resolved contrast fix)');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 181,
+        "color": "#CBD5E1",
+        "lineContent": "assert(lightTheme.surface.switchTrack === '#CBD5E1', 'lightTheme.surface.switchTrack === #CBD5E1');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 181,
+        "color": "#CBD5E1",
+        "lineContent": "assert(lightTheme.surface.switchTrack === '#CBD5E1', 'lightTheme.surface.switchTrack === #CBD5E1');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 182,
+        "color": "#334155",
+        "lineContent": "assert(darkTheme.surface.switchTrack === '#334155', 'darkTheme.surface.switchTrack === #334155');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 182,
+        "color": "#334155",
+        "lineContent": "assert(darkTheme.surface.switchTrack === '#334155', 'darkTheme.surface.switchTrack === #334155');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 184,
+        "color": "#FCA5A5",
+        "lineContent": "assert(lightTheme.surface.switchTrackDanger === '#FCA5A5', 'lightTheme.surface.switchTrackDanger === #FCA5A5');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 184,
+        "color": "#FCA5A5",
+        "lineContent": "assert(lightTheme.surface.switchTrackDanger === '#FCA5A5', 'lightTheme.surface.switchTrackDanger === #FCA5A5');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 185,
+        "color": "#7F1D1D",
+        "lineContent": "assert(darkTheme.surface.switchTrackDanger === '#7F1D1D', 'darkTheme.surface.switchTrackDanger === #7F1D1D');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 185,
+        "color": "#7F1D1D",
+        "lineContent": "assert(darkTheme.surface.switchTrackDanger === '#7F1D1D', 'darkTheme.surface.switchTrackDanger === #7F1D1D');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 187,
+        "color": "#FFFFFF",
+        "lineContent": "assert(lightTheme.surface.qrCanvas === '#FFFFFF', 'lightTheme.surface.qrCanvas === #FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 187,
+        "color": "#FFFFFF",
+        "lineContent": "assert(lightTheme.surface.qrCanvas === '#FFFFFF', 'lightTheme.surface.qrCanvas === #FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 188,
+        "color": "#FFFFFF",
+        "lineContent": "assert(darkTheme.surface.qrCanvas === '#FFFFFF', 'darkTheme.surface.qrCanvas === #FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 188,
+        "color": "#FFFFFF",
+        "lineContent": "assert(darkTheme.surface.qrCanvas === '#FFFFFF', 'darkTheme.surface.qrCanvas === #FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 190,
+        "color": "#000000",
+        "lineContent": "assert(lightTheme.surface.shadow === '#000000', 'lightTheme.surface.shadow === #000000');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 190,
+        "color": "#000000",
+        "lineContent": "assert(lightTheme.surface.shadow === '#000000', 'lightTheme.surface.shadow === #000000');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 191,
+        "color": "#000000",
+        "lineContent": "assert(darkTheme.surface.shadow === '#000000', 'darkTheme.surface.shadow === #000000');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 191,
+        "color": "#000000",
+        "lineContent": "assert(darkTheme.surface.shadow === '#000000', 'darkTheme.surface.shadow === #000000');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 193,
+        "color": "#E2E8F0",
+        "lineContent": "assert(lightTheme.border.subtle === '#E2E8F0', 'lightTheme.border.subtle === #E2E8F0');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 193,
+        "color": "#E2E8F0",
+        "lineContent": "assert(lightTheme.border.subtle === '#E2E8F0', 'lightTheme.border.subtle === #E2E8F0');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 194,
+        "color": "#1E293B",
+        "lineContent": "assert(darkTheme.border.subtle === '#1E293B', 'darkTheme.border.subtle === #1E293B');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 194,
+        "color": "#1E293B",
+        "lineContent": "assert(darkTheme.border.subtle === '#1E293B', 'darkTheme.border.subtle === #1E293B');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 210,
+        "color": "#FFFFFF",
+        "lineContent": "assert(QR_CANVAS_COLOR === '#FFFFFF', 'QR_CANVAS_COLOR === #FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 210,
+        "color": "#FFFFFF",
+        "lineContent": "assert(QR_CANVAS_COLOR === '#FFFFFF', 'QR_CANVAS_COLOR === #FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 211,
+        "color": "#FFFFFF",
+        "lineContent": "assert(ON_BRAND_TEXT_COLOR === '#FFFFFF', 'ON_BRAND_TEXT_COLOR === #FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 211,
+        "color": "#FFFFFF",
+        "lineContent": "assert(ON_BRAND_TEXT_COLOR === '#FFFFFF', 'ON_BRAND_TEXT_COLOR === #FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m1_theme_stress.ts",
+        "line": 343,
+        "color": "#FFFFFF",
+        "lineContent": "// 7.2 onBrand text (#FFFFFF) on brand buttons"
+      }
+    ],
+    "frontend/tests/adversarial_m2_stress.ts": [
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 102,
+        "color": "#F8FAFC",
+        "lineContent": "const lightCanvas = lightTheme.surface.app; // #F8FAFC"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 103,
+        "color": "#FFFFFF",
+        "lineContent": "const lightCard = lightTheme.surface.card;  // #FFFFFF"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 104,
+        "color": "#0F172A",
+        "lineContent": "const lightTextPrimary = lightTheme.text.primary; // #0F172A"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 105,
+        "color": "#475569",
+        "lineContent": "const lightTextMuted = lightTheme.text.muted;     // #475569"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 106,
+        "color": "#EA580C",
+        "lineContent": "const lightBrandAccent = lightTheme.brand.accent; // #EA580C"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 107,
+        "color": "#0D9488",
+        "lineContent": "const lightBrandPrimary = lightTheme.brand.primary; // #0D9488"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 115,
+        "color": "#0F172A",
+        "lineContent": "console.log(`  Text Primary (#0F172A) on #F8FAFC: ${lightTextRatio.toFixed(2)}:1 (AAA requires >= 7:1)`);"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 115,
+        "color": "#F8FAFC",
+        "lineContent": "console.log(`  Text Primary (#0F172A) on #F8FAFC: ${lightTextRatio.toFixed(2)}:1 (AAA requires >= 7:1)`);"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 116,
+        "color": "#475569",
+        "lineContent": "console.log(`  Text Muted (#475569) on #F8FAFC: ${lightMutedRatio.toFixed(2)}:1 (AA requires >= 4.5:1)`);"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 116,
+        "color": "#F8FAFC",
+        "lineContent": "console.log(`  Text Muted (#475569) on #F8FAFC: ${lightMutedRatio.toFixed(2)}:1 (AA requires >= 4.5:1)`);"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 117,
+        "color": "#EA580C",
+        "lineContent": "console.log(`  Brand Accent (#EA580C) on #F8FAFC: ${lightAccentRatio.toFixed(2)}:1`);"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 117,
+        "color": "#F8FAFC",
+        "lineContent": "console.log(`  Brand Accent (#EA580C) on #F8FAFC: ${lightAccentRatio.toFixed(2)}:1`);"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 118,
+        "color": "#0D9488",
+        "lineContent": "console.log(`  Brand Primary (#0D9488) on #F8FAFC: ${lightPrimaryRatio.toFixed(2)}:1`);"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 118,
+        "color": "#F8FAFC",
+        "lineContent": "console.log(`  Brand Primary (#0D9488) on #F8FAFC: ${lightPrimaryRatio.toFixed(2)}:1`);"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 122,
+        "color": "#EA580C",
+        "lineContent": "assert('Theme: Light Accent', 'Accent is #EA580C', lightTheme.brand.accent === '#EA580C');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 122,
+        "color": "#EA580C",
+        "lineContent": "assert('Theme: Light Accent', 'Accent is #EA580C', lightTheme.brand.accent === '#EA580C');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 125,
+        "color": "#0B0F19",
+        "lineContent": "const darkCanvas = darkTheme.surface.app;   // #0B0F19"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 126,
+        "color": "#141E30",
+        "lineContent": "const darkCard = darkTheme.surface.card;    // #141E30"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 127,
+        "color": "#FFFFFF",
+        "lineContent": "const darkTextPrimary = darkTheme.text.primary; // #FFFFFF"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 128,
+        "color": "#94A3B8",
+        "lineContent": "const darkTextMuted = darkTheme.text.muted;     // #94A3B8"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 129,
+        "color": "#FB923C",
+        "lineContent": "const darkBrandAccent = darkTheme.brand.accent; // #FB923C"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 130,
+        "color": "#14B8A6",
+        "lineContent": "const darkBrandPrimary = darkTheme.brand.primary; // #14B8A6"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 138,
+        "color": "#FFFFFF",
+        "lineContent": "console.log(`  Text Primary (#FFFFFF) on #0B0F19: ${darkTextRatio.toFixed(2)}:1 (AAA requires >= 7:1)`);"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 138,
+        "color": "#0B0F19",
+        "lineContent": "console.log(`  Text Primary (#FFFFFF) on #0B0F19: ${darkTextRatio.toFixed(2)}:1 (AAA requires >= 7:1)`);"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 139,
+        "color": "#94A3B8",
+        "lineContent": "console.log(`  Text Muted (#94A3B8) on #0B0F19: ${darkMutedRatio.toFixed(2)}:1 (AA requires >= 4.5:1)`);"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 139,
+        "color": "#0B0F19",
+        "lineContent": "console.log(`  Text Muted (#94A3B8) on #0B0F19: ${darkMutedRatio.toFixed(2)}:1 (AA requires >= 4.5:1)`);"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 140,
+        "color": "#FB923C",
+        "lineContent": "console.log(`  Brand Accent (#FB923C) on #0B0F19: ${darkAccentRatio.toFixed(2)}:1`);"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 140,
+        "color": "#0B0F19",
+        "lineContent": "console.log(`  Brand Accent (#FB923C) on #0B0F19: ${darkAccentRatio.toFixed(2)}:1`);"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 141,
+        "color": "#14B8A6",
+        "lineContent": "console.log(`  Brand Primary (#14B8A6) on #0B0F19: ${darkPrimaryRatio.toFixed(2)}:1`);"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 141,
+        "color": "#0B0F19",
+        "lineContent": "console.log(`  Brand Primary (#14B8A6) on #0B0F19: ${darkPrimaryRatio.toFixed(2)}:1`);"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 145,
+        "color": "#FB923C",
+        "lineContent": "assert('Theme: Dark Accent', 'Accent is #FB923C', darkTheme.brand.accent === '#FB923C');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m2_stress.ts",
+        "line": 145,
+        "color": "#FB923C",
+        "lineContent": "assert('Theme: Dark Accent', 'Accent is #FB923C', darkTheme.brand.accent === '#FB923C');"
+      }
+    ],
+    "frontend/tests/adversarial_m3_expressive.test.ts": [
+      {
+        "file": "frontend/tests/adversarial_m3_expressive.test.ts",
+        "line": 46,
+        "color": "#000000",
+        "lineContent": "await runner.test('OLED Pitch Black Theme has #000000 canvas and full structural symmetry with darkTheme', () => {"
+      },
+      {
+        "file": "frontend/tests/adversarial_m3_expressive.test.ts",
+        "line": 47,
+        "color": "#000000",
+        "lineContent": "assert.strictEqual(oledTheme.surface.app, '#000000', 'OLED canvas is #000000 pitch black');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m3_expressive.test.ts",
+        "line": 47,
+        "color": "#000000",
+        "lineContent": "assert.strictEqual(oledTheme.surface.app, '#000000', 'OLED canvas is #000000 pitch black');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m3_expressive.test.ts",
+        "line": 48,
+        "color": "#000000",
+        "lineContent": "assert.strictEqual(oledTheme.surface.card, '#000000', 'OLED card surface is #000000');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m3_expressive.test.ts",
+        "line": 48,
+        "color": "#000000",
+        "lineContent": "assert.strictEqual(oledTheme.surface.card, '#000000', 'OLED card surface is #000000');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m3_expressive.test.ts",
+        "line": 49,
+        "color": "#000000",
+        "lineContent": "assert.strictEqual(oledTheme.surface.header, '#000000', 'OLED header is #000000');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m3_expressive.test.ts",
+        "line": 49,
+        "color": "#000000",
+        "lineContent": "assert.strictEqual(oledTheme.surface.header, '#000000', 'OLED header is #000000');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m3_expressive.test.ts",
+        "line": 50,
+        "color": "#000000",
+        "lineContent": "assert.strictEqual(oledTheme.surface.modal, '#000000', 'OLED modal is #000000');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m3_expressive.test.ts",
+        "line": 50,
+        "color": "#000000",
+        "lineContent": "assert.strictEqual(oledTheme.surface.modal, '#000000', 'OLED modal is #000000');"
+      },
+      {
+        "file": "frontend/tests/adversarial_m3_expressive.test.ts",
+        "line": 66,
+        "color": "#FFFFFF",
+        "lineContent": "// Contrast ratio: White text (#FFFFFF) on #000000 is 21:1 (maximum possible AAA)"
+      },
+      {
+        "file": "frontend/tests/adversarial_m3_expressive.test.ts",
+        "line": 66,
+        "color": "#000000",
+        "lineContent": "// Contrast ratio: White text (#FFFFFF) on #000000 is 21:1 (maximum possible AAA)"
+      },
+      {
+        "file": "frontend/tests/adversarial_m3_expressive.test.ts",
+        "line": 67,
+        "color": "#FFFFFF",
+        "lineContent": "assert.strictEqual(oledTheme.text.primary, '#FFFFFF', 'OLED text is pure white for 21:1 contrast');"
+      }
+    ],
+    "frontend/tests/adversarial_theme_tokens.test.ts": [
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 87,
+        "color": "#FFFFFF",
+        "lineContent": "assert(lightTheme.text.inverse === '#FFFFFF', 'lightTheme.text.inverse === #FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 87,
+        "color": "#FFFFFF",
+        "lineContent": "assert(lightTheme.text.inverse === '#FFFFFF', 'lightTheme.text.inverse === #FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 88,
+        "color": "#120E0B",
+        "lineContent": "assert(darkTheme.text.inverse === '#120E0B', 'darkTheme.text.inverse === #120E0B (Indochine Heritage contrast)');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 88,
+        "color": "#120E0B",
+        "lineContent": "assert(darkTheme.text.inverse === '#120E0B', 'darkTheme.text.inverse === #120E0B (Indochine Heritage contrast)');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 89,
+        "color": "#FFFFFF",
+        "lineContent": "assert(lightTheme.text.onBrand === '#FFFFFF', 'lightTheme.text.onBrand === #FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 89,
+        "color": "#FFFFFF",
+        "lineContent": "assert(lightTheme.text.onBrand === '#FFFFFF', 'lightTheme.text.onBrand === #FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 90,
+        "color": "#120E0B",
+        "lineContent": "assert(darkTheme.text.onBrand === '#120E0B', 'darkTheme.text.onBrand === #120E0B (Indochine dark ink on white brand button)');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 90,
+        "color": "#120E0B",
+        "lineContent": "assert(darkTheme.text.onBrand === '#120E0B', 'darkTheme.text.onBrand === #120E0B (Indochine dark ink on white brand button)');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 92,
+        "color": "#E7E5E4",
+        "lineContent": "assert(lightTheme.surface.switchTrack === '#E7E5E4', 'lightTheme.surface.switchTrack === #E7E5E4');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 92,
+        "color": "#E7E5E4",
+        "lineContent": "assert(lightTheme.surface.switchTrack === '#E7E5E4', 'lightTheme.surface.switchTrack === #E7E5E4');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 93,
+        "color": "#44403C",
+        "lineContent": "assert(darkTheme.surface.switchTrack === '#44403C', 'darkTheme.surface.switchTrack === #44403C');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 93,
+        "color": "#44403C",
+        "lineContent": "assert(darkTheme.surface.switchTrack === '#44403C', 'darkTheme.surface.switchTrack === #44403C');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 94,
+        "color": "#FECACA",
+        "lineContent": "assert(lightTheme.surface.switchTrackDanger === '#FECACA', 'lightTheme.surface.switchTrackDanger === #FECACA');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 94,
+        "color": "#FECACA",
+        "lineContent": "assert(lightTheme.surface.switchTrackDanger === '#FECACA', 'lightTheme.surface.switchTrackDanger === #FECACA');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 95,
+        "color": "#7F1D1D",
+        "lineContent": "assert(darkTheme.surface.switchTrackDanger === '#7F1D1D', 'darkTheme.surface.switchTrackDanger === #7F1D1D');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 95,
+        "color": "#7F1D1D",
+        "lineContent": "assert(darkTheme.surface.switchTrackDanger === '#7F1D1D', 'darkTheme.surface.switchTrackDanger === #7F1D1D');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 96,
+        "color": "#FFFFFF",
+        "lineContent": "assert(lightTheme.surface.qrCanvas === '#FFFFFF', 'lightTheme.surface.qrCanvas === #FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 96,
+        "color": "#FFFFFF",
+        "lineContent": "assert(lightTheme.surface.qrCanvas === '#FFFFFF', 'lightTheme.surface.qrCanvas === #FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 97,
+        "color": "#FFFFFF",
+        "lineContent": "assert(darkTheme.surface.qrCanvas === '#FFFFFF', 'darkTheme.surface.qrCanvas === #FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 97,
+        "color": "#FFFFFF",
+        "lineContent": "assert(darkTheme.surface.qrCanvas === '#FFFFFF', 'darkTheme.surface.qrCanvas === #FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 98,
+        "color": "#000000",
+        "lineContent": "assert(lightTheme.surface.shadow === '#000000', 'lightTheme.surface.shadow === #000000');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 98,
+        "color": "#000000",
+        "lineContent": "assert(lightTheme.surface.shadow === '#000000', 'lightTheme.surface.shadow === #000000');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 99,
+        "color": "#000000",
+        "lineContent": "assert(darkTheme.surface.shadow === '#000000', 'darkTheme.surface.shadow === #000000');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 99,
+        "color": "#000000",
+        "lineContent": "assert(darkTheme.surface.shadow === '#000000', 'darkTheme.surface.shadow === #000000');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 101,
+        "color": "#E7E5E4",
+        "lineContent": "assert(lightTheme.border.subtle === '#E7E5E4', 'lightTheme.border.subtle === #E7E5E4');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 101,
+        "color": "#E7E5E4",
+        "lineContent": "assert(lightTheme.border.subtle === '#E7E5E4', 'lightTheme.border.subtle === #E7E5E4');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 102,
+        "color": "#1E293B",
+        "lineContent": "assert(darkTheme.border.subtle === 'rgba(245, 245, 244, 0.12)' || darkTheme.border.subtle === '#1E293B', 'darkTheme.border.subtle is valid');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 122,
+        "color": "#FFFFFF",
+        "lineContent": "assert(QR_CANVAS_COLOR === '#FFFFFF', 'QR_CANVAS_COLOR === #FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 122,
+        "color": "#FFFFFF",
+        "lineContent": "assert(QR_CANVAS_COLOR === '#FFFFFF', 'QR_CANVAS_COLOR === #FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 123,
+        "color": "#FFFFFF",
+        "lineContent": "assert(ON_BRAND_TEXT_COLOR === '#FFFFFF', 'ON_BRAND_TEXT_COLOR === #FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/adversarial_theme_tokens.test.ts",
+        "line": 123,
+        "color": "#FFFFFF",
+        "lineContent": "assert(ON_BRAND_TEXT_COLOR === '#FFFFFF', 'ON_BRAND_TEXT_COLOR === #FFFFFF');"
+      }
+    ],
+    "frontend/tests/challenger_nav_hig.ts": [
+      {
+        "file": "frontend/tests/challenger_nav_hig.ts",
+        "line": 149,
+        "color": "#FF0000",
+        "lineContent": "const customDragElement = React.createElement(ModalDragIndicator, { color: '#FF0000', barStyle: { width: 40 } });"
+      },
+      {
+        "file": "frontend/tests/challenger_nav_hig.ts",
+        "line": 156,
+        "color": "#FF0000",
+        "lineContent": "assert(flatCustomBarStyle.backgroundColor === '#FF0000', 'ModalDragIndicator respects custom color prop');"
+      }
+    ],
+    "frontend/tests/tier1_feature_coverage.test.ts": [
+      {
+        "file": "frontend/tests/tier1_feature_coverage.test.ts",
+        "line": 815,
+        "color": "#F8FAFC",
+        "lineContent": "assert.strictEqual(lightTheme.surface.app, '#F8FAFC');"
+      },
+      {
+        "file": "frontend/tests/tier1_feature_coverage.test.ts",
+        "line": 816,
+        "color": "#FFFFFF",
+        "lineContent": "assert.strictEqual(lightTheme.surface.card, '#FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/tier1_feature_coverage.test.ts",
+        "line": 817,
+        "color": "#0F172A",
+        "lineContent": "assert.strictEqual(lightTheme.text.primary, '#0F172A'); // 15.8:1 AAA contrast"
+      },
+      {
+        "file": "frontend/tests/tier1_feature_coverage.test.ts",
+        "line": 818,
+        "color": "#0F172A",
+        "lineContent": "assert.strictEqual(lightTheme.brand.primary, '#0F172A');"
+      },
+      {
+        "file": "frontend/tests/tier1_feature_coverage.test.ts",
+        "line": 819,
+        "color": "#34C759",
+        "lineContent": "assert.strictEqual(lightTheme.brand.success, '#34C759');"
+      },
+      {
+        "file": "frontend/tests/tier1_feature_coverage.test.ts",
+        "line": 820,
+        "color": "#FF3B30",
+        "lineContent": "assert.strictEqual(lightTheme.brand.danger, '#FF3B30');"
+      },
+      {
+        "file": "frontend/tests/tier1_feature_coverage.test.ts",
+        "line": 825,
+        "color": "#080C14",
+        "lineContent": "assert.strictEqual(darkTheme.surface.app, '#080C14');"
+      },
+      {
+        "file": "frontend/tests/tier1_feature_coverage.test.ts",
+        "line": 826,
+        "color": "#131C2E",
+        "lineContent": "assert.strictEqual(darkTheme.surface.card, '#131C2E');"
+      },
+      {
+        "file": "frontend/tests/tier1_feature_coverage.test.ts",
+        "line": 827,
+        "color": "#FFFFFF",
+        "lineContent": "assert.strictEqual(darkTheme.text.primary, '#FFFFFF'); // 21:1 AAA contrast"
+      },
+      {
+        "file": "frontend/tests/tier1_feature_coverage.test.ts",
+        "line": 828,
+        "color": "#FFFFFF",
+        "lineContent": "assert.strictEqual(darkTheme.brand.primary, '#FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/tier1_feature_coverage.test.ts",
+        "line": 829,
+        "color": "#30D158",
+        "lineContent": "assert.strictEqual(darkTheme.brand.success, '#30D158');"
+      },
+      {
+        "file": "frontend/tests/tier1_feature_coverage.test.ts",
+        "line": 830,
+        "color": "#FF453A",
+        "lineContent": "assert.strictEqual(darkTheme.brand.danger, '#FF453A');"
+      },
+      {
+        "file": "frontend/tests/tier1_feature_coverage.test.ts",
+        "line": 846,
+        "color": "#94A3B8",
+        "lineContent": "assert.strictEqual(lightTheme.border.default, '#94A3B8');"
+      },
+      {
+        "file": "frontend/tests/tier1_feature_coverage.test.ts",
+        "line": 847,
+        "color": "#2D3D58",
+        "lineContent": "assert.strictEqual(darkTheme.border.default, '#2D3D58');"
+      },
+      {
+        "file": "frontend/tests/tier1_feature_coverage.test.ts",
+        "line": 848,
+        "color": "#0F172A",
+        "lineContent": "assert.strictEqual(lightTheme.border.active, '#0F172A');"
+      },
+      {
+        "file": "frontend/tests/tier1_feature_coverage.test.ts",
+        "line": 849,
+        "color": "#FFFFFF",
+        "lineContent": "assert.strictEqual(darkTheme.border.active, '#FFFFFF');"
+      },
+      {
+        "file": "frontend/tests/tier1_feature_coverage.test.ts",
+        "line": 853,
+        "color": "#D97706",
+        "lineContent": "assert.strictEqual(lightTheme.brand.warning, '#D97706');"
+      },
+      {
+        "file": "frontend/tests/tier1_feature_coverage.test.ts",
+        "line": 854,
+        "color": "#FFD60A",
+        "lineContent": "assert.strictEqual(darkTheme.brand.warning, '#FFD60A');"
+      }
+    ]
+  }
+}

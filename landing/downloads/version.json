@@ -1,0 +1,35 @@
+{
+  "latest_version": "2026.5",
+  "release_date": "2026-09-21",
+  "platforms": {
+    "android": {
+      "version": "2026.5",
+      "url": "https://ongchu.cloud/downloads/ongchu-pos-release.apk",
+      "filename": "ongchu-pos-release.apk",
+      "size_mb": 24.5,
+      "min_os": "Android 7.0+",
+      "arch": ["arm64-v8a", "armeabi-v7a", "x86_64"],
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "ios": {
+      "version": "2026.5",
+      "ipa_url": "https://ongchu.cloud/downloads/ongchu-pos-release.ipa",
+      "manifest_url": "itms-services://?action=download-manifest&url=https://ongchu.cloud/downloads/manifest.plist",
+      "filename": "ongchu-pos-release.ipa",
+      "size_mb": 28.2,
+      "min_os": "iOS 14.0+ / iPadOS 14.0+",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "desktop_windows": {
+      "version": "2026.5",
+      "url": "https://ongchu.cloud/downloads/ongchu-pos-desktop.exe",
+      "filename": "ongchu-pos-desktop.exe",
+      "size_mb": 12.8,
+      "min_os": "Windows 10 / 11 (64-bit)"
+    },
+    "web": {
+      "url": "https://app.ongchu.cloud",
+      "type": "PWA / Responsive SPA"
+    }
+  }
+}

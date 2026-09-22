@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Trang chủ tổng quan toàn ngành F&B -->
+  <url>
+    <loc>https://ongchu.cloud/</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Cụm trang chuyên biệt: Quán Cafe & Trà Sữa -->
+  <url>
+    <loc>https://ongchu.cloud/cafe.html</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Cụm trang chuyên biệt: Quán Ăn & Nhà Hàng -->
+  <url>
+    <loc>https://ongchu.cloud/quan-an.html</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Trang Chính Sách Quyền Riêng Tư -->
+  <url>
+    <loc>https://ongchu.cloud/privacy.html</loc>
+    <lastmod>2026-09-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+</urlset>

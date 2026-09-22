@@ -1,0 +1,96 @@
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Expo & React Native
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+*.jks
+*.p8
+*.p12
+*.key
+*.keystore
+*.mobileprovision
+credentials/
+frontend/credentials/
+frontend/credentials.json
+credentials.json
+*.orig.*
+
+# Tauri / Rust
+desktop/src-tauri/target/
+desktop/node_modules/
+
+# Go
+backend/bin/
+backend/dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+pos.db
+pos.db-journal
+*.sqlite
+*.sqlite3
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.*.local
+*.pem
+
+# Logs & Diagnostics
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+screen_*.png
+pixel_*.png
+.temp/
+scripts/*.png
+scripts/*.jpg
+
+# OS Metadata
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE & Editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Build artifacts & Local DB (STRICT ZERO-DB COMMIT & DEPLOYMENT)
+*.ipa
+*.db
+*.db-shm
+*.db-wal
+*.db-journal
+*.sqlite
+*.sqlite3
+*.sql
+*.bak
+backend/*.db
+backend/*.db-*
+backend/data/
+data/
+data/tenants/
+tenants/
+artifacts/
+scripts/__pycache__/
+go_sdk/
+github-public-repo/
+p12/
+builds/
+desktop-app/
+*.png
+!frontend/assets/*.png
+!landing/assets/*.png
+!docs/images/*.png

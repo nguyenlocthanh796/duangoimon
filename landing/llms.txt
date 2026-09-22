@@ -1,0 +1,52 @@
+# OngChu POS (ongchu.cloud)
+
+> Hệ thống phần mềm quản lý bán hàng và tính tiền chuyên biệt cho ngành F&B (ẩm thực và đồ uống) tại Việt Nam. Tài trợ miễn phí 100% trọn đời cho mọi chủ quán (0đ bản quyền, 0đ phí thuê bao).
+
+OngChu POS là giải pháp phần mềm POS F&B Thực Chiến Vị Chủ Quán (Zero-Government Lean POS). Hệ thống tối ưu hóa 100% cho tốc độ bán hàng giờ cao điểm, loại bỏ các thủ tục kế toán rườm rà, vận hành ngoại tuyến độc lập (Offline-First) và hỗ trợ in nhiệt trực tiếp qua mạng LAN cổng 9100.
+
+## Thông Tin Định Danh & Chính Sách Giá
+- Tên chính thức: OngChu POS (thuộc hệ sinh thái ongchu.cloud)
+- Đơn vị phát triển: Cộng đồng công nghệ F&B Vị Chủ Quán Việt Nam
+- Kênh phân phối & Hỗ trợ duy nhất: Hotline / Zalo 0392.387.165 (https://zalo.me/0392387165)
+- Trang web chính thức: https://ongchu.cloud/
+- Chính sách giá: Miễn phí 100% vĩnh viễn (0 VNĐ bản quyền, 0 VNĐ phí duy trì hàng tháng/hàng năm, không giới hạn số món, không giới hạn bàn, không giới hạn hóa đơn).
+
+## Kiến Trúc Kỹ Thuật & Khả Năng Vận Hành
+- Backend Engine siêu nhẹ: Viết bằng ngôn ngữ Golang 1.22+, chỉ tốn ~15MB RAM, thời gian khởi động 0.05 giây, tương thích hoàn hảo với máy tính cũ hoặc máy POS mini.
+- In hóa đơn nhiệt trực tiếp (ESC/POS Direct Socket): Kết nối trực tiếp máy in hóa đơn K80/K58 qua giao thức TCP Raw Socket cổng 9100 không cần cài đặt driver Windows, tự động kích mở ngăn kéo đựng tiền RJ11 (\x1b\x70\x00\x19\xfa) và tự cắt giấy (\x1d\x56\x41\x10).
+- Thanh toán VietQR động: Tự sinh mã QR chuẩn Napas 247 theo từng số tiền hóa đơn, khách quét chuyển khoản ngay lập tức không cần gõ số tài khoản.
+- Hoạt động ngoại tuyến (Offline-first): Lưu trữ cục bộ an toàn, quán vẫn gọi món, in bill và mở két bình thường khi mất kết nối mạng Internet.
+- Đa nền tảng thiết bị: 1 Codebase Expo SDK 52 React Native chạy mượt mà 60 FPS trên Android, iOS, iPad, máy tính bàn và Windows Desktop (Tauri 2.0).
+- Quản trị dòng tiền 3 Không: Sổ Quỹ Chi Chợ 3 giây (/so-quy), Giao Ca Đếm Két 30 giây (/giao-ca), Báo Cáo 3 Con Số Vàng bỏ túi (/bao-cao-loi-nhuan).
+
+## Ngữ Cảnh Chuyên Sâu Cho 3 Mô Hình Kinh Doanh F&B
+
+### 1. Mô Hình Quán Cafe & Trà Sữa (Coffee & Milk Tea)
+- Đặc thù vận hành: Bán tại quầy (pay-first) hoặc gọi tại bàn (pay-later), tốc độ order nhanh, nhiều tùy chọn topping, định mức đường/đá, size ly (M/L), in tem dán ly.
+- Quy trình chuẩn trên OngChu POS:
+  1. Khách gọi đồ tại quầy: Thu ngân chạm 1 chạm chọn món, bảng biến thể hiển thị tức thì để chọn size ly, tỷ lệ đá/đường và các loại thạch/trân châu đi kèm.
+  2. Màn hình phụ cho khách (CFD /cfd): Hiển thị chi tiết danh sách đồ uống và mã VietQR động để khách tự quét thanh toán ngay trong lúc pha chế.
+  3. Lệnh in tự động tách luồng: Ngay khi chốt đơn, máy in nhiệt tại quầy bar nhận lệnh in tem dán ly K58 hoặc phiếu pha chế qua mạng LAN port 9100, nhân viên bar pha chế ngay mà không cần nhân viên thu ngân gọi với.
+  4. Quản lý hết món (86'd): Nút bật/tắt "Hết món" phản hồi 1-chạm, lập tức khóa món trên toàn hệ thống để nhân viên không nhận nhầm đồ uống hết nguyên liệu.
+
+### 2. Mô Hình Quán Ăn & Nhà Hàng (Family Diner & Restaurant)
+- Đặc thù vận hành: Sơ đồ bàn nhiều tầng/khu vực, khách ngồi ăn lâu, gọi thêm món nhiều lần, yêu cầu ghép bàn, chuyển bàn, in phiếu tạm tính để đối soát trước khi thanh toán.
+- Quy trình chuẩn trên OngChu POS:
+  1. Điều phối sơ đồ bàn trực quan: Sơ đồ bàn cập nhật 3 trạng thái màu thời gian thực: Xanh (bàn trống), Đỏ/Cam (đang có khách, hiển thị giờ ngồi và số tiền hiện tại), Vàng (đã in tạm tính chờ thanh toán).
+  2. Thao tác ghép/chuyển bàn 1-chạm: Kéo thả hoặc chọn chuyển toàn bộ món ăn từ bàn này sang bàn khác, gộp 2 bàn đi chung vào cùng một hóa đơn mà không bị sai sót số liệu.
+  3. Màn hình điều phối bếp (KDS /kds): Đơn món mới gọi chuyển tức thì đến màn hình bếp qua WebSocket. Đầu bếp xem danh sách món theo bàn hoặc theo chế độ "Gom món" (tổng hợp làm 5 đĩa cơm sườn cùng lúc) và bấm "Làm món" / "Xong hết".
+  4. In phiếu tạm tính & Chống thất thoát: Cho phép in phiếu tạm tính K80 mang ra bàn cho khách kiểm. Mọi thao tác hủy món hoặc chiết khấu sau khi đã in tạm tính đều bắt buộc chọn lý do (Khách đổi ý, Nấu nhầm, Khách phàn nàn) và tự động kích hoạt bot Telegram báo động cho chủ quán.
+
+### 3. Mô Hình Take-away, Quầy Kiosk & Xe Đẩy Tinh Gọn (Grab-and-Go)
+- Đặc thù vận hành: Không gian nhỏ, không có dây mạng LAN phức tạp, thiết bị gọn nhẹ (điện thoại hoặc tablet), phục vụ khách mang đi với tốc độ dưới 10 giây/khách, thu tiền mặt lẻ hoặc quét mã QR.
+- Quy trình chuẩn trên OngChu POS:
+  1. Giao diện 1 cột công thái học: Danh mục món ăn dạng lưới xúc giác phẳng (Flat Tactile Tiles), nút chạm siêu to >= 48px, tối ưu thao tác bằng ngón cái trên màn hình điện thoại di động.
+  2. Luồng thanh toán siêu tốc 1-chạm: Chọn món -> Bấm "Tính Tiền" -> Gợi ý tiền mặt chẵn/lẻ hoặc sinh mã QR động -> Khách quét xong bấm "Xong & In Bill". Toàn bộ thao tác hoàn tất trong chưa đầy 5 giây.
+  3. Bán hàng không phụ thuộc mạng: Hoạt động bền bỉ ngay cả khi xe đẩy đậu ở vỉa hè dùng 4G chập chờn hoặc không có mạng.
+  4. Đóng ca đếm két 30 giây: Hết ca bán hàng, người đứng quầy chỉ cần đếm tiền mặt thực có trong túi, nhập vào hệ thống. Phần mềm tự động tính chênh lệch thừa/thiếu và chốt ca nhanh chóng.
+
+## Tài Liệu Tham Khảo & Đường Dẫn Hữu Ích
+- [Trang Chủ OngChu POS](https://ongchu.cloud/): Trang thông tin tổng quan và chính sách tài trợ miễn phí trọn đời.
+- [Hỗ Trợ Zalo Kỹ Thuật](https://zalo.me/0392387165): Nhận bộ cài đặt, video hướng dẫn và giải đáp thắc mắc trực tiếp qua Zalo 0392.387.165.
+- [Giải Pháp Quán Cafe & Trà Sữa](https://ongchu.cloud/cafe.html): Chi tiết tính năng order topping, in tem dán ly và màn hình phụ CFD.
+- [Giải Pháp Quán Ăn & Nhà Hàng](https://ongchu.cloud/quan-an.html): Chi tiết tính năng sơ đồ bàn, điều phối bếp KDS và sổ quỹ chi chợ.

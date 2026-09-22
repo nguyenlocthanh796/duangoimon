@@ -1,0 +1,51 @@
+# Progress Log - Milestone 2
+
+Last visited: 2026-09-17T09:17:00Z
+Status: Completed
+
+- [x] Initialized DISPATCH.md and BRIEFING.md
+- [x] Read ORIGINAL_REQUEST.md and PROJECT.md
+- [x] Read survey handoff report (teamwork_preview_explorer_survey_1/handoff.md)
+- [x] Consult skills (ongchu-frontend-expo, ponytail)
+- [x] Baseline check: npx tsc --noEmit (Passed with 0 errors)
+- [x] Part 1: Fix 5 Missing `fontSize` on `<TextInput>`
+  - [x] `frontend/app/cai-dat/_components/OwnerAccountTab.tsx` (lines 590, 706, 729 + s.inputBox)
+  - [x] `frontend/app/giao-ca/index.tsx` (line 1591 in modalInput)
+  - [x] `frontend/lib/components/ui/AppOmniSearch.tsx` (line 421 in s.input)
+- [x] Part 3: Modal Header Alignment
+  - [x] `frontend/app/kho-hang/index.tsx` (AppHeader with standard title and showBack)
+  - [x] `frontend/app/thuc-don/_components/ProductFormModal.tsx` (AppHeader with standard title and showBack)
+- [x] Part 2: Upgrade all 74 `TextInput` instances with `fontSize < 16px` to `16`
+  - [x] `app/cai-dat/_components/OperationsTab.tsx`
+  - [x] `app/login/index.tsx`
+  - [x] `app/login/_components/SaaSAccountForm.tsx`
+  - [x] `app/login/_components/StaffPinPad.tsx`
+  - [x] `app/bao-cao-loi-nhuan/_components/ReportCustomDateModal.tsx`
+  - [x] `app/bao-cao-loi-nhuan/_components/ReportInvoicesTab.tsx`
+  - [x] `app/hoa-don/index.tsx`
+  - [x] `app/huong-dan/index.tsx`
+  - [x] `app/khach-hang/components/CustomerFormModal.tsx`
+  - [x] `app/khach-hang/components/CustomerListView.tsx`
+  - [x] `app/khach-hang/components/SettleDebtModal.tsx`
+  - [x] `app/thuc-don/_components/CategoryManagementTab.tsx`
+  - [x] `app/thuc-don/_components/ProductFormModal.tsx`
+  - [x] `app/thuc-don/_components/ToppingManagementTab.tsx`
+  - [x] `app/thanh-toan/_components/EInvoiceModal.tsx`
+  - [x] `app/quan-ly-ban/index.tsx`
+  - [x] `lib/components/pos/DiscountModal.tsx`
+  - [x] `lib/components/nhan-su/StaffFormModal.tsx`
+  - [x] `lib/components/nhan-su/StaffListTab.tsx`
+  - [x] `lib/components/nhan-su/QuickShiftLogModal.tsx`
+  - [x] `lib/components/nhan-su/ClockInOutModal.tsx`
+  - [x] `lib/components/nhan-su/BonusDeductionModal.tsx`
+  - [x] `lib/components/nhan-su/SalaryAdvanceModal.tsx`
+  - [x] `lib/components/nhan-su/PaySalaryModal.tsx`
+  - [x] `lib/components/nhan-su/PayrollHistoryModal.tsx`
+  - [x] `app/kho-hang/index.tsx`
+  - [x] `app/saas-admin/index.tsx`
+- [x] Verification:
+  - [x] `python scan_inputs.py`: 143/143 JSX TextInput >= 16, 0 under 16, 0 missing
+  - [x] `python filter_real_jsx_inputs.py`: Total violating = 0
+  - [x] `cd frontend && npx tsc --noEmit`: Exit code 0 (0 errors)
+- [x] Write handoff.md
+- [x] Send completion message to parent

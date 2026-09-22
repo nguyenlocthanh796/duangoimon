@@ -1,0 +1,1406 @@
+[
+  {
+    "file": "app\\bao-cao-loi-nhuan\\_components\\ReportCustomDateModal.tsx",
+    "line": 142,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                  s.dateInput,\n                  {\n                    color: theme.text.primary,\n                    borderColor: theme.border.subtle,\n                    backgroundColor: theme.surface.header,\n                  },\n                ]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\bao-cao-loi-nhuan\\_components\\ReportCustomDateModal.tsx",
+    "line": 162,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                  s.dateInput,\n                  {\n                    color: theme.text.primary,\n                    borderColor: theme.border.subtle,\n                    backgroundColor: theme.surface.header,\n                  },\n                ]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\bao-cao-loi-nhuan\\_components\\ReportInvoicesTab.tsx",
+    "line": 51,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.searchInput, { color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\BankVietQRTab.tsx",
+    "line": 186,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\BankVietQRTab.tsx",
+    "line": 200,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\BankVietQRTab.tsx",
+    "line": 217,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\BankVietQRTab.tsx",
+    "line": 230,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\BankVietQRTab.tsx",
+    "line": 388,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\BillReceiptTab.tsx",
+    "line": 160,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\BillReceiptTab.tsx",
+    "line": 173,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\BillReceiptTab.tsx",
+    "line": 310,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\BillReceiptTab.tsx",
+    "line": 323,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\BillReceiptTab.tsx",
+    "line": 456,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\BillReceiptTab.tsx",
+    "line": 469,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\BranchesTab.tsx",
+    "line": 328,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                  s.input,\n                  {\n                    backgroundColor: theme.surface.header,\n                    color: theme.text.primary,\n                    borderColor: theme.border.subtle,\n                  },\n                ]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\BranchesTab.tsx",
+    "line": 348,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                  s.input,\n                  {\n                    backgroundColor: theme.surface.header,\n                    color: theme.text.primary,\n                    borderColor: theme.border.subtle,\n                  },\n                ]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\BranchesTab.tsx",
+    "line": 370,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                s.input,\n                {\n                  backgroundColor: theme.surface.header,\n                  color: theme.text.primary,\n                  borderColor: theme.border.subtle,\n                },\n              ]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\BranchesTab.tsx",
+    "line": 390,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                s.input,\n                {\n                  backgroundColor: theme.surface.header,\n                  color: theme.text.primary,\n                  borderColor: theme.border.subtle,\n                },\n              ]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\OperationsTab.tsx",
+    "line": 328,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                s.input,\n                {\n                  backgroundColor: theme.surface.header,\n                  borderColor: theme.border.subtle,\n                  color: theme.text.primary,\n                  marginTop: 4,\n                },\n              ]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\OperationsTab.tsx",
+    "line": 459,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\OperationsTab.tsx",
+    "line": 487,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\OperationsTab.tsx",
+    "line": 500,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\OperationsTab.tsx",
+    "line": 656,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n              s.input,\n              {\n                flex: 1.2,\n                backgroundColor: theme.surface.app,\n                borderColor: theme.border.default,\n                color: theme.text.primary,\n                fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',\n                fontSize: 12,\n                height: 38,\n              },\n            ]",
+    "inline_fs": 12.0,
+    "ref_fs": 16.0,
+    "effective_fs": 12.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\OwnerAccountTab.tsx",
+    "line": 342,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.textInput, { color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\OwnerAccountTab.tsx",
+    "line": 365,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.textInput, { color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\OwnerAccountTab.tsx",
+    "line": 382,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.textInput, { color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\OwnerAccountTab.tsx",
+    "line": 450,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                  s.pinInput,\n                  {\n                    backgroundColor: theme.surface.card,\n                    borderColor: theme.border.default,\n                    color: theme.text.primary,\n                  },\n                ]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\OwnerAccountTab.tsx",
+    "line": 504,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                  s.pinInput,\n                  {\n                    backgroundColor: theme.surface.card,\n                    borderColor: theme.border.default,\n                    color: theme.text.primary,\n                  },\n                ]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\OwnerAccountTab.tsx",
+    "line": 590,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                  s.inputBox,\n                  {\n                    height: 42,\n                    backgroundColor: theme.surface.card,\n                    borderColor: theme.border.default,\n                    color: theme.text.primary,\n                  },\n                ]",
+    "inline_fs": null,
+    "ref_fs": null,
+    "effective_fs": null
+  },
+  {
+    "file": "app\\cai-dat\\_components\\OwnerAccountTab.tsx",
+    "line": 706,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                    s.inputBox,\n                    {\n                      height: 42,\n                      backgroundColor: theme.surface.input,\n                      borderColor: theme.status.dangerBorder,\n                      color: theme.brand.danger,\n                      fontWeight: '600',\n                    },\n                  ]",
+    "inline_fs": null,
+    "ref_fs": null,
+    "effective_fs": null
+  },
+  {
+    "file": "app\\cai-dat\\_components\\OwnerAccountTab.tsx",
+    "line": 729,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                    s.inputBox,\n                    {\n                      height: 42,\n                      backgroundColor: theme.surface.input,\n                      borderColor: theme.status.dangerBorder,\n                      color: theme.brand.danger,\n                      fontWeight: '600',\n                    },\n                  ]",
+    "inline_fs": null,
+    "ref_fs": null,
+    "effective_fs": null
+  },
+  {
+    "file": "app\\cai-dat\\_components\\StoreInfoTab.tsx",
+    "line": 88,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\StoreInfoTab.tsx",
+    "line": 101,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\StoreInfoTab.tsx",
+    "line": 114,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\StoreInfoTab.tsx",
+    "line": 128,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\StoreInfoTab.tsx",
+    "line": 142,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\StoreInfoTab.tsx",
+    "line": 186,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\StoreInfoTab.tsx",
+    "line": 199,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\StoreInfoTab.tsx",
+    "line": 214,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\cai-dat\\_components\\StoreInfoTab.tsx",
+    "line": 227,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\giao-ca\\index.tsx",
+    "line": 272,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                  s.modalInput,\n                  {\n                    backgroundColor: theme.surface.header,\n                    color: theme.text.primary,\n                    borderColor: theme.border.subtle,\n                  },\n                ]",
+    "inline_fs": null,
+    "ref_fs": null,
+    "effective_fs": null
+  },
+  {
+    "file": "app\\giao-ca\\index.tsx",
+    "line": 293,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                  s.modalInput,\n                  {\n                    fontSize: 18,\n                    fontWeight: '500',\n                    backgroundColor: theme.surface.header,\n                    color: theme.brand.primary,\n                    borderColor: theme.border.subtle,\n                  },\n                ]",
+    "inline_fs": 18.0,
+    "ref_fs": null,
+    "effective_fs": 18.0
+  },
+  {
+    "file": "app\\giao-ca\\index.tsx",
+    "line": 777,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.cashInput, { color: theme.brand.primary }]",
+    "inline_fs": null,
+    "ref_fs": 20.0,
+    "effective_fs": 20.0
+  },
+  {
+    "file": "app\\giao-ca\\index.tsx",
+    "line": 845,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.noteInput, { color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\giao-ca\\index.tsx",
+    "line": 1242,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.cashInputWide, { color: theme.brand.primary, borderBottomColor: theme.brand.primary }]",
+    "inline_fs": null,
+    "ref_fs": 20.0,
+    "effective_fs": 20.0
+  },
+  {
+    "file": "app\\hoa-don\\index.tsx",
+    "line": 899,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.searchInput, { color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\huong-dan\\index.tsx",
+    "line": 986,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.searchInput, { color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\khach-hang\\components\\CustomerFormModal.tsx",
+    "line": 72,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { color: theme.text.primary, borderColor: theme.border.default, backgroundColor: theme.surface.header }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\khach-hang\\components\\CustomerFormModal.tsx",
+    "line": 83,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { color: theme.text.primary, borderColor: theme.border.default, backgroundColor: theme.surface.header }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\khach-hang\\components\\CustomerFormModal.tsx",
+    "line": 95,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { color: theme.text.primary, borderColor: theme.border.default, backgroundColor: theme.surface.header }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\khach-hang\\components\\CustomerFormModal.tsx",
+    "line": 107,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { color: theme.text.primary, borderColor: theme.border.default, backgroundColor: theme.surface.header }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\khach-hang\\components\\CustomerListView.tsx",
+    "line": 248,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.searchInput, { color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\khach-hang\\components\\SettleDebtModal.tsx",
+    "line": 147,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { color: theme.text.primary, borderColor: theme.border.default, backgroundColor: theme.surface.header }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\khach-hang\\components\\SettleDebtModal.tsx",
+    "line": 158,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { color: theme.text.primary, borderColor: theme.border.default, backgroundColor: theme.surface.header, height: 38 }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\kho-hang\\index.tsx",
+    "line": 406,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.searchInput, { color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\kho-hang\\index.tsx",
+    "line": 1107,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.default, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\kho-hang\\index.tsx",
+    "line": 1124,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.default, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\kho-hang\\index.tsx",
+    "line": 1248,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.default, color: theme.text.primary, fontSize: 18, textAlign: 'center' }]",
+    "inline_fs": 18.0,
+    "ref_fs": 14.0,
+    "effective_fs": 18.0
+  },
+  {
+    "file": "app\\kho-hang\\index.tsx",
+    "line": 1285,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.default, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\kho-hang\\index.tsx",
+    "line": 1397,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                  s.input,\n                  {\n                    backgroundColor: theme.surface.card,\n                    borderColor: theme.border.default,\n                    color: theme.text.primary,\n                    fontSize: 16,\n                  },\n                ]",
+    "inline_fs": 16.0,
+    "ref_fs": 14.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\kho-hang\\index.tsx",
+    "line": 1467,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.card, borderColor: theme.border.default, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\kho-hang\\index.tsx",
+    "line": 1480,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.card, borderColor: theme.border.default, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\kho-hang\\index.tsx",
+    "line": 1537,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.card, borderColor: theme.border.default, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\kho-hang\\index.tsx",
+    "line": 1549,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.card, borderColor: theme.border.default, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\kho-hang\\index.tsx",
+    "line": 1563,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.card, borderColor: theme.border.default, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\kho-hang\\index.tsx",
+    "line": 1580,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.card, borderColor: theme.border.default, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\login\\index.tsx",
+    "line": 497,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.modalInput, { color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\login\\index.tsx",
+    "line": 594,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.modalInput, { color: theme.text.primary, fontSize: 13 }]",
+    "inline_fs": 13.0,
+    "ref_fs": 16.0,
+    "effective_fs": 13.0
+  },
+  {
+    "file": "app\\login\\_components\\SaaSAccountForm.tsx",
+    "line": 59,
+    "tag_preview": "<TextInput>",
+    "style_prop": null,
+    "inline_fs": null,
+    "ref_fs": null,
+    "effective_fs": null
+  },
+  {
+    "file": "app\\login\\_components\\SaaSAccountForm.tsx",
+    "line": 60,
+    "tag_preview": "<TextInput>",
+    "style_prop": null,
+    "inline_fs": null,
+    "ref_fs": null,
+    "effective_fs": null
+  },
+  {
+    "file": "app\\login\\_components\\SaaSAccountForm.tsx",
+    "line": 61,
+    "tag_preview": "<TextInput>",
+    "style_prop": null,
+    "inline_fs": null,
+    "ref_fs": null,
+    "effective_fs": null
+  },
+  {
+    "file": "app\\login\\_components\\SaaSAccountForm.tsx",
+    "line": 62,
+    "tag_preview": "<TextInput>",
+    "style_prop": null,
+    "inline_fs": null,
+    "ref_fs": null,
+    "effective_fs": null
+  },
+  {
+    "file": "app\\login\\_components\\SaaSAccountForm.tsx",
+    "line": 277,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.textInput, { color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\login\\_components\\SaaSAccountForm.tsx",
+    "line": 313,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.textInput, { color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\login\\_components\\SaaSAccountForm.tsx",
+    "line": 349,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.textInput, { color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\login\\_components\\SaaSAccountForm.tsx",
+    "line": 443,
+    "tag_preview": "<TextInput",
+    "style_prop": "{\n                      flex: 1,\n                      height: 42,\n                      backgroundColor: theme.surface.card,\n                      borderColor: theme.border.subtle,\n                      borderWidth: 1,\n                      borderRadius: 8,\n                      paddingHorizontal: 12,\n                      color: theme.text.primary,\n                      fontSize: 14,\n                    }",
+    "inline_fs": 14.0,
+    "ref_fs": null,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\login\\_components\\SaaSAccountForm.tsx",
+    "line": 614,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.textInput, { color: theme.text.primary, fontSize: 13 }]",
+    "inline_fs": 13.0,
+    "ref_fs": 16.0,
+    "effective_fs": 13.0
+  },
+  {
+    "file": "app\\login\\_components\\SaaSAccountForm.tsx",
+    "line": 832,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.textInput, { color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\login\\_components\\StaffPinPad.tsx",
+    "line": 473,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.masterKeyInput, { color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\quan-ly-ban\\index.tsx",
+    "line": 949,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.searchInput, { color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\quan-ly-ban\\index.tsx",
+    "line": 1446,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.default, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\quan-ly-ban\\index.tsx",
+    "line": 1608,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.default, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 1160,
+    "tag_preview": "<TextInput",
+    "style_prop": "{\n                        flex: 1,\n                        color: theme.text.primary,\n                        fontSize: 13,\n                        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',\n                        padding: 0,\n                      }",
+    "inline_fs": 13.0,
+    "ref_fs": null,
+    "effective_fs": 13.0
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 1543,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                          s.formInput,\n                          {\n                            backgroundColor: theme.surface.header,\n                            borderColor: theme.border.subtle,\n                            color: theme.text.primary,\n                          },\n                        ]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 1563,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                          s.formInput,\n                          {\n                            backgroundColor: theme.surface.header,\n                            borderColor: theme.border.subtle,\n                            color: theme.text.primary,\n                          },\n                        ]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 1584,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                            s.formInput,\n                            {\n                              backgroundColor: theme.surface.header,\n                              borderColor: theme.border.subtle,\n                              color: theme.text.primary,\n                            },\n                          ]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 1605,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                            s.formInput,\n                            {\n                              backgroundColor: theme.surface.header,\n                              borderColor: theme.border.subtle,\n                              color: theme.text.primary,\n                            },\n                          ]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 2858,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.searchInput, { color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 3082,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.formInput, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 3094,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.formInput, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 3107,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.formInput, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 3120,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.formInput, { backgroundColor: theme.surface.header, color: theme.text.primary, borderColor: theme.border.subtle }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 3394,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                              s.formInput,\n                              {\n                                backgroundColor: theme.surface.header,\n                                color: theme.text.primary,\n                                borderColor: theme.border.subtle,\n                                fontSize: 15,\n                              },\n                            ]",
+    "inline_fs": 15.0,
+    "ref_fs": 14.0,
+    "effective_fs": 15.0
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 3457,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                              s.formInput,\n                              {\n                                backgroundColor: theme.surface.header,\n                                color: theme.text.primary,\n                                borderColor: theme.border.subtle,\n                                fontSize: 14,\n                              },\n                            ]",
+    "inline_fs": 14.0,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 3502,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                              s.formInput,\n                              {\n                                backgroundColor: theme.surface.header,\n                                color: theme.text.primary,\n                                borderColor: theme.border.subtle,\n                                fontSize: 14,\n                              },\n                            ]",
+    "inline_fs": 14.0,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\saas-admin\\index.tsx",
+    "line": 3887,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                        s.formInput,\n                        {\n                          backgroundColor: theme.surface.header,\n                          color: theme.text.primary,\n                          borderColor: theme.border.subtle,\n                          fontSize: 13,\n                        },\n                      ]",
+    "inline_fs": 13.0,
+    "ref_fs": 14.0,
+    "effective_fs": 13.0
+  },
+  {
+    "file": "app\\so-quy\\_components\\QuickCashFormContent.tsx",
+    "line": 281,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                s.formInput,\n                { color: txType === 'chi' ? theme.brand.danger : theme.brand.success, fontSize: 22, flex: 1 },\n              ]",
+    "inline_fs": 22.0,
+    "ref_fs": 16.0,
+    "effective_fs": 22.0
+  },
+  {
+    "file": "app\\so-quy\\_components\\QuickCashFormContent.tsx",
+    "line": 306,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.formInput, { color: theme.text.primary, fontWeight: 'normal', fontSize: 16 }]",
+    "inline_fs": 16.0,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\thanh-toan\\_components\\EInvoiceModal.tsx",
+    "line": 169,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                  s.input,\n                  {\n                    backgroundColor: theme.surface.header,\n                    borderColor:\n                      isValidTax === true\n                        ? theme.brand.success\n                        : isValidTax === false\n                        ? theme.brand.danger\n                        : theme.border.default,\n                    color: theme.text.primary,\n                  },\n                ]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\thanh-toan\\_components\\EInvoiceModal.tsx",
+    "line": 196,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                  s.input,\n                  {\n                    backgroundColor: theme.surface.header,\n                    borderColor: theme.border.default,\n                    color: theme.text.primary,\n                  },\n                ]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\thanh-toan\\_components\\EInvoiceModal.tsx",
+    "line": 217,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                  s.input,\n                  {\n                    backgroundColor: theme.surface.header,\n                    borderColor: theme.border.default,\n                    color: theme.text.primary,\n                  },\n                ]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\thanh-toan\\_components\\EInvoiceModal.tsx",
+    "line": 238,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                  s.input,\n                  {\n                    backgroundColor: theme.surface.header,\n                    borderColor: theme.border.default,\n                    color: theme.text.primary,\n                  },\n                ]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\thuc-don\\_components\\CategoryManagementTab.tsx",
+    "line": 310,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                  s.input,\n                  {\n                    backgroundColor: theme.surface.header,\n                    borderColor: theme.border.default,\n                    color: theme.text.primary,\n                  },\n                ]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\thuc-don\\_components\\ProductFormModal.tsx",
+    "line": 472,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                  s.input,\n                  {\n                    backgroundColor: theme.surface.card,\n                    borderColor: theme.border.default,\n                    color: theme.text.primary,\n                    fontSize: 16,\n                    height: 48,\n                  },\n                ]",
+    "inline_fs": 16.0,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\thuc-don\\_components\\ProductFormModal.tsx",
+    "line": 527,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                    s.input,\n                    {\n                      flex: 1,\n                      backgroundColor: theme.surface.card,\n                      borderColor: theme.brand.primary,\n                      color: theme.text.primary,\n                      height: 40,\n                    },\n                  ]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\thuc-don\\_components\\ProductFormModal.tsx",
+    "line": 642,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                  s.heroPriceInput,\n                  {\n                    color: theme.brand.primary,\n                  },\n                ]",
+    "inline_fs": null,
+    "ref_fs": 22.0,
+    "effective_fs": 22.0
+  },
+  {
+    "file": "app\\thuc-don\\_components\\ProductFormModal.tsx",
+    "line": 677,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                    s.costInputInner,\n                    {\n                      color: theme.text.primary,\n                    },\n                  ]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\thuc-don\\_components\\ProductFormModal.tsx",
+    "line": 777,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                    s.input,\n                    {\n                      width: 90,\n                      backgroundColor: theme.surface.header,\n                      borderColor: theme.border.default,\n                      color: theme.text.primary,\n                      height: 40,\n                    },\n                  ]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\thuc-don\\_components\\ProductFormModal.tsx",
+    "line": 794,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                    s.input,\n                    {\n                      flex: 1,\n                      backgroundColor: theme.surface.header,\n                      borderColor: theme.border.default,\n                      color: theme.text.primary,\n                      height: 40,\n                    },\n                  ]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\thuc-don\\_components\\ProductFormModal.tsx",
+    "line": 893,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                s.input,\n                {\n                  backgroundColor: theme.surface.card,\n                  borderColor: theme.border.default,\n                  color: theme.text.primary,\n                  height: 44,\n                },\n              ]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "app\\thuc-don\\_components\\ProductFormModal.tsx",
+    "line": 1127,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                    s.input,\n                    {\n                      flex: 1,\n                      height: 42,\n                      backgroundColor: theme.surface.header,\n                      borderColor: theme.border.default,\n                      color: theme.text.primary,\n                      fontSize: 14,\n                    },\n                  ]",
+    "inline_fs": 14.0,
+    "ref_fs": 16.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\thuc-don\\_components\\ToppingManagementTab.tsx",
+    "line": 293,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                    s.input,\n                    {\n                      color: theme.text.primary,\n                      backgroundColor: theme.surface.header,\n                      borderColor: theme.border.default,\n                    },\n                  ]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "app\\thuc-don\\_components\\ToppingManagementTab.tsx",
+    "line": 313,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                    s.input,\n                    {\n                      color: theme.text.primary,\n                      backgroundColor: theme.surface.header,\n                      borderColor: theme.border.default,\n                    },\n                  ]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "lib\\components\\nhan-su\\BonusDeductionModal.tsx",
+    "line": 100,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.brand.success }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "lib\\components\\nhan-su\\BonusDeductionModal.tsx",
+    "line": 118,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.brand.danger }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "lib\\components\\nhan-su\\BonusDeductionModal.tsx",
+    "line": 133,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "lib\\components\\nhan-su\\ClockInOutModal.tsx",
+    "line": 170,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "lib\\components\\nhan-su\\ClockInOutModal.tsx",
+    "line": 202,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "lib\\components\\nhan-su\\ClockInOutModal.tsx",
+    "line": 216,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "lib\\components\\nhan-su\\PayrollHistoryModal.tsx",
+    "line": 81,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.searchInput, { color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "lib\\components\\nhan-su\\PaySalaryModal.tsx",
+    "line": 228,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "lib\\components\\nhan-su\\QuickShiftLogModal.tsx",
+    "line": 201,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "lib\\components\\nhan-su\\QuickShiftLogModal.tsx",
+    "line": 215,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "lib\\components\\nhan-su\\QuickShiftLogModal.tsx",
+    "line": 231,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "lib\\components\\nhan-su\\QuickShiftLogModal.tsx",
+    "line": 245,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "lib\\components\\nhan-su\\SalaryAdvanceModal.tsx",
+    "line": 130,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "lib\\components\\nhan-su\\SalaryAdvanceModal.tsx",
+    "line": 191,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "lib\\components\\nhan-su\\StaffFormModal.tsx",
+    "line": 156,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "lib\\components\\nhan-su\\StaffFormModal.tsx",
+    "line": 170,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "lib\\components\\nhan-su\\StaffFormModal.tsx",
+    "line": 199,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "lib\\components\\nhan-su\\StaffFormModal.tsx",
+    "line": 301,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "lib\\components\\nhan-su\\StaffFormModal.tsx",
+    "line": 316,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "lib\\components\\nhan-su\\StaffFormModal.tsx",
+    "line": 331,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle, color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "lib\\components\\nhan-su\\StaffListTab.tsx",
+    "line": 79,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.searchInput, { color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "lib\\components\\pos\\CustomItemModal.tsx",
+    "line": 137,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                  s.input,\n                  {\n                    backgroundColor: theme.surface.app,\n                    color: theme.text.primary,\n                    borderColor: theme.border.default,\n                  },\n                ]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "lib\\components\\pos\\CustomItemModal.tsx",
+    "line": 159,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                  s.input,\n                  {\n                    backgroundColor: theme.surface.app,\n                    color: theme.brand.primary,\n                    borderColor: theme.border.default,\n                    fontSize: 22,\n                    fontWeight: '500',\n                  },\n                ]",
+    "inline_fs": 22.0,
+    "ref_fs": 16.0,
+    "effective_fs": 22.0
+  },
+  {
+    "file": "lib\\components\\pos\\DiscountModal.tsx",
+    "line": 523,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.seamlessVoucherInput, { color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": 14.0,
+    "effective_fs": 14.0
+  },
+  {
+    "file": "lib\\components\\pos\\DiscountModal.tsx",
+    "line": 794,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.formInput, { color: theme.brand.primary }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "lib\\components\\pos\\DiscountModal.tsx",
+    "line": 812,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.formInput, { color: theme.text.primary, fontWeight: 'normal' }]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "lib\\components\\pos\\ModifierSheet.tsx",
+    "line": 544,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n                  s.noteInputBox,\n                  {\n                    backgroundColor: theme.surface.card,\n                    color: theme.text.primary,\n                    borderColor: theme.border.default,\n                  },\n                ]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "lib\\components\\pos\\QRScannerModal.tsx",
+    "line": 413,
+    "tag_preview": "<TextInput",
+    "style_prop": "s.manualInput",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "lib\\components\\pos\\TableOverviewBanner.tsx",
+    "line": 80,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.searchInput, { color: theme.text.primary, fontSize: 16 }]",
+    "inline_fs": 16.0,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "lib\\components\\pos\\TablePickerModal.tsx",
+    "line": 300,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.searchInput, { color: theme.text.primary, fontSize: 16 }]",
+    "inline_fs": 16.0,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "lib\\components\\pos\\table-ops\\TableOpsGuestNoteView.tsx",
+    "line": 97,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n              s.tableNoteInput,\n              {\n                backgroundColor: theme.surface.card,\n                borderColor: theme.border.default,\n                color: theme.text.primary,\n              },\n            ]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "lib\\components\\pos-home\\InlineModifierPane.tsx",
+    "line": 382,
+    "tag_preview": "<TextInput",
+    "style_prop": "[\n              s.noteInput,\n              {\n                backgroundColor: theme.surface.header,\n                color: theme.text.primary,\n                borderColor: theme.border.subtle,\n              },\n            ]",
+    "inline_fs": null,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "lib\\components\\pos-home\\ProductCatalogPane.tsx",
+    "line": 65,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.searchInput, { color: theme.text.primary, fontSize: 16 }]",
+    "inline_fs": 16.0,
+    "ref_fs": 16.0,
+    "effective_fs": 16.0
+  },
+  {
+    "file": "lib\\components\\ui\\AppOmniSearch.tsx",
+    "line": 74,
+    "tag_preview": "<TextInput>",
+    "style_prop": null,
+    "inline_fs": null,
+    "ref_fs": null,
+    "effective_fs": null
+  },
+  {
+    "file": "lib\\components\\ui\\AppOmniSearch.tsx",
+    "line": 223,
+    "tag_preview": "<TextInput",
+    "style_prop": "[s.input, { color: theme.text.primary }]",
+    "inline_fs": null,
+    "ref_fs": null,
+    "effective_fs": null
+  },
+  {
+    "file": "node_modules\\react-native\\types_generated\\Libraries\\Components\\Keyboard\\Keyboard.d.ts",
+    "line": 83,
+    "tag_preview": "<TextInput",
+    "style_prop": null,
+    "inline_fs": null,
+    "ref_fs": null,
+    "effective_fs": null
+  },
+  {
+    "file": "node_modules\\react-native\\types_generated\\Libraries\\Components\\TextInput\\InputAccessoryView.d.ts",
+    "line": 42,
+    "tag_preview": "<TextInput",
+    "style_prop": "{\n *               padding: 10,\n *               paddingTop: 50,\n *             }",
+    "inline_fs": null,
+    "ref_fs": null,
+    "effective_fs": null
+  },
+  {
+    "file": "node_modules\\react-native\\types_generated\\Libraries\\Components\\TextInput\\TextInput.flow.d.ts",
+    "line": 283,
+    "tag_preview": "<TextInput",
+    "style_prop": null,
+    "inline_fs": null,
+    "ref_fs": null,
+    "effective_fs": null
+  },
+  {
+    "file": "node_modules\\react-native\\types_generated\\Libraries\\Components\\TextInput\\TextInput.flow.d.ts",
+    "line": 791,
+    "tag_preview": "<TextInput",
+    "style_prop": "{height: 40, borderColor: 'gray', borderWidth: 1}",
+    "inline_fs": null,
+    "ref_fs": null,
+    "effective_fs": null
+  },
+  {
+    "file": "node_modules\\react-native\\types_generated\\Libraries\\Components\\TextInput\\TextInput.flow.d.ts",
+    "line": 820,
+    "tag_preview": "<TextInput",
+    "style_prop": null,
+    "inline_fs": null,
+    "ref_fs": null,
+    "effective_fs": null
+  },
+  {
+    "file": "node_modules\\react-native\\types_generated\\Libraries\\Components\\TextInput\\TextInput.flow.d.ts",
+    "line": 902,
+    "tag_preview": "<TextInput",
+    "style_prop": "{height: 40, borderColor: 'gray', borderWidth: 1}",
+    "inline_fs": null,
+    "ref_fs": null,
+    "effective_fs": null
+  },
+  {
+    "file": "node_modules\\react-native\\types_generated\\Libraries\\Components\\TextInput\\TextInput.flow.d.ts",
+    "line": 931,
+    "tag_preview": "<TextInput",
+    "style_prop": null,
+    "inline_fs": null,
+    "ref_fs": null,
+    "effective_fs": null
+  },
+  {
+    "file": "tests\\adversarial_m3_forensic_audit.ts",
+    "line": 38,
+    "tag_preview": "<TextInput",
+    "style_prop": null,
+    "inline_fs": null,
+    "ref_fs": null,
+    "effective_fs": null
+  }
+]
