@@ -68,6 +68,7 @@ desktop.ini
 *.sublime-workspace
 
 # Build artifacts & Local DB (STRICT ZERO-DB COMMIT & DEPLOYMENT)
+*.apk
 *.ipa
 *.db
 *.db-shm

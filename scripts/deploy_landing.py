@@ -30,32 +30,46 @@ def main():
     print(f"Connecting to VPS {HOST} via SSH...")
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    connected = False
     if KEY_PATH:
-        ssh.connect(HOST, PORT, USER, key_filename=KEY_PATH, timeout=15, banner_timeout=60)
-    else:
+        try:
+            ssh.connect(HOST, PORT, USER, key_filename=KEY_PATH, timeout=15, banner_timeout=60)
+            connected = True
+        except Exception as e:
+            print(f"Key auth failed ({e}), falling back to password...")
+    if not connected:
         ssh.connect(HOST, PORT, USER, PASS, timeout=15, banner_timeout=60)
     sftp = ssh.open_sftp()
     print("SSH connection established.")
+
+    def sftp_put_if_changed(local_p, remote_p):
+        try:
+            rstat = sftp.stat(remote_p)
+            if rstat.st_size == os.path.getsize(local_p):
+                print(f"  [=] Unchanged: {os.path.basename(local_p)}")
+                return
+        except IOError:
+            pass
+        sftp.put(local_p, remote_p)
+        print(f"  [+] Uploaded {os.path.basename(local_p)} ({os.path.getsize(local_p)} bytes)")
 
     for rdir in REMOTE_DIRS:
         print(f"\nDeploying to {rdir}...")
         ssh.exec_command(f"mkdir -p {rdir}/assets {rdir}/downloads")
 
         # 1. Upload root files
-        for fname in ["index.html", "privacy.html", "cafe.html", "quan-an.html", "styles.css", "app.js", "robots.txt", "sitemap.xml", "llms.txt"]:
+        for fname in ["index.html", "tai-app.html", "privacy.html", "cafe.html", "quan-an.html", "styles.css", "app.js", "robots.txt", "sitemap.xml", "llms.txt"]:
             local_path = os.path.join(LOCAL_DIR, fname)
             if os.path.exists(local_path):
                 remote_path = f"{rdir}/{fname}"
-                sftp.put(local_path, remote_path)
-                print(f"  [+] Uploaded {fname} ({os.path.getsize(local_path)} bytes)")
+                sftp_put_if_changed(local_path, remote_path)
 
         # 2. Upload assets
         assets_dir = os.path.join(LOCAL_DIR, "assets")
         for asset_path in glob.glob(os.path.join(assets_dir, "*.*")):
             aname = os.path.basename(asset_path)
             remote_asset = f"{rdir}/assets/{aname}"
-            sftp.put(asset_path, remote_asset)
-            print(f"  [+] Uploaded assets/{aname}")
+            sftp_put_if_changed(asset_path, remote_asset)
 
         # 3. Upload downloads metadata & files
         downloads_dir = os.path.join(LOCAL_DIR, "downloads")
@@ -63,8 +77,7 @@ def main():
             for dl_path in glob.glob(os.path.join(downloads_dir, "*.*")):
                 dlname = os.path.basename(dl_path)
                 remote_dl = f"{rdir}/downloads/{dlname}"
-                sftp.put(dl_path, remote_dl)
-                print(f"  [+] Uploaded downloads/{dlname}")
+                sftp_put_if_changed(dl_path, remote_dl)
 
         # Permissions
         cmd = f"chown -R www-data:www-data {rdir} && chmod -R 755 {rdir}"

@@ -47,6 +47,7 @@ OngChu POS là giải pháp phần mềm POS F&B Thực Chiến Vị Chủ Quán
 
 ## Tài Liệu Tham Khảo & Đường Dẫn Hữu Ích
 - [Trang Chủ OngChu POS](https://ongchu.cloud/): Trang thông tin tổng quan và chính sách tài trợ miễn phí trọn đời.
+- [Tải Ứng Dụng Đa Nền Tảng](https://ongchu.cloud/tai-app.html): Tải bản cài đặt Windows (.EXE 15MB), Android (.APK), iOS/iPadOS PWA và Web App trực tuyến.
 - [Hỗ Trợ Zalo Kỹ Thuật](https://zalo.me/0392387165): Nhận bộ cài đặt, video hướng dẫn và giải đáp thắc mắc trực tiếp qua Zalo 0392.387.165.
 - [Giải Pháp Quán Cafe & Trà Sữa](https://ongchu.cloud/cafe.html): Chi tiết tính năng order topping, in tem dán ly và màn hình phụ CFD.
 - [Giải Pháp Quán Ăn & Nhà Hàng](https://ongchu.cloud/quan-an.html): Chi tiết tính năng sơ đồ bàn, điều phối bếp KDS và sổ quỹ chi chợ.
