@@ -1366,6 +1366,172 @@ img {
 }
 
 /* ----------------------------------------------------
+   DOWNLOAD HUB SPECIFIC COMPONENTS (tai-app.html)
+---------------------------------------------------- */
+.dl-platforms-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-6);
+  margin-top: var(--space-4);
+}
+
+.dl-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.dl-card:hover {
+  box-shadow: var(--shadow-card-hover);
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+}
+
+.dl-card.highlight {
+  border: 2px solid var(--brand-accent);
+  background: #FFFDF9;
+}
+
+.dl-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.dl-card-badge.gold {
+  background: rgba(180, 83, 9, 0.12);
+  color: var(--brand-accent);
+}
+
+.dl-card-badge.green {
+  background: rgba(21, 128, 61, 0.12);
+  color: #15803D;
+}
+
+.dl-card-badge.subtle {
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+}
+
+.dl-card-preview {
+  margin: var(--space-4) 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-height: 220px;
+}
+
+.dl-card-preview img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  transition: transform var(--transition-smooth);
+}
+
+.dl-card:hover .dl-card-preview img {
+  transform: scale(1.02);
+}
+
+.dl-specs-box {
+  background: rgba(0, 0, 0, 0.025);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin: var(--space-4) 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.dl-spec-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.dl-spec-row .spec-label {
+  color: var(--text-muted);
+}
+
+.dl-spec-row .spec-val {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.dl-step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 14.5px;
+}
+
+.dl-step-num {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--brand-accent);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.platform-pill-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: var(--space-6);
+}
+
+.platform-pill {
+  padding: 8px 18px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-default);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all var(--transition-fast);
+}
+
+.platform-pill:hover {
+  border-color: var(--brand-accent);
+  color: var(--brand-accent);
+  background: #FFFDF9;
+  transform: translateY(-1px);
+}
+
+/* ----------------------------------------------------
    RESPONSIVE BREAKPOINTS
 ---------------------------------------------------- */
 @media (max-width: 1024px) {
@@ -1388,6 +1554,9 @@ img {
   }
   .footer-grid {
     grid-template-columns: 1fr 1fr;
+  }
+  .dl-platforms-grid {
+    grid-template-columns: 1fr;
   }
 }
 

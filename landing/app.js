@@ -163,4 +163,22 @@ document.addEventListener('DOMContentLoaded', () => {
       trackEvent(eventName);
     });
   });
+
+  // ----------------------------------------------------
+  // 6. COPY DOWNLOAD LINK HELPER
+  // ----------------------------------------------------
+  window.copyDownloadLink = function(btn) {
+    const url = 'https://ongchu.cloud/tai-app.html';
+    navigator.clipboard.writeText(url).then(() => {
+      const origText = btn.innerHTML;
+      btn.innerHTML = '✓ Đã sao chép link!';
+      btn.style.color = '#15803D';
+      setTimeout(() => {
+        btn.innerHTML = origText;
+        btn.style.color = '';
+      }, 2500);
+    }).catch(() => {
+      alert('Đường dẫn: ' + url);
+    });
+  };
 });
