@@ -38,7 +38,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles.css?v=2026.96"/>
+  <link rel="stylesheet" href="styles.css?v=2026.97"/>
 
   <!-- SCHEMA.ORG STRUCTURED DATA -->
   <script type="application/ld+json">
@@ -810,85 +810,85 @@
 
         <div class="faq-list" style="max-width: 820px; margin: 0 auto;">
           
-          <details class="faq-item" open>
-            <summary class="faq-question">
+          <div class="faq-item active">
+            <button type="button" class="faq-trigger" aria-expanded="true">
               <span>Tôi có cần mua máy tính mới hoặc máy POS đắt tiền để sử dụng không?</span>
-              <span class="faq-icon" aria-hidden="true">+</span>
-            </summary>
-            <div class="faq-answer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-panel">
               <p>Hoàn toàn không. OngChu POS được thiết kế siêu nhẹ theo tiêu chuẩn tinh gọn: bản Windows chỉ tốn ~15MB RAM, bản Android chạy mượt cả trên các dòng điện thoại tầm trung. Bạn có thể tận dụng ngay chiếc laptop cũ hoặc điện thoại cá nhân sẵn có để bắt đầu bán hàng.</p>
             </div>
-          </details>
+          </div>
 
-          <details class="faq-item">
-            <summary class="faq-question">
+          <div class="faq-item">
+            <button type="button" class="faq-trigger" aria-expanded="false">
               <span>Cài đặt máy in hóa đơn có khó không? Có cần IT hỗ trợ không?</span>
-              <span class="faq-icon" aria-hidden="true">+</span>
-            </summary>
-            <div class="faq-answer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-panel">
               <p>Rất đơn giản. Bạn chỉ cần cắm dây mạng từ máy in vào modem Wi-Fi của quán, sau đó vào mục Cài Đặt trên OngChu POS và nhập địa chỉ IP của máy in (mặc định là cổng 9100). Không cần cài đặt driver Windows Spooler phức tạp. Đội ngũ kỹ thuật hỗ trợ cài đặt từ xa qua Zalo: 0392.387.165 hoàn toàn miễn phí.</p>
             </div>
-          </details>
+          </div>
 
-          <details class="faq-item">
-            <summary class="faq-question">
+          <div class="faq-item">
+            <button type="button" class="faq-trigger" aria-expanded="false">
               <span>Nếu mất kết nối Internet quán có bán hàng và in hóa đơn được không?</span>
-              <span class="faq-icon" aria-hidden="true">+</span>
-            </summary>
-            <div class="faq-answer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-panel">
               <p>Chắc chắn được. OngChu POS áp dụng kiến trúc Offline-First: dữ liệu hóa đơn, giỏ hàng và danh mục món được lưu trực tiếp trên thiết bị của bạn. Máy in qua mạng LAN nội bộ vẫn in bill bình thường khi mất cáp quang ngoài đường. Khi có mạng trở lại, hệ thống sẽ tự động đồng bộ lên đám mây trong vòng 50ms.</p>
             </div>
-          </details>
+          </div>
 
-          <details class="faq-item">
-            <summary class="faq-question">
+          <div class="faq-item">
+            <button type="button" class="faq-trigger" aria-expanded="false">
               <span>Tôi muốn dùng thử trước khi cài đặt chính thức có được không?</span>
-              <span class="faq-icon" aria-hidden="true">+</span>
-            </summary>
-            <div class="faq-answer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-panel">
               <p>Được ngay lập tức! Bạn chỉ cần bấm vào nút <strong>"Vào bán hàng"</strong> hoặc truy cập <strong>app.ongchu.cloud</strong>, hệ thống đã chuẩn bị sẵn một quán mẫu có đầy đủ thực đơn Cafe, Trà Sữa, Bàn Ăn, KDS và Sổ Quỹ để bạn thao tác trực tiếp mà không cần đăng ký tài khoản.</p>
             </div>
-          </details>
+          </div>
 
-          <details class="faq-item">
-            <summary class="faq-question">
+          <div class="faq-item">
+            <button type="button" class="faq-trigger" aria-expanded="false">
               <span>Quán có nhiều nhân viên và nhiều thiết bị cùng dùng có đồng bộ không?</span>
-              <span class="faq-icon" aria-hidden="true">+</span>
-            </summary>
-            <div class="faq-answer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-panel">
               <p>Có. Hệ thống tích hợp sẵn WebSocket Hub chạy ngầm. Khi nhân viên phục vụ order trên điện thoại Android, quầy thu ngân Windows và màn hình bếp KDS sẽ nhận đơn và cập nhật trạng thái bàn tức thì dưới 50ms.</p>
             </div>
-          </details>
+          </div>
 
-          <details class="faq-item">
-            <summary class="faq-question">
+          <div class="faq-item">
+            <button type="button" class="faq-trigger" aria-expanded="false">
               <span>Dữ liệu bán hàng có bị mất khi tôi đổi điện thoại hoặc cài lại máy tính không?</span>
-              <span class="faq-icon" aria-hidden="true">+</span>
-            </summary>
-            <div class="faq-answer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-panel">
               <p>Không bao giờ mất. OngChu POS sử dụng cơ chế bảo vệ kép: vừa lưu trữ cục bộ để bán hàng offline khi đứt cáp quang, vừa tự động đồng bộ hóa lên máy chủ đám mây mã hóa an toàn. Khi bạn đổi sang máy tính hay điện thoại mới, chỉ cần đăng nhập tài khoản là toàn bộ thực đơn, sơ đồ bàn, sổ quỹ và lịch sử hóa đơn sẽ phục hồi 100% ngay lập tức.</p>
             </div>
-          </details>
+          </div>
 
-          <details class="faq-item">
-            <summary class="faq-question">
+          <div class="faq-item">
+            <button type="button" class="faq-trigger" aria-expanded="false">
               <span>Phần mềm có thật sự miễn phí 100% trọn đời không? Có thu phí sau này không?</span>
-              <span class="faq-icon" aria-hidden="true">+</span>
-            </summary>
-            <div class="faq-answer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-panel">
               <p>Cam kết danh dự Cái Tâm Vị Chủ Quán: 100% miễn phí trọn đời, 0đ phí bản quyền, 0đ thuê bao tháng, 0đ phí cài đặt. Chúng tôi không giới hạn số lượng món ăn, không giới hạn số hóa đơn và không giới hạn số thiết bị kết nối. Quý chủ quán hoàn toàn yên tâm phát triển kinh doanh mà không lo bị tăng giá phần mềm.</p>
             </div>
-          </details>
+          </div>
 
-          <details class="faq-item">
-            <summary class="faq-question">
+          <div class="faq-item">
+            <button type="button" class="faq-trigger" aria-expanded="false">
               <span>Tôi có thể in hóa đơn từ điện thoại qua máy in Bluetooth không?</span>
-              <span class="faq-icon" aria-hidden="true">+</span>
-            </summary>
-            <div class="faq-answer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-panel">
               <p>Hoàn toàn được. OngChu POS hỗ trợ mọi kết nối máy in phổ biến nhất: máy in qua cổng mạng LAN Wi-Fi (khuyên dùng vì tốc độ cao và nhiều máy cùng in được), máy in nhiệt USB và máy in Bluetooth mini cầm tay bỏ túi (rất tiện lợi cho nhân viên in hóa đơn tạm tính ngay tại bàn cho khách).</p>
             </div>
-          </details>
+          </div>
 
         </div>
       </div>
@@ -974,6 +974,6 @@
     </div>
   </footer>
 
-  <script src="app.js?v=2026.96"></script>
+  <script src="app.js?v=2026.97"></script>
 </body>
 </html>
