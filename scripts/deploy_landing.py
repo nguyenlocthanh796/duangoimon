@@ -43,15 +43,18 @@ def main():
     print("SSH connection established.")
 
     def sftp_put_if_changed(local_p, remote_p):
-        try:
-            rstat = sftp.stat(remote_p)
-            if rstat.st_size == os.path.getsize(local_p):
-                print(f"  [=] Unchanged: {os.path.basename(local_p)}")
-                return
-        except IOError:
-            pass
+        fname = os.path.basename(local_p)
+        force_upload = fname.endswith(('.html', '.css', '.js'))
+        if not force_upload:
+            try:
+                rstat = sftp.stat(remote_p)
+                if rstat.st_size == os.path.getsize(local_p):
+                    print(f"  [=] Unchanged: {fname}")
+                    return
+            except IOError:
+                pass
         sftp.put(local_p, remote_p)
-        print(f"  [+] Uploaded {os.path.basename(local_p)} ({os.path.getsize(local_p)} bytes)")
+        print(f"  [+] Uploaded {fname} ({os.path.getsize(local_p)} bytes)")
 
     for rdir in REMOTE_DIRS:
         print(f"\nDeploying to {rdir}...")

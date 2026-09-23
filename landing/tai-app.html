@@ -38,7 +38,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles.css?v=2026.95"/>
+  <link rel="stylesheet" href="styles.css?v=2026.96"/>
 
   <!-- SCHEMA.ORG STRUCTURED DATA -->
   <script type="application/ld+json">
@@ -183,11 +183,34 @@
           </p>
 
           <!-- 4 TRUST BADGES -->
-          <div style="display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 24px;">
+          <div style="display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;">
             <span class="trust-badge">✓ Miễn phí 100% trọn đời</span>
             <span class="trust-badge">✓ Cài đặt nhanh trong 3 phút</span>
             <span class="trust-badge">✓ Tốn ~15MB RAM (Siêu nhẹ)</span>
             <span class="trust-badge">✓ In nhiệt LAN 9100 &amp; Mở két RJ11</span>
+          </div>
+
+          <!-- ROLE-BASED QUICK PICKER (HƯỚNG DẪN CHỌN THEO VAI TRÒ VẬN HÀNH) -->
+          <div style="background: rgba(180, 83, 9, 0.05); border: 1px solid rgba(180, 83, 9, 0.2); border-radius: var(--radius-lg); padding: 12px 18px; margin: 0 auto 24px; max-width: 820px; display: flex; align-items: center; justify-content: space-around; gap: 12px; flex-wrap: wrap; font-size: 14px;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-weight: 700; color: #B45309;">Quầy Thu Ngân:</span>
+              <a href="#windows" style="color: var(--text-primary); text-decoration: underline; font-weight: 600;">Windows .EXE</a>
+            </div>
+            <div style="color: var(--border-default); display: inline-block;">|</div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-weight: 700; color: #15803D;">Chạy Bàn / Order:</span>
+              <a href="#android" style="color: var(--text-primary); text-decoration: underline; font-weight: 600;">Android APK &amp; iOS</a>
+            </div>
+            <div style="color: var(--border-default); display: inline-block;">|</div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-weight: 700; color: #0284C7;">Bếp &amp; Pha Chế:</span>
+              <a href="#web" style="color: var(--text-primary); text-decoration: underline; font-weight: 600;">Tablet KDS Web</a>
+            </div>
+            <div style="color: var(--border-default); display: inline-block;">|</div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-weight: 700; color: #7C3AED;">Chủ Quán Giám Sát:</span>
+              <a href="#web" style="color: var(--text-primary); text-decoration: underline; font-weight: 600;">Trình Duyệt Web</a>
+            </div>
           </div>
 
           <!-- PLATFORM ANCHOR PILLS -->
@@ -289,8 +312,8 @@
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 <span>Tải Bản Cài Windows (.EXE 15MB)</span>
               </a>
-              <div style="text-align: center; margin-top: 10px; font-size: 13.5px; color: var(--text-muted);">
-                Tải về bấm đúp mở lên dùng ngay, không cần cài driver rườm rà.
+              <div style="text-align: center; margin-top: 10px; font-size: 13.5px; color: var(--text-muted); line-height: 1.45;">
+                Tải về bấm đúp mở lên dùng ngay. Nếu Windows hiện thông báo SmartScreen, chỉ cần chọn <strong>More info</strong> → <strong>Run anyway</strong> để khởi chạy tức thì.
               </div>
             </div>
           </article>
@@ -363,8 +386,8 @@
                   <span>Mở Bản Web PWA Trên Android (Không cần cài)</span>
                 </a>
               </div>
-              <div style="text-align: center; margin-top: 10px; font-size: 13.5px; color: var(--text-muted);">
-                Chỉ cần bấm cho phép cài đặt từ nguồn ngoài để mở file APK.
+              <div style="text-align: center; margin-top: 10px; font-size: 13.5px; color: var(--text-muted); line-height: 1.45;">
+                Cài đặt trực tiếp file APK. Khi điện thoại hỏi "Tệp có thể gây hại" do tải ngoài CH Play, chỉ cần chọn <strong>Vẫn tải xuống / Vẫn cài đặt</strong> (Install anyway) để hoàn tất.
               </div>
             </div>
           </article>
@@ -388,6 +411,14 @@
               <p style="font-size: 15px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 16px;">
                 Trải nghiệm mượt mà toàn màn hình trên iPhone và iPad bằng công nghệ Progressive Web App (PWA). Không cần tải qua App Store, tự động cập nhật và hỗ trợ chia đôi màn hình Master-Detail trên iPad.
               </p>
+
+              <!-- MOCKUP PREVIEW (GIAO DIỆN IPAD & TABLET) -->
+              <div class="dl-card-preview" title="Giao diện giỏ hàng và sơ đồ bàn OngChu POS trên iPad">
+                <picture>
+                  <source srcset="assets/screen_cart.webp" type="image/webp"/>
+                  <img src="assets/screen_cart.png" alt="Giao diện OngChu POS trên máy tính bảng iPad" loading="lazy" width="560" height="220"/>
+                </picture>
+              </div>
 
               <!-- 3-STEP VISUAL INSTRUCTIONS -->
               <div style="background: rgba(0, 0, 0, 0.025); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 16px; margin: var(--space-4) 0;">
@@ -669,10 +700,30 @@
                 <td style="padding: 14px 16px; text-align: center; color: #15803D; font-weight: 700;">✓ Có</td>
                 <td style="padding: 14px 16px; text-align: center; color: #15803D; font-weight: 700;">✓ Có</td>
               </tr>
-              <tr>
+              <tr style="border-bottom: 1px solid var(--border-subtle);">
                 <td style="padding: 14px 20px; color: var(--text-primary);">
                   <strong>Báo cáo P&amp;L 3 Con Số Vàng</strong>
                   <div style="font-size: 13px; color: var(--text-muted);">Doanh thu — Chi phí nguyên vật liệu — Tiền thực bỏ túi</div>
+                </td>
+                <td style="padding: 14px 16px; text-align: center; color: #15803D; font-weight: 700; background: rgba(180, 83, 9, 0.03);">✓ Có</td>
+                <td style="padding: 14px 16px; text-align: center; color: #15803D; font-weight: 700;">✓ Có</td>
+                <td style="padding: 14px 16px; text-align: center; color: #15803D; font-weight: 700;">✓ Có</td>
+                <td style="padding: 14px 16px; text-align: center; color: #15803D; font-weight: 700;">✓ Có</td>
+              </tr>
+              <tr style="border-bottom: 1px solid var(--border-subtle); background: var(--bg-card-hover);">
+                <td style="padding: 14px 20px; color: var(--text-primary);">
+                  <strong>Cảnh báo gian lận Telegram Goroutine</strong>
+                  <div style="font-size: 13px; color: var(--text-muted);">Báo động tức thì khi hủy món sau in bếp, giảm giá &gt;20%, mở két tay</div>
+                </td>
+                <td style="padding: 14px 16px; text-align: center; color: #15803D; font-weight: 700; background: rgba(180, 83, 9, 0.03);">✓ Tức thì</td>
+                <td style="padding: 14px 16px; text-align: center; color: #15803D; font-weight: 700;">✓ Tức thì</td>
+                <td style="padding: 14px 16px; text-align: center; color: #15803D; font-weight: 700;">✓ Tức thì</td>
+                <td style="padding: 14px 16px; text-align: center; color: #15803D; font-weight: 700;">✓ Tức thì</td>
+              </tr>
+              <tr>
+                <td style="padding: 14px 20px; color: var(--text-primary);">
+                  <strong>In bill tạm tính &amp; VietQR động trên từng bàn</strong>
+                  <div style="font-size: 13px; color: var(--text-muted);">Khách quét mã chuyển khoản đúng số tiền và mã hóa đơn</div>
                 </td>
                 <td style="padding: 14px 16px; text-align: center; color: #15803D; font-weight: 700; background: rgba(180, 83, 9, 0.03);">✓ Có</td>
                 <td style="padding: 14px 16px; text-align: center; color: #15803D; font-weight: 700;">✓ Có</td>
@@ -809,6 +860,36 @@
             </div>
           </details>
 
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span>Dữ liệu bán hàng có bị mất khi tôi đổi điện thoại hoặc cài lại máy tính không?</span>
+              <span class="faq-icon" aria-hidden="true">+</span>
+            </summary>
+            <div class="faq-answer">
+              <p>Không bao giờ mất. OngChu POS sử dụng cơ chế bảo vệ kép: vừa lưu trữ cục bộ để bán hàng offline khi đứt cáp quang, vừa tự động đồng bộ hóa lên máy chủ đám mây mã hóa an toàn. Khi bạn đổi sang máy tính hay điện thoại mới, chỉ cần đăng nhập tài khoản là toàn bộ thực đơn, sơ đồ bàn, sổ quỹ và lịch sử hóa đơn sẽ phục hồi 100% ngay lập tức.</p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span>Phần mềm có thật sự miễn phí 100% trọn đời không? Có thu phí sau này không?</span>
+              <span class="faq-icon" aria-hidden="true">+</span>
+            </summary>
+            <div class="faq-answer">
+              <p>Cam kết danh dự Cái Tâm Vị Chủ Quán: 100% miễn phí trọn đời, 0đ phí bản quyền, 0đ thuê bao tháng, 0đ phí cài đặt. Chúng tôi không giới hạn số lượng món ăn, không giới hạn số hóa đơn và không giới hạn số thiết bị kết nối. Quý chủ quán hoàn toàn yên tâm phát triển kinh doanh mà không lo bị tăng giá phần mềm.</p>
+            </div>
+          </details>
+
+          <details class="faq-item">
+            <summary class="faq-question">
+              <span>Tôi có thể in hóa đơn từ điện thoại qua máy in Bluetooth không?</span>
+              <span class="faq-icon" aria-hidden="true">+</span>
+            </summary>
+            <div class="faq-answer">
+              <p>Hoàn toàn được. OngChu POS hỗ trợ mọi kết nối máy in phổ biến nhất: máy in qua cổng mạng LAN Wi-Fi (khuyên dùng vì tốc độ cao và nhiều máy cùng in được), máy in nhiệt USB và máy in Bluetooth mini cầm tay bỏ túi (rất tiện lợi cho nhân viên in hóa đơn tạm tính ngay tại bàn cho khách).</p>
+            </div>
+          </details>
+
         </div>
       </div>
     </section>
@@ -893,6 +974,6 @@
     </div>
   </footer>
 
-  <script src="app.js?v=2026.95"></script>
+  <script src="app.js?v=2026.96"></script>
 </body>
 </html>
