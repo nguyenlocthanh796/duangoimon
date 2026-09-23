@@ -1400,6 +1400,45 @@ img {
   background: #FFFDF9;
 }
 
+.dl-icon-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dl-icon-circle.win {
+  background: rgba(0, 120, 212, 0.1);
+  color: #0078D4;
+}
+
+.dl-icon-circle.android {
+  background: rgba(21, 128, 61, 0.12);
+  color: #15803D;
+}
+
+.dl-icon-circle.apple {
+  background: rgba(28, 25, 23, 0.08);
+  color: #1C1917;
+}
+
+.dl-icon-circle.web {
+  background: rgba(180, 83, 9, 0.1);
+  color: #B45309;
+}
+
+.dl-icon-circle.hardware {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-lg);
+  background: rgba(180, 83, 9, 0.08);
+  color: #B45309;
+  margin-bottom: 14px;
+}
+
 .dl-card-badge {
   display: inline-flex;
   align-items: center;
@@ -1529,6 +1568,20 @@ img {
   color: var(--brand-accent);
   background: #FFFDF9;
   transform: translateY(-1px);
+}
+
+.platform-pill svg {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+}
+
+.btn-icon-svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 /* ----------------------------------------------------
