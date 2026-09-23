@@ -45,6 +45,7 @@ class PageHTMLParser(HTMLParser):
         self.meta_tags = {}
         self.links = []
         self.images = []
+        self.sources = []
         self.scripts = []
         self.json_ld_blocks = []
         self.in_json_ld = False
@@ -64,6 +65,8 @@ class PageHTMLParser(HTMLParser):
             self.links.append(attr_dict)
         elif tag_lower == 'img':
             self.images.append(attr_dict)
+        elif tag_lower == 'source':
+            self.sources.append(attr_dict)
         elif tag_lower == 'script':
             script_type = attr_dict.get('type', '').lower()
             if script_type == 'application/ld+json':
@@ -249,6 +252,11 @@ class SEOAuditor:
             src = img.get('src', '')
             if src and not src.startswith(('http://', 'https://', 'data:')):
                 asset_links.append(src)
+
+        for src_tag in parser.sources:
+            srcset = src_tag.get('srcset', '')
+            if srcset and not srcset.startswith(('http://', 'https://', 'data:')):
+                asset_links.append(srcset)
 
         for s in parser.scripts:
             src = s.get('src', '')

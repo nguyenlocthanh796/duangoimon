@@ -5,9 +5,20 @@ import glob
 import paramiko
 
 HOST = os.getenv("VPS_HOST", "116.118.3.48")
-PORT = 22
-USER = "root"
-PASS = os.getenv("VPS_PASSWORD", "")
+PORT = int(os.getenv("VPS_PORT", "22"))
+USER = os.getenv("VPS_USER", "root")
+PASS = os.getenv("VPS_PASSWORD")
+KEY_PATH = os.getenv("VPS_SSH_KEY")
+
+if not PASS and not KEY_PATH:
+    default_ed25519 = os.path.expanduser("~/.ssh/id_ed25519")
+    default_rsa = os.path.expanduser("~/.ssh/id_rsa")
+    if os.path.exists(default_ed25519):
+        KEY_PATH = default_ed25519
+    elif os.path.exists(default_rsa):
+        KEY_PATH = default_rsa
+    else:
+        sys.exit("ABORT: Không tìm thấy VPS_PASSWORD hoặc SSH key trong ~/.ssh/. Vui lòng cấu hình!")
 
 LOCAL_DIR = r"d:\duanpos-ongchu\landing"
 REMOTE_DIRS = [
@@ -19,7 +30,10 @@ def main():
     print(f"Connecting to VPS {HOST} via SSH...")
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(HOST, PORT, USER, PASS, timeout=15, banner_timeout=60)
+    if KEY_PATH:
+        ssh.connect(HOST, PORT, USER, key_filename=KEY_PATH, timeout=15, banner_timeout=60)
+    else:
+        ssh.connect(HOST, PORT, USER, PASS, timeout=15, banner_timeout=60)
     sftp = ssh.open_sftp()
     print("SSH connection established.")
 
