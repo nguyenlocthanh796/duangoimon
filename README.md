@@ -1,48 +1,60 @@
-# OngChu POS — Lean F&B Point of Sale Platform
+# 👑 OngChu Lean POS — Universal Omnichannel F&B Platform
+> **Hệ Thống Bán Hàng & Quản Trị F&B Thực Chiến — Cái Tâm Vị Chủ Quán**
+> 
+> *Đa Nền Tảng Siêu Nhẹ:* Windows Desktop Native (.exe 15MB) · iPad & iPhone (iOS Safari PWA) · Android POS (Sony Xperia / Sunmi / iMin) · Web Cloud ([app.ongchu.cloud](https://app.ongchu.cloud))
 
 <p align="center">
-  <img src="screenshots/hero_banner_trio.png" alt="OngChu POS Tri-Screen Showcase" width="920"/>
+  <img src="screenshots/hero_banner_trio.png" alt="OngChu POS Tri-Screen Showcase" width="940"/>
 </p>
 
 <p align="center">
-  <a href="https://ongchu.cloud"><img src="https://img.shields.io/badge/Platform-Web%20%7C%20Windows%20%7C%20Android-1c1917?style=flat-square" alt="Platform"/></a>
-  <a href="https://app.ongchu.cloud"><img src="https://img.shields.io/badge/Production%20App-app.ongchu.cloud-b45309?style=flat-square" alt="Live App"/></a>
-  <a href="https://github.com/nguyenlocthanh796/duangoimon/releases"><img src="https://img.shields.io/badge/Release-v2.0.0-15803d?style=flat-square" alt="Release"/></a>
-  <img src="https://img.shields.io/badge/Architecture-Dual--Theme%20Universal-44403c?style=flat-square" alt="Architecture"/>
-  <img src="https://img.shields.io/badge/Hardware-Direct%20ESC%2FPOS%209100-b45309?style=flat-square" alt="Hardware"/>
+  <a href="https://ongchu.cloud"><img src="https://img.shields.io/badge/Cổng%20Thông%20Tin-ongchu.cloud-1c1917?style=flat-square" alt="Website"/></a>
+  <a href="https://app.ongchu.cloud"><img src="https://img.shields.io/badge/Production%20POS-app.ongchu.cloud-b45309?style=flat-square" alt="Live App"/></a>
+  <a href="https://github.com/nguyenlocthanh796/duangoimon/releases"><img src="https://img.shields.io/badge/Phiên%20Bản-v2.0.0-15803d?style=flat-square" alt="Release"/></a>
+  <img src="https://img.shields.io/badge/Frontend-Expo%20SDK%2057%20%7C%20RN%200.86-44403c?style=flat-square" alt="Frontend"/>
+  <img src="https://img.shields.io/badge/Backend-Golang%201.22%2B%20%2815MB%29-00add8?style=flat-square" alt="Backend"/>
+  <img src="https://img.shields.io/badge/In%20Nhiệt-Raw%20TCP%20Socket%209100-b45309?style=flat-square" alt="Hardware"/>
+  <img src="https://img.shields.io/badge/Bảo%20Mật-HMAC--SHA256%20%7C%204%20Vành%20Đai-dc2626?style=flat-square" alt="Security"/>
 </p>
 
 ---
 
-## 1. Tổng Quan Hệ Thống (Executive Summary)
+## 🏛️ 1. Tổng Quan Hệ Sinh Thái & Triết Lý Vị Chủ Quán
 
-**OngChu POS** là hệ sinh thái quản lý và bán hàng điểm bán (Point-of-Sale) chuyên sâu dành riêng cho ngành F&B (Nhà hàng, Quán Cà Phê, Trà Sữa, Quán Ăn, Tiệm Bánh và Chuỗi Đa Chi Nhánh). 
+**OngChu POS** là hệ sinh thái quản lý và vận hành điểm bán (Point-of-Sale) chuyên sâu dành riêng cho ngành F&B (Nhà hàng, Quán Cà Phê, Trà Sữa, Quán Ăn, Tiệm Bánh, Quán Nhậu và Chuỗi Đa Chi Nhánh).
 
-Hệ thống được thiết kế theo triết lý **"Vị Chủ Quán (Zero-Gov & Lean Operator)"** — tối giản hóa thao tác, tốc độ cảm ứng dưới 50ms, kiểm soát dòng tiền chặt chẽ và phòng chống gian lận nội bộ tuyệt đối.
-
-- **Web POS Trực Tiếp**: [https://app.ongchu.cloud](https://app.ongchu.cloud) (Sử dụng tức thì, không cần cài đặt)
-- **Cổng Thông Tin Giải Pháp**: [https://ongchu.cloud](https://ongchu.cloud)
-- **Bản Cài Đặt Desktop Windows**: Ứng dụng native siêu nhẹ ~12MB, RAM tiêu thụ <20MB
-- **Bản Cài Đặt Android Native**: Tương thích mọi dòng máy POS cầm tay và Tablet Android
+Hệ thống được kiến tạo xoay quanh triết lý **"Vị Chủ Quán (Zero-Gov & Lean Operator)"**:
+* **Không làm phiền chủ quán**: Bỏ qua các quy trình hành chính rườm rà. Thao tác gọi món, in bill và thanh toán đạt tốc độ cảm ứng dưới **50ms**.
+* **3 Giây Sổ Quỹ Chi Chợ**: Ghi nhận tức thì các khoản tiền mặt chi thực tế trong ngày (đá, rau, thịt, ứng lương) ngay tại quầy thu ngân.
+* **30 Giây Giao Ca Đếm Két**: Khóa ca chính xác bằng bảng đếm mệnh giá tiền mặt, tự động đối soát chênh lệch két và ghi nhật ký kiểm toán.
+* **3 Con Số Vàng Lợi Nhuận**: Nắm bắt bức tranh tài chính chuẩn xác mỗi ngày: `Tiền mặt trong két` + `Tiền tài khoản VietQR` = `Lợi nhuận ròng thực tế`.
+* **Bảo vệ dòng tiền tuyệt đối**: Hệ thống Goroutine ngầm tự động gửi tin nhắn cảnh báo tức thì qua Telegram khi phát hiện hủy món sau in tạm tính, chiết khấu hóa đơn > 20% hoặc mở két tiền bằng tay.
 
 ---
 
-## 2. 6 Trụ Cột Kỹ Thuật & Vận Hành Bất Biến
+## ⚡ 2. 6 Trụ Cột Kỹ Thuật Bất Biến (Core Invariants)
 
 | # | Trụ Cột | Hiện Thực Kỹ Thuật | Giá Trị Thực Chiến |
 |---|---|---|---|
-| **1** | **Bán Hàng 1-Chạm** | Máy trạng thái giỏ hàng đa bàn, chuyển bàn/gộp bàn tức thì | Tốc độ gọi món, in bếp và thanh toán dưới 3 giây |
-| **2** | **Sổ Quỹ Chi Chợ 3s (`/so-quy`)** | Nhật ký dòng tiền chi nhanh, tự động trừ két tiền | Ghi nhận chi đá, rau, thịt, ứng lương nhân viên tức thì |
-| **3** | **Giao Ca Đếm Két 30s (`/giao-ca`)** | Bảng đếm mệnh giá tiền mặt, đối soát lệch tiền tự động | Khóa ca chính xác, Telegram gửi cảnh báo khi lệch tiền |
-| **4** | **Báo Cáo 3 Con Số Vàng (`/bao-cao-loi-nhuan`)** | Công thức: `Tiền Trong Két` + `Tiền Trong Bank` = `Lợi Nhuận Ròng` | Chủ quán nắm rõ tài chính tức thì, không cần đợi kế toán |
-| **5** | **In Nhiệt Direct ESC/POS** | Raw TCP Socket (Port 9100) kích mở két RJ11 không cần driver | Tốc độ in bill K80/K58 tức thì, tự động cắt giấy |
-| **6** | **Chống Gian Lận Độc Lập** | Goroutine kiểm soát ngầm, gửi cảnh báo Telegram tức thời | Báo động khi hủy món sau in tạm tính, chiết khấu >20%, mở két tay |
+| **1** | **Vị Chủ Quán (Lean Operator)** | Sổ quỹ chi chợ 3s (`/so-quy`), Giao ca đếm két 30s (`/giao-ca`), Báo cáo 3 con số vàng (`/bao-cao-loi-nhuan`), Goroutine Telegram chống gian lận. | Chủ quán nắm rõ tài chính tức thì trong ngày, kiểm soát thất thoát mà không phụ thuộc kế toán. |
+| **2** | **Backend Siêu Tốc (15MB)** | Golang 1.22+ Gin / Fiber (boot 0.05s, RAM <15MB), WebSocket Hub (`/ws/pos`) đồng bộ tức thì KDS & Màn hình phụ CFD, GORM Auto-Migrate PostgreSQL 16 & SQLite. | Hoạt động trơn tru trên VPS cấu hình tối thiểu, chịu tải hàng ngàn request đồng thời với độ trễ siêu thấp. |
+| **3** | **In Nhiệt Direct ESC/POS** | Raw TCP Socket trực tiếp (Port 9100, không cần Windows Spooler / Driver), kích xung mở két tiền RJ11 `\x1b\x70\x00\x19\xfa`, tự động cắt giấy `\x1d\x56\x41\x10`. | Tốc độ in hóa đơn K80/K58 tức thì, không bị treo spooler hoặc phụ thuộc driver rườm rà. |
+| **4** | **Frontend Universal Đa Nền Tảng** | 1 Codebase Expo SDK 57 (React Native 0.86.3, React 19), Zustand Multi-Table Cart Engine (<1KB, Zero DOM lag), Shopify FlashList 60 FPS mượt mà. | Chạy mượt trên mọi thiết bị: Windows PC, iPad, điện thoại Android, máy POS cầm tay Sunmi / iMin. |
+| **5** | **Thẩm Mỹ Dual-Theme Indochine** | Light Mode (Ngà Giấy Dó `#F9F6F0` / Gỗ Mun `#1C1917`), Dark Mode (Nâu Than `#14110E`), Điểm nhấn Cam Apple `#B45309`. Tabular Nums 100%, Thang đo 7 cấp typography. | Chống lóa mắt trong môi trường quầy bar / thu ngân, hiển thị số tiền và mã hóa đơn thẳng hàng tuyệt đối. |
+| **6** | **Chống Gian Lận & Offline-First** | Hoạt động bán hàng độc lập khi mất Internet qua SQLite cục bộ, đồng bộ tự động khi có mạng. Audit Log lưu vết hủy món và sửa đơn. | Quán không bao giờ bị gián đoạn bán hàng, phòng ngừa tiêu cực và thất thoát tiền mặt nội bộ. |
 
 ---
 
-## 3. Bộ Ảnh Chụp Thực Tế & Hướng Dẫn Chi Tiết (Real Device Annotated Showcase)
+## 📱 3. Kiểm Thử Thiết Bị Thật & Bộ Ảnh Chụp Nghiệp Vụ
 
-Toàn bộ ảnh giao diện bên dưới được chụp trực tiếp từ thiết bị thật với các nhãn chỉ dẫn viền cam/đỏ trực quan:
+### 3.1. Thao Tác Trên Thiết Bị Di Động Thực Tế (Sony Xperia 5 — CinemaWide 21:9 OLED)
+Hệ thống được kiểm thử thực tế trên thiết bị vật lý qua ADB JSON-RPC Server, tối ưu hóa công thái học cảm ứng với vùng chạm tối thiểu **44 × 44pt** và phản hồi Haptics chân thực:
+
+<p align="center">
+  <img src="screenshots/screen_xperia_sony.png" alt="OngChu POS trên thiết bị Sony Xperia 5 thật" width="940"/>
+</p>
+
+### 3.2. 12 Màn Hình Nghiệp Vụ Thực Tế Có Chú Thích Chỉ Dẫn
 
 <div align="center">
   <table>
@@ -105,35 +117,90 @@ Toàn bộ ảnh giao diện bên dưới được chụp trực tiếp từ thi
 
 ---
 
-## 4. Tải Ứng Dụng & Cài Đặt (Releases)
+## 🛡️ 4. Bảo Mật Toàn Diện 4 Vành Đai (Security Hardening)
 
-| Nền Tảng | Định Dạng | Liên Kết Tải | Ghi Chú |
+Hệ thống tuân thủ quy chuẩn bảo mật nghiêm ngặt chống xâm nhập và gian lận:
+1. **Vành đai 1: Zero-Source Deployment**: Không lưu trữ mã nguồn `.go`/`.ts`/`.git` trên VPS Production. Chỉ triển khai Stripped Binary Go (`-s -w -trimpath`) và Hermes Bytecode (`.hbc`) trên Mobile.
+2. **Vành đai 2: Chống MITM & Ký Số Request**: 100% kết nối qua TLS 1.3/HSTS. Xác thực tính toàn vẹn gói tin bằng chữ ký số HMAC-SHA256 (`X-Signature`, `X-Timestamp`, `X-Nonce` TTL 30s chống tấn công phát lại Replay Attack).
+3. **Vành đai 3: Đóng Băng Hệ Điều Hành & CSDL**: CSDL PostgreSQL 16 & Redis 7 cô lập trong Docker Network nội bộ (CẤM bind `0.0.0.0`). Tường lửa UFW chỉ mở cổng Web HTTPS (443) và SSH đổi port.
+4. **Vành đai 4: Kiểm Soát Đa Khách Thuê & Chống Gian Lận (Multi-Tenant Isolation)**: Ràng buộc phân tách dữ liệu tuyệt đối giữa các quán (`tenant_id` scope bắt buộc trên 100% query GORM), Rate Limiting Token Bucket và Audit Logs bất biến (Append-Only).
+
+---
+
+## 💻 5. Bảng Điều Phối Cổng & Môi Trường (Port Matrix)
+
+| Phân Hệ | Thư Mục | Công Nghệ | Cổng Mặc Định | Nhiệm Vụ Trọng Tâm |
+| :--- | :--- | :--- | :--- | :--- |
+| **Frontend Mobile & Web** | `/frontend` | Expo SDK 57, React Native 0.86, Zustand | `8085` | 10 Màn hình nghiệp vụ chính, Zero-Modal Inline Navigation |
+| **Golang Backend** | `/backend` | Go 1.22+, Gin, GORM, WebSocket Hub | `8080` | RESTful APIs, WebSocket Hub `/ws/pos`, ESC/POS Direct Socket |
+| **Database & Cache** | `docker-compose` | PostgreSQL 16 Alpine, Redis 7 | `5432` / `6379` | Sổ kế toán kép, lưu vết Audit Logs, Caching dữ liệu |
+| **Máy In Nhiệt ESC/POS** | Mạng LAN | TCP Raw Socket | `9100` | In hóa đơn K80/K58 trực tiếp, kích mở ngăn kéo đựng tiền RJ11 |
+| **Desktop Wrapper** | `/desktop` | Tauri 2.0 (Rust Core) | N/A (`.exe`) | Đóng gói Windows Native siêu nhẹ (~10MB, tiêu thụ ~15MB RAM) |
+| **Android ADB Testing** | `/scripts` | Python JSON-RPC MCP Server | ADB Stdio | Kiểm thử tự động trên thiết bị Android thật (Sony Xperia 5 / Tablet) |
+
+---
+
+## 🚀 6. Hướng Dẫn Tải & Trải Nghiệm (Releases)
+
+| Nền Tảng | Định Dạng | Liên Kết Tải / Truy Cập | Ghi Chú |
 |---|---|---|---|
-| **Windows Desktop** | `.exe` (~12MB) | [Tải Bản Windows](https://github.com/nguyenlocthanh796/duangoimon/releases/latest) | Bản Portable độc lập, không cần cài đặt môi trường |
-| **Android Phone / Tablet** | `.apk` (~25MB) | [Tải Bản Android APK](https://github.com/nguyenlocthanh796/duangoimon/releases/latest) | Tương thích máy POS Sunmi, iMin, điện thoại Android 8.0+ |
-| **Web POS Online** | PWA Cloud | [Mở Web POS](https://app.ongchu.cloud) | Đồng bộ dữ liệu đám mây tức thì |
+| **Web POS Trực Tiếp** | PWA Cloud | [Mở app.ongchu.cloud](https://app.ongchu.cloud) | Chạy ngay trên Chrome, Safari, Edge mà không cần cài đặt |
+| **Cổng Thông Tin Giải Pháp** | Marketing Showroom | [Truy cập ongchu.cloud](https://ongchu.cloud) | Xem bảng so sánh tính năng, quy trình 8 bước và tải bản cài đặt |
+| **Windows Desktop Native** | `.exe` (~15MB) | [Tải Bản Windows .EXE](https://github.com/nguyenlocthanh796/duangoimon/releases/latest) | Bản Portable độc lập, siêu mượt, kết nối trực tiếp máy in cổng LAN |
+| **Android Phone / Tablet** | `.apk` (~25MB) | [Tải Bản Android APK](https://github.com/nguyenlocthanh796/duangoimon/releases/latest) | Tương thích máy POS Sunmi, iMin và điện thoại Android 8.0+ |
 
 ---
 
-## 5. Quy Trình Vận Hành Tiêu Chuẩn (SOP)
+## 🛠️ 7. Hướng Dẫn Khởi Chạy Tự Triển Khai (Self-Hosted Quickstart)
 
-### 5.1. Quy Trình Bán Hàng & Tính Tiền
-1. **Mở Bàn / Chọn Bàn**: Chạm vào bàn trống trên Sơ Đồ Bàn -> Chọn món ăn hoặc quét mã vạch SKU.
-2. **Tùy Chọn Topping & Ghi Chú**: Chọn kích cỡ Ly (M/L/XL), lượng Đá/Đường và Topping thêm -> Bấm `Thêm Vào Giỏ`.
-3. **Báo Bếp / Lưu Đơn**: Bấm `Lưu Đơn & Báo Bếp` -> Lệnh in tự động đẩy xuống máy in bếp hoặc màn hình KDS Barista.
+### 7.1. Khởi động CSDL PostgreSQL & Redis:
+```bash
+docker-compose up -d
+```
+
+### 7.2. Khởi động Golang Backend:
+```bash
+cd backend
+go run cmd/server/main.go
+# Health check: http://localhost:8080/health
+```
+
+### 7.3. Khởi động Frontend Universal (Expo SDK 57):
+```bash
+cd frontend
+npm install
+npm run dev
+# Mở trình duyệt tại: http://localhost:8085
+```
+
+### 7.4. Đóng gói ứng dụng Desktop (Tauri 2.0):
+```bash
+cd desktop
+npm run tauri build
+```
+
+---
+
+## 📋 8. Quy Trình Vận Hành Chuẩn F&B (SOP)
+
+### 8.1. Quy Trình Bán Hàng & Tính Tiền (Dưới 3 Giây)
+1. **Mở Bàn / Chọn Bàn**: Chạm vào bàn trên Sơ Đồ Bàn -> Chọn món ăn hoặc quét mã vạch SKU.
+2. **Tùy Chọn Topping & Ghi Chú**: Chọn kích cỡ ly, lượng đá/đường và món thêm -> Bấm `Thêm Vào Giỏ`.
+3. **Báo Bếp / Lưu Đơn**: Bấm `Lưu Đơn & Báo Bếp` -> Lệnh in tự động đẩy xuống máy in bếp hoặc màn hình KDS.
 4. **Thanh Toán**:
-   - **Tiền Mặt**: Nhập số tiền khách đưa bằng phím Numpad -> Hệ thống tự tính tiền thối -> Bấm `Hoàn Tất & In Bill` (Két tiền RJ11 tự động bật mở).
-   - **VietQR Động**: Chuyển sang tab VietQR -> Khách quét mã thanh toán -> Webhook tự động xác nhận trong 1s.
+   - **Tiền Mặt**: Bấm Numpad số tiền khách đưa -> Hệ thống tự tính tiền thừa -> Bấm `Hoàn Tất & In Bill` (Két tiền RJ11 tự động bật mở).
+   - **VietQR Động**: Chuyển tab VietQR -> Khách quét mã chính xác số tiền -> Webhook tự động chốt đơn sau 1 giây.
 
-### 5.2. Quy Trình Chi Chợ & Giao Ca
-1. **Ghi Chi Chợ 3s**: Mở menu `/so-quy` -> Chọn nhanh loại chi (Đá, Rau, Thịt, Ứng lương) -> Nhập số tiền -> Bấm `Lưu Phiếu Chi`.
-2. **Giao Ca Đếm Két 30s**: Mở menu `/giao-ca` -> Nhập số lượng từng mệnh giá tiền trong két -> Bấm `Tổng Kết Ca`. Nếu có chênh lệch tiền, hệ thống tự động ghi nhật ký và gửi cảnh báo đến Telegram Chủ Quán.
-3. **Xem Báo Cáo Cuối Ngày**: Mở menu `/bao-cao-loi-nhuan` để kiểm tra 3 Con Số Vàng: Tiền mặt trong két, Tiền chuyển khoản trong ngân hàng và Lợi nhuận ròng thực tế.
+### 8.2. Quy Trình Chi Chợ & Giao Ca Đếm Két
+1. **Ghi Chi Chợ 3s**: Mở `/so-quy` -> Chọn loại chi (Đá, Rau củ, Thịt cá, Gas, Phụ phí) -> Nhập số tiền -> Bấm `Lưu Phiếu Chi` (Tự động trừ két).
+2. **Giao Ca Đếm Két 30s**: Mở `/giao-ca` -> Nhập số tờ từng mệnh giá tiền mặt trong két -> Bấm `Tổng Kết Ca`. Nếu phát hiện chênh lệch, hệ thống lập tức gửi cảnh báo đến Telegram Chủ Quán.
+3. **Tổng Kết Lợi Nhuận**: Mở `/bao-cao-loi-nhuan` kiểm tra 3 Con Số Vàng: Tiền mặt trong két, Tiền trong tài khoản và Lợi nhuận ròng thực tế bỏ túi.
 
 ---
 
-## 6. Bản Quyền & Liên Hệ Hỗ Trợ
+## 📄 9. Bản Quyền & Hỗ Trợ Kỹ Thuật
 
 - **Bản Quyền**: © 2026 OngChu POS. Mọi quyền được bảo lưu.
 - **Website Chính Thức**: [https://ongchu.cloud](https://ongchu.cloud)
-- **Hỗ Trợ Kỹ Thuật & Triển Khai**: `hotro@ongchu.cloud`
+- **Email Hỗ Trợ & Triển Khai**: `hotro@ongchu.cloud`
+- **Báo Cáo Sự Cố**: [GitHub Issues](https://github.com/nguyenlocthanh796/duangoimon/issues)
