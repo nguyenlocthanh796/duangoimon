@@ -13,8 +13,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/glebarez/sqlite"
 	"github.com/google/uuid"
+	"github.com/ongchu/pos-backend/internal/auth"
 	"github.com/ongchu/pos-backend/internal/database"
 	"github.com/ongchu/pos-backend/internal/handler"
+	"github.com/ongchu/pos-backend/internal/middleware"
 	"github.com/ongchu/pos-backend/internal/models"
 	"github.com/ongchu/pos-backend/internal/websocket"
 	"gorm.io/gorm"
@@ -82,6 +84,8 @@ func SetupTestEnv(t *testing.T) (*gorm.DB, *gin.Engine) {
 		&models.StaffAdvance{},
 		&models.StaffPayroll{},
 		&models.RecurringExpense{},
+		&models.PaymentIdempotencyKey{},
+		&models.TenantDevice{},
 	)
 	if err != nil {
 		t.Fatalf("AutoMigrate failed: %v", err)
@@ -111,10 +115,18 @@ func SetupTestRouter() *gin.Engine {
 		public.GET("/orders/latest/active", handler.GetLatestActiveOrder)
 		public.POST("/cfd-sync", handler.SyncCFDState)
 		public.GET("/cfd-active", handler.GetCFDActiveState)
+		public.POST("/login", handler.SaaSLogin)
+		public.POST("/register", handler.RegisterTenant)
+		public.POST("/refresh-token", handler.RefreshToken)
+		public.POST("/staff-pin", handler.StaffPinLogin)
 	}
 
-	// Main API group
+	// Webhook ngân hàng
+	r.POST("/api/v1/webhook/bank-transfer", handler.HandleBankTransferWebhook)
+
+	// Main API group (Bảo vệ bằng JWTAuthMiddleware)
 	api := r.Group("/api/v1")
+	api.Use(middleware.JWTAuthMiddleware())
 	{
 		// Orders
 		api.GET("/orders", handler.GetOrders)
@@ -211,8 +223,9 @@ func SetupTestRouter() *gin.Engine {
 		api.POST("/vendors", handler.CreateVendor)
 		api.GET("/vendors/:name/purchase-orders", handler.GetVendorPurchaseOrders)
 
-		// Offline sync
+		// Offline sync & Backup Restore
 		api.POST("/sync/orders", handler.SyncOrders)
+		api.POST("/backup/restore", middleware.RequireRole("owner"), middleware.RequirePermission("backup.restore"), handler.RestoreBackup)
 
 		// Auth & PIN security
 		api.POST("/auth/verify-pin", handler.VerifyPin)
@@ -239,8 +252,41 @@ func SetupTestRouter() *gin.Engine {
 	return r
 }
 
-// PerformRequest dispatches an HTTP request against a handler
+var (
+	defaultTestToken  string
+	testTokenInitOnce sync.Once
+)
+
+func GetDefaultTestToken() string {
+	testTokenInitOnce.Do(func() {
+		claims := &auth.TokenClaims{
+			UserID:      "usr_test_super_owner",
+			Username:    "test_owner",
+			TenantID:    "tenant_ongchu",
+			BranchID:    "branch-default",
+			Role:        "owner",
+			Permissions: auth.DefaultPermissionsForRole("owner"),
+		}
+		pair, err := auth.CreateAuthTokenPair(claims)
+		if err == nil {
+			defaultTestToken = pair.AccessToken
+		}
+	})
+	return defaultTestToken
+}
+
+// PerformRequest dispatches an HTTP request against a handler using default authenticated test token
 func PerformRequest(r http.Handler, method, path string, body interface{}) *httptest.ResponseRecorder {
+	return PerformRequestWithToken(r, method, path, body, GetDefaultTestToken())
+}
+
+// PerformUnauthenticatedRequest dispatches a raw unauthenticated HTTP request
+func PerformUnauthenticatedRequest(r http.Handler, method, path string, body interface{}) *httptest.ResponseRecorder {
+	return PerformRequestWithToken(r, method, path, body, "")
+}
+
+// PerformRequestWithToken dispatches an HTTP request with an optional Bearer token
+func PerformRequestWithToken(r http.Handler, method, path string, body interface{}, token string) *httptest.ResponseRecorder {
 	var reqBody *bytes.Buffer
 	if body != nil {
 		if str, ok := body.(string); ok {
@@ -255,6 +301,9 @@ func PerformRequest(r http.Handler, method, path string, body interface{}) *http
 
 	req, _ := http.NewRequest(method, path, reqBody)
 	req.Header.Set("Content-Type", "application/json")
+	if token != "" {
+		req.Header.Set("Authorization", "Bearer "+token)
+	}
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 	return w
@@ -329,6 +378,71 @@ func SeedInitialStoreData(db *gorm.DB) (tenant models.Tenant, branch models.Bran
 		FullName:  "Quản Lý Hoàng",
 		Role:      "manager",
 		PinCode:   "8888",
+		IsActive:  true,
+		CreatedAt: now,
+		UpdatedAt: now,
+	}
+	db.Create(&manager)
+
+	return
+}
+
+// SeedSecondaryStoreData khởi tạo dữ liệu cho Quán đối thủ (Tenant B)
+func SeedSecondaryStoreData(db *gorm.DB) (tenant models.Tenant, branch models.Branch, table models.DiningTable, cashier models.User, manager models.User) {
+	now := time.Now()
+	tenant = models.Tenant{
+		ID:        "tenant_store_b_" + uuid.New().String()[:8],
+		Name:      "OngChu Phở B",
+		Subdomain: "pho-b-" + uuid.New().String()[:6],
+		IsActive:  true,
+		CreatedAt: now,
+		UpdatedAt: now,
+	}
+	db.Create(&tenant)
+
+	branch = models.Branch{
+		ID:        uuid.New().String(),
+		TenantID:  tenant.ID,
+		Name:      "Chi Nhánh B",
+		IsActive:  true,
+		CreatedAt: now,
+		UpdatedAt: now,
+	}
+	db.Create(&branch)
+
+	table = models.DiningTable{
+		ID:        uuid.New().String(),
+		TenantID:  tenant.ID,
+		BranchID:  branch.ID,
+		Name:      "Bàn B01",
+		Capacity:  4,
+		Status:    "trong",
+		CreatedAt: now,
+	}
+	db.Create(&table)
+
+	cashier = models.User{
+		ID:        uuid.New().String(),
+		TenantID:  tenant.ID,
+		BranchID:  &branch.ID,
+		Username:  "cashier_b01",
+		FullName:  "Thu Ngân B",
+		Role:      "cashier",
+		PinCode:   "4321",
+		IsActive:  true,
+		CreatedAt: now,
+		UpdatedAt: now,
+	}
+	db.Create(&cashier)
+
+	manager = models.User{
+		ID:        uuid.New().String(),
+		TenantID:  tenant.ID,
+		BranchID:  &branch.ID,
+		Username:  "manager_b01",
+		FullName:  "Quản Lý B",
+		Role:      "manager",
+		PinCode:   "7777",
 		IsActive:  true,
 		CreatedAt: now,
 		UpdatedAt: now,
