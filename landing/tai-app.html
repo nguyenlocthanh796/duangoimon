@@ -38,7 +38,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles.css?v=2026.91"/>
+  <link rel="stylesheet" href="styles.css?v=2026.95"/>
 
   <!-- SCHEMA.ORG STRUCTURED DATA -->
   <script type="application/ld+json">
@@ -91,14 +91,11 @@
 </head>
 <body>
 
-  <!-- GLOBAL SITE HEADER (ĐỒNG BỘ 100% CÙNG INDEX.HTML) -->
+  <!-- GLOBAL SITE HEADER (ĐỒNG BỘ 100% CÙNG TRANG CHỦ) -->
   <header class="site-header" role="banner">
     <div class="header-inner">
-      <a href="index.html" class="brand-logo" title="Trang chủ OngChu POS">
-        <picture>
-          <source srcset="assets/icon.webp" type="image/webp"/>
-          <img src="assets/icon.png" alt="Logo OngChu POS" class="brand-icon" width="36" height="36" loading="eager"/>
-        </picture>
+      <a href="/" class="brand-logo" title="Trang chủ OngChu POS">
+        <img src="assets/icon.png" alt="Logo OngChu POS" class="brand-icon" width="36" height="36"/>
         <span>OngChu POS</span>
       </a>
 
@@ -107,8 +104,8 @@
         <a href="index.html#quy-trinh" class="nav-link">Quy trình</a>
         <a href="index.html#offline" class="nav-link">Offline-First</a>
         <a href="index.html#thiet-bi" class="nav-link">Thiết bị</a>
-        <a href="cafe.html" class="nav-link">Quán Cafe</a>
-        <a href="quan-an.html" class="nav-link">Quán Ăn</a>
+        <a href="index.html#giai-phap" class="nav-link">Giải pháp</a>
+        <a href="index.html#hoi-dap" class="nav-link">Hỏi đáp</a>
       </nav>
 
       <div class="nav-actions">
@@ -125,7 +122,7 @@
     </div>
   </header>
 
-  <!-- MOBILE NAVIGATION DRAWER (HOẠT ĐỘNG HOÀN HẢO VỚI APP.JS) -->
+  <!-- MOBILE NAVIGATION DRAWER (ĐỒNG BỘ 100% CÙNG TRANG CHỦ) -->
   <div class="mobile-drawer-backdrop" id="mobile-drawer-backdrop" aria-hidden="true"></div>
   <aside class="mobile-drawer" id="mobile-drawer" aria-label="Menu điều hướng di động" aria-hidden="true">
     <div class="drawer-head">
@@ -140,13 +137,19 @@
       <a href="index.html" class="drawer-link">Trang Chủ</a>
       <a href="index.html#tinh-nang" class="drawer-link">Tính năng sản phẩm</a>
       <a href="index.html#quy-trinh" class="drawer-link">Quy trình vận hành</a>
+      <a href="index.html#offline" class="drawer-link">Bán hàng Offline-First</a>
       <a href="index.html#thiet-bi" class="drawer-link">Thiết bị hỗ trợ</a>
+      <a href="index.html#giai-phap" class="drawer-link">Giải pháp ngành</a>
+      <a href="index.html#hoi-dap" class="drawer-link">Câu hỏi thường gặp</a>
       <a href="cafe.html" class="drawer-link">Dành cho Quán Cafe</a>
       <a href="quan-an.html" class="drawer-link">Dành cho Quán Ăn</a>
-      <a href="tai-app.html" class="drawer-link" style="color: var(--brand-accent); font-weight: 700;">Tải Ứng Dụng (Download)</a>
+      <a href="tai-app.html" class="drawer-link" style="color: var(--brand-accent); font-weight: 700;">Tải Ứng Dụng (Mọi thiết bị)</a>
     </nav>
 
     <div class="drawer-footer">
+      <a href="tai-app.html" class="btn btn-secondary" style="width: 100%; justify-content: center; margin-bottom: 8px;">
+        Tải Ứng Dụng (Mọi thiết bị)
+      </a>
       <a href="https://app.ongchu.cloud/" class="btn btn-primary" style="width: 100%;" data-track="mobile_drawer_cta">
         Vào Bán Hàng Ngay
       </a>
@@ -841,54 +844,55 @@
 
   </main>
 
-  <!-- GLOBAL FOOTER (CHUẨN HÓA ĐỒNG BỘ 100% CÙNG CÁC TRANG CON) -->
+  <!-- GLOBAL FOOTER (CHUẨN HÓA ĐỒNG BỘ 100% CÙNG TRANG CHỦ) -->
   <footer class="site-footer" role="contentinfo">
-    <div class="container footer-container">
+    <div class="container">
       <div class="footer-grid">
-        
         <div class="footer-brand">
-          <div class="brand-logo" style="margin-bottom: 16px;">
-            <img src="assets/icon.png" alt="OngChu POS" class="brand-icon" width="32" height="32"/>
-            <span style="font-weight: 700; font-size: 18px; color: var(--text-primary);">OngChu POS</span>
-          </div>
-          <p style="font-size: 14.5px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px;">
-            Hệ thống POS bán hàng F&amp;B chuyên nghiệp thực chiến. Cái tâm vị chủ quán — tinh gọn, tốc độ và minh bạch tài chính.
-          </p>
-          <div style="font-size: 14px; color: var(--text-muted);">
-            Zalo Hỗ Trợ Kỹ Thuật: <a href="https://zalo.me/0392387165" style="color: var(--text-primary); font-weight: 600;" target="_blank" rel="noopener">0392.387.165</a>
-          </div>
+          <h4>OngChu POS</h4>
+          <p>Nền tảng quản lý bán hàng và vận hành F&amp;B thực chiến — Cái tâm vị chủ quán.</p>
+          <p style="font-size: 13.5px; color: var(--text-dim);">Hotline / Zalo: 0392.387.165</p>
         </div>
 
         <div class="footer-col">
-          <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 14px; font-size: 15px;">Giải Pháp F&amp;B</div>
-          <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 14.5px;">
-            <li><a href="cafe.html" style="color: var(--text-secondary);">Quán Cafe &amp; Trà Sữa</a></li>
-            <li><a href="quan-an.html" style="color: var(--text-secondary);">Quán Ăn &amp; Nhà Hàng</a></li>
-            <li><a href="index.html#offline" style="color: var(--text-secondary);">Bán Hàng Mất Mạng</a></li>
-            <li><a href="index.html#thiet-bi" style="color: var(--text-secondary);">Thiết Bị Khuyên Dùng</a></li>
+          <h5>Sản Phẩm</h5>
+          <ul class="footer-links">
+            <li><a href="tai-app.html" style="color: var(--color-gold-dark); font-weight: 600;">Tải Ứng Dụng (Mọi Nền Tảng)</a></li>
+            <li><a href="https://app.ongchu.cloud/">Ứng Dụng POS Web</a></li>
+            <li><a href="index.html#tinh-nang">Tính Năng Bán Hàng</a></li>
+            <li><a href="index.html#quy-trinh">Quy Trình 8 Bước</a></li>
+            <li><a href="index.html#offline">Kiến Trúc Offline-First</a></li>
           </ul>
         </div>
 
         <div class="footer-col">
-          <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 14px; font-size: 15px;">Tải &amp; Bộ Cài Đặt</div>
-          <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 14.5px;">
-            <li><a href="tai-app.html" style="color: var(--brand-accent); font-weight: 700;">Tải Ứng Dụng (Mọi thiết bị)</a></li>
-            <li><a href="downloads/ongchu-pos-desktop.exe" style="color: var(--text-secondary);">Bản Cài Windows (.EXE 15MB)</a></li>
-            <li><a href="downloads/ongchu-pos.apk" style="color: var(--text-secondary);">Bản Cài Android (.APK)</a></li>
-            <li><a href="https://app.ongchu.cloud/" style="color: var(--text-secondary);">Web App Bán Hàng Trực Tuyến</a></li>
-            <li><a href="privacy.html" style="color: var(--text-secondary);">Chính Sách Bảo Mật</a></li>
+          <h5>Giải Pháp</h5>
+          <ul class="footer-links">
+            <li><a href="cafe.html">Quán Cafe &amp; Trà Sữa</a></li>
+            <li><a href="quan-an.html">Quán Ăn &amp; Cơm</a></li>
+            <li><a href="quan-an.html">Nhà Hàng &amp; Quán Nhậu</a></li>
+            <li><a href="index.html#thiet-bi">Thiết Bị Phần Cứng</a></li>
           </ul>
         </div>
 
+        <div class="footer-col">
+          <h5>Hỗ Trợ &amp; Pháp Lý</h5>
+          <ul class="footer-links">
+            <li><a href="privacy.html">Chính Sách Quyền Riêng Tư</a></li>
+            <li><a href="https://ongchu.cloud/tra-cuu">Tra Cứu Hóa Đơn Điện Tử</a></li>
+            <li><a href="index.html#hoi-dap">Câu Hỏi Thường Gặp</a></li>
+            <li><a href="https://zalo.me/0392387165" target="_blank" rel="noopener">Hỗ Trợ Kỹ Thuật Zalo</a></li>
+          </ul>
+        </div>
       </div>
 
-      <div style="margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 13.5px; color: var(--text-muted);">
-        <div>© 2026 OngChu POS. Phát triển vì sự thịnh vượng của chủ quán F&amp;B Việt Nam.</div>
-        <div>Tài trợ phần mềm miễn phí 100% trọn đời.</div>
+      <div class="footer-bottom">
+        <div>&copy; 2026 OngChu POS. Toàn bộ bản quyền được bảo hộ.</div>
+        <div>Hệ thống vận hành độc lập, bảo mật đa vành đai và sẵn sàng cho doanh nghiệp F&amp;B.</div>
       </div>
     </div>
   </footer>
 
-  <script src="app.js?v=2026.91"></script>
+  <script src="app.js?v=2026.95"></script>
 </body>
 </html>

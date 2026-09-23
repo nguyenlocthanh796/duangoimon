@@ -124,7 +124,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles.css?v=2026.9"/>
+  <link rel="stylesheet" href="styles.css?v=2026.95"/>
 </head>
 <body>
 
@@ -642,7 +642,7 @@
               <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Kết nối trực tiếp máy in Bluetooth, Wi-Fi và LAN.</li>
               <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Phản hồi xúc giác Haptics khi chạm phím.</li>
             </ul>
-            <a href="tai-app.html" class="btn btn-primary">Tải Bản Android APK</a>
+            <a href="tai-app.html#android" class="btn btn-primary">Tải Bản Android APK</a>
           </div>
           <div class="tab-mockup">
             <picture>
@@ -662,7 +662,7 @@
               <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Cài đặt tức thì dạng PWA hoặc TestFlight nội bộ.</li>
               <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Thích hợp quán Cafe, Nhà hàng phong cách hiện đại.</li>
             </ul>
-            <a href="https://app.ongchu.cloud/" class="btn btn-primary">Mở Trên Safari Ngay</a>
+            <a href="tai-app.html#ios" class="btn btn-primary">Xem Hướng Dẫn Cài iOS</a>
           </div>
           <div class="tab-mockup">
             <picture>
@@ -682,7 +682,7 @@
               <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Tự động cập nhật phiên bản mới nhất trên Cloud.</li>
               <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Truy cập an toàn qua giao thức HTTPS chuẩn bảo mật.</li>
             </ul>
-            <a href="https://app.ongchu.cloud/" class="btn btn-primary">Truy Cập app.ongchu.cloud</a>
+            <a href="tai-app.html#web" class="btn btn-primary">Bán Hàng Trên Web App</a>
           </div>
           <div class="tab-mockup">
             <picture>
@@ -702,7 +702,7 @@
               <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Kết nối trực tiếp máy in hóa đơn cổng LAN, USB.</li>
               <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Phím tắt bán hàng tiện lợi cho thu ngân.</li>
             </ul>
-            <a href="downloads/ongchu-pos-desktop.exe" class="btn btn-primary" download>Tải Bản Windows .EXE (15MB)</a>
+            <a href="tai-app.html#windows" class="btn btn-primary">Tải Bản Windows .EXE (15MB)</a>
           </div>
           <div class="tab-mockup">
             <picture>
@@ -930,54 +930,6 @@
     </div>
   </footer>
 
-  <!-- MODAL: TẢI ỨNG DỤNG -->
-  <div class="modal-backdrop" id="download-modal" aria-hidden="true" role="dialog" aria-labelledby="modal-dl-title">
-    <div class="modal-card">
-      <div class="modal-head">
-        <h3 class="modal-title" id="modal-dl-title">Tải Ứng Dụng OngChu POS</h3>
-        <button type="button" class="modal-close-btn" onclick="closeModal('download-modal')" aria-label="Đóng">✕</button>
-      </div>
-
-      <div style="display: flex; flex-direction: column; gap: 16px;">
-        <!-- Windows EXE -->
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-subtle);">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <span style="font-size: 28px;">💻</span>
-            <div>
-              <div style="font-weight: 700; color: var(--text-primary);">Windows Desktop Native</div>
-              <div style="font-size: 14px; color: var(--text-muted);">Bản cài .EXE siêu nhẹ 15MB, in nhiệt trực tiếp</div>
-            </div>
-          </div>
-          <a href="downloads/ongchu-pos-desktop.exe" class="btn btn-primary" download style="padding: 0 16px; font-size: 14.5px;">Tải .EXE</a>
-        </div>
-
-        <!-- Web PWA -->
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-subtle);">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <span style="font-size: 28px;">🌐</span>
-            <div>
-              <div style="font-weight: 700; color: var(--text-primary);">Web App Trực Tuyến</div>
-              <div style="font-size: 14px; color: var(--text-muted);">Chạy trên Chrome, Safari, iPad, Máy tính</div>
-            </div>
-          </div>
-          <a href="https://app.ongchu.cloud/" class="btn btn-secondary" style="padding: 0 16px; font-size: 14.5px;">Mở Web</a>
-        </div>
-
-        <!-- Android APK -->
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-subtle);">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <span style="font-size: 28px;">📱</span>
-            <div>
-              <div style="font-weight: 700; color: var(--text-primary);">Android &amp; Máy POS</div>
-              <div style="font-size: 14px; color: var(--text-muted);">Tương thích điện thoại, tablet, Sunmi, iMin</div>
-            </div>
-          </div>
-          <a href="https://app.ongchu.cloud/" class="btn btn-secondary" style="padding: 0 16px; font-size: 14.5px;">Dùng PWA</a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script src="app.js?v=2026.9"></script>
+  <script src="app.js?v=2026.95"></script>
 </body>
 </html>
