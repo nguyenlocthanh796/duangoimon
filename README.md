@@ -4,7 +4,7 @@
 > *Đa Nền Tảng Siêu Nhẹ:* Windows Desktop Native (.exe 15MB) · iPad & iPhone (iOS Safari PWA) · Android POS (Sony Xperia / Sunmi / iMin) · Web Cloud ([app.ongchu.cloud](https://app.ongchu.cloud))
 
 <p align="center">
-  <img src="screenshots/hero_banner_trio.png" alt="OngChu POS Tri-Screen Showcase" width="940"/>
+  <img src="https://ongchu.cloud/assets/x_promo_banner.jpg" alt="OngChu Lean POS Omnichannel Showcase" width="100%" style="border-radius: 12px;"/>
 </p>
 
 <p align="center">
@@ -31,9 +31,10 @@ Hệ thống được kiến tạo xoay quanh triết lý **"Vị Chủ Quán (Z
 * **Bảo vệ dòng tiền tuyệt đối**: Hệ thống Goroutine ngầm tự động gửi tin nhắn cảnh báo tức thì qua Telegram khi phát hiện hủy món sau in tạm tính, chiết khấu hóa đơn > 20% hoặc mở két tiền bằng tay.
 
 ### 🌐 Kênh Tiếp Cận & Tải Về Trực Tiếp:
-- **Bản Cài Đặt Desktop Windows (.EXE)**: [Tải Bản Cài Đặt (5.8MB)](https://ongchu.cloud/downloads/ongchu-pos-desktop.exe) · [GitHub Releases CDN](https://github.com/nguyenlocthanh796/duangoimon/releases/tag/v2.0.0) · [Bản Portable (12MB)](https://ongchu.cloud/downloads/ongchu-pos-portable.exe)
-- **Bản Cài Đặt Android Native (.APK)**: [Tải File .APK](https://ongchu.cloud/downloads/ongchu-pos.apk) · [GitHub Releases CDN](https://github.com/nguyenlocthanh796/duangoimon/releases/tag/v2.0.0)
-- **Web POS Trực Tiếp**: [https://app.ongchu.cloud](https://app.ongchu.cloud) (Dùng ngay trên trình duyệt, không cần cài đặt)
+- **Bản Cài Đặt Desktop Windows (.EXE)**: [Tải Bản Setup (5.8MB)](https://ongchu.cloud/downloads/ongchu-pos-desktop.exe) · [GitHub Setup CDN](https://github.com/nguyenlocthanh796/duangoimon/releases/download/v2.0.0/OngChu_POS_v2.0.0_Setup.exe) · [Bản Portable (12MB)](https://ongchu.cloud/downloads/ongchu-pos-portable.exe)
+- **Bản Cài Đặt Android Native (.APK)**: [Tải File .APK (Máy chủ VN)](https://ongchu.cloud/downloads/ongchu-pos.apk) · [GitHub APK CDN (136MB)](https://github.com/nguyenlocthanh796/duangoimon/releases/download/v2.0.0/OngChu_POS_v2.0.0.apk)
+- **Bản Cài Đặt Apple iOS / iPadOS (.IPA)**: [Tải File .IPA (18.5MB)](https://ongchu.cloud/downloads/ongchu-pos.ipa) · [GitHub IPA CDN](https://github.com/nguyenlocthanh796/duangoimon/releases/download/v2.0.0/OngChu_POS_v2.0.0.ipa)
+- **Web POS Trực Tiếp**: [https://app.ongchu.cloud](https://app.ongchu.cloud) (Dùng ngay trên trình duyệt Safari / Chrome)
 - **Cổng Thông Tin & Giới Thiệu**: [https://ongchu.cloud](https://ongchu.cloud)
 
 ---
@@ -51,75 +52,30 @@ Hệ thống được kiến tạo xoay quanh triết lý **"Vị Chủ Quán (Z
 
 ---
 
-## 📱 3. Kiểm Thử Thiết Bị Thật & Bộ Ảnh Chụp Nghiệp Vụ
+## 📱 3. Thư Viện Màn Hình Nghiệp Vụ Thực Tế & Chú Thích Vận Hành
 
-### 3.1. Thao Tác Trên Thiết Bị Di Động Thực Tế (Sony Xperia 5 — CinemaWide 21:9 OLED)
-Hệ thống được kiểm thử thực tế trên thiết bị vật lý qua ADB JSON-RPC Server, tối ưu hóa công thái học cảm ứng với vùng chạm tối thiểu **44 × 44pt** và phản hồi Haptics chân thực:
+### 3.1. Trải Nghiệm Di Động Thực Chiến (Sony Xperia 5 — CinemaWide 21:9 OLED)
+Hệ thống được thiết kế theo chuẩn công thái học F&B khắt khe: Vùng chạm cảm ứng tối thiểu **44 × 44pt**, rung phản hồi xúc giác **Haptics**, âm thanh thao tác **0ms Web Audio**, Shopify FlashList **60 FPS** không giật lag.
 
 <p align="center">
-  <img src="screenshots/screen_xperia_sony.png" alt="OngChu POS trên thiết bị Sony Xperia 5 thật" width="940"/>
+  <a href="https://ongchu.cloud/assets/screen_xperia.png" target="_blank">
+    <img src="https://ongchu.cloud/assets/screen_xperia.png" alt="OngChu POS trên điện thoại Sony Xperia CinemaWide 21:9" width="100%" style="border-radius: 12px;"/>
+  </a>
 </p>
 
-### 3.2. 12 Màn Hình Nghiệp Vụ Thực Tế Có Chú Thích Chỉ Dẫn
+### 3.2. 9 Màn Hình Nghiệp Vụ Chuẩn Vị Chủ Quán (Kèm Chú Thích Chi Tiết)
 
-<div align="center">
-  <table>
-    <tr>
-      <td width="25%" align="center">
-        <a href="screenshots/01_pos_table_overview.png"><img src="screenshots/01_pos_table_overview.png" alt="Sơ Đồ Bàn Ăn" width="100%"/></a><br/>
-        <sub><b>1. Sơ Đồ Bàn Ăn Realtime</b></sub>
-      </td>
-      <td width="25%" align="center">
-        <a href="screenshots/02_pos_menu_ordering.png"><img src="screenshots/02_pos_menu_ordering.png" alt="Thực Đơn & Món Ăn" width="100%"/></a><br/>
-        <sub><b>2. Thực Đơn & Giá Vốn</b></sub>
-      </td>
-      <td width="25%" align="center">
-        <a href="screenshots/03_pos_modifier_toppings.png"><img src="screenshots/03_pos_modifier_toppings.png" alt="Tùy Chọn Topping" width="100%"/></a><br/>
-        <sub><b>3. Size & Topping Món</b></sub>
-      </td>
-      <td width="25%" align="center">
-        <a href="screenshots/04_pos_cart_tray.png"><img src="screenshots/04_pos_cart_tray.png" alt="Giỏ Hàng Đa Bàn" width="100%"/></a><br/>
-        <sub><b>4. Giỏ Hàng Đa Bàn</b></sub>
-      </td>
-    </tr>
-    <tr>
-      <td width="25%" align="center">
-        <a href="screenshots/05_pos_numpad_cash.png"><img src="screenshots/05_pos_numpad_cash.png" alt="Numpad Tiền Mặt" width="100%"/></a><br/>
-        <sub><b>5. Numpad Đếm Tiền Mặt</b></sub>
-      </td>
-      <td width="25%" align="center">
-        <a href="screenshots/06_pos_dynamic_vietqr.png"><img src="screenshots/06_pos_dynamic_vietqr.png" alt="VietQR Động" width="100%"/></a><br/>
-        <sub><b>6. Mã VietQR Động NAPAS</b></sub>
-      </td>
-      <td width="25%" align="center">
-        <a href="screenshots/07_pos_kds_kitchen.png"><img src="screenshots/07_pos_kds_kitchen.png" alt="Bếp Bar KDS" width="100%"/></a><br/>
-        <sub><b>7. Bếp / Bar KDS Vé Món</b></sub>
-      </td>
-      <td width="25%" align="center">
-        <a href="screenshots/08_pos_invoices_history.png"><img src="screenshots/08_pos_invoices_history.png" alt="Sổ Đơn Hóa Đơn" width="100%"/></a><br/>
-        <sub><b>8. Sổ Đơn & In Lại Bill</b></sub>
-      </td>
-    </tr>
-    <tr>
-      <td width="25%" align="center">
-        <a href="screenshots/09_pos_cashflow_expenses.png"><img src="screenshots/09_pos_cashflow_expenses.png" alt="Sổ Quỹ Chi Chợ" width="100%"/></a><br/>
-        <sub><b>9. Sổ Quỹ Chi Chợ 3s</b></sub>
-      </td>
-      <td width="25%" align="center">
-        <a href="screenshots/10_pos_shift_handover.png"><img src="screenshots/10_pos_shift_handover.png" alt="Giao Ca Đếm Két" width="100%"/></a><br/>
-        <sub><b>10. Giao Ca Két Tiền 30s</b></sub>
-      </td>
-      <td width="25%" align="center">
-        <a href="screenshots/11_pos_pnl_report.png"><img src="screenshots/11_pos_pnl_report.png" alt="Báo Cáo Lợi Nhuận" width="100%"/></a><br/>
-        <sub><b>11. Báo Cáo 3 Con Số Vàng</b></sub>
-      </td>
-      <td width="25%" align="center">
-        <a href="screenshots/12_pos_settings_printer.png"><img src="screenshots/12_pos_settings_printer.png" alt="Cài Đặt Máy In" width="100%"/></a><br/>
-        <sub><b>12. Máy In Nhiệt & Két Tiền</b></sub>
-      </td>
-    </tr>
-  </table>
-</div>
+| Màn Hình Nghiệp Vụ & Chức Năng | Hình Ảnh Trực Quan (Hosted on ongchu.cloud) | Giá Trị Thực Chiến Vị Chủ Quán |
+|---|---|---|
+| **1. Quầy Thu Ngân Bán Hàng Master-Detail**<br/>`Tuyến: /` · `Màn hình lớn / Desktop / Tablet` | [![Quầy Thu Ngân Bán Hàng](https://ongchu.cloud/assets/screen_pos.png)](https://ongchu.cloud/assets/screen_pos.png) | • Bố cục 2 cột 60/40 chống mỏi mắt.<br/>• Tìm kiếm món siêu tốc, phân loại nhóm món dạng tab.<br/>• Bấm chọn món & topping phản hồi < 50ms.<br/>• Giỏ hàng đa bàn độc lập, zero DOM lag. |
+| **2. Sơ Đồ Bàn Ăn Đa Khu Vực**<br/>`Tuyến: /` · `Nghiệp vụ phòng bàn` | [![Sơ Đồ Bàn Ăn](https://ongchu.cloud/assets/screen_tables.png)](https://ongchu.cloud/assets/screen_tables.png) | • Trực quan hóa bàn trống, bàn có khách, bàn đã in bill.<br/>• Đếm thời gian thực khách ngồi theo từng bàn.<br/>• Chuyển bàn, ghép bàn, tách bàn nhanh 1 chạm.<br/>• Hỗ trợ linh hoạt nhiều tầng / khu vực ngoài trời / VIP. |
+| **3. Giỏ Hàng & Tác Vụ Bàn Chuyên Sâu**<br/>`Tuyến: /` · `iPad & Máy tính bảng` | [![Giỏ Hàng & Tác Vụ Bàn](https://ongchu.cloud/assets/screen_cart.png)](https://ongchu.cloud/assets/screen_cart.png) | • Hiển thị chi tiết từng món kèm modifier/topping.<br/>• In tạm tính K80/K58 trước thanh toán.<br/>• Ghi chú bếp riêng cho từng món (ít ngọt, không đá).<br/>• Thanh dock hành động Cam Apple xuyên suốt. |
+| **4. Thanh Toán Đa Kênh & VietQR Động**<br/>`Tuyến: /thanh-toan` · `Quầy thu ngân` | [![Thanh Toán & Numpad / VietQR](https://ongchu.cloud/assets/screen_checkout.png)](https://ongchu.cloud/assets/screen_checkout.png) | • Numpad trợ lực tính tiền thối tự động chính xác.<br/>• Sinh mã VietQR Napas247 động khớp từng đồng.<br/>• Hỗ trợ ghi nợ sổ khách quen & thẻ ngân hàng.<br/>• Tự động kích xung 24V mở két tiền RJ11 sau khi chốt đơn. |
+| **5. Bếp & Quầy Pha Chế Điều Phối (KDS)**<br/>`Tuyến: /kds` · `Màn hình bếp & quầy bar` | [![Bếp Bar KDS](https://ongchu.cloud/assets/screen_kds.png)](https://ongchu.cloud/assets/screen_kds.png) | • Nhận vé món tức thì qua WebSocket Hub 0ms.<br/>• Bấm trả món từng phần hoặc toàn bàn theo thứ tự gọi.<br/>• Báo hết món (86) một chạm, tự động khóa gọi món toàn quán.<br/>• Cảnh báo thời gian chờ món lâu bằng màu sắc trực quan. |
+| **6. Quản Lý Thực Đơn & Nhóm Món**<br/>`Tuyến: /thuc-don` · `Cấu hình danh mục` | [![Quản Lý Thực Đơn](https://ongchu.cloud/assets/screen_menu.png)](https://ongchu.cloud/assets/screen_menu.png) | • Phân loại nhóm món 2 cấp mượt mà.<br/>• Định cấu hình topping, size ly, giá bán & giá vốn (COGS).<br/>• Bật/tắt trạng thái kinh doanh hoặc báo hết hàng tức thì.<br/>• Đồng bộ realtime xuống toàn bộ máy thu ngân & chạy bàn. |
+| **7. Sổ Quỹ Chi Chợ 3 Giây**<br/>`Tuyến: /so-quy` · `Vị Chủ Quán` | [![Sổ Quỹ Chi Chợ 3s](https://ongchu.cloud/assets/screen_soquy.png)](https://ongchu.cloud/assets/screen_soquy.png) | • Ghi nhận tức thì tiền mặt chi trong ngày (đá, rau, thịt, ứng lương).<br/>• Bóc tách dòng tiền chi phí thực tế ra khỏi doanh số.<br/>• Thao tác nhanh 3 giây ngay tại quầy thu ngân.<br/>• Triệt tiêu hoàn toàn tình trạng thất thoát tiền mặt cuối ngày. |
+| **8. Giao Ca Đếm Két 30 Giây**<br/>`Tuyến: /giao-ca` · `Bàn giao thu ngân` | [![Giao Ca Đếm Két 30s](https://ongchu.cloud/assets/screen_giaoca.png)](https://ongchu.cloud/assets/screen_giaoca.png) | • Bảng đếm tiền mặt theo từng mệnh giá 500k -> 1k.<br/>• Tự động đối soát tiền thực đếm với doanh số ca bán.<br/>• In biên bản giao ca K80/K58 có chữ ký người bàn giao.<br/>• Tự động gửi Telegram cho chủ quán nếu phát hiện lệch két. |
+| **9. Báo Cáo 3 Con Số Vàng (P&L Thực Tế)**<br/>`Tuyến: /bao-cao-loi-nhuan` · `Chủ quán giám sát` | [![Báo Cáo 3 Con Số Vàng](https://ongchu.cloud/assets/screen_baocao.png)](https://ongchu.cloud/assets/screen_baocao.png) | • **Con số 1**: Tiền mặt trong két thực tế sau khi trừ chi chợ.<br/>• **Con số 2**: Tiền tài khoản VietQR đã vào ngân hàng.<br/>• **Con số 3**: Lợi nhuận ròng thực sự bỏ túi (Real Net Profit).<br/>• Nắm trọn sức khỏe kinh doanh mà không cần chờ kế toán. |
 
 ---
 
