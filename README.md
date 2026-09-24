@@ -30,6 +30,12 @@ Hệ thống được kiến tạo xoay quanh triết lý **"Vị Chủ Quán (Z
 * **3 Con Số Vàng Lợi Nhuận**: Nắm bắt bức tranh tài chính chuẩn xác mỗi ngày: `Tiền mặt trong két` + `Tiền tài khoản VietQR` = `Lợi nhuận ròng thực tế`.
 * **Bảo vệ dòng tiền tuyệt đối**: Hệ thống Goroutine ngầm tự động gửi tin nhắn cảnh báo tức thì qua Telegram khi phát hiện hủy món sau in tạm tính, chiết khấu hóa đơn > 20% hoặc mở két tiền bằng tay.
 
+### 🌐 Kênh Tiếp Cận & Tải Về Trực Tiếp:
+- **Bản Cài Đặt Desktop Windows (.EXE)**: [Tải Bản Cài Đặt (5.8MB)](https://ongchu.cloud/downloads/ongchu-pos-desktop.exe) · [GitHub Releases CDN](https://github.com/nguyenlocthanh796/duangoimon/releases/tag/v2.0.0) · [Bản Portable (12MB)](https://ongchu.cloud/downloads/ongchu-pos-portable.exe)
+- **Bản Cài Đặt Android Native (.APK)**: [Tải File .APK](https://ongchu.cloud/downloads/ongchu-pos.apk) · [GitHub Releases CDN](https://github.com/nguyenlocthanh796/duangoimon/releases/tag/v2.0.0)
+- **Web POS Trực Tiếp**: [https://app.ongchu.cloud](https://app.ongchu.cloud) (Dùng ngay trên trình duyệt, không cần cài đặt)
+- **Cổng Thông Tin & Giới Thiệu**: [https://ongchu.cloud](https://ongchu.cloud)
+
 ---
 
 ## ⚡ 2. 6 Trụ Cột Kỹ Thuật Bất Biến (Core Invariants)
