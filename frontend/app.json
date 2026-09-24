@@ -28,9 +28,16 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#F97316"
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#1C1917"
       },
-      "package": "vn.ongchu.pos"
+      "package": "vn.ongchu.pos",
+      "permissions": [
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.ACCESS_WIFI_STATE",
+        "android.permission.CAMERA"
+      ]
     },
     "androidStatusBar": {
       "translucent": true,

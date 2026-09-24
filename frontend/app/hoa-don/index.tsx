@@ -118,45 +118,56 @@ export default function OrderHistoryScreen() {
       const res = await apiClient.getOrders();
       if (res.success && Array.isArray(res.data) && res.data.length > 0) {
         const currentHistory = usePOSStore.getState().orderHistory || [];
-        const existingIds = new Set(currentHistory.map((h: any) => h.id || h.orderCode));
-        const newFromBackend = res.data
-          .filter((o: any) => !existingIds.has(o.id) && !existingIds.has(o.order_code))
-          .map((o: any) => ({
-            id: o.id,
-            orderCode: o.order_code || o.id,
-            tableId: o.table_id || 'takeaway',
-            tableName: o.table_name || (o.table_id ? `Bàn ${o.table_id}` : 'Mang về'),
-            createdAt: o.created_at || new Date().toISOString(),
+        const existingMap = new Map(currentHistory.map((h: any) => [h.id || h.orderCode, h]));
+        const backendOrders = res.data.map((o: any) => {
+          const ordId = o.id || o.order_code;
+          const ordCode = o.order_code || o.code || (o.id ? `HD-${String(o.id).slice(-6)}` : 'HD-POS');
+          const existing = existingMap.get(ordId) || existingMap.get(ordCode);
+          return {
+            ...(existing || {}),
+            id: ordId,
+            orderCode: ordCode,
+            tableId: o.table_id || o.tableId || 'takeaway',
+            tableName: o.table_name || o.tableName || (o.table_id ? `Bàn ${o.table_id}` : 'Mang về'),
+            createdAt: o.created_at || o.createdAt || (existing?.createdAt) || new Date().toISOString(),
             subtotal: o.subtotal || o.total_amount || 0,
             finalTotal: o.final_amount || o.total_amount || 0,
             discountAmount: o.discount_amount || 0,
             paidAmount: o.paid_amount || o.final_amount || o.total_amount || 0,
             changeAmount: o.change_amount || 0,
-            guestCount: o.guest_count || 1,
-            cashierName: o.cashier_name || 'Thu Ngân',
-            paymentMethod: (o.payment_method || 'tien_mat') as any,
-            status: o.status === 'voided' ? ('voided' as const) : ('paid' as const),
-            items: (o.items || []).map((it: any) => ({
-              cartItemId: it.id || `ci_${Date.now()}`,
-              item: {
-                id: it.product_id,
-                name: it.product_name || 'Món',
-                price: it.unit_price || 0,
-                costPrice: 0,
-                unit: 'Phần',
-                category: 'Món',
-                station: 'bar',
-              },
-              qty: it.quantity || 1,
-              unitPrice: it.unit_price || 0,
-              sentToKitchen: true,
-            })),
-          }));
-        if (newFromBackend.length > 0) {
-          usePOSStore.setState({
-            orderHistory: [...newFromBackend, ...currentHistory],
-          });
-        }
+            guestCount: o.guest_count || o.guestCount || 1,
+            cashierName: o.cashier_name || o.created_by || 'Thu Ngân',
+            paymentMethod: (o.payment_method === 'chuyen_khoan_vietqr' ? 'vietqr' : (o.payment_method || 'tien_mat')) as any,
+            status: o.status === 'da_huy' || o.status === 'voided' ? ('voided' as const) : ('paid' as const),
+            branchId: o.branch_id || o.branchId,
+            items: (o.items && o.items.length > 0)
+              ? o.items.map((it: any) => ({
+                  cartItemId: it.id || `ci_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+                  item: {
+                    id: it.product_id || it.productId || it.id,
+                    name: it.product_name || it.productName || it.name || 'Món',
+                    price: it.unit_price || it.unitPrice || it.price || 0,
+                    costPrice: it.cost_price || 0,
+                    unit: it.unit || 'Phần',
+                    category: it.category || 'Món',
+                    station: it.station || 'bar',
+                  },
+                  qty: it.quantity || it.qty || 1,
+                  unitPrice: it.unit_price || it.unitPrice || it.price || 0,
+                  selectedSize: it.selected_size || it.selectedSize,
+                  note: it.note || '',
+                  sentToKitchen: true,
+                }))
+              : (existing?.items || []),
+          };
+        });
+
+        // Merge backend orders with any local orders not yet on server
+        const backendIds = new Set(backendOrders.map((b: any) => b.id));
+        const localOnly = currentHistory.filter((h: any) => !backendIds.has(h.id) && !backendIds.has(h.orderCode));
+        usePOSStore.setState({
+          orderHistory: [...backendOrders, ...localOnly],
+        });
       }
     } catch (_) {}
   }, []);
@@ -1003,7 +1014,6 @@ export default function OrderHistoryScreen() {
         ]}
         activeTab={paymentFilter}
         onTabChange={(id) => setPaymentFilter(id as PaymentFilter)}
-        backgroundColor={theme.surface.app}
       />
 
       {/* 🌟 DÃY 2: BỘ LỌC THỜI GIAN (Mặc định Hôm Nay, mở rộng Hôm qua / 7 ngày / Tháng này) */}
@@ -1026,9 +1036,9 @@ export default function OrderHistoryScreen() {
                   setDateFilter(pill.id as DateFilterType);
                 }}
                 style={{
-                  height: 30,
-                  paddingHorizontal: 12,
-                  borderRadius: 15,
+                  height: 36,
+                  paddingHorizontal: 14,
+                  borderRadius: 18,
                   backgroundColor: isSel ? theme.brand.accent : theme.surface.header,
                   borderColor: isSel ? theme.brand.accent : theme.border.subtle,
                   borderWidth: StyleSheet.hairlineWidth,
@@ -1037,8 +1047,8 @@ export default function OrderHistoryScreen() {
                 }}
               >
                 <AppText
-                  variant="xs"
-                  weight={isSel ? 'bold' : 'normal'}
+                  variant="sm"
+                  weight={isSel ? 'bold' : 'medium'}
                   color={isSel ? theme.text.onBrand : theme.text.primary}
                 >
                   {pill.label}
@@ -1150,11 +1160,37 @@ export default function OrderHistoryScreen() {
             {/* KPI on Mobile in Natural Scroll */}
             {!isWide && renderKpiSection()}
             {filteredOrders.length === 0 ? (
-              <EmptyState
-                icon="receipt"
-                message="Không tìm thấy hóa đơn nào"
-                description="Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc thanh toán."
-              />
+              searchQuery.trim() ? (
+                <EmptyState
+                  icon="file-search-outline"
+                  message="Không tìm thấy hóa đơn phù hợp"
+                  description={`Không có hóa đơn nào khớp với từ khóa "${searchQuery}".`}
+                  actionText="Xóa Tìm Kiếm"
+                  onAction={() => setSearchQuery('')}
+                />
+              ) : dateFilter === 'today' && branchOrders.length > 0 ? (
+                <EmptyState
+                  icon="clock-outline"
+                  message="Hôm nay chưa có hóa đơn mới"
+                  description={`Hệ thống có ${branchOrders.length} hóa đơn ở các mốc thời gian trước.`}
+                  actionText={`Xem Tất Cả (${branchOrders.length} Đơn)`}
+                  onAction={() => setDateFilter('all')}
+                />
+              ) : dateFilter !== 'all' && branchOrders.length > 0 ? (
+                <EmptyState
+                  icon="calendar-blank-outline"
+                  message="Không có hóa đơn trong mốc này"
+                  description="Thử chuyển sang mốc thời gian khác để xem lịch sử bán hàng."
+                  actionText="Xem Tất Cả Hóa Đơn"
+                  onAction={() => setDateFilter('all')}
+                />
+              ) : (
+                <EmptyState
+                  icon="receipt-text-outline"
+                  message="Chưa có hóa đơn nào"
+                  description="Hóa đơn thanh toán tại quầy sẽ xuất hiện tại đây sau khi hoàn tất giao dịch."
+                />
+              )
             ) : (
               filteredOrders.map((order) => {
                 const isVoided = order.status === 'voided';
@@ -1325,21 +1361,21 @@ export default function OrderHistoryScreen() {
                     style={[
                       s.tabletTabBtn,
                       tabletDetailTab === 'receipt' && {
-                        borderBottomColor: theme.brand.primary,
-                        borderBottomWidth: 2,
+                        borderBottomColor: theme.brand.accent,
+                        borderBottomWidth: 3,
                       },
                     ]}
                   >
                     <Icon
                       name="receipt"
-                      size={14}
-                      color={tabletDetailTab === 'receipt' ? theme.brand.primary : theme.text.muted}
+                      size={16}
+                      color={tabletDetailTab === 'receipt' ? theme.brand.accent : theme.text.muted}
                       style={{ marginRight: 6 }}
                     />
                     <AppText
-                      variant="xs"
-                      weight={tabletDetailTab === 'receipt' ? 'medium' : 'normal'}
-                      color={tabletDetailTab === 'receipt' ? theme.brand.primary : theme.text.muted}
+                      variant="sm"
+                      weight={tabletDetailTab === 'receipt' ? 'bold' : 'normal'}
+                      color={tabletDetailTab === 'receipt' ? theme.brand.accent : theme.text.muted}
                     >
                       Phiếu In Nhiệt K80
                     </AppText>
@@ -1354,21 +1390,21 @@ export default function OrderHistoryScreen() {
                     style={[
                       s.tabletTabBtn,
                       tabletDetailTab === 'camera' && {
-                        borderBottomColor: theme.brand.primary,
-                        borderBottomWidth: 2,
+                        borderBottomColor: theme.brand.accent,
+                        borderBottomWidth: 3,
                       },
                     ]}
                   >
                     <Icon
                       name="cctv"
-                      size={14}
-                      color={tabletDetailTab === 'camera' ? theme.brand.primary : theme.text.muted}
+                      size={16}
+                      color={tabletDetailTab === 'camera' ? theme.brand.accent : theme.text.muted}
                       style={{ marginRight: 6 }}
                     />
                     <AppText
-                      variant="xs"
-                      weight={tabletDetailTab === 'camera' ? 'medium' : 'normal'}
-                      color={tabletDetailTab === 'camera' ? theme.brand.primary : theme.text.muted}
+                      variant="sm"
+                      weight={tabletDetailTab === 'camera' ? 'bold' : 'normal'}
+                      color={tabletDetailTab === 'camera' ? theme.brand.accent : theme.text.muted}
                     >
                       Đối Chiếu Camera & Lần Gọi
                     </AppText>
@@ -1386,10 +1422,11 @@ export default function OrderHistoryScreen() {
               </View>
             ) : (
               <View style={s.emptyDetailBox}>
-                <Icon name="receipt" size={48} color={theme.text.muted} />
-                <AppText variant="sm" color={theme.text.muted} style={{ marginTop: 8 }}>
-                  Chọn một hóa đơn bên trái để xem phiếu in nhiệt K80
-                </AppText>
+                <EmptyState
+                  icon="receipt-text-outline"
+                  message="Chưa chọn hóa đơn"
+                  description="Chọn một hóa đơn trong danh sách bên trái để xem phiếu in nhiệt K80 và camera đối soát."
+                />
               </View>
             )}
           </View>

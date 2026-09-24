@@ -37,6 +37,7 @@ export interface MenuItemWithModifiers {
   unit?: string;
   station?: 'bar' | 'kitchen' | 'snack';
   isOutOfStock?: boolean;
+  allowSugarIce?: boolean;
   sizes?: ModifierOption[];
   toppings?: ModifierOption[];
 }

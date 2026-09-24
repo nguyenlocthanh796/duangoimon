@@ -432,7 +432,7 @@ export function OperationsTab({ isWide = false, settings, onUpdate }: Operations
                         type: 'info',
                       });
                     }}
-                    trackColor={{ false: theme.border.default, true: theme.brand.primary }}
+                    trackColor={{ false: theme.border.default, true: theme.brand.accent }}
                     thumbColor={theme.text.onBrand}
                   />
                 </View>

@@ -17,6 +17,7 @@ interface ReportSoldItemsTabProps {
   filteredProducts: SoldProductRecord[];
   maxSoldQty: number;
   onSelectProduct?: (prod: SoldProductRecord) => void;
+  selectedProduct?: SoldProductRecord | null;
 }
 
 export const ReportSoldItemsTab: React.FC<ReportSoldItemsTabProps> = ({
@@ -27,6 +28,7 @@ export const ReportSoldItemsTab: React.FC<ReportSoldItemsTabProps> = ({
   filteredProducts,
   maxSoldQty,
   onSelectProduct,
+  selectedProduct,
 }) => {
   const { theme, isDark } = useTheme();
   const { isWide } = useResponsive();
@@ -163,6 +165,7 @@ export const ReportSoldItemsTab: React.FC<ReportSoldItemsTabProps> = ({
           filteredProducts.map((prod, idx) => {
             const isLast = idx === filteredProducts.length - 1;
             const ratio = Math.min(100, Math.round((prod.qtySold / maxSoldQty) * 100));
+            const isSelected = isWide && selectedProduct?.id === prod.id;
 
             return (
               <View
@@ -182,7 +185,14 @@ export const ReportSoldItemsTab: React.FC<ReportSoldItemsTabProps> = ({
                     }
                     onSelectProduct?.(prod);
                   }}
-                  style={s.soldProductRow}
+                  style={[
+                    s.soldProductRow,
+                    isSelected && {
+                      backgroundColor: theme.status.warningBg,
+                      borderLeftWidth: 4,
+                      borderLeftColor: theme.brand.accent,
+                    },
+                  ]}
                 >
                   {/* Rank Badge */}
                   <View
@@ -232,7 +242,7 @@ export const ReportSoldItemsTab: React.FC<ReportSoldItemsTabProps> = ({
 
                     {/* Progress Bar Mini */}
                     <View style={[s.progressBarTrack, { backgroundColor: theme.border.subtle }]}>
-                      <View style={[s.progressBarFill, { width: `${ratio}%`, backgroundColor: theme.brand.primary }]} />
+                      <View style={[s.progressBarFill, { width: `${ratio}%`, backgroundColor: theme.brand.accent }]} />
                     </View>
                   </View>
 

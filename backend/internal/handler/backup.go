@@ -48,15 +48,17 @@ type RestoreAreaPayload struct {
 }
 
 type RestoreBackupRequest struct {
-	TenantID      string                   `json:"tenantId"`
-	Categories    []RestoreCategoryPayload `json:"categories"`
-	MenuItems     []RestoreProductPayload  `json:"menuItems"`
-	Tables        []RestoreTablePayload    `json:"tables"`
-	Areas         []RestoreAreaPayload     `json:"areas"`
-	StoreSettings map[string]interface{}   `json:"storeSettings"`
+	TenantID         string                   `json:"tenantId"`
+	Confirm          bool                     `json:"confirm"`
+	ConfirmOverwrite bool                     `json:"confirm_overwrite"`
+	Categories       []RestoreCategoryPayload `json:"categories"`
+	MenuItems        []RestoreProductPayload  `json:"menuItems"`
+	Tables           []RestoreTablePayload    `json:"tables"`
+	Areas            []RestoreAreaPayload     `json:"areas"`
+	StoreSettings    map[string]interface{}   `json:"storeSettings"`
 }
 
-// RestoreBackup tiếp nhận bản sao lưu JSON từ client và đồng bộ toàn diện vào CSDL
+// RestoreBackup tiếp nhận bản sao lưu JSON từ client và đồng bộ toàn diện vào CSDL (Owner only + Step-up confirmation)
 func RestoreBackup(c *gin.Context) {
 	var req RestoreBackupRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -64,13 +66,25 @@ func RestoreBackup(c *gin.Context) {
 		return
 	}
 
-	tenantID := GetTenantID(c)
-	if tenantID == "" || tenantID == "tenant_saas" || tenantID == "tenant_saas_root" {
-		if req.TenantID != "" {
-			tenantID = req.TenantID
-		} else {
-			tenantID = "tenant_ongchu"
-		}
+	if !req.Confirm && !req.ConfirmOverwrite {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Tác vụ ghi đè toàn bộ dữ liệu quán yêu cầu xác nhận rõ ràng (confirm: true)",
+			"code":  "CONFIRMATION_REQUIRED",
+		})
+		return
+	}
+
+	authTenant := GetTenantID(c)
+	userRole := c.GetString("role")
+	userName := c.GetString("username")
+
+	tenantID := authTenant
+	if req.TenantID != "" && req.TenantID != authTenant && userRole != "superadmin" && userRole != "saas_admin" {
+		c.JSON(http.StatusForbidden, gin.H{
+			"error": "Không được phép phục hồi dữ liệu cho quán khác",
+			"code":  "CROSS_TENANT_FORBIDDEN",
+		})
+		return
 	}
 
 	db := database.DB
@@ -291,6 +305,19 @@ func RestoreBackup(c *gin.Context) {
 				_ = tx.Create(&newSettings).Error
 			}
 		}
+
+		// Ghi nhật ký Audit Log
+		audit := models.AuditLog{
+			ID:          uuid.New().String(),
+			TenantID:    tenantID,
+			BranchID:    branchID,
+			Action:      "restore_backup",
+			PerformedBy: userName,
+			Details:     fmt.Sprintf("Phục hồi toàn diện CSDL: %d danh mục, %d món, %d bàn", len(req.Categories), len(req.MenuItems), len(req.Tables)),
+			Severity:    "danger",
+			CreatedAt:   now,
+		}
+		_ = tx.Create(&audit)
 
 		return nil
 	})

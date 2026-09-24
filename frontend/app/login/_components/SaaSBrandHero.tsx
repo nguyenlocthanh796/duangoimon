@@ -102,8 +102,8 @@ export const SaaSBrandHero: React.FC = () => {
         <View style={s.licenseCard}>
           <View style={s.licenseHeader}>
             <View style={s.licenseBadge}>
-              <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: theme.brand.success }} />
-              <AppText variant="xs" weight="medium" color={theme.brand.success}>
+              <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: '#22C55E' }} />
+              <AppText variant="xs" weight="medium" color="rgba(255, 255, 255, 0.92)">
                 {isBound ? 'BẢN QUYỀN SAAS CHÍNH THỨC' : 'HỆ THỐNG CLOUD POS SẴN SÀNG'}
               </AppText>
             </View>

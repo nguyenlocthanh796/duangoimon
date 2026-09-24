@@ -4,6 +4,7 @@ import * as Haptics from 'expo-haptics';
 import { useTheme } from '../../../theme';
 import { playTapSound } from '../../../utils/sound';
 import { PressableScale } from '../../ui/PressableScale';
+import { useAppToast } from '../../ui/AppToast';
 import { ProductCardProps, getCategoryVisuals } from './types';
 import { areProductCardPropsEqual } from './areProductCardPropsEqual';
 import { ProductCardMedia } from './ProductCardMedia';
@@ -12,6 +13,7 @@ import { ProductListItem } from './ProductListItem';
 
 const ProductCardComponent: React.FC<ProductCardProps> = (props) => {
   if (!props) return null;
+  const { showToast } = useAppToast();
   const {
     name,
     price,
@@ -50,6 +52,11 @@ const ProductCardComponent: React.FC<ProductCardProps> = (props) => {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
         } catch (_) {}
       }
+      showToast({
+        title: 'Món tạm hết (86)',
+        message: `"${name}" hiện đang tạm hết, không thể gọi món.`,
+        type: 'warning',
+      });
       return;
     }
     playTapSound();

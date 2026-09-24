@@ -13,6 +13,7 @@ export interface DenomCounterGridProps {
   denomCounts: Record<number, number>;
   onUpdate: (denom: number, delta: number) => void;
   isClosed: boolean;
+  isWide?: boolean;
   isDesktopLarge?: boolean;
 }
 
@@ -20,12 +21,14 @@ export const DenomCounterGrid: React.FC<DenomCounterGridProps> = ({
   denomCounts,
   onUpdate,
   isClosed,
+  isWide,
   isDesktopLarge,
 }) => {
   const { theme } = useTheme();
+  const useGrid = isWide || isDesktopLarge;
 
   return (
-    <View style={[s.gridContainer, isDesktopLarge && s.gridDesktop]}>
+    <View style={[s.gridContainer, useGrid && s.gridDesktop]}>
       {CASH_DENOMINATIONS.map((denom) => {
         const count = denomCounts[denom] || 0;
         const lineTotal = denom * count;
@@ -34,7 +37,7 @@ export const DenomCounterGrid: React.FC<DenomCounterGridProps> = ({
             key={denom}
             style={[
               s.rowItem,
-              isDesktopLarge && [
+              useGrid && [
                 s.rowItemDesktop,
                 {
                   borderColor: count > 0 ? theme.brand.primary : theme.border.subtle,
@@ -143,11 +146,11 @@ const s = StyleSheet.create({
     paddingVertical: 10,
   },
   rowItemDesktop: {
-    width: '48.8%',
-    borderRadius: 12,
+    width: '48.5%',
+    borderRadius: 10,
     borderWidth: StyleSheet.hairlineWidth,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
+    paddingVertical: 9,
+    paddingHorizontal: 12,
   },
   infoCol: {
     flex: 1,

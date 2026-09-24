@@ -747,9 +747,209 @@ const GUIDE_DATA: GuideSection[] = [
   },
 ];
 
+function GuideDetailContent({
+  guide,
+  theme,
+  insets,
+  activeVisualStepIdx,
+  onSelectVisualStep,
+  onActionPress,
+  isWide,
+}: {
+  guide: GuideSection;
+  theme: any;
+  insets: any;
+  activeVisualStepIdx: number;
+  onSelectVisualStep: (idx: number) => void;
+  onActionPress?: () => void;
+  isWide?: boolean;
+}) {
+  const catLabel = GUIDE_CATEGORIES.find((c) => c.id === guide.category)?.label || 'Hướng Dẫn';
+  const activeVisual = guide.visualSteps
+    ? guide.visualSteps[activeVisualStepIdx] || guide.visualSteps[0]
+    : null;
+
+  return (
+    <View style={{ flex: 1, backgroundColor: theme.surface.app }}>
+      <ScrollView
+        style={s.listContainer}
+        contentContainerStyle={[
+          s.detailContent,
+          { paddingBottom: Math.max(insets.bottom, 24) + (guide.actionRoute ? 80 : 32) },
+          isWide && s.wideDetailInner,
+        ]}
+      >
+        {/* Tiêu đề & chuyên mục trên Desktop */}
+        {isWide && (
+          <View style={{ marginBottom: 16 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+              {guide.badge && (
+                <View style={[s.badgePill, { backgroundColor: theme.status.warningBg }]}>
+                  <AppText variant="xxs" weight="bold" color={theme.brand.accent}>
+                    {guide.badge}
+                  </AppText>
+                </View>
+              )}
+              <AppText variant="xs" color={theme.text.muted}>
+                Chuyên mục: {catLabel}
+              </AppText>
+            </View>
+            <AppText variant="lg" weight="bold" color={theme.text.primary}>
+              {guide.title}
+            </AppText>
+          </View>
+        )}
+
+        {/* Ngữ cảnh áp dụng */}
+        <View style={[s.scenarioBox, { borderBottomColor: theme.border.subtle }]}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            {!isWide && guide.badge && (
+              <View style={[s.badgePill, { backgroundColor: theme.status.warningBg }]}>
+                <AppText variant="xxs" weight="bold" color={theme.brand.accent}>
+                  {guide.badge}
+                </AppText>
+              </View>
+            )}
+            <AppText variant="xs" color={theme.text.muted}>
+              Ngữ cảnh vận hành
+            </AppText>
+          </View>
+          <AppText variant="md" color={theme.text.primary}>
+            {guide.scenario}
+          </AppText>
+        </View>
+
+        {/* Minh họa trực quan nếu có */}
+        {guide.visualSteps && guide.visualSteps.length > 0 && activeVisual && (
+          <View style={s.visualContainer}>
+            <View style={[s.stepSelectorRow, { borderBottomColor: theme.border.subtle }]}>
+              {guide.visualSteps.map((vStep, vIdx) => {
+                const isStepActive = vIdx === activeVisualStepIdx;
+                return (
+                  <TouchableOpacity
+                    key={vStep.step}
+                    activeOpacity={0.7}
+                    onPress={() => onSelectVisualStep(vIdx)}
+                    style={[
+                      s.visualStepTab,
+                      isStepActive && { borderBottomColor: theme.brand.accent, borderBottomWidth: 2 },
+                    ]}
+                  >
+                    <AppText
+                      variant="sm"
+                      weight={isStepActive ? 'bold' : 'normal'}
+                      color={isStepActive ? theme.brand.accent : theme.text.muted}
+                      tabularNums
+                    >
+                      {`Bước ${vStep.step}`}
+                    </AppText>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            <View style={[s.visualCard, { borderColor: theme.border.subtle }]}>
+              <View style={[s.visualImageWrap, { backgroundColor: theme.surface.app }]}>
+                <Image
+                  source={activeVisual.image}
+                  style={s.visualImage}
+                  resizeMode="contain"
+                />
+              </View>
+              <View style={[s.visualCaption, { backgroundColor: theme.surface.header, borderTopColor: theme.border.subtle }]}>
+                <AppText variant="sm" weight="bold" color={theme.brand.accent}>
+                  {activeVisual.title}
+                </AppText>
+              </View>
+            </View>
+          </View>
+        )}
+
+        {/* Các bước thực hiện */}
+        <AppText
+          variant="xs"
+          weight="bold"
+          color={theme.text.muted}
+          style={{ marginBottom: 12, marginTop: guide.visualSteps ? 16 : 8, textTransform: 'uppercase', letterSpacing: 0.5 }}
+        >
+          Các bước thực hiện
+        </AppText>
+        {guide.steps.map((step, idx) => (
+          <View key={idx} style={s.stepRow}>
+            <View style={[s.stepNumberBadge, { backgroundColor: theme.brand.accent }]}>
+              <AppText variant="xxs" weight="bold" color={theme.text.onBrand} tabularNums>
+                {idx + 1}
+              </AppText>
+            </View>
+            <AppText variant="md" color={theme.text.primary} style={{ flex: 1 }}>
+              {step}
+            </AppText>
+          </View>
+        ))}
+
+        {/* Mẹo thực chiến */}
+        {guide.tips && guide.tips.length > 0 && (
+          <View style={[s.tipsBox, { borderLeftColor: theme.brand.accent, backgroundColor: theme.status.warningBg, padding: 12, borderRadius: 6 }]}>
+            <AppText variant="xs" weight="bold" color={theme.brand.accent} style={{ textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>
+              Mẹo Vị Chủ Quán
+            </AppText>
+            {guide.tips.map((tip, idx) => (
+              <AppText key={idx} variant="sm" color={theme.text.primary} style={{ marginTop: 4 }}>
+                • {tip}
+              </AppText>
+            ))}
+          </View>
+        )}
+
+        {/* Cảnh báo an ninh */}
+        {guide.warning && (
+          <View style={[s.warningBox, { borderLeftColor: theme.brand.danger, backgroundColor: theme.status.dangerBg, padding: 12, borderRadius: 6 }]}>
+            <AppText variant="xs" weight="bold" color={theme.brand.danger} style={{ textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>
+              Lưu Ý An Ninh
+            </AppText>
+            <AppText variant="sm" color={theme.brand.danger}>
+              {guide.warning}
+            </AppText>
+          </View>
+        )}
+      </ScrollView>
+
+      {/* Thanh tác vụ cố định đáy (Docked Bottom Action Bar) */}
+      {guide.actionRoute && (
+        <View
+          style={[
+            s.bottomDockBar,
+            {
+              backgroundColor: theme.surface.card,
+              borderTopColor: theme.border.subtle,
+              paddingBottom: Math.max(insets.bottom, 12),
+            },
+          ]}
+        >
+          <View style={[s.bottomDockContent, isWide && s.wideDetailInner]}>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={onActionPress}
+              style={[
+                s.actionBtn,
+                { backgroundColor: theme.brand.accent, borderColor: theme.brand.accent },
+              ]}
+            >
+              <AppText variant="md" weight="bold" color={theme.text.onBrand}>
+                {guide.actionLabel || 'Thực Hành Ngay'}
+              </AppText>
+              <Icon name="arrow-right" size={18} color={theme.text.onBrand} style={{ marginLeft: 6 }} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+    </View>
+  );
+}
+
 export default function UserGuideScreen() {
   const { theme } = useTheme();
-  const { isWide, isDesktopLarge } = useResponsive();
+  const { isWide } = useResponsive();
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
@@ -769,11 +969,6 @@ export default function UserGuideScreen() {
     return () => sub.remove();
   }, [selectedGuideId]);
 
-  const selectedGuide = useMemo(() => {
-    if (!selectedGuideId) return null;
-    return GUIDE_DATA.find((g) => g.id === selectedGuideId) || null;
-  }, [selectedGuideId]);
-
   const filteredGuides = useMemo(() => {
     const q = searchQuery.toLowerCase().trim();
     return GUIDE_DATA.filter((item) => {
@@ -790,17 +985,25 @@ export default function UserGuideScreen() {
     });
   }, [searchQuery, selectedCategory]);
 
-  // 1. Màn hình con nội tuyến: Hiển thị đầy đủ bài viết chi tiết (Zero-Modal Invariant)
-  if (selectedGuide) {
+  const selectedGuide = useMemo(() => {
+    if (!selectedGuideId) return null;
+    return GUIDE_DATA.find((g) => g.id === selectedGuideId) || null;
+  }, [selectedGuideId]);
+
+  // Active guide trên màn Desktop (mặc định lấy món đầu nếu chưa chọn)
+  const activeDesktopGuide = useMemo(() => {
+    if (selectedGuide) return selectedGuide;
+    if (filteredGuides.length > 0) return filteredGuides[0];
+    return null;
+  }, [selectedGuide, filteredGuides]);
+
+  // 1. Phân nhánh Mobile: Inline Sub-Screen khi chạm vào 1 bài hướng dẫn (Zero-Modal Invariant)
+  if (!isWide && selectedGuide) {
     const catLabel = GUIDE_CATEGORIES.find((c) => c.id === selectedGuide.category)?.label || 'Hướng Dẫn';
     const curStepIdx = activeVisualSteps[selectedGuide.id] ?? 0;
-    const activeVisual = selectedGuide.visualSteps
-      ? selectedGuide.visualSteps[curStepIdx] || selectedGuide.visualSteps[0]
-      : null;
 
     return (
       <View style={[s.container, { backgroundColor: theme.surface.app }]}>
-        {/* Header màn hình con nội tuyến */}
         <AppHeader
           showBack
           onBack={() => {
@@ -810,166 +1013,31 @@ export default function UserGuideScreen() {
           title={selectedGuide.title}
           subtitle={`Chuyên mục: ${catLabel}`}
         />
-
-        {/* Nội dung đầy đủ bài viết */}
-        <ScrollView
-          style={s.listContainer}
-          contentContainerStyle={[
-            s.detailContent,
-            { paddingBottom: Math.max(insets.bottom, 24) + (selectedGuide.actionRoute ? 80 : 32) },
-            isWide && s.wideListContent,
-          ]}
-        >
-          {/* Ngữ cảnh áp dụng */}
-          <View style={[s.scenarioBox, { borderBottomColor: theme.border.subtle }]}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-              {selectedGuide.badge && (
-                <AppText variant="xs" weight="medium" color={theme.brand.primary}>
-                  [{selectedGuide.badge}]
-                </AppText>
-              )}
-              <AppText variant="xs" color={theme.text.muted}>
-                Ngữ cảnh vận hành
-              </AppText>
-            </View>
-            <AppText variant="sm" color={theme.text.primary}>
-              {selectedGuide.scenario}
-            </AppText>
-          </View>
-
-          {/* Minh họa trực quan nếu có */}
-          {selectedGuide.visualSteps && selectedGuide.visualSteps.length > 0 && activeVisual && (
-            <View style={s.visualContainer}>
-              <View style={[s.stepSelectorRow, { borderBottomColor: theme.border.subtle }]}>
-                {selectedGuide.visualSteps.map((vStep, vIdx) => {
-                  const isStepActive = vIdx === curStepIdx;
-                  return (
-                    <TouchableOpacity
-                      key={vStep.step}
-                      activeOpacity={0.7}
-                      onPress={() => {
-                        playTapSound();
-                        setActiveVisualSteps((prev) => ({ ...prev, [selectedGuide.id]: vIdx }));
-                      }}
-                      style={[
-                        s.visualStepTab,
-                        isStepActive && { borderBottomColor: theme.brand.primary },
-                      ]}
-                    >
-                      <AppText
-                        variant="sm"
-                        weight={isStepActive ? 'medium' : 'normal'}
-                        color={isStepActive ? theme.brand.primary : theme.text.muted}
-                        tabularNums
-                      >
-                        {`Bước ${vStep.step}`}
-                      </AppText>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-
-              <View style={[s.visualCard, { borderColor: theme.border.subtle }]}>
-                <View style={[s.visualImageWrap, { backgroundColor: theme.surface.app }]}>
-                  <Image
-                    source={activeVisual.image}
-                    style={s.visualImage}
-                    resizeMode="contain"
-                  />
-                </View>
-                <View style={[s.visualCaption, { backgroundColor: theme.surface.header, borderTopColor: theme.border.subtle }]}>
-                  <AppText variant="sm" weight="medium" color={theme.brand.primary}>
-                    {activeVisual.title}
-                  </AppText>
-                </View>
-              </View>
-            </View>
-          )}
-
-          {/* Các bước thực hiện */}
-          <AppText
-            variant="xs"
-            weight="bold"
-            color={theme.text.muted}
-            style={{ marginBottom: 12, marginTop: selectedGuide.visualSteps ? 16 : 8, textTransform: 'uppercase', letterSpacing: 0.5 }}
-          >
-            Các bước thực hiện
-          </AppText>
-          {selectedGuide.steps.map((step, idx) => (
-            <View key={idx} style={s.stepRow}>
-              <AppText variant="sm" weight="medium" color={theme.brand.primary} tabularNums style={{ width: 24 }}>
-                {`${idx + 1}.`}
-              </AppText>
-              <AppText variant="sm" color={theme.text.primary} style={{ flex: 1 }}>
-                {step}
-              </AppText>
-            </View>
-          ))}
-
-          {/* Mẹo thực chiến */}
-          {selectedGuide.tips && selectedGuide.tips.length > 0 && (
-            <View style={[s.tipsBox, { borderLeftColor: theme.brand.primary }]}>
-              <AppText variant="xs" weight="bold" color={theme.brand.primary} style={{ textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>
-                Mẹo Vị Chủ Quán
-              </AppText>
-              {selectedGuide.tips.map((tip, idx) => (
-                <AppText key={idx} variant="sm" color={theme.text.muted} style={{ marginTop: 4 }}>
-                  • {tip}
-                </AppText>
-              ))}
-            </View>
-          )}
-
-          {/* Cảnh báo an ninh */}
-          {selectedGuide.warning && (
-            <View style={[s.warningBox, { borderLeftColor: theme.brand.danger }]}>
-              <AppText variant="xs" weight="bold" color={theme.brand.danger} style={{ textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>
-                Lưu Ý An Ninh
-              </AppText>
-              <AppText variant="sm" color={theme.brand.danger}>
-                {selectedGuide.warning}
-              </AppText>
-            </View>
-          )}
-        </ScrollView>
-
-        {/* Thanh tác vụ cố định đáy (Docked Bottom Action Bar) */}
-        {selectedGuide.actionRoute && (
-          <View
-            style={[
-              s.bottomDockBar,
-              {
-                backgroundColor: theme.surface.card,
-                borderTopColor: theme.border.subtle,
-                paddingBottom: Math.max(insets.bottom, 12),
-              },
-            ]}
-          >
-            <View style={[s.bottomDockContent, isWide && s.wideListContent]}>
-              <TouchableOpacity
-                activeOpacity={0.8}
-                onPress={() => {
-                  playTapSound();
-                  router.push(selectedGuide.actionRoute as any);
-                }}
-                style={[
-                  s.actionBtn,
-                  { backgroundColor: theme.brand.primaryBg, borderColor: theme.brand.primary },
-                ]}
-              >
-                <AppText variant="sm" weight="medium" color={theme.brand.primary}>
-                  {selectedGuide.actionLabel || 'Thực Hành Ngay'}
-                </AppText>
-                <Icon name="arrow-right" size={16} color={theme.brand.primary} style={{ marginLeft: 6 }} />
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
+        <GuideDetailContent
+          guide={selectedGuide}
+          theme={theme}
+          insets={insets}
+          activeVisualStepIdx={curStepIdx}
+          onSelectVisualStep={(idx) => {
+            playTapSound();
+            setActiveVisualSteps((prev) => ({ ...prev, [selectedGuide.id]: idx }));
+          }}
+          onActionPress={() => {
+            playTapSound();
+            if (selectedGuide.actionRoute) {
+              router.push(selectedGuide.actionRoute as any);
+            }
+          }}
+          isWide={false}
+        />
       </View>
     );
   }
 
-  // 2. Màn hình ngoài: Danh sách tiêu đề và chú thích ngắn gọn
+  // 2. Màn hình chính: Master-Detail trên Desktop / Danh sách trên Mobile
+  const currentDetailGuide = isWide ? activeDesktopGuide : null;
+  const desktopCurStepIdx = currentDetailGuide ? (activeVisualSteps[currentDetailGuide.id] ?? 0) : 0;
+
   return (
     <View style={[s.container, { backgroundColor: theme.surface.app }]}>
       {/* 1. Header chuẩn toàn hệ thống */}
@@ -979,133 +1047,190 @@ export default function UserGuideScreen() {
         subtitle="Cẩm Nang Vận Hành POS Thực Chiến Vị Chủ Quán"
       />
 
-      {/* 2. Thanh tìm kiếm và Tabs chuyên mục */}
-      <View style={[s.searchWrap, { backgroundColor: theme.surface.card, borderBottomColor: theme.border.subtle }]}>
-        <View style={[s.searchBar, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle }]}>
-          <Icon name="magnify" size={18} color={theme.text.muted} />
-          <TextInput
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholder="Tìm kiếm hướng dẫn vận hành..."
-            placeholderTextColor={theme.text.subtle}
-            style={[s.searchInput, { color: theme.text.primary }]}
-          />
-          {searchQuery.length > 0 && (
-            <TouchableOpacity onPress={() => setSearchQuery('')} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-              <Icon name="close-circle" size={16} color={theme.text.muted} />
-            </TouchableOpacity>
-          )}
-        </View>
-
-        {/* Dải Tabs phân loại nghiệp vụ phẳng, liền mạch */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={s.categoryScroll}
-        >
-          {GUIDE_CATEGORIES.map((cat) => {
-            const isActive = selectedCategory === cat.id;
-            return (
-              <TouchableOpacity
-                key={cat.id}
-                onPress={() => {
-                  playTapSound();
-                  setSelectedCategory(cat.id);
-                }}
-                style={[
-                  s.categoryTab,
-                  isActive && { borderBottomColor: theme.brand.primary },
-                ]}
-              >
-                <AppText
-                  variant="sm"
-                  weight={isActive ? 'medium' : 'normal'}
-                  color={isActive ? theme.brand.primary : theme.text.muted}
-                >
-                  {cat.label}
-                </AppText>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
-      </View>
-
-      {/* 3. Danh sách hướng dẫn: Tiêu đề + Chú thích ngắn + Chevron chuyển tiếp */}
-      <ScrollView
-        style={s.listContainer}
-        contentContainerStyle={[
-          s.listContent,
-          { paddingBottom: Math.max(insets.bottom, 24) + 40 },
-          isWide && s.wideListContent,
-          isDesktopLarge && {
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            gap: 12,
-            maxWidth: 1600,
-          },
-        ]}
-      >
-        {filteredGuides.length === 0 ? (
-          <View style={s.emptyWrap}>
-            <AppText variant="sm" weight="medium" color={theme.text.primary}>
-              Không tìm thấy hướng dẫn phù hợp
-            </AppText>
-            <AppText variant="xs" color={theme.text.muted} style={{ marginTop: 4 }}>
-              Thử tìm kiếm với từ khóa khác như "in bill", "chuyển bàn", "giao ca"
-            </AppText>
-          </View>
-        ) : (
-          filteredGuides.map((guide) => (
-            <TouchableOpacity
-              key={guide.id}
-              activeOpacity={0.7}
-              onPress={() => {
-                playTapSound();
-                if (Platform.OS !== 'web') {
-                  try {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  } catch {}
-                }
-                setSelectedGuideId(guide.id);
-              }}
-              style={[
-                s.guideRow,
-                { borderBottomColor: theme.border.subtle },
-                isDesktopLarge && {
-                  width: '49.4%',
-                  borderRadius: 12,
-                  borderWidth: StyleSheet.hairlineWidth,
-                  borderColor: theme.border.subtle,
+      {/* 2. Thân nội dung: Master-Detail trên Desktop (isWide), 1 cột trên Mobile */}
+      <View style={{ flex: 1, flexDirection: isWide ? 'row' : 'column' }}>
+        {/* Cột Danh Sách (Master) */}
+        <View
+          style={[
+            isWide
+              ? {
+                  width: 440,
+                  borderRightWidth: StyleSheet.hairlineWidth,
+                  borderRightColor: theme.border.subtle,
                   backgroundColor: theme.surface.card,
-                },
-              ]}
+                }
+              : { flex: 1 },
+          ]}
+        >
+          {/* Thanh tìm kiếm & Tabs chuyên mục */}
+          <View style={[s.searchWrap, { backgroundColor: theme.surface.card, borderBottomColor: theme.border.subtle }]}>
+            <View style={[s.searchBar, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle }]}>
+              <Icon name="magnify" size={18} color={theme.text.muted} />
+              <TextInput
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholder="Tìm kiếm hướng dẫn vận hành..."
+                placeholderTextColor={theme.text.muted}
+                style={[s.searchInput, { color: theme.text.primary }]}
+              />
+              {searchQuery.length > 0 && (
+                <TouchableOpacity onPress={() => setSearchQuery('')} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                  <Icon name="close-circle" size={16} color={theme.text.muted} />
+                </TouchableOpacity>
+              )}
+            </View>
+
+            {/* Dải Tabs phân loại nghiệp vụ phẳng, chuẩn Tier 1 */}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={s.categoryScroll}
             >
-              <View style={{ flex: 1 }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <AppText variant="md" weight="normal" color={theme.text.primary} style={{ flex: 1 }}>
-                    {guide.title}
-                  </AppText>
-                  {guide.badge && (
-                    <AppText variant="xs" weight="medium" color={theme.brand.primary}>
-                      {guide.badge}
+              {GUIDE_CATEGORIES.map((cat) => {
+                const isActive = selectedCategory === cat.id;
+                return (
+                  <TouchableOpacity
+                    key={cat.id}
+                    onPress={() => {
+                      playTapSound();
+                      setSelectedCategory(cat.id);
+                    }}
+                    style={[
+                      s.categoryTab,
+                      isActive && { borderBottomColor: theme.brand.accent, borderBottomWidth: 3 },
+                    ]}
+                  >
+                    <AppText
+                      variant="md"
+                      weight={isActive ? 'bold' : 'normal'}
+                      color={isActive ? theme.brand.accent : theme.text.muted}
+                    >
+                      {cat.label}
                     </AppText>
-                  )}
-                </View>
-                <AppText variant="xs" color={theme.text.muted} numberOfLines={1} style={{ marginTop: 4 }}>
-                  {guide.scenario}
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
+
+          {/* Danh sách hướng dẫn */}
+          <ScrollView
+            style={s.listContainer}
+            contentContainerStyle={[
+              s.listContent,
+              { paddingBottom: Math.max(insets.bottom, 24) + 40 },
+            ]}
+          >
+            {filteredGuides.length === 0 ? (
+              <View style={s.emptyWrap}>
+                <AppText variant="md" weight="bold" color={theme.text.primary}>
+                  Không tìm thấy hướng dẫn phù hợp
+                </AppText>
+                <AppText variant="xs" color={theme.text.muted} style={{ marginTop: 4 }}>
+                  Thử tìm kiếm với từ khóa khác như "in bill", "chuyển bàn", "giao ca"
                 </AppText>
               </View>
+            ) : (
+              filteredGuides.map((guide) => {
+                const isSelectedOnWide = isWide && activeDesktopGuide?.id === guide.id;
+                return (
+                  <TouchableOpacity
+                    key={guide.id}
+                    activeOpacity={0.7}
+                    onPress={() => {
+                      playTapSound();
+                      if (Platform.OS !== 'web') {
+                        try {
+                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        } catch {}
+                      }
+                      setSelectedGuideId(guide.id);
+                    }}
+                    style={[
+                      s.guideRow,
+                      {
+                        borderBottomColor: theme.border.subtle,
+                        backgroundColor: isSelectedOnWide ? theme.status.warningBg : theme.surface.card,
+                        borderLeftWidth: isSelectedOnWide ? 4 : 0,
+                        borderLeftColor: theme.brand.accent,
+                      },
+                    ]}
+                  >
+                    <View style={{ flex: 1 }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                        <AppText
+                          variant="md"
+                          weight={isSelectedOnWide ? 'bold' : 'medium'}
+                          color={isSelectedOnWide ? theme.brand.accent : theme.text.primary}
+                          style={{ flex: 1 }}
+                        >
+                          {guide.title}
+                        </AppText>
+                        {guide.badge && (
+                          <View style={[s.badgePill, { backgroundColor: isSelectedOnWide ? theme.brand.accent : theme.status.warningBg }]}>
+                            <AppText
+                              variant="xxs"
+                              weight="bold"
+                              color={isSelectedOnWide ? theme.text.onBrand : theme.brand.accent}
+                            >
+                              {guide.badge}
+                            </AppText>
+                          </View>
+                        )}
+                      </View>
+                      <AppText variant="xs" color={theme.text.muted} numberOfLines={2} style={{ marginTop: 4 }}>
+                        {guide.scenario}
+                      </AppText>
+                    </View>
 
-              <Icon
-                name="chevron-right"
-                size={20}
-                color={theme.text.muted}
-                style={{ marginLeft: 12 }}
+                    <Icon
+                      name="chevron-right"
+                      size={20}
+                      color={isSelectedOnWide ? theme.brand.accent : theme.text.muted}
+                      style={{ marginLeft: 8 }}
+                    />
+                  </TouchableOpacity>
+                );
+              })
+            )}
+          </ScrollView>
+        </View>
+
+        {/* Cột Chi Tiết (Detail) trên Desktop */}
+        {isWide && (
+          <View style={{ flex: 1, backgroundColor: theme.surface.app }}>
+            {currentDetailGuide ? (
+              <GuideDetailContent
+                guide={currentDetailGuide}
+                theme={theme}
+                insets={insets}
+                activeVisualStepIdx={desktopCurStepIdx}
+                onSelectVisualStep={(idx) => {
+                  playTapSound();
+                  setActiveVisualSteps((prev) => ({ ...prev, [currentDetailGuide.id]: idx }));
+                }}
+                onActionPress={() => {
+                  playTapSound();
+                  if (currentDetailGuide.actionRoute) {
+                    router.push(currentDetailGuide.actionRoute as any);
+                  }
+                }}
+                isWide={true}
               />
-            </TouchableOpacity>
-          ))
+            ) : (
+              <View style={[s.emptyWrap, { flex: 1, justifyContent: 'center' }]}>
+                <Icon name="book-open-outline" size={48} color={theme.text.muted} style={{ marginBottom: 12 }} />
+                <AppText variant="md" weight="bold" color={theme.text.primary}>
+                  Chọn bài hướng dẫn để xem chi tiết
+                </AppText>
+                <AppText variant="xs" color={theme.text.muted} style={{ marginTop: 4 }}>
+                  Cẩm nang hướng dẫn vận hành chi tiết các nghiệp vụ POS thực chiến
+                </AppText>
+              </View>
+            )}
+          </View>
         )}
-      </ScrollView>
+      </View>
     </View>
   );
 }
@@ -1120,8 +1245,8 @@ const s = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   searchBar: {
-    height: 38,
-    borderRadius: 6,
+    height: 42,
+    borderRadius: 8,
     borderWidth: StyleSheet.hairlineWidth,
     paddingHorizontal: 10,
     flexDirection: 'row',
@@ -1139,8 +1264,8 @@ const s = StyleSheet.create({
     marginTop: 8,
   },
   categoryTab: {
-    paddingVertical: 8,
-    borderBottomWidth: 2,
+    paddingVertical: 10,
+    borderBottomWidth: 3,
     borderBottomColor: 'transparent',
   },
   listContainer: {
@@ -1151,13 +1276,14 @@ const s = StyleSheet.create({
     paddingHorizontal: 0,
   },
   detailContent: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingHorizontal: 20,
+    paddingTop: 20,
   },
-  wideListContent: {
-    maxWidth: 960,
+  wideDetailInner: {
+    maxWidth: 860,
     width: '100%',
     alignSelf: 'center',
+    paddingHorizontal: 24,
   },
   guideRow: {
     flexDirection: 'row',
@@ -1166,18 +1292,23 @@ const s = StyleSheet.create({
     paddingVertical: 14,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
+  badgePill: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
   scenarioBox: {
     paddingBottom: 14,
-    marginBottom: 12,
+    marginBottom: 14,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   visualContainer: {
-    marginBottom: 14,
+    marginBottom: 16,
   },
   stepSelectorRow: {
     flexDirection: 'row',
     gap: 16,
-    marginBottom: 8,
+    marginBottom: 10,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   visualStepTab: {
@@ -1186,14 +1317,13 @@ const s = StyleSheet.create({
     borderBottomColor: 'transparent',
   },
   visualCard: {
-    marginHorizontal: -16,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 8,
     overflow: 'hidden',
   },
   visualImageWrap: {
     width: '100%',
-    height: 260,
+    height: 280,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -1203,23 +1333,30 @@ const s = StyleSheet.create({
   },
   visualCaption: {
     paddingHorizontal: 16,
-    paddingVertical: 6,
+    paddingVertical: 8,
     borderTopWidth: StyleSheet.hairlineWidth,
   },
   stepRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: 8,
+    marginBottom: 10,
+  },
+  stepNumberBadge: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+    marginTop: 2,
   },
   tipsBox: {
-    marginTop: 12,
-    paddingLeft: 12,
-    borderLeftWidth: 2,
+    marginTop: 14,
+    borderLeftWidth: 3,
   },
   warningBox: {
-    marginTop: 12,
-    paddingLeft: 12,
-    borderLeftWidth: 2,
+    marginTop: 14,
+    borderLeftWidth: 3,
   },
   bottomDockBar: {
     position: 'absolute',
@@ -1234,8 +1371,8 @@ const s = StyleSheet.create({
     width: '100%',
   },
   actionBtn: {
-    height: 46,
-    borderRadius: 6,
+    height: 48,
+    borderRadius: 8,
     borderWidth: 1,
     flexDirection: 'row',
     alignItems: 'center',

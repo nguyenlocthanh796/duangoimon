@@ -271,10 +271,10 @@ export default function ThanhToanScreen() {
       }
     );
 
-    // Đồng bộ tức thời tới Backend Golang nếu online
-    const orderIdToPay = (selectedTable as any)?.activeOrderId || selectedTable?.id;
-    if (orderIdToPay) {
-      apiClient.payOrder(orderIdToPay, {
+    // Đồng bộ tức thời tới Backend Golang nếu order đã có sẵn trên server
+    const serverOrderId = (selectedTable as any)?.activeOrderId;
+    if (serverOrderId) {
+      apiClient.payOrder(serverOrderId, {
         payment_method: payMethod === 'vietqr' ? 'chuyen_khoan_vietqr' : payMethod,
         paid_amount: payMethod === 'tien_mat' ? cashGiven : totalAmount,
         cash_amount: payMethod === 'tien_mat' ? cashGiven : mixedCashGiven,

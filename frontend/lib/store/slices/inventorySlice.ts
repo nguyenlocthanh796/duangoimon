@@ -52,35 +52,92 @@ export const createInventorySlice = (set: any, get: any): InventorySlice => ({
     const { inventoryItems } = get();
     const yieldRate = item.yieldRate ?? 100;
     const effectiveCostPrice = calculateEffectiveCost(item.costPrice, yieldRate);
+    const tempId = `inv_${Date.now()}`;
     const newItem: InventoryItem = {
       ...item,
-      id: `inv_${Date.now()}`,
+      id: tempId,
       yieldRate,
       effectiveCostPrice,
     };
     set({ inventoryItems: [newItem, ...inventoryItems] });
+
+    // 🚀 Đồng bộ lưu xuống CSDL Backend ngay lập tức
+    import('../../api/apiClient')
+      .then(({ apiClient }) => {
+        apiClient
+          .createIngredient({
+            sku: item.sku,
+            name: item.name,
+            category: item.category,
+            unit: item.unit,
+            current_stock: item.currentStock,
+            min_stock: item.minStockAlert,
+            cost_price: item.costPrice,
+            supplier_name: item.supplierName,
+          })
+          .then((res: any) => {
+            if (res && res.data && res.data.id) {
+              const serverId = res.data.id;
+              const current = get().inventoryItems;
+              set({
+                inventoryItems: current.map((i: InventoryItem) =>
+                  i.id === tempId ? { ...i, id: serverId } : i
+                ),
+              });
+            }
+          })
+          .catch(() => {});
+      })
+      .catch(() => {});
   },
 
   updateInventoryItem: (id: string, updates: Partial<InventoryItem>) => {
     const { inventoryItems } = get();
-    set({
-      inventoryItems: inventoryItems.map((i: InventoryItem) => {
-        if (i.id !== id) return i;
-        const merged = { ...i, ...updates };
-        const yieldRate = merged.yieldRate ?? 100;
-        const effectiveCostPrice = calculateEffectiveCost(merged.costPrice, yieldRate);
-        return {
-          ...merged,
-          yieldRate,
-          effectiveCostPrice,
-        };
-      }),
+    const updatedList = inventoryItems.map((i: InventoryItem) => {
+      if (i.id !== id) return i;
+      const merged = { ...i, ...updates };
+      const yieldRate = merged.yieldRate ?? 100;
+      const effectiveCostPrice = calculateEffectiveCost(merged.costPrice, yieldRate);
+      return {
+        ...merged,
+        yieldRate,
+        effectiveCostPrice,
+      };
     });
+    set({ inventoryItems: updatedList });
+
+    // 🚀 Đồng bộ sửa xuống CSDL Backend
+    const target = updatedList.find((i: InventoryItem) => i.id === id);
+    if (target) {
+      import('../../api/apiClient')
+        .then(({ apiClient }) => {
+          apiClient
+            .updateIngredient(id, {
+              sku: target.sku,
+              name: target.name,
+              category: target.category,
+              unit: target.unit,
+              current_stock: target.currentStock,
+              min_stock: target.minStockAlert,
+              cost_price: target.costPrice,
+              supplier_name: target.supplierName,
+            })
+            .catch(() => {});
+        })
+        .catch(() => {});
+    }
   },
 
   deleteInventoryItem: (id: string) => {
     const { inventoryItems } = get();
     set({ inventoryItems: inventoryItems.filter((i: InventoryItem) => i.id !== id) });
+
+    // 🚀 Đồng bộ xóa xuống CSDL Backend
+    import('../../api/apiClient')
+      .then(({ apiClient }) => {
+        apiClient.deleteIngredient(id).catch(() => {});
+      })
+      .catch(() => {});
   },
 
   restockInventoryItem: (id: string, qty: number, totalCost: number, paymentSource = 'cash') => {

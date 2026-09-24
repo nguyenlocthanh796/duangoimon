@@ -112,6 +112,39 @@ export default function KDSScreen() {
     return () => clearInterval(interval);
   }, []); // Run once on mount
 
+  // 💡 Giữ sáng màn hình liên tục cho Bếp / KDS (Screen Wake Lock)
+  useEffect(() => {
+    let wakeLockSentinel: any = null;
+    const requestWakeLock = async () => {
+      try {
+        if (typeof navigator !== 'undefined' && 'wakeLock' in navigator && (navigator as any).wakeLock) {
+          wakeLockSentinel = await (navigator as any).wakeLock.request('screen');
+        }
+      } catch (_) {}
+    };
+
+    requestWakeLock();
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        requestWakeLock();
+      }
+    };
+
+    if (Platform.OS === 'web' && typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+    }
+
+    return () => {
+      if (wakeLockSentinel && typeof wakeLockSentinel.release === 'function') {
+        wakeLockSentinel.release().catch(() => {});
+      }
+      if (Platform.OS === 'web' && typeof document !== 'undefined') {
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+      }
+    };
+  }, []);
+
   const [activeStation, setActiveStation] = useState<StationFilter>('all');
   const [viewMode, setViewMode] = useState<ViewMode>('tickets');
   const [omniSearchOpen, setOmniSearchOpen] = useState(false);

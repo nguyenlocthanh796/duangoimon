@@ -60,6 +60,12 @@ export default function POSScreen() {
   const orderChannel = usePOSStore((s) => s.orderChannel);
   const outOfStockProductIds = usePOSStore((s) => s.outOfStockProductIds);
   const menuItems = usePOSStore((s) => s.menuItems);
+  const fetchMasterCatalog = usePOSStore((s) => s.fetchMasterCatalog);
+  const populateSampleMenu = usePOSStore((s) => s.populateSampleMenu);
+
+  useEffect(() => {
+    fetchMasterCatalog?.();
+  }, [fetchMasterCatalog]);
 
   const dynamicAreas = useMemo(() => {
     const set = new Set<string>();

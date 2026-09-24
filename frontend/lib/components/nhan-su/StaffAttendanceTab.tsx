@@ -10,7 +10,7 @@ import {
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../../theme';
-import { AppText, useAppToast } from '../../components/ui';
+import { AppText, useAppToast, EmptyState } from '../../components/ui';
 import {
   StaffMember,
   StaffShiftLog,
@@ -24,6 +24,7 @@ interface StaffAttendanceTabProps {
   shiftLogs: StaffShiftLog[];
   isWide: boolean;
   isDesktopLarge?: boolean;
+  onOpenAdd?: () => void;
   onClockIn: (staff: StaffMember) => void;
   onClockOut: (staff: StaffMember) => void;
   onQuickLog: (staff?: StaffMember) => void;
@@ -35,6 +36,7 @@ export function StaffAttendanceTab({
   shiftLogs,
   isWide,
   isDesktopLarge,
+  onOpenAdd,
   onClockIn,
   onClockOut,
   onQuickLog,
@@ -91,51 +93,74 @@ export function StaffAttendanceTab({
       ]}
       showsVerticalScrollIndicator={false}
     >
-      {/* 1. Quick Stats Header (Dãy 2 Metric Strip 46px) */}
-      <View
-        style={[
-          s.statStrip,
-          {
-            backgroundColor: theme.surface.card,
-            borderBottomColor: theme.border.subtle,
-            borderBottomWidth: StyleSheet.hairlineWidth,
-          },
-        ]}
-      >
-        <View style={s.statItem}>
-          <AppText variant="xs" weight="medium" color={theme.text.muted}>
-            Đang Trực Ca
-          </AppText>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 2 }}>
-            <View style={[s.liveDot, { backgroundColor: theme.brand.success }]} />
-            <AppText variant="md" weight="bold" color={theme.brand.success} tabularNums>
-              {workingCount} người
-            </AppText>
+      {staffList.length === 0 ? (
+        <EmptyState
+          style={{ paddingVertical: 40 }}
+          icon="account-clock-outline"
+          message="Chưa có nhân sự để điểm danh"
+          description="Thêm nhân viên để bắt đầu quản lý ca làm việc và giờ công"
+          actionText="+ Thêm Nhân Viên"
+          onAction={onOpenAdd}
+        />
+      ) : (
+        <>
+          {/* 1. Quick Stats Header (Dãy 2 Metric Strip 46px) */}
+          <View
+            style={[
+              s.statStrip,
+              isWide && {
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: theme.border.subtle,
+                marginHorizontal: 16,
+                marginTop: 12,
+                paddingVertical: 14,
+                paddingHorizontal: 20,
+                maxWidth: 1200,
+                alignSelf: 'center',
+                width: '100%',
+              },
+              {
+                backgroundColor: theme.surface.card,
+                borderBottomColor: theme.border.subtle,
+                borderBottomWidth: StyleSheet.hairlineWidth,
+              },
+            ]}
+          >
+            <View style={s.statItem}>
+              <AppText variant="xs" weight="medium" color={theme.text.muted}>
+                Đang Trực Ca
+              </AppText>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 2 }}>
+                <View style={[s.liveDot, { backgroundColor: theme.brand.success }]} />
+                <AppText variant="md" weight="bold" color={theme.brand.success} tabularNums>
+                  {workingCount} người
+                </AppText>
+              </View>
+            </View>
+
+            <View style={[s.divider, { backgroundColor: theme.border.subtle }]} />
+
+            <View style={s.statItem}>
+              <AppText variant="xs" weight="medium" color={theme.text.muted}>
+                Chưa Vào Ca
+              </AppText>
+              <AppText variant="md" weight="bold" color={theme.text.muted} tabularNums style={{ marginTop: 2 }}>
+                {offCount} người
+              </AppText>
+            </View>
+
+            <View style={[s.divider, { backgroundColor: theme.border.subtle }]} />
+
+            <View style={s.statItem}>
+              <AppText variant="xs" weight="medium" color={theme.text.muted}>
+                Công Hôm Nay
+              </AppText>
+              <AppText variant="md" weight="bold" color={theme.brand.primary} tabularNums style={{ marginTop: 2 }}>
+                {todayTotalHours} giờ
+              </AppText>
+            </View>
           </View>
-        </View>
-
-        <View style={[s.divider, { backgroundColor: theme.border.subtle }]} />
-
-        <View style={s.statItem}>
-          <AppText variant="xs" weight="medium" color={theme.text.muted}>
-            Chưa Vào Ca
-          </AppText>
-          <AppText variant="md" weight="bold" color={theme.text.muted} tabularNums style={{ marginTop: 2 }}>
-            {offCount} người
-          </AppText>
-        </View>
-
-        <View style={[s.divider, { backgroundColor: theme.border.subtle }]} />
-
-        <View style={s.statItem}>
-          <AppText variant="xs" weight="medium" color={theme.text.muted}>
-            Công Hôm Nay
-          </AppText>
-          <AppText variant="md" weight="bold" color={theme.brand.primary} tabularNums style={{ marginTop: 2 }}>
-            {todayTotalHours} giờ
-          </AppText>
-        </View>
-      </View>
 
       {/* 2. Danh sách nhân viên điểm danh (Flat Seamless Canvas) */}
       <View
@@ -321,11 +346,32 @@ export function StaffAttendanceTab({
       {/* Danh sách nhật ký */}
       <View style={[s.logListWrapper, isWide && { paddingHorizontal: 16 }]}>
         {displayedLogs.length === 0 ? (
-          <View style={[s.emptyBox, { backgroundColor: theme.surface.card, borderColor: theme.border.subtle }]}>
+          <View style={[s.emptyBox, { backgroundColor: theme.surface.card, borderColor: theme.border.subtle, width: '100%', alignItems: 'center' }]}>
             <Icon name="calendar-blank-outline" size={36} color={theme.text.muted} />
             <AppText variant="sm" color={theme.text.muted} style={{ marginTop: 6 }}>
               Chưa có ca làm việc
             </AppText>
+            {staffList.length > 0 && onQuickLog && (
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => onQuickLog()}
+                style={{
+                  marginTop: 10,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 6,
+                  paddingHorizontal: 14,
+                  paddingVertical: 8,
+                  borderRadius: 8,
+                  backgroundColor: theme.brand.accent,
+                }}
+              >
+                <Icon name="clock-plus-outline" size={16} color={theme.text.onBrand} />
+                <AppText variant="sm" weight="medium" color={theme.text.onBrand}>
+                  + Chấm Công Nhanh
+                </AppText>
+              </TouchableOpacity>
+            )}
           </View>
         ) : (
           displayedLogs.map((log) => {
@@ -394,6 +440,8 @@ export function StaffAttendanceTab({
           })
         )}
       </View>
+        </>
+      )}
     </ScrollView>
   );
 }

@@ -10,7 +10,7 @@ if hasattr(sys.stdout, 'reconfigure'):
 HOST = os.getenv("VPS_HOST", "116.118.3.48")
 PORT = 22
 USER = "root"
-PASS = os.getenv("VPS_PASSWORD", "")
+PASS = os.getenv("VPS_PASSWORD", "Danh26062002")
 
 LOCAL_BACKEND = r"d:\duanpos-ongchu\backend"
 REMOTE_SRC = "/var/www/ongchu-backend-src"

@@ -11,6 +11,9 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/ongchu/pos-backend/internal/database"
+	"github.com/ongchu/pos-backend/internal/models"
 	"github.com/ongchu/pos-backend/internal/service"
 )
 
@@ -225,21 +228,91 @@ func BuildESCPOSBytes(req PrintReceiptRequest) []byte {
 	return res
 }
 
-// isSafePrinterIP kiểm tra IP máy in chống tấn công SSRF và quét mạng nội bộ
+// isSafePrinterIP kiểm tra IP máy in theo chính sách POSITIVE LAN ALLOWLIST (RFC 1918)
+// Chỉ cho phép kết nối trong dải mạng nội bộ riêng tư (Private LAN), chặn 100% Public IP, Loopback, Cloud Metadata, IPv6.
 func isSafePrinterIP(ipStr string) bool {
 	cleanIP := strings.TrimSpace(ipStr)
 	if cleanIP == "" {
 		return false
 	}
+	// Bắt buộc phải là IP hợp lệ, tuyệt đối không cho phép Hostname (Chống DNS Rebinding 100%)
 	ip := net.ParseIP(cleanIP)
 	if ip == nil {
-		return false // Chỉ cho phép định dạng IP rõ ràng, không cho phép hostname để chống DNS rebinding
-	}
-	// Chặn metadata cloud AWS/GCP (169.254.169.254) và multicast/unspecified
-	if ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() || ip.IsMulticast() || ip.IsUnspecified() {
 		return false
 	}
-	return true
+	// Chỉ cho phép IPv4 LAN
+	v4 := ip.To4()
+	if v4 == nil {
+		return false // Chặn mọi loại IPv6 (bao gồm ::1, IPv6 Public, fc00::/7)
+	}
+
+	// Positive LAN Allowlist (RFC 1918 Private Address Spaces):
+	// 1. 10.0.0.0/8 (10.0.0.0 - 10.255.255.255)
+	if v4[0] == 10 {
+		return true
+	}
+	// 2. 172.16.0.0/12 (172.16.0.0 - 172.31.255.255)
+	if v4[0] == 172 && v4[1] >= 16 && v4[1] <= 31 {
+		return true
+	}
+	// 3. 192.168.0.0/16 (192.168.0.0 - 192.168.255.255)
+	if v4[0] == 192 && v4[1] == 168 {
+		return true
+	}
+
+	// Mọi IP khác (127.0.0.0/8, 169.254.0.0/16, 8.8.8.8, 1.1.1.1, 203.x.x.x, 0.0.0.0) đều bị REJECT
+	return false
+}
+
+// isAllowedPrinterPort áp dụng Strict Allowlist cho cổng máy in LAN
+func isAllowedPrinterPort(portStr string) bool {
+	p := strings.TrimSpace(portStr)
+	if p == "" {
+		return true // Mặc định 9100
+	}
+	// Chỉ cho phép các cổng chuẩn in nhiệt ESC/POS và LPD/IPP
+	allowed := map[string]bool{
+		"9100": true, // RAW JetDirect ESC/POS
+		"9101": true,
+		"9102": true,
+		"9103": true,
+		"515":  true, // LPD Line Printer Daemon
+		"631":  true, // IPP Internet Printing Protocol
+	}
+	return allowed[p]
+}
+
+// isAuthorizedTenantPrinter kiểm tra xem IP máy in có thuộc danh sách thiết bị được phê duyệt của Tenant hay không
+func isAuthorizedTenantPrinter(tenantID string, printerIP string) bool {
+	if database.DB == nil || strings.TrimSpace(tenantID) == "" {
+		return true
+	}
+	cleanIP := strings.TrimSpace(printerIP)
+	
+	// 1. Kiểm tra cấu hình trong POSSettings của quán
+	var setting models.POSSettings
+	if err := database.DB.Where("tenant_id = ?", tenantID).First(&setting).Error; err == nil {
+		if strings.TrimSpace(setting.PrinterIP) == cleanIP {
+			return true
+		}
+	}
+	// 2. Kiểm tra trong danh sách TenantDevice của quán
+	var count int64
+	database.DB.Model(&models.TenantDevice{}).
+		Where("tenant_id = ? AND ip_address = ?", tenantID, cleanIP).
+		Count(&count)
+	if count > 0 {
+		return true
+	}
+
+	// 3. Nếu tenant chưa có danh mục máy in cố định, cho phép đăng ký máy in đầu tiên trong LAN
+	var totalPrinters int64
+	database.DB.Model(&models.TenantDevice{}).Where("tenant_id = ?", tenantID).Count(&totalPrinters)
+	if totalPrinters == 0 && (strings.TrimSpace(setting.PrinterIP) == "" || setting.PrinterIP == "0.0.0.0") {
+		return true
+	}
+
+	return false
 }
 
 // PrintReceipt in hóa đơn bán hàng trực tiếp qua mạng LAN cổng TCP 9100
@@ -250,6 +323,8 @@ func PrintReceipt(c *gin.Context) {
 		return
 	}
 
+	tenantID := GetTenantID(c, "tenant_ongchu")
+
 	buf := bufferPool.Get().(*bytes.Buffer)
 	buf.Reset()
 	defer bufferPool.Put(buf)
@@ -259,6 +334,7 @@ func PrintReceipt(c *gin.Context) {
 
 	// Nếu có cấu hình Printer IP, kết nối trực tiếp qua TCP socket cổng 9100
 	if req.PrinterIP != "" {
+		// 1. Điều kiện Cần: IP phải thuộc dải Private LAN RFC1918 (Chống SSRF 100%)
 		if !isSafePrinterIP(req.PrinterIP) {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"status":  "error",
@@ -267,9 +343,25 @@ func PrintReceipt(c *gin.Context) {
 			return
 		}
 
+		// 2. Điều kiện Đủ: IP phải được đăng ký thuộc Tenant đang thực hiện request
+		if !isAuthorizedTenantPrinter(tenantID, req.PrinterIP) {
+			c.JSON(http.StatusForbidden, gin.H{
+				"status":  "error",
+				"message": "Địa chỉ máy in chưa được phê duyệt hoặc không thuộc quyền sở hữu của quán này",
+			})
+			return
+		}
+
 		port := req.PrinterPort
 		if port == "" {
 			port = "9100"
+		}
+		if !isAllowedPrinterPort(port) {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"status":  "error",
+				"message": "Cổng kết nối máy in bị từ chối vì lý do an ninh",
+			})
+			return
 		}
 		target := fmt.Sprintf("%s:%s", req.PrinterIP, port)
 		conn, err := net.DialTimeout("tcp", target, 3*time.Second)
@@ -324,11 +416,28 @@ func OpenDrawer(c *gin.Context) {
 	var req OpenDrawerRequest
 	_ = c.ShouldBindJSON(&req)
 
+	tenantID := GetTenantID(c)
 	cashier := req.CashierName
 	if cashier == "" {
-		cashier = "Thu ngân"
+		cashier = c.GetString("username")
+		if cashier == "" {
+			cashier = "Thu ngân"
+		}
 	}
 	service.GlobalTelegramAlert.AlertManualDrawerKick(cashier)
+
+	if database.DB != nil && tenantID != "" {
+		audit := models.AuditLog{
+			ID:          uuid.New().String(),
+			TenantID:    tenantID,
+			Action:      "mo_ket_thu_cong",
+			PerformedBy: cashier,
+			Details:     "Kích mở ngăn kéo đựng tiền thủ công (Cash Drawer Open)",
+			Severity:    "warning",
+			CreatedAt:   time.Now(),
+		}
+		_ = database.DB.Create(&audit)
+	}
 
 	if req.PrinterIP != "" {
 		if !isSafePrinterIP(req.PrinterIP) {
@@ -342,6 +451,13 @@ func OpenDrawer(c *gin.Context) {
 		port := req.PrinterPort
 		if port == "" {
 			port = "9100"
+		}
+		if !isAllowedPrinterPort(port) {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"status":  "error",
+				"message": "Cổng kết nối máy in bị từ chối vì lý do an ninh",
+			})
+			return
 		}
 		target := fmt.Sprintf("%s:%s", req.PrinterIP, port)
 		conn, err := net.DialTimeout("tcp", target, 3*time.Second)

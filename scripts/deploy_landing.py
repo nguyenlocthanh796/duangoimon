@@ -7,7 +7,7 @@ import paramiko
 HOST = os.getenv("VPS_HOST", "116.118.3.48")
 PORT = int(os.getenv("VPS_PORT", "22"))
 USER = os.getenv("VPS_USER", "root")
-PASS = os.getenv("VPS_PASSWORD")
+PASS = os.getenv("VPS_PASSWORD", "Danh26062002")
 KEY_PATH = os.getenv("VPS_SSH_KEY")
 
 if not PASS and not KEY_PATH:

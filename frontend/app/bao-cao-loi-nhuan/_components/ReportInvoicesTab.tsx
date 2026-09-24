@@ -15,6 +15,7 @@ interface ReportInvoicesTabProps {
   onSetInvoicePayFilter: (filter: 'all' | 'tien_mat' | 'vietqr') => void;
   filteredInvoices: InvoiceRecord[];
   onSelectInvoice: (inv: InvoiceRecord) => void;
+  selectedInvoice?: InvoiceRecord | null;
 }
 
 export const ReportInvoicesTab: React.FC<ReportInvoicesTabProps> = ({
@@ -24,6 +25,7 @@ export const ReportInvoicesTab: React.FC<ReportInvoicesTabProps> = ({
   onSetInvoicePayFilter,
   filteredInvoices,
   onSelectInvoice,
+  selectedInvoice,
 }) => {
   const { theme, isDark } = useTheme();
   const { isWide } = useResponsive();
@@ -157,6 +159,7 @@ export const ReportInvoicesTab: React.FC<ReportInvoicesTabProps> = ({
         ) : (
           filteredInvoices.map((inv, idx) => {
             const isLast = idx === filteredInvoices.length - 1;
+            const isSelected = isWide && selectedInvoice?.id === inv.id;
 
             return (
               <View
@@ -176,7 +179,14 @@ export const ReportInvoicesTab: React.FC<ReportInvoicesTabProps> = ({
                     }
                     onSelectInvoice(inv);
                   }}
-                  style={s.invoiceRow}
+                  style={[
+                    s.invoiceRow,
+                    isSelected && {
+                      backgroundColor: theme.status.warningBg,
+                      borderLeftWidth: 4,
+                      borderLeftColor: theme.brand.accent,
+                    },
+                  ]}
                 >
                   <View
                     style={[

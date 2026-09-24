@@ -51,6 +51,9 @@ func CanonicalTenantID(t string) string {
 	if clean == "phothin" || clean == "tenant_pho_thin" {
 		return "tenant_pho_thin"
 	}
+	if clean == "quanchebuoiangiang" || clean == "tenant_87fb90f7" || clean == "tenant_quanchebuoiangiang" {
+		return "tenant_87fb90f7"
+	}
 	if clean == "banhmihp" || clean == "tenant_banhmi_hp" {
 		return "tenant_banhmi_hp"
 	}

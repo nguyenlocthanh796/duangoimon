@@ -12,6 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../../../lib/theme';
+import { useResponsive } from '../../../lib/hooks/useResponsive';
 import { useAuthStore } from '../../../lib/store/useAuthStore';
 import { useStaffStore } from '../../../lib/store/useStaffStore';
 import { AppText, Button, AppModal, AppFormField } from '../../../lib/components/ui';
@@ -47,6 +48,7 @@ export const OpenShiftModal: React.FC<OpenShiftModalProps> = ({
   defaultStartingCash = 500000,
 }) => {
   const { theme, isDark } = useTheme();
+  const { isWide } = useResponsive();
   const insets = useSafeAreaInsets();
   const currentUser = useAuthStore((st) => st.currentUser);
   const staffList = useStaffStore((st) => st.staffList) || [];
@@ -113,7 +115,8 @@ export const OpenShiftModal: React.FC<OpenShiftModalProps> = ({
     <AppModal
       visible={visible}
       onClose={onClose}
-      presentation="sheet"
+      presentation={isWide ? 'dialog' : 'sheet'}
+      maxWidth={isWide ? 580 : undefined}
       title="Mở Ca Bán Hàng"
       subtitle="Bàn giao két & thiết bị đầu ca"
       icon="cash-register"

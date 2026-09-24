@@ -91,9 +91,14 @@ func CreateStaff(c *gin.Context) {
 		return
 	}
 
-	if req.TenantID == "" {
-		req.TenantID = GetTenantID(c, "tenant-default")
+	tenantID := GetTenantID(c)
+	if tenantID == "" {
+		tenantID = req.TenantID
 	}
+	if tenantID == "" {
+		tenantID = "tenant-default"
+	}
+
 	if req.BranchID == "" {
 		req.BranchID = c.GetHeader("X-Branch-ID")
 	}
@@ -112,7 +117,7 @@ func CreateStaff(c *gin.Context) {
 
 	staff := models.Staff{
 		ID:                     uuid.New().String(),
-		TenantID:               req.TenantID,
+		TenantID:               tenantID,
 		BranchID:               req.BranchID,
 		Name:                   req.Name,
 		Phone:                  req.Phone,
@@ -151,9 +156,14 @@ func UpdateStaff(c *gin.Context) {
 		return
 	}
 
+	tenantID := GetTenantID(c)
 	var staff models.Staff
-	if err := database.DB.First(&staff, "id = ?", id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Không tìm thấy nhân viên"})
+	query := database.DB.Where("id = ?", id)
+	if tenantID != "" {
+		query = query.Where("tenant_id = ?", tenantID)
+	}
+	if err := query.First(&staff).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Không tìm thấy nhân viên thuộc quán này"})
 		return
 	}
 
@@ -185,13 +195,18 @@ func DeleteStaff(c *gin.Context) {
 		return
 	}
 
+	tenantID := GetTenantID(c)
 	var staff models.Staff
-	if err := database.DB.First(&staff, "id = ?", id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Không tìm thấy nhân viên"})
+	query := database.DB.Where("id = ?", id)
+	if tenantID != "" {
+		query = query.Where("tenant_id = ?", tenantID)
+	}
+	if err := query.First(&staff).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Không tìm thấy nhân viên thuộc quán này"})
 		return
 	}
 
-	if err := database.DB.Model(&models.Staff{}).Where("id = ?", id).Update("is_active", false).Error; err != nil {
+	if err := database.DB.Model(&models.Staff{}).Where("id = ? AND tenant_id = ?", id, staff.TenantID).Update("is_active", false).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -211,6 +226,22 @@ func ClockInStaff(c *gin.Context) {
 		req.ShiftType = "ca_sang"
 	}
 
+	tenantID := GetTenantID(c)
+	if database.DB == nil {
+		c.JSON(http.StatusOK, gin.H{"message": "Đã chấm công"})
+		return
+	}
+
+	var staff models.Staff
+	query := database.DB.Where("id = ?", staffID)
+	if tenantID != "" {
+		query = query.Where("tenant_id = ?", tenantID)
+	}
+	if err := query.First(&staff).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Không tìm thấy nhân viên thuộc quán này"})
+		return
+	}
+
 	now := time.Now()
 	workDate := now.Format("2006-01-02")
 
@@ -224,16 +255,9 @@ func ClockInStaff(c *gin.Context) {
 		CreatedAt: now,
 	}
 
-	var tenantID string = "tenant_ongchu"
-	if database.DB != nil {
-		var staff models.Staff
-		if err := database.DB.First(&staff, "id = ?", staffID).Error; err == nil && staff.TenantID != "" {
-			tenantID = staff.TenantID
-		}
-		if err := database.DB.Create(&shift).Error; err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
+	if err := database.DB.Create(&shift).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
 	websocket.GlobalHub.BroadcastToTenant(tenantID, "staff_clocked_in", gin.H{"staff_id": staffID, "shift": shift})

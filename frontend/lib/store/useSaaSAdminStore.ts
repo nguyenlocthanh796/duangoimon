@@ -207,6 +207,8 @@ export interface SaaSAdminState {
     ownerPassword?: string;
     ownerPin?: string;
   }>;
+  fetchTenants: () => Promise<void>;
+  deleteTenant: (tenantId: string) => Promise<{ success: boolean; error?: string }>;
   toggleTenantStatus: (tenantId: string) => Promise<{ success: boolean; newStatus: boolean }>;
   renewTenantLicense: (tenantId: string, months: number) => Promise<{ success: boolean; newExpiry: string }>;
   resetTenantPin: (tenantId: string) => Promise<{ success: boolean; ownerPin: string; rescueCode: string }>;
@@ -262,15 +264,17 @@ export interface SaaSAdminState {
   unbindDevice?: (tenantId: string, deviceId: string) => Promise<{ success: boolean }>;
 }
 
-export const SAAS_MASTER_ROOT_KEY =
-  'ongchu_saas_master_root_key_202696febcef886f40d280e4a909a3a56085';
-
 export function getAdminHeaders(extra: Record<string, string> = {}): Record<string, string> {
+  let token = '';
+  try {
+    const { useAuthStore } = require('./useAuthStore');
+    token = useAuthStore.getState().token || '';
+  } catch (_) {}
+
   return {
     'Content-Type': 'application/json',
     Accept: 'application/json',
-    'X-Admin-Key': SAAS_MASTER_ROOT_KEY,
-    Authorization: `Bearer ${SAAS_MASTER_ROOT_KEY}`,
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...extra,
   };
 }
@@ -436,7 +440,7 @@ export const useSaaSAdminStore = create<SaaSAdminState>()(
         };
       },
 
-      deleteTenant: async (tenantId) => {
+      deleteTenant: async (tenantId: string) => {
         const target = get().tenants.find((t) => t.id === tenantId);
         if (!target) return { success: false, error: 'Không tìm thấy quán cần xóa' };
 

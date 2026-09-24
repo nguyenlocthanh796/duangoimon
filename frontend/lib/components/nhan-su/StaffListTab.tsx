@@ -23,6 +23,8 @@ interface StaffListTabProps {
   staffList: StaffMember[];
   isWide: boolean;
   isDesktopLarge?: boolean;
+  selectedStaffId?: string;
+  isMasterDetail?: boolean;
   onOpenAdd: () => void;
   onSelectStaff: (staff: StaffMember) => void;
 }
@@ -31,6 +33,8 @@ export function StaffListTab({
   staffList,
   isWide,
   isDesktopLarge,
+  selectedStaffId,
+  isMasterDetail,
   onOpenAdd,
   onSelectStaff,
 }: StaffListTabProps) {
@@ -115,29 +119,32 @@ export function StaffListTab({
         contentContainerStyle={[
           s.listScroll,
           {
-            padding: isWide ? 16 : 0,
-            gap: isWide ? 12 : 0,
+            padding: isWide ? (isMasterDetail ? 12 : 16) : 0,
+            gap: isWide ? (isMasterDetail ? 8 : 12) : 0,
             paddingBottom: isWide ? 24 : 16,
           },
-          isWide && { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+          isWide && !isMasterDetail && { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
         ]}
         showsVerticalScrollIndicator={false}
       >
         {filteredStaff.length === 0 ? (
           <EmptyState
             icon="account-search-outline"
-            message="Không có nhân sự phù hợp"
-            description="Thử tìm kiếm với từ khóa khác hoặc thêm nhân sự mới"
+            message={staffList.length === 0 ? 'Chưa có nhân viên nào' : 'Không có nhân sự phù hợp'}
+            description={staffList.length === 0 ? 'Bấm nút bên dưới để tạo hồ sơ nhân viên mới' : 'Thử tìm kiếm với từ khóa khác hoặc thêm nhân sự mới'}
+            actionText="+ Thêm Nhân Viên"
+            onAction={onOpenAdd}
           />
         ) : (
           filteredStaff.map((staff) => {
             const roleInfo = ROLE_CONFIG[staff.role];
+            const isSelected = selectedStaffId === staff.id;
 
             return (
               <View
                 key={staff.id}
                 style={[
-                  isWide && { width: isDesktopLarge ? '32.4%' : '49.2%' },
+                  isWide && { width: isMasterDetail ? '100%' : isDesktopLarge ? '32.4%' : '49.2%' },
                   { borderBottomColor: theme.border.subtle, borderBottomWidth: StyleSheet.hairlineWidth },
                 ]}
               >
@@ -155,10 +162,16 @@ export function StaffListTab({
                   style={[
                     s.staffCard,
                     {
-                      backgroundColor: theme.surface.card,
-                      borderColor: theme.border.subtle,
-                      borderRadius: isWide ? 14 : 0,
+                      backgroundColor: isSelected
+                        ? isDark
+                          ? 'rgba(180, 83, 9, 0.15)'
+                          : '#FEF3C7'
+                        : theme.surface.card,
+                      borderColor: isSelected ? theme.brand.accent : theme.border.subtle,
+                      borderRadius: isWide ? 10 : 0,
                       borderWidth: isWide ? 1 : 0,
+                      borderLeftWidth: isSelected ? 4 : isWide ? 1 : 0,
+                      borderLeftColor: isSelected ? theme.brand.accent : theme.border.subtle,
                     },
                   ]}
                 >

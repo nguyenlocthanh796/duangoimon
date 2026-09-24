@@ -2,12 +2,14 @@ package database
 
 import (
 	"log"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/glebarez/sqlite"
 	"github.com/ongchu/pos-backend/internal/config"
 	"github.com/ongchu/pos-backend/internal/models"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -104,11 +106,12 @@ func InitDB(cfg *config.Config) *gorm.DB {
 		&models.TenantAddonConfig{},
 		&models.SaaSLicenseKey{},
 		&models.SaaSPlanConfig{},
+		&models.PaymentIdempotencyKey{},
 	)
 	if err != nil {
 		log.Printf("⚠️ AutoMigrate error: %v", err)
 	} else {
-		log.Println("✅ AutoMigrate (28 Merchant & SaaS Models) completed successfully!")
+		log.Println("✅ AutoMigrate (29 Merchant & SaaS Models) completed successfully!")
 	}
 
 	// 4. Seed Data ban đầu nếu cơ sở dữ liệu mới khởi tạo
@@ -183,31 +186,45 @@ func SeedInitialData(db *gorm.DB) {
 	EnsureSuperAdmin(db)
 }
 
-// EnsureSuperAdmin đảm bảo tài khoản quản trị tối cao SaaS nguyenlocthanh291097 luôn tồn tại
+// EnsureSuperAdmin đảm bảo tài khoản quản trị tối cao SaaS tồn tại nếu được cấu hình
 func EnsureSuperAdmin(db *gorm.DB) {
 	if db == nil {
 		return
 	}
-	now := time.Now()
-	superAdmin := models.User{
-		ID:           "usr_saas_superadmin",
-		TenantID:     "saas_master",
-		Username:     "nguyenlocthanh291097",
-		FullName:     "Nguyễn Lộc Thành (Quản Trị SaaS)",
-		Role:         "saas_admin",
-		PinCode:      "9999",
-		PasswordHash: "Danh@!26062002",
-		IsActive:     true,
-		CreatedAt:    now,
-		UpdatedAt:    now,
+	initialPass := strings.TrimSpace(os.Getenv("SUPERADMIN_INITIAL_PASSWORD"))
+	adminUser := strings.TrimSpace(os.Getenv("SUPERADMIN_USERNAME"))
+	if adminUser == "" {
+		adminUser = "saas_admin"
 	}
-	db.FirstOrCreate(&superAdmin, models.User{Username: "nguyenlocthanh291097"})
-	db.Model(&superAdmin).Where("username = ?", "nguyenlocthanh291097").Updates(map[string]interface{}{
-		"role":          "saas_admin",
-		"full_name":     "Nguyễn Lộc Thành (Quản Trị SaaS)",
-		"password_hash": "Danh@!26062002",
-		"is_active":     true,
-	})
+
+	var existing models.User
+	err := db.Where("username = ? OR id = 'usr_saas_superadmin'", adminUser).First(&existing).Error
+	if err == gorm.ErrRecordNotFound && initialPass != "" {
+		hash, errHash := bcrypt.GenerateFromPassword([]byte(initialPass), 12)
+		if errHash == nil {
+			now := time.Now()
+			newAdmin := models.User{
+				ID:           "usr_saas_superadmin",
+				TenantID:     "saas_master",
+				Username:     adminUser,
+				FullName:     "Quản Trị Viên Hệ Thống",
+				Role:         "saas_admin",
+				PasswordHash: string(hash),
+				IsActive:     true,
+				CreatedAt:    now,
+				UpdatedAt:    now,
+			}
+			_ = db.Create(&newAdmin).Error
+		}
+	} else if err == nil && initialPass != "" {
+		hash, errHash := bcrypt.GenerateFromPassword([]byte(initialPass), 12)
+		if errHash == nil {
+			_ = db.Model(&existing).Updates(map[string]interface{}{
+				"password_hash": string(hash),
+				"is_active":     true,
+			}).Error
+		}
+	}
 }
 
 // GetPlanMaxQuotas truy xuất hạn mức chi nhánh và thiết bị động từ bảng saas_plan_configs.

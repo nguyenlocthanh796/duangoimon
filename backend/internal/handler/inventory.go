@@ -38,6 +38,131 @@ func GetIngredients(c *gin.Context) {
 	c.JSON(http.StatusOK, ingredients)
 }
 
+// CreateIngredientRequest payload tạo nguyên vật liệu / hàng hóa
+type CreateIngredientRequest struct {
+	SKU          string  `json:"sku"`
+	Name         string  `json:"name" binding:"required"`
+	Category     string  `json:"category"`
+	Unit         string  `json:"unit" binding:"required"`
+	CurrentStock float64 `json:"current_stock"`
+	MinStock     float64 `json:"min_stock"`
+	CostPrice    float64 `json:"cost_price"`
+	SupplierName string  `json:"supplier_name"`
+	BranchID     string  `json:"branch_id"`
+}
+
+// CreateIngredient thêm mới nguyên vật liệu/hàng tồn kho
+func CreateIngredient(c *gin.Context) {
+	tenantID := GetTenantID(c)
+	var req CreateIngredientRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Thiếu dữ liệu bắt buộc (Tên hoặc ĐVT)"})
+		return
+	}
+
+	branchID := req.BranchID
+	if branchID == "" {
+		branchID = "main"
+	}
+	cat := req.Category
+	if cat == "" {
+		cat = "nguyen_lieu"
+	}
+	sku := req.SKU
+	if sku == "" {
+		sku = fmt.Sprintf("NL-%03d", time.Now().Unix()%1000)
+	}
+
+	ing := models.Ingredient{
+		ID:                 uuid.New().String(),
+		TenantID:           tenantID,
+		BranchID:           branchID,
+		SKU:                sku,
+		Name:               req.Name,
+		Category:           cat,
+		Unit:               req.Unit,
+		CurrentStock:       req.CurrentStock,
+		MinStock:           req.MinStock,
+		AvgCostPrice:       req.CostPrice,
+		YieldRate:          100,
+		EffectiveCostPrice: req.CostPrice,
+		SupplierName:       req.SupplierName,
+		CreatedAt:          time.Now(),
+		UpdatedAt:          time.Now(),
+	}
+
+	if database.DB != nil {
+		if err := database.DB.Create(&ing).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Không thể lưu nguyên liệu: %v", err)})
+			return
+		}
+	}
+
+	c.JSON(http.StatusCreated, ing)
+}
+
+// UpdateIngredient cập nhật nguyên vật liệu/hàng tồn kho
+func UpdateIngredient(c *gin.Context) {
+	tenantID := GetTenantID(c)
+	id := c.Param("id")
+
+	var req CreateIngredientRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Dữ liệu cập nhật không hợp lệ"})
+		return
+	}
+
+	if database.DB == nil {
+		c.JSON(http.StatusOK, gin.H{"success": true})
+		return
+	}
+
+	var ing models.Ingredient
+	if err := ScopeTenant(database.DB, tenantID).First(&ing, "id = ?", id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Không tìm thấy mặt hàng trong kho"})
+		return
+	}
+
+	updates := map[string]interface{}{
+		"name":                 req.Name,
+		"unit":                 req.Unit,
+		"current_stock":        req.CurrentStock,
+		"min_stock":            req.MinStock,
+		"avg_cost_price":       req.CostPrice,
+		"effective_cost_price": req.CostPrice,
+		"supplier_name":        req.SupplierName,
+		"updated_at":           time.Now(),
+	}
+	if req.SKU != "" {
+		updates["sku"] = req.SKU
+	}
+	if req.Category != "" {
+		updates["category"] = req.Category
+	}
+
+	if err := database.DB.Model(&ing).Updates(updates).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Không thể cập nhật: %v", err)})
+		return
+	}
+
+	c.JSON(http.StatusOK, ing)
+}
+
+// DeleteIngredient xóa nguyên vật liệu khỏi kho
+func DeleteIngredient(c *gin.Context) {
+	tenantID := GetTenantID(c)
+	id := c.Param("id")
+
+	if database.DB != nil {
+		if err := ScopeTenant(database.DB, tenantID).Delete(&models.Ingredient{}, "id = ?", id).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Không thể xóa mặt hàng: %v", err)})
+			return
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": true, "message": "Đã xóa mặt hàng"})
+}
+
 // GetLowStockIngredients cảnh báo các nguyên liệu đã chạm hoặc dưới ngưỡng an toàn (MinStock)
 func GetLowStockIngredients(c *gin.Context) {
 	tenantID := c.Query("tenant_id")
@@ -118,9 +243,17 @@ func CreatePurchaseOrder(c *gin.Context) {
 		paymentType = "tien_mat"
 	}
 
+	tenantID := GetTenantID(c)
+	if tenantID == "" {
+		tenantID = req.TenantID
+	}
+	if tenantID == "" {
+		tenantID = "tenant_ongchu"
+	}
+
 	po := models.PurchaseOrder{
 		ID:          poID,
-		TenantID:    req.TenantID,
+		TenantID:    tenantID,
 		BranchID:    req.BranchID,
 		POCode:      poCode,
 		Supplier:    req.Supplier,
@@ -134,14 +267,22 @@ func CreatePurchaseOrder(c *gin.Context) {
 
 	if database.DB != nil {
 		err := database.DB.Transaction(func(tx *gorm.DB) error {
+			// Xác thực toàn bộ nguyên liệu thuộc đúng Tenant hiện tại (Chống Cross-Tenant FK Injection)
+			for _, it := range req.Items {
+				var ing models.Ingredient
+				if err := tx.Where("id = ? AND tenant_id = ?", it.IngredientID, tenantID).First(&ing).Error; err != nil {
+					return fmt.Errorf("nguyên liệu '%s' không tồn tại hoặc không thuộc quyền sở hữu của quán này", it.IngredientID)
+				}
+			}
+
 			if err := tx.Create(&po).Error; err != nil {
 				return err
 			}
 
-			// Tăng tồn kho nguyên liệu theo từng dòng phiếu nhập
+			// Tăng tồn kho nguyên liệu theo từng dòng phiếu nhập của đúng Tenant
 			for _, it := range req.Items {
 				if err := tx.Model(&models.Ingredient{}).
-					Where("id = ?", it.IngredientID).
+					Where("id = ? AND tenant_id = ?", it.IngredientID, tenantID).
 					Update("current_stock", gorm.Expr("current_stock + ?", it.Quantity)).Error; err != nil {
 					return err
 				}
@@ -150,7 +291,7 @@ func CreatePurchaseOrder(c *gin.Context) {
 		})
 
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Lỗi lưu phiếu nhập: %v", err)})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 	}

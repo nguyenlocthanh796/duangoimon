@@ -160,10 +160,10 @@ export default function SettingsScreen() {
               activeOpacity={0.8}
               onPress={handleSave}
               hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-              style={[s.headerSaveBtn, { backgroundColor: theme.brand.primary }]}
+              style={[s.headerSaveBtn, { backgroundColor: theme.brand.accent }]}
             >
               <Icon name="content-save-outline" size={16} color={theme.text.onBrand} />
-              <AppText variant="xs" weight="medium" color={theme.text.onBrand}>
+              <AppText variant="xs" weight="bold" color={theme.text.onBrand}>
                 Lưu Cài Đặt
               </AppText>
             </TouchableOpacity>

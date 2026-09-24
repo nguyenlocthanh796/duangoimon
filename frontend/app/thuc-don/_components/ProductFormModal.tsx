@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../../../lib/theme';
+import { useResponsive } from '../../../lib/hooks/useResponsive';
 import { AppText, useAppToast, AppHeader, AppModal } from '../../../lib/components/ui';
 import {
   useCategories,
@@ -44,6 +45,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
   onDelete,
 }) => {
   const { theme, isDark } = useTheme();
+  const { isWide } = useResponsive();
   const insets = useSafeAreaInsets();
   const { showToast } = useAppToast();
   const categories = useCategories();
@@ -100,8 +102,8 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
       setUnit('Ly');
       setStation('bar');
       setSelectedToppings([...storeToppings]);
-      setImage('https://images.unsplash.com/photo-1541658016709-82535e94bc69?w=400&q=80');
-      setImageCompressionInfo('Ảnh mẫu mặc định');
+      setImage('');
+      setImageCompressionInfo('');
       setSizes([]);
     }
     setShowQuickAddCat(false);
@@ -294,7 +296,8 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
     <Modal
       visible={visible}
       animationType="fade"
-      presentationStyle="fullScreen"
+      presentationStyle={isWide ? 'overFullScreen' : 'fullScreen'}
+      transparent={isWide}
       statusBarTranslucent={true}
       onRequestClose={onClose}
     >
@@ -303,44 +306,66 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
         backgroundColor="transparent"
         translucent={true}
       />
-      <View style={[s.fullScreenContainer, { backgroundColor: theme.surface.app }]}>
-        {/* Top Header Toàn Màn Hình Thống Nhất AppHeader (Liền Mạch Đệm Status Bar) */}
-        <AppHeader
-          showBack
-          onBack={onClose}
-          title={itemToEdit ? 'Chỉnh Sửa Món' : 'Thêm Món Mới'}
-          subtitle={itemToEdit ? `Mã: ${itemToEdit.code || 'N/A'}` : 'Nhập thông tin món ăn'}
-          rightCustom={
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={handleSave}
-              style={[
-                s.btnSaveHeader,
-                {
-                  backgroundColor: theme.brand.primary,
-                },
-              ]}
-            >
-              <Icon name="check" size={16} color={theme.text.onBrand} />
-              <AppText variant="xs" weight="medium" color={theme.text.onBrand}>
-                Lưu
-              </AppText>
-            </TouchableOpacity>
+      <View
+        style={
+          isWide
+            ? [s.desktopModalOverlay, { backgroundColor: 'rgba(0, 0, 0, 0.55)' }]
+            : [s.fullScreenContainer, { backgroundColor: theme.surface.app }]
+        }
+      >
+        <View
+          style={
+            isWide
+              ? [
+                  s.desktopModalContainer,
+                  {
+                    backgroundColor: theme.surface.app,
+                    borderColor: theme.border.default,
+                  },
+                ]
+              : { flex: 1 }
           }
-        />
-
-        <ScrollView
-          style={{ flex: 1 }}
-          contentContainerStyle={{
-            paddingHorizontal: 16,
-            paddingTop: 12,
-            paddingBottom: Math.max(insets.bottom, 16) + 40,
-          }}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
         >
-          {/* PHÂN ĐOẠN 0: HÌNH ẢNH MÓN ĂN */}
-          <AppText
+          {/* Top Header Toàn Màn Hình Thống Nhất AppHeader (Liền Mạch Đệm Status Bar) */}
+          <AppHeader
+            showBack
+            onBack={onClose}
+            title={itemToEdit ? 'Chỉnh Sửa Món' : 'Thêm Món Mới'}
+            subtitle={itemToEdit ? `Mã: ${itemToEdit.code || 'N/A'}` : 'Nhập thông tin món ăn'}
+            rightCustom={
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={handleSave}
+                style={[
+                  s.btnSaveHeader,
+                  {
+                    backgroundColor: theme.brand.primary,
+                  },
+                ]}
+              >
+                <Icon name="check" size={16} color={theme.text.onBrand} />
+                <AppText variant="xs" weight="medium" color={theme.text.onBrand}>
+                  Lưu
+                </AppText>
+              </TouchableOpacity>
+            }
+          />
+
+          <ScrollView
+            style={{ flex: 1 }}
+            contentContainerStyle={{
+              paddingHorizontal: isWide ? 24 : 16,
+              paddingTop: isWide ? 16 : 12,
+              paddingBottom: Math.max(insets.bottom, 16) + 40,
+              maxWidth: isWide ? 760 : undefined,
+              alignSelf: isWide ? 'center' : undefined,
+              width: '100%',
+            }}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            {/* PHÂN ĐOẠN 0: HÌNH ẢNH MÓN ĂN */}
+            <AppText
             variant="xs"
             weight="medium"
             color={theme.text.muted}
@@ -1213,44 +1238,47 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
         </AppModal>
 
         {/* Modal Chọn Nhanh Ảnh Món Mẫu F&B */}
-        <AppModal
-          visible={showSampleImagesModal}
-          onClose={() => setShowSampleImagesModal(false)}
-          title="Thư Viện Ảnh Món F&B Mẫu"
-          subtitle="Ảnh vuông 1:1 chuẩn đẹp, tải siêu nhẹ"
-          width={480}
-        >
-          <View style={s.sampleImageGrid}>
-            {SAMPLE_FOOD_IMAGES.map((item, idx) => {
-              const isPicked = image === item.url;
-              return (
-                <TouchableOpacity
-                  key={idx}
-                  activeOpacity={0.8}
-                  onPress={() => handleSelectSampleImage(item.url)}
-                  style={[
-                    s.sampleImageCard,
-                    {
-                      backgroundColor: theme.surface.header,
-                      borderColor: isPicked ? theme.brand.primary : theme.border.default,
-                      borderWidth: isPicked ? 2 : 1,
-                    },
-                  ]}
-                >
-                  <Image source={{ uri: item.url }} style={s.sampleImageThumb} resizeMode="cover" />
-                  <View style={{ padding: 6 }}>
-                    <AppText variant="xs" weight={isPicked ? 'medium' : 'normal'} color={isPicked ? theme.brand.primary : theme.text.primary} numberOfLines={1}>
-                      {item.name}
-                    </AppText>
-                    <AppText variant="xxs" color={theme.text.muted} numberOfLines={1}>
-                      {item.category}
-                    </AppText>
-                  </View>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        </AppModal>
+        {showSampleImagesModal && (
+          <AppModal
+            visible={showSampleImagesModal}
+            onClose={() => setShowSampleImagesModal(false)}
+            title="Thư Viện Ảnh Món F&B Mẫu"
+            subtitle="Ảnh vuông 1:1 chuẩn đẹp, tải siêu nhẹ"
+            width={480}
+          >
+            <View style={s.sampleImageGrid}>
+              {SAMPLE_FOOD_IMAGES.map((item, idx) => {
+                const isPicked = image === item.url;
+                return (
+                  <TouchableOpacity
+                    key={idx}
+                    activeOpacity={0.8}
+                    onPress={() => handleSelectSampleImage(item.url)}
+                    style={[
+                      s.sampleImageCard,
+                      {
+                        backgroundColor: theme.surface.header,
+                        borderColor: isPicked ? theme.brand.primary : theme.border.default,
+                        borderWidth: isPicked ? 2 : 1,
+                      },
+                    ]}
+                  >
+                    <Image source={{ uri: item.url }} style={s.sampleImageThumb} resizeMode="cover" />
+                    <View style={{ padding: 6 }}>
+                      <AppText variant="xs" weight={isPicked ? 'medium' : 'normal'} color={isPicked ? theme.brand.primary : theme.text.primary} numberOfLines={1}>
+                        {item.name}
+                      </AppText>
+                      <AppText variant="xxs" color={theme.text.muted} numberOfLines={1}>
+                        {item.category}
+                      </AppText>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </AppModal>
+        )}
+        </View>
       </View>
     </Modal>
   );
@@ -1259,6 +1287,25 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
 const s = StyleSheet.create({
   fullScreenContainer: {
     flex: 1,
+  },
+  desktopModalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  desktopModalContainer: {
+    width: '100%',
+    maxWidth: 760,
+    maxHeight: '92%',
+    borderRadius: 16,
+    borderWidth: StyleSheet.hairlineWidth,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.25,
+    shadowRadius: 24,
+    elevation: 10,
   },
   iconBtn: {
     width: 36,

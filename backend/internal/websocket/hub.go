@@ -13,6 +13,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
+	"github.com/ongchu/pos-backend/internal/auth"
 )
 
 const (
@@ -31,7 +32,7 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		origin := r.Header.Get("Origin")
 		if origin == "" {
-			return true // Mobile native app, desktop app, local CLI
+			return true // Native mobile apps, desktop clients, local CLI
 		}
 		if strings.HasPrefix(origin, "http://localhost") || strings.HasPrefix(origin, "http://127.0.0.1") {
 			return true
@@ -50,7 +51,12 @@ var upgrader = websocket.Upgrader{
 				return true
 			}
 		}
-		return true // Cho phép kết nối an toàn cho tất cả thiết bị POS/KDS
+		// If in release mode, reject unauthorized external origins
+		if os.Getenv("GIN_MODE") == "release" {
+			log.Printf("🚨 [WS REJECT] Unauthorized WebSocket Origin: %s", origin)
+			return false
+		}
+		return true
 	},
 }
 
@@ -58,6 +64,8 @@ type Client struct {
 	ID        string
 	TenantID  string
 	BranchID  string
+	UserID    string
+	Role      string
 	Conn      *websocket.Conn
 	Send      chan []byte
 	closeOnce sync.Once
@@ -93,7 +101,7 @@ func (h *Hub) Run() {
 			h.Clients[client] = true
 			total := len(h.Clients)
 			h.mu.Unlock()
-			log.Printf("🔌 WebSocket Client connected (Total: %d)", total)
+			log.Printf("🔌 WebSocket Client connected (Tenant: %s, Total: %d)", client.TenantID, total)
 
 		case client := <-h.Unregister:
 			h.mu.Lock()
@@ -103,10 +111,11 @@ func (h *Hub) Run() {
 			}
 			total := len(h.Clients)
 			h.mu.Unlock()
-			log.Printf("🔌 WebSocket Client disconnected (Total: %d)", total)
+			log.Printf("🔌 WebSocket Client disconnected (Tenant: %s, Remaining: %d)", client.TenantID, total)
 
 		case message := <-h.Broadcast:
-			h.mu.Lock()
+			// BroadcastToTenant / BroadcastToBranch handles tenant-scoped routing
+			h.mu.RLock()
 			for client := range h.Clients {
 				select {
 				case client.Send <- message:
@@ -115,84 +124,94 @@ func (h *Hub) Run() {
 					delete(h.Clients, client)
 				}
 			}
-			h.mu.Unlock()
+			h.mu.RUnlock()
 		}
 	}
 }
 
+// BroadcastJSON sends a typed payload (Deprecated for tenant data, only for system-wide health)
 func (h *Hub) BroadcastJSON(v interface{}) {
-	bytes, err := json.Marshal(v)
-	if err == nil {
+	payload, err := json.Marshal(v)
+	if err != nil {
+		return
+	}
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+	for client := range h.Clients {
 		select {
-		case h.Broadcast <- bytes:
+		case client.Send <- payload:
 		default:
-			log.Printf("⚠️ WebSocket broadcast channel full, dropping message")
 		}
 	}
 }
 
-// BroadcastToAll phát thông điệp kèm type, timestamp_ms và payload tới toàn bộ clients
-func (h *Hub) BroadcastToAll(eventType string, data interface{}) {
-	nowMs := time.Now().UnixMilli()
-	h.BroadcastJSON(gin.H{
-		"type":         eventType,
-		"timestamp_ms": nowMs,
-		"data":         data,
-	})
-}
-
-// CanonicalTenantID chuẩn hóa mã định danh quán về dạng chuẩn (Canonical)
-func CanonicalTenantID(t string) string {
-	clean := strings.TrimSpace(strings.ToLower(t))
-	if clean == "" || clean == "tenant-default" || clean == "default" || clean == "tenant_ongchu" || clean == "ongchu" {
+// CanonicalTenantID chuẩn hóa mã tenant để định tuyến broadcast chuẩn xác
+func CanonicalTenantID(raw string) string {
+	clean := strings.ToLower(strings.TrimSpace(raw))
+	if clean == "" || clean == "default" {
 		return "tenant_ongchu"
 	}
-	if clean == "quanquan" || clean == "tenant_quanquan" {
-		return "tenant_quanquan"
-	}
-	if clean == "trabong" || clean == "tenant_tra_bong" {
-		return "tenant_tra_bong"
-	}
-	if clean == "phoco" || clean == "tenant_cafe_pho_co" {
-		return "tenant_cafe_pho_co"
-	}
-	if clean == "phothin" || clean == "tenant_pho_thin" {
-		return "tenant_pho_thin"
-	}
-	if clean == "banhmihp" || clean == "tenant_banhmi_hp" {
-		return "tenant_banhmi_hp"
+	if !strings.HasPrefix(clean, "tenant_") {
+		return "tenant_" + clean
 	}
 	return clean
 }
 
-// BroadcastToTenant phát thông điệp tới tất cả clients thuộc đúng TenantID
-func (h *Hub) BroadcastToTenant(tenantID string, eventType string, data any) {
-	h.BroadcastToTenantBranch(tenantID, "", eventType, data)
-}
-
-// BroadcastToTenantBranch phát thông điệp tới clients thuộc đúng TenantID và BranchID
-func (h *Hub) BroadcastToTenantBranch(tenantID string, branchID string, eventType string, data any) {
-	nowMs := time.Now().UnixMilli()
-	payload, err := json.Marshal(map[string]any{
-		"type":         eventType,
-		"tenant_id":    tenantID,
-		"branch_id":    branchID,
-		"timestamp_ms": nowMs,
-		"data":         data,
-	})
-	if err != nil {
-		return
+// BroadcastToTenant phát thông điệp CHỈ tới các thiết bị thuộc TenantID tương ứng
+func (h *Hub) BroadcastToTenant(tenantID string, eventType string, data interface{}) {
+	normTenant := CanonicalTenantID(tenantID)
+	msg := gin.H{
+		"type":      eventType,
+		"tenant_id": normTenant,
+		"data":      data,
+		"timestamp": time.Now().Unix(),
 	}
 
-	targetTenant := CanonicalTenantID(tenantID)
+	payload, err := json.Marshal(msg)
+	if err != nil {
+		log.Printf("Error marshaling tenant websocket message: %v", err)
+		return
+	}
 
 	h.mu.RLock()
 	defer h.mu.RUnlock()
 
 	for client := range h.Clients {
-		cTenant := CanonicalTenantID(client.TenantID)
-		if cTenant == targetTenant {
-			if branchID != "" && client.BranchID != "" && client.BranchID != "default" && client.BranchID != branchID {
+		if CanonicalTenantID(client.TenantID) == normTenant {
+			select {
+			case client.Send <- payload:
+			default:
+				log.Printf("⚠️ WebSocket client queue full for tenant %s", normTenant)
+			}
+		}
+	}
+}
+
+// BroadcastToBranch phát thông điệp CHỈ tới các thiết bị thuộc Chi Nhánh cụ thể
+func (h *Hub) BroadcastToBranch(tenantID string, branchID string, eventType string, data interface{}) {
+	normTenant := CanonicalTenantID(tenantID)
+	normBranch := strings.TrimSpace(branchID)
+
+	msg := gin.H{
+		"type":      eventType,
+		"tenant_id": normTenant,
+		"branch_id": normBranch,
+		"data":      data,
+		"timestamp": time.Now().Unix(),
+	}
+
+	payload, err := json.Marshal(msg)
+	if err != nil {
+		log.Printf("Error marshaling branch websocket message: %v", err)
+		return
+	}
+
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+
+	for client := range h.Clients {
+		if CanonicalTenantID(client.TenantID) == normTenant {
+			if normBranch != "" && client.BranchID != "" && client.BranchID != normBranch {
 				continue
 			}
 			select {
@@ -202,6 +221,11 @@ func (h *Hub) BroadcastToTenantBranch(tenantID string, branchID string, eventTyp
 			}
 		}
 	}
+}
+
+// BroadcastToTenantBranch alias cho BroadcastToBranch
+func (h *Hub) BroadcastToTenantBranch(tenantID string, branchID string, eventType string, data interface{}) {
+	h.BroadcastToBranch(tenantID, branchID, eventType, data)
 }
 
 // BroadcastFromClient phát thông điệp từ 1 client CHỈ tới các clients khác thuộc cùng TenantID
@@ -227,17 +251,53 @@ func (h *Hub) BroadcastFromClient(sender *Client, message []byte) {
 }
 
 func HandleWebSocket(c *gin.Context) {
+	tokenStr := c.Query("token")
+	if tokenStr == "" {
+		authHeader := c.GetHeader("Authorization")
+		if authHeader != "" {
+			parts := strings.SplitN(authHeader, " ", 2)
+			if len(parts) == 2 {
+				tokenStr = parts[1]
+			} else {
+				tokenStr = authHeader
+			}
+		}
+	}
+
+	var authenticatedTenant string
+	var authenticatedBranch string
+	var authenticatedUser string
+	var authenticatedRole string
+
+	if tokenStr != "" {
+		claims, err := auth.VerifyAccessToken(tokenStr)
+		if err == nil && claims != nil {
+			authenticatedTenant = claims.TenantID
+			authenticatedBranch = claims.BranchID
+			authenticatedUser = claims.UserID
+			authenticatedRole = claims.Role
+		}
+	}
+
+	// Fallback cho Public CFD, KDS hoặc Client chuyển giao Token mà không làm đứt kết nối WebSocket
+	if authenticatedTenant == "" {
+		authenticatedTenant = CanonicalTenantID(c.DefaultQuery("tenant_id", "default"))
+		authenticatedBranch = c.DefaultQuery("branch_id", "default")
+		authenticatedRole = "guest_display"
+	}
+
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		log.Printf("Failed to upgrade websocket: %v", err)
 		return
 	}
 
-	rawTenant := c.DefaultQuery("tenant_id", "default")
 	client := &Client{
 		ID:       c.Query("client_id"),
-		TenantID: CanonicalTenantID(rawTenant),
-		BranchID: c.DefaultQuery("branch_id", "default"),
+		TenantID: authenticatedTenant,
+		BranchID: authenticatedBranch,
+		UserID:   authenticatedUser,
+		Role:     authenticatedRole,
 		Conn:     conn,
 		Send:     make(chan []byte, 256),
 	}
@@ -268,7 +328,7 @@ func HandleWebSocket(c *gin.Context) {
 			}
 			_ = client.Conn.SetReadDeadline(time.Now().Add(pongWait))
 
-			// 🏓 Xử lý Ping từ Client giữ kết nối và trả về Pong trực tiếp
+			// Xử lý Ping từ Client
 			var rawMsg struct {
 				Type string `json:"type"`
 			}
@@ -277,10 +337,10 @@ func HandleWebSocket(c *gin.Context) {
 				case client.Send <- []byte(`{"type":"pong"}`):
 				default:
 				}
-				continue // Không broadcast gói ping đi máy khác
+				continue
 			}
 
-			// Broadcast incoming messages (e.g. table_cart_updated, cfd_cart_sync) CHỈ tới các client cùng TenantID
+			// Broadcast message CHỈ tới clients cùng TenantID
 			GlobalHub.BroadcastFromClient(client, message)
 		}
 	}()
@@ -298,7 +358,6 @@ func HandleWebSocket(c *gin.Context) {
 			case message, ok := <-client.Send:
 				_ = client.Conn.SetWriteDeadline(time.Now().Add(writeWait))
 				if !ok {
-					// Channel was closed by hub
 					_ = client.Conn.WriteMessage(websocket.CloseMessage, []byte{})
 					return
 				}

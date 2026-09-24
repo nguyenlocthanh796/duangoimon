@@ -178,29 +178,41 @@ export function playKitchenChime(force = false) {
         if (webAudioCtx.state === 'suspended') webAudioCtx.resume();
         const now = webAudioCtx.currentTime;
 
-        // Nốt 1: Ding (587.33Hz - D5)
+        // Nốt 1: Ding kép hài âm ấm (587.33Hz D5 + 1174.66Hz D6)
         const osc1 = webAudioCtx.createOscillator();
+        const osc1b = webAudioCtx.createOscillator();
         const gain1 = webAudioCtx.createGain();
-        osc1.type = 'sine';
+        osc1.type = 'triangle';
+        osc1b.type = 'sine';
         osc1.frequency.setValueAtTime(587.33, now);
-        gain1.gain.setValueAtTime(0.2, now);
-        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+        osc1b.frequency.setValueAtTime(1174.66, now);
+        gain1.gain.setValueAtTime(0.45, now);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
         osc1.connect(gain1);
+        osc1b.connect(gain1);
         gain1.connect(webAudioCtx.destination);
         osc1.start(now);
-        osc1.stop(now + 0.3);
+        osc1b.start(now);
+        osc1.stop(now + 0.4);
+        osc1b.stop(now + 0.4);
 
-        // Nốt 2: Dong (880.00Hz - A5)
+        // Nốt 2: Dong ngân vang cao (880.00Hz A5 + 1760.00Hz A6)
         const osc2 = webAudioCtx.createOscillator();
+        const osc2b = webAudioCtx.createOscillator();
         const gain2 = webAudioCtx.createGain();
-        osc2.type = 'sine';
-        osc2.frequency.setValueAtTime(880.00, now + 0.12);
-        gain2.gain.setValueAtTime(0.25, now + 0.12);
-        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.12 + 0.45);
+        osc2.type = 'triangle';
+        osc2b.type = 'sine';
+        osc2.frequency.setValueAtTime(880.00, now + 0.14);
+        osc2b.frequency.setValueAtTime(1760.00, now + 0.14);
+        gain2.gain.setValueAtTime(0.55, now + 0.14);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.14 + 0.65);
         osc2.connect(gain2);
+        osc2b.connect(gain2);
         gain2.connect(webAudioCtx.destination);
-        osc2.start(now + 0.12);
-        osc2.stop(now + 0.12 + 0.45);
+        osc2.start(now + 0.14);
+        osc2b.start(now + 0.14);
+        osc2.stop(now + 0.14 + 0.65);
+        osc2b.stop(now + 0.14 + 0.65);
       }
     } catch (_) {}
     return;

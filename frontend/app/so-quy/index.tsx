@@ -38,6 +38,7 @@ import {
   useCashTransactions,
   useOrderHistory,
   usePOSActions,
+  useActiveShift,
   CashTransaction,
 } from '../../lib/store/usePOSStore';
 
@@ -131,7 +132,7 @@ export default function SoQuyScreen() {
   }, [orderHistory, selectedBranchId]);
 
   // Current logged in cashier & shift (100% Real Dynamic Data)
-  const activeShift = usePOSStore((s) => s.activeShift);
+  const activeShift = useActiveShift();
   const currentCashier = currentUser?.name || activeShift?.cashierName || 'Thu Ngân';
   const currentShiftCode = activeShift?.shiftName || 'Ca Hiện Tại';
   const shiftStartTime = activeShift?.openedAt ? activeShift.openedAt.split(' ')[1] || '07:00' : '07:00';
@@ -438,24 +439,34 @@ export default function SoQuyScreen() {
               key={item.name}
               style={{ borderBottomColor: theme.border.subtle, borderBottomWidth: StyleSheet.hairlineWidth }}
             >
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={() => {
-                  playTapSound();
-                  if (Platform.OS !== 'web') {
-                    try {
-                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    } catch {}
-                  }
-                  setSelectedSoldItemDetail(item);
-                }}
-                style={[
-                  s.userItemRow,
-                  {
-                    backgroundColor: theme.surface.card,
-                  },
-                ]}
-              >
+              {(() => {
+                const isSelected = isWide && selectedSoldItemDetail?.name === item.name;
+                return (
+                  <TouchableOpacity
+                    activeOpacity={0.7}
+                    onPress={() => {
+                      playTapSound();
+                      if (Platform.OS !== 'web') {
+                        try {
+                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        } catch {}
+                      }
+                      setSelectedSoldItemDetail(item);
+                      if (isWide) {
+                        setSelectedTxDetail(null);
+                      }
+                    }}
+                    style={[
+                      s.userItemRow,
+                      {
+                        backgroundColor: isSelected
+                          ? (isDark ? 'rgba(180, 83, 9, 0.16)' : '#FEF3C7')
+                          : theme.surface.card,
+                        borderLeftWidth: isSelected ? 4 : 0,
+                        borderLeftColor: theme.brand.accent,
+                      },
+                    ]}
+                  >
                 <View
                   style={[
                     s.rankBadge,
@@ -514,7 +525,9 @@ export default function SoQuyScreen() {
                 </View>
 
                 <Icon name="chevron-right" size={16} color={theme.text.muted} style={{ marginLeft: 4 }} />
-              </TouchableOpacity>
+                  </TouchableOpacity>
+                );
+              })()}
             </View>
           );
         })}
@@ -581,9 +594,831 @@ export default function SoQuyScreen() {
 
 
 
+  // --- DETAIL CARDS (Tái sử dụng cho cả Mobile Sub-Screen và Desktop Wide Right Pane) ---
+  const renderTxDetailCards = (tx: CashTransaction) => {
+    const isChi = tx.type === 'chi';
+    const isVoided = tx.status === 'voided';
+    const isCash = tx.paymentMethod === 'tien_mat' || !tx.paymentMethod;
+
+    return (
+      <View style={{ gap: isWide ? 12 : 8 }}>
+        {/* Banner Cảnh Báo Phiếu Đã Hủy */}
+        {isVoided && (
+          <View
+            style={[
+              s.voidAlertBanner,
+              {
+                backgroundColor: theme.status.dangerBg,
+                borderColor: theme.brand.danger,
+                borderRadius: isWide ? 14 : 0,
+                borderWidth: 1,
+              },
+            ]}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Icon name="close-circle-outline" size={20} color={theme.brand.danger} />
+              <AppText variant="sm" weight="bold" color={theme.brand.danger}>
+                PHIẾU ĐÃ BỊ HỦY (KHÔNG TÍNH VÀO DÒNG TIỀN)
+              </AppText>
+            </View>
+            <View style={{ marginTop: 6, gap: 3 }}>
+              <AppText variant="xs" color={theme.text.muted}>
+                Người hủy: <AppText variant="xs" weight="medium" color={theme.text.primary}>{tx.voidedBy || 'Chủ Quán'}</AppText>
+              </AppText>
+              <AppText variant="xs" color={theme.text.muted}>
+                Lý do: <AppText variant="xs" weight="medium" color={theme.brand.danger}>{tx.voidReason || 'Chủ quán hủy phiếu'}</AppText>
+              </AppText>
+              {tx.voidedAt && (
+                <AppText variant="xs" color={theme.text.muted}>
+                  Thời gian: <AppText variant="xs" tabularNums color={theme.text.primary}>{new Date(tx.voidedAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} · {new Date(tx.voidedAt).toLocaleDateString('vi-VN')}</AppText>
+                </AppText>
+              )}
+            </View>
+          </View>
+        )}
+
+        {/* Card 1: Số Tiền & Trạng Thái */}
+        <View
+          style={[
+            s.detailCard,
+            {
+              backgroundColor: theme.surface.card,
+              borderColor: theme.border.subtle,
+              borderRadius: isWide ? 14 : 0,
+              borderWidth: isWide ? 1 : 0,
+              borderBottomWidth: StyleSheet.hairlineWidth,
+              borderBottomColor: theme.border.subtle,
+              paddingHorizontal: 16,
+              paddingVertical: 16,
+            },
+          ]}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <View>
+              <AppText variant="xs" color={theme.text.muted}>
+                SỐ TIỀN {isChi ? 'CHI RA' : 'THU VÀO'} {isVoided ? '(ĐÃ HỦY)' : ''}
+              </AppText>
+              <AppText
+                variant="xl"
+                weight="bold"
+                color={isVoided ? theme.text.muted : (isChi ? theme.brand.danger : theme.brand.success)}
+                tabularNums
+                style={[
+                  { marginTop: 4 },
+                  isVoided && { textDecorationLine: 'line-through' },
+                ]}
+              >
+                {isChi ? '-' : '+'}{formatCurrency(tx.amount)} đ
+              </AppText>
+            </View>
+            <View
+              style={[
+                s.statusPillLarge,
+                {
+                  backgroundColor: isVoided
+                    ? (isDark ? 'rgba(239, 68, 68, 0.20)' : 'rgba(239, 68, 68, 0.12)')
+                    : isChi
+                    ? (isDark ? 'rgba(239, 68, 68, 0.20)' : 'rgba(239, 68, 68, 0.12)')
+                    : (isDark ? 'rgba(16, 185, 129, 0.20)' : 'rgba(16, 185, 129, 0.12)'),
+                },
+              ]}
+            >
+              <Icon
+                name={isVoided ? 'close-circle' : (isChi ? 'arrow-up-circle-outline' : 'arrow-down-circle-outline')}
+                size={14}
+                color={isVoided ? theme.brand.danger : (isChi ? theme.brand.danger : theme.brand.success)}
+              />
+              <AppText
+                variant="xs"
+                weight="medium"
+                color={isVoided ? theme.brand.danger : (isChi ? theme.brand.danger : theme.brand.success)}
+              >
+                {isVoided ? 'Phiếu Đã Hủy' : (isChi ? (isCash ? 'Phiếu Chi Két' : 'Chi Chuyển Khoản') : (isCash ? 'Phiếu Thu Két' : 'Thu Chuyển Khoản'))}
+              </AppText>
+            </View>
+          </View>
+
+          <View style={[s.metaGridBox, { borderTopColor: theme.border.subtle, marginTop: 16, paddingTop: 14 }]}>
+            <View style={s.metaGridItem}>
+              <AppText variant="xs" color={theme.text.muted}>Thời Gian</AppText>
+              <AppText variant="md" weight="medium" color={theme.text.primary} tabularNums style={{ marginTop: 2 }}>
+                {tx.time} · Hôm nay
+              </AppText>
+            </View>
+            <View style={s.metaGridItem}>
+              <AppText variant="xs" color={theme.text.muted}>Người Lập</AppText>
+              <AppText variant="md" weight="medium" color={theme.brand.primary} style={{ marginTop: 2 }}>
+                {tx.performedBy || 'Chủ Quán'}
+              </AppText>
+            </View>
+          </View>
+        </View>
+
+        {/* Card 2: Chi Tiết Chứng Từ */}
+        <View
+          style={[
+            s.detailCard,
+            {
+              backgroundColor: theme.surface.card,
+              borderColor: theme.border.subtle,
+              borderRadius: isWide ? 14 : 0,
+              borderWidth: isWide ? 1 : 0,
+              borderBottomWidth: StyleSheet.hairlineWidth,
+              borderBottomColor: theme.border.subtle,
+              paddingHorizontal: 16,
+              paddingVertical: 16,
+            },
+          ]}
+        >
+          <AppText variant="xs" weight="medium" color={theme.text.muted} style={{ marginBottom: 12 }}>
+            CHI TIẾT CHỨNG TỪ
+          </AppText>
+          <View style={s.financeDetailRow}>
+            <AppText variant="md" color={theme.text.muted} style={{ width: 130 }}>Hạng Mục</AppText>
+            <AppText variant="md" weight="bold" color={theme.text.primary} style={{ flex: 1, textAlign: 'right' }}>
+              {tx.category || (isChi ? 'Chi Chợ' : 'Thu Ngoài')}
+            </AppText>
+          </View>
+          <View style={s.financeDetailRow}>
+            <AppText variant="md" color={theme.text.muted} style={{ width: 130 }}>Diễn Giải</AppText>
+            <AppText variant="md" weight="medium" color={theme.text.primary} style={{ flex: 1, textAlign: 'right' }}>
+              {tx.description}
+            </AppText>
+          </View>
+          <View style={s.financeDetailRow}>
+            <AppText variant="md" color={theme.text.muted} style={{ width: 130 }}>Nguồn Tiền</AppText>
+            <AppText variant="md" weight="medium" color={theme.text.primary} style={{ flex: 1, textAlign: 'right' }}>
+              {isCash ? '💵 Két Tiền Mặt' : '🏦 Tài Khoản Ngân Hàng / Chuyển Khoản'}
+            </AppText>
+          </View>
+          {isChi && (
+            <View style={s.financeDetailRow}>
+              <AppText variant="md" color={theme.text.muted} style={{ width: 130 }}>Tính Chất Chi Phí</AppText>
+              <AppText variant="md" weight="medium" color={theme.text.primary} style={{ flex: 1, textAlign: 'right' }}>
+                {tx.expenseType === 'co_dinh' ? 'Định Phí (Thuê nhà, lương, điện nước)' : 'Biến Phí (Nguyên liệu, chợ hàng ngày)'}
+              </AppText>
+            </View>
+          )}
+          <View style={[s.financeDetailRow, { borderBottomWidth: 0 }]}>
+            <AppText variant="md" color={theme.text.muted} style={{ width: 130 }}>Ca Bán Hàng</AppText>
+            <AppText variant="md" weight="medium" color={theme.text.primary} tabularNums style={{ flex: 1, textAlign: 'right' }}>
+              {currentShiftCode}
+            </AppText>
+          </View>
+        </View>
+
+        {/* Card 3: Tác Động Dòng Tiền */}
+        <View
+          style={[
+            s.detailCard,
+            {
+              backgroundColor: theme.surface.card,
+              borderColor: theme.border.subtle,
+              borderRadius: isWide ? 14 : 0,
+              borderWidth: isWide ? 1 : 0,
+              borderBottomWidth: StyleSheet.hairlineWidth,
+              borderBottomColor: theme.border.subtle,
+              paddingHorizontal: 16,
+              paddingVertical: 14,
+            },
+          ]}
+        >
+          <AppText variant="xs" weight="medium" color={theme.text.muted} style={{ marginBottom: 10 }}>
+            TÁC ĐỘNG KÉT TIỀN
+          </AppText>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <View>
+              <AppText variant="xs" color={theme.text.muted}>
+                Trạng Thái Ghi Sổ
+              </AppText>
+              <AppText variant="md" weight="medium" color={isVoided ? theme.brand.danger : theme.brand.success} style={{ marginTop: 2 }}>
+                {isVoided ? 'Đã hủy dòng tiền' : 'Đã ghi nhận thành công'}
+              </AppText>
+            </View>
+            <View style={{ alignItems: 'flex-end' }}>
+              <AppText variant="xs" color={theme.text.muted}>
+                Dòng Tiền Thực
+              </AppText>
+              <AppText
+                variant="md"
+                weight="bold"
+                color={isVoided ? theme.text.muted : (isChi ? theme.brand.danger : theme.brand.success)}
+                tabularNums
+                style={{ marginTop: 2 }}
+              >
+                {isVoided ? '0 đ' : `${isChi ? '-' : '+'}${formatCurrency(tx.amount)} đ`}
+              </AppText>
+            </View>
+          </View>
+        </View>
+      </View>
+    );
+  };
+
+  const renderSoldItemDetailCards = (item: { name: string; unit: string; qty: number; revenue: number; price: number }) => {
+    const contrib = userTotalRevenue > 0 ? ((item.revenue / userTotalRevenue) * 100).toFixed(1) : '0';
+    const contribNum = parseFloat(contrib);
+    const estCash = userTotalRevenue > 0 ? Math.round(item.revenue * (userCashSales / userTotalRevenue)) : 0;
+    const estQr = item.revenue - estCash;
+    const cashPct = item.revenue > 0 ? Math.round((estCash / item.revenue) * 100) : 50;
+    const qrPct = 100 - cashPct;
+    const itemOrders = userOrders.filter((o) =>
+      o.items.some((it) => (it.item?.name || 'Món ăn') === item.name)
+    );
+
+    return (
+      <View style={{ gap: isWide ? 12 : 8 }}>
+        {/* Card 1: Hero KPI & Tỷ Trọng Doanh Thu Ca */}
+        <View
+          style={[
+            s.detailCard,
+            {
+              backgroundColor: theme.surface.card,
+              borderColor: theme.border.subtle,
+              borderRadius: isWide ? 14 : 0,
+              borderWidth: isWide ? 1 : 0,
+              borderBottomWidth: StyleSheet.hairlineWidth,
+              borderBottomColor: theme.border.subtle,
+              paddingHorizontal: 16,
+              paddingVertical: 16,
+            },
+          ]}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <View>
+              <AppText variant="xs" color={theme.text.muted} weight="medium">
+                TỔNG THU MÓN NÀY TRONG CA
+              </AppText>
+              <AppText
+                variant="xl"
+                weight="bold"
+                color={theme.brand.primary}
+                tabularNums
+                style={{ marginTop: 4 }}
+              >
+                {formatCurrency(item.revenue)} đ
+              </AppText>
+            </View>
+            <View
+              style={[
+                s.statusPillLarge,
+                {
+                  backgroundColor: theme.brand.primaryBg,
+                  borderColor: theme.brand.primary,
+                },
+              ]}
+            >
+              <Icon name="chart-pie" size={14} color={theme.brand.primary} />
+              <AppText variant="sm" weight="bold" color={theme.brand.primary} tabularNums>
+                {contrib}% ca
+              </AppText>
+            </View>
+          </View>
+
+          {/* Progress Bar Tỷ Trọng Doanh Thu */}
+          <View style={{ marginTop: 14 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
+              <AppText variant="xs" color={theme.text.muted} weight="medium">
+                Tỷ Trọng Doanh Thu Trong Ca
+              </AppText>
+              <AppText variant="xs" weight="bold" color={theme.brand.primary} tabularNums>
+                {contrib}%
+              </AppText>
+            </View>
+            <View style={[s.progressBarBg, { backgroundColor: theme.surface.header }]}>
+              <View style={[s.progressBarFill, { width: `${Math.min(contribNum, 100)}%`, backgroundColor: theme.brand.primary }]} />
+            </View>
+          </View>
+
+          {/* 3 Cột Chỉ Số Nhanh */}
+          <View style={[s.metaGridBox, { borderTopColor: theme.border.subtle, marginTop: 16, paddingTop: 14 }]}>
+            <View style={s.metaGridItem}>
+              <AppText variant="xs" color={theme.text.muted}>Số Lượng Xuất</AppText>
+              <AppText variant="md" weight="bold" color={theme.text.primary} tabularNums style={{ marginTop: 2 }}>
+                {item.qty} {item.unit || 'phần'}
+              </AppText>
+            </View>
+            <View style={s.metaGridItem}>
+              <AppText variant="xs" color={theme.text.muted}>Đơn Giá Niêm Yết</AppText>
+              <AppText variant="md" weight="medium" color={theme.text.primary} tabularNums style={{ marginTop: 2 }}>
+                {formatCurrency(item.price)} đ
+              </AppText>
+            </View>
+            <View style={s.metaGridItem}>
+              <AppText variant="xs" color={theme.text.muted}>Số Lần Gọi Món</AppText>
+              <AppText variant="md" weight="medium" color={theme.brand.accent} tabularNums style={{ marginTop: 2 }}>
+                {itemOrders.length} đơn
+              </AppText>
+            </View>
+          </View>
+        </View>
+
+        {/* Card 2: Cơ Cấu Phương Thức Thanh Toán (2 Cột Trực Quan) */}
+        <View
+          style={[
+            s.detailCard,
+            {
+              backgroundColor: theme.surface.card,
+              borderColor: theme.border.subtle,
+              borderRadius: isWide ? 14 : 0,
+              borderWidth: isWide ? 1 : 0,
+              borderBottomWidth: StyleSheet.hairlineWidth,
+              borderBottomColor: theme.border.subtle,
+              paddingHorizontal: 16,
+              paddingVertical: 16,
+            },
+          ]}
+        >
+          <AppText variant="xs" weight="medium" color={theme.text.muted} style={{ marginBottom: 12 }}>
+            CƠ CẤU PHƯƠNG THỨC THU TIỀN
+          </AppText>
+          <View style={{ flexDirection: 'row', gap: 10, marginBottom: 12 }}>
+            {/* Cột 1: Tiền mặt */}
+            <View
+              style={[
+                s.paymentBreakdownCol,
+                {
+                  backgroundColor: isDark ? 'rgba(34, 197, 94, 0.12)' : 'rgba(34, 197, 94, 0.08)',
+                  borderColor: theme.brand.success,
+                },
+              ]}
+            >
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <Icon name="cash-multiple" size={16} color={theme.brand.success} />
+                <AppText variant="xs" weight="medium" color={theme.brand.success}>
+                  Tiền Mặt Két ({cashPct}%)
+                </AppText>
+              </View>
+              <AppText variant="md" weight="medium" color={theme.text.primary} tabularNums style={{ marginTop: 4 }}>
+                ~{formatCurrency(estCash)} đ
+              </AppText>
+            </View>
+
+            {/* Cột 2: VietQR / Chuyển khoản */}
+            <View
+              style={[
+                s.paymentBreakdownCol,
+                {
+                  backgroundColor: isDark ? 'rgba(59, 130, 246, 0.12)' : 'rgba(59, 130, 246, 0.08)',
+                  borderColor: theme.brand.cyan,
+                },
+              ]}
+            >
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <Icon name="qrcode-scan" size={16} color={theme.brand.cyan} />
+                <AppText variant="xs" weight="medium" color={theme.brand.cyan}>
+                  VietQR / CK ({qrPct}%)
+                </AppText>
+              </View>
+              <AppText variant="md" weight="medium" color={theme.text.primary} tabularNums style={{ marginTop: 4 }}>
+                ~{formatCurrency(estQr)} đ
+              </AppText>
+            </View>
+          </View>
+
+          {/* Dual-Color Ratio Bar */}
+          <View style={s.dualColorRatioBar}>
+            <View style={{ width: `${cashPct}%`, height: 6, backgroundColor: theme.brand.success }} />
+            <View style={{ width: `${qrPct}%`, height: 6, backgroundColor: theme.brand.cyan }} />
+          </View>
+        </View>
+
+        {/* Card 3: Thông Số Món Ăn */}
+        <View
+          style={[
+            s.detailCard,
+            {
+              backgroundColor: theme.surface.card,
+              borderColor: theme.border.subtle,
+              borderRadius: isWide ? 14 : 0,
+              borderWidth: isWide ? 1 : 0,
+              borderBottomWidth: StyleSheet.hairlineWidth,
+              borderBottomColor: theme.border.subtle,
+              paddingHorizontal: 16,
+              paddingVertical: 14,
+            },
+          ]}
+        >
+          <AppText variant="xs" weight="medium" color={theme.text.muted} style={{ marginBottom: 10 }}>
+            THÔNG SỐ MÓN ĂN
+          </AppText>
+          <View style={s.financeDetailRow}>
+            <AppText variant="md" weight="normal" color={theme.text.muted} style={{ width: 130 }}>
+              Tên Món
+            </AppText>
+            <AppText variant="md" weight="medium" color={theme.text.primary} style={{ flex: 1, textAlign: 'right' }}>
+              {item.name}
+            </AppText>
+          </View>
+          <View style={s.financeDetailRow}>
+            <AppText variant="md" weight="normal" color={theme.text.muted} style={{ width: 130 }}>
+              Đơn Vị Tính
+            </AppText>
+            <AppText variant="md" weight="medium" color={theme.text.primary} style={{ flex: 1, textAlign: 'right' }}>
+              {item.unit || 'phần'}
+            </AppText>
+          </View>
+          <View style={s.financeDetailRow}>
+            <AppText variant="md" weight="normal" color={theme.text.muted} style={{ width: 130 }}>
+              Tỷ Trọng Doanh Thu
+            </AppText>
+            <AppText variant="md" weight="bold" color={theme.brand.primary} tabularNums style={{ flex: 1, textAlign: 'right' }}>
+              {contrib}% toàn ca
+            </AppText>
+          </View>
+          <View style={[s.financeDetailRow, { borderBottomWidth: 0 }]}>
+            <AppText variant="md" weight="normal" color={theme.text.muted} style={{ width: 130 }}>
+              Ca Bán Hàng
+            </AppText>
+            <AppText variant="md" weight="medium" color={theme.text.primary} tabularNums style={{ flex: 1, textAlign: 'right' }}>
+              {currentShiftCode} · {currentCashier}
+            </AppText>
+          </View>
+        </View>
+
+        {/* Card 4: Danh Sách Hóa Đơn Xuất Món Này Trong Ca */}
+        <View
+          style={[
+            s.detailCard,
+            {
+              backgroundColor: theme.surface.card,
+              borderColor: theme.border.subtle,
+              borderRadius: isWide ? 14 : 0,
+              borderWidth: isWide ? 1 : 0,
+              borderBottomWidth: StyleSheet.hairlineWidth,
+              borderBottomColor: theme.border.subtle,
+              paddingHorizontal: 16,
+              paddingVertical: 14,
+            },
+          ]}
+        >
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+            <AppText variant="xs" weight="medium" color={theme.text.muted}>
+              HÓA ĐƠN XUẤT MÓN ({itemOrders.length} ĐƠN)
+            </AppText>
+            <AppText variant="xs" color={theme.text.muted}>
+              Gần nhất lên đầu
+            </AppText>
+          </View>
+
+          {itemOrders.length === 0 ? (
+            <View style={{ paddingVertical: 16, alignItems: 'center' }}>
+              <AppText variant="sm" color={theme.text.muted}>
+                Chưa có đơn hàng nào ghi nhận món này
+              </AppText>
+            </View>
+          ) : (
+            itemOrders.slice(0, 6).map((ord) => {
+              const matchedItem = ord.items.find(
+                (it) => (it.item?.name || 'Món ăn') === item.name
+              );
+              const qty = matchedItem?.qty || 1;
+              const itemSubtotal = qty * item.price;
+              const isCash = ord.paymentMethod === 'tien_mat';
+
+              return (
+                <View
+                  key={ord.id}
+                  style={[
+                    s.itemOrderHistoryRow,
+                    {
+                      borderBottomColor: theme.border.subtle,
+                      borderBottomWidth: StyleSheet.hairlineWidth,
+                    },
+                  ]}
+                >
+                  <View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                      <AppText variant="sm" weight="bold" color={theme.text.primary}>
+                        #{ord.orderCode || ord.id.slice(-6)}
+                      </AppText>
+                      <View style={[s.tableBadgeMini, { backgroundColor: theme.surface.header }]}>
+                        <AppText variant="xxs" color={theme.text.muted}>
+                          {ord.tableName || 'Mang về'}
+                        </AppText>
+                      </View>
+                    </View>
+                    <AppText variant="xs" color={theme.text.muted} tabularNums style={{ marginTop: 2 }}>
+                      {ord.createdAt ? new Date(ord.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : 'Vừa xong'} · {isCash ? '💵 Tiền mặt' : '🏦 Chuyển khoản'}
+                    </AppText>
+                  </View>
+                  <View style={{ alignItems: 'flex-end' }}>
+                    <AppText variant="sm" weight="bold" color={theme.text.primary} tabularNums>
+                      {qty} {item.unit || 'phần'}
+                    </AppText>
+                    <AppText variant="xs" color={theme.brand.primary} tabularNums style={{ marginTop: 2 }}>
+                      {formatCurrency(itemSubtotal)} đ
+                    </AppText>
+                  </View>
+                </View>
+              );
+            })
+          )}
+        </View>
+
+        {/* Card 5: Nhận Định Vị Chủ Quán */}
+        <View
+          style={[
+            s.detailCard,
+            {
+              backgroundColor: isDark ? 'rgba(180, 83, 9, 0.14)' : 'rgba(180, 83, 9, 0.08)',
+              borderColor: theme.brand.accent,
+              borderRadius: isWide ? 14 : 0,
+              borderWidth: isWide ? 1 : 0,
+              borderBottomWidth: StyleSheet.hairlineWidth,
+              borderBottomColor: theme.brand.accent,
+              paddingHorizontal: 16,
+              paddingVertical: 14,
+            },
+          ]}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <Icon name="lightbulb-on-outline" size={18} color={theme.brand.accent} />
+            <AppText variant="sm" weight="bold" color={theme.brand.accent}>
+              NHẬN ĐỊNH VỊ CHỦ QUÁN
+            </AppText>
+          </View>
+          <AppText variant="sm" color={theme.text.primary}>
+            {contribNum >= 20
+              ? `🔥 Món chủ lực tạo doanh thu cao nhất ca (${contrib}% ca). Cần luôn chuẩn bị nguyên liệu đầy đủ trong kho.`
+              : contribNum >= 10
+              ? `✨ Món bán đều đặn, đóng góp ổn định (${contrib}% ca). Có thể gợi ý tư vấn thêm topping.`
+              : `💡 Món phụ kèm / ăn nhẹ (${contrib}% ca). Đề xuất nhân viên giới thiệu kèm khi khách gọi đồ uống.`}
+          </AppText>
+        </View>
+      </View>
+    );
+  };
+
+  // --- DESKTOP WIDE RIGHT PANE RENDERERS ---
+  const renderWideTxDetail = (tx: CashTransaction) => {
+    const isChi = tx.type === 'chi';
+    const isVoided = tx.status === 'voided';
+
+    return (
+      <View style={{ flex: 1, backgroundColor: theme.surface.app }}>
+        {/* Sticky Header */}
+        <View
+          style={[
+            s.stickyFormHeader,
+            {
+              backgroundColor: theme.surface.card,
+              borderBottomColor: theme.border.subtle,
+              borderBottomWidth: StyleSheet.hairlineWidth,
+            },
+          ]}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 }}>
+              <View
+                style={[
+                  s.formIconSquircle,
+                  {
+                    backgroundColor: isChi
+                      ? (isDark ? 'rgba(239, 68, 68, 0.16)' : '#FEE2E2')
+                      : (isDark ? 'rgba(16, 185, 129, 0.16)' : '#DCFCE7'),
+                  },
+                ]}
+              >
+                <Icon
+                  name={isChi ? 'arrow-up-circle-outline' : 'arrow-down-circle-outline'}
+                  size={18}
+                  color={isChi ? theme.brand.danger : theme.brand.success}
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <AppText variant="md" weight="bold" color={theme.text.primary} numberOfLines={1}>
+                  {isChi ? 'Chi Tiết Phiếu Chi' : 'Chi Tiết Phiếu Thu'}
+                </AppText>
+                <AppText variant="xs" color={theme.text.muted} numberOfLines={1}>
+                  Mã phiếu #{tx.id} · {tx.time}
+                </AppText>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => {
+                playTapSound();
+                setSelectedTxDetail(null);
+              }}
+              style={[
+                s.navBtn,
+                {
+                  backgroundColor: theme.surface.header,
+                  borderColor: theme.border.subtle,
+                },
+              ]}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Icon name="close" size={18} color={theme.text.primary} />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Scrollable Body */}
+        <ScrollView
+          contentContainerStyle={{ padding: 16, paddingBottom: 24 }}
+          showsVerticalScrollIndicator={false}
+        >
+          {renderTxDetailCards(tx)}
+        </ScrollView>
+
+        {/* Sticky Action Footer */}
+        <View
+          style={[
+            s.stickyFormFooter,
+            {
+              backgroundColor: theme.surface.card,
+              borderTopColor: theme.border.subtle,
+              borderTopWidth: StyleSheet.hairlineWidth,
+            },
+          ]}
+        >
+          {!isVoided && (
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => {
+                playTapSound();
+                setVoidModalOpen(true);
+              }}
+              style={[
+                s.fullPageBtnAction,
+                {
+                  backgroundColor: theme.status.dangerBg,
+                  borderColor: theme.brand.danger,
+                  flex: 1,
+                },
+              ]}
+            >
+              <Icon name="delete-outline" size={18} color={theme.brand.danger} />
+              <AppText variant="sm" weight="medium" color={theme.brand.danger} numberOfLines={1}>
+                Hủy Phiếu
+              </AppText>
+            </TouchableOpacity>
+          )}
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => {
+              playTapSound();
+              showToast({ title: 'Đã In', message: `In phiếu #${tx.id} K80`, type: 'success' });
+            }}
+            style={[
+              s.fullPageBtnAction,
+              {
+                backgroundColor: theme.surface.header,
+                borderColor: theme.border.default,
+                flex: 1,
+              },
+            ]}
+          >
+            <Icon name="printer" size={18} color={theme.text.primary} />
+            <AppText variant="sm" weight="medium" color={theme.text.primary} numberOfLines={1}>
+              In K80
+            </AppText>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => {
+              playTapSound();
+              setSelectedTxDetail(null);
+            }}
+            style={[
+              s.fullPageBtnAction,
+              {
+                backgroundColor: theme.brand.primary,
+                borderColor: theme.brand.primary,
+                flex: 1,
+              },
+            ]}
+          >
+            <AppText variant="sm" weight="bold" color={theme.text.onBrand} numberOfLines={1}>
+              Đóng Chi Tiết
+            </AppText>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
+  const renderWideSoldItemDetail = (item: { name: string; unit: string; qty: number; revenue: number; price: number }) => {
+    return (
+      <View style={{ flex: 1, backgroundColor: theme.surface.app }}>
+        {/* Sticky Header */}
+        <View
+          style={[
+            s.stickyFormHeader,
+            {
+              backgroundColor: theme.surface.card,
+              borderBottomColor: theme.border.subtle,
+              borderBottomWidth: StyleSheet.hairlineWidth,
+            },
+          ]}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 }}>
+              <View style={[s.formIconSquircle, { backgroundColor: theme.brand.primaryBg }]}>
+                <Icon name="chart-pie" size={18} color={theme.brand.primary} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <AppText variant="md" weight="bold" color={theme.text.primary} numberOfLines={1}>
+                  Chi Tiết Món Trong Ca
+                </AppText>
+                <AppText variant="xs" color={theme.text.muted} numberOfLines={1}>
+                  {item.name} · Ca {currentShiftCode}
+                </AppText>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => {
+                playTapSound();
+                setSelectedSoldItemDetail(null);
+              }}
+              style={[
+                s.navBtn,
+                {
+                  backgroundColor: theme.surface.header,
+                  borderColor: theme.border.subtle,
+                },
+              ]}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Icon name="close" size={18} color={theme.text.primary} />
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Scrollable Body */}
+        <ScrollView
+          contentContainerStyle={{ padding: 16, paddingBottom: 24 }}
+          showsVerticalScrollIndicator={false}
+        >
+          {renderSoldItemDetailCards(item)}
+        </ScrollView>
+
+        {/* Sticky Action Footer */}
+        <View
+          style={[
+            s.stickyFormFooter,
+            {
+              backgroundColor: theme.surface.card,
+              borderTopColor: theme.border.subtle,
+              borderTopWidth: StyleSheet.hairlineWidth,
+            },
+          ]}
+        >
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => {
+              playTapSound();
+              router.push('/bao-cao-loi-nhuan' as any);
+            }}
+            style={[
+              s.fullPageBtnAction,
+              {
+                backgroundColor: theme.surface.header,
+                borderColor: theme.border.default,
+                flex: 1,
+              },
+            ]}
+          >
+            <Icon name="chart-box-outline" size={18} color={theme.brand.primary} />
+            <AppText variant="sm" weight="bold" color={theme.text.primary} numberOfLines={1}>
+              Xem Báo Cáo P&L
+            </AppText>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => {
+              playTapSound();
+              setSelectedSoldItemDetail(null);
+            }}
+            style={[
+              s.fullPageBtnAction,
+              {
+                backgroundColor: theme.brand.primary,
+                borderColor: theme.brand.primary,
+                flex: 1,
+              },
+            ]}
+          >
+            <AppText variant="sm" weight="bold" color={theme.text.onBrand} numberOfLines={1}>
+              Đóng Chi Tiết
+            </AppText>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
   return (
     <View style={[s.container, { backgroundColor: theme.surface.app }]}>
-      {selectedTxDetail ? (
+      {selectedTxDetail && !isWide ? (
         <View style={{ flex: 1, backgroundColor: theme.surface.app }}>
           <AppHeader
             title={selectedTxDetail.type === 'chi' ? 'Chi Tiết Phiếu Chi' : 'Chi Tiết Phiếu Thu'}
@@ -856,15 +1691,15 @@ export default function SoQuyScreen() {
                 playTapSound();
                 setSelectedTxDetail(null);
               }}
-              style={[s.fullPageBtnAction, { backgroundColor: theme.brand.primary, borderColor: theme.brand.primary, flex: 1.2 }]}
+              style={[s.fullPageBtnAction, { backgroundColor: theme.brand.primary, borderColor: theme.brand.primary, flex: 1 }]}
             >
-              <AppText variant="md" weight="bold" color={theme.text.onBrand} numberOfLines={1}>
+              <AppText variant="sm" weight="bold" color={theme.text.onBrand} numberOfLines={1}>
                 Đóng
               </AppText>
             </TouchableOpacity>
           </View>
         </View>
-      ) : selectedSoldItemDetail ? (
+      ) : selectedSoldItemDetail && !isWide ? (
         <View style={{ flex: 1, backgroundColor: theme.surface.app }}>
           <AppHeader
             title="Chi Tiết Món"
@@ -1191,13 +2026,13 @@ export default function SoQuyScreen() {
                     style={[
                       s.detailCard,
                       {
-                        backgroundColor: isDark ? 'rgba(13, 148, 136, 0.14)' : 'rgba(13, 148, 136, 0.08)',
-                        borderColor: theme.brand.primary,
+                        backgroundColor: isDark ? 'rgba(180, 83, 9, 0.14)' : 'rgba(180, 83, 9, 0.08)',
+                        borderColor: theme.brand.accent,
                         marginTop: isWide ? 12 : 8,
                         borderRadius: isWide ? 14 : 0,
                         borderWidth: isWide ? 1 : 0,
                         borderBottomWidth: StyleSheet.hairlineWidth,
-                        borderBottomColor: theme.brand.primary,
+                        borderBottomColor: theme.brand.accent,
                         paddingHorizontal: 16,
                         paddingVertical: 14,
                         marginBottom: 16,
@@ -1205,8 +2040,8 @@ export default function SoQuyScreen() {
                     ]}
                   >
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                      <Icon name="lightbulb-on-outline" size={18} color={theme.brand.primary} />
-                      <AppText variant="sm" weight="bold" color={theme.brand.primary}>
+                      <Icon name="lightbulb-on-outline" size={18} color={theme.brand.accent} />
+                      <AppText variant="sm" weight="bold" color={theme.brand.accent}>
                         NHẬN ĐỊNH VỊ CHỦ QUÁN
                       </AppText>
                     </View>
@@ -1243,10 +2078,10 @@ export default function SoQuyScreen() {
                 setSelectedSoldItemDetail(null);
                 router.push('/bao-cao-loi-nhuan' as any);
               }}
-              style={[s.fullPageBtnAction, { backgroundColor: theme.surface.header, borderColor: theme.border.default }]}
+              style={[s.fullPageBtnAction, { backgroundColor: theme.surface.header, borderColor: theme.border.default, flex: 1 }]}
             >
               <Icon name="chart-box-outline" size={18} color={theme.brand.primary} />
-              <AppText variant="md" weight="bold" color={theme.text.primary} numberOfLines={1}>
+              <AppText variant="sm" weight="bold" color={theme.text.primary} numberOfLines={1}>
                 Xem Báo Cáo
               </AppText>
             </TouchableOpacity>
@@ -1257,9 +2092,9 @@ export default function SoQuyScreen() {
                 playTapSound();
                 setSelectedSoldItemDetail(null);
               }}
-              style={[s.fullPageBtnAction, { backgroundColor: theme.brand.primary, borderColor: theme.brand.primary, flex: 1.2 }]}
+              style={[s.fullPageBtnAction, { backgroundColor: theme.brand.primary, borderColor: theme.brand.primary, flex: 1 }]}
             >
-              <AppText variant="md" weight="bold" color={theme.text.onBrand} numberOfLines={1}>
+              <AppText variant="sm" weight="bold" color={theme.text.onBrand} numberOfLines={1}>
                 Đóng
               </AppText>
             </TouchableOpacity>
@@ -1473,11 +2308,15 @@ export default function SoQuyScreen() {
                   activeOpacity={0.8}
                   onPress={() => {
                     playTapSound();
+                    setSelectedSoldItemDetail(null);
+                    setSelectedTxDetail(null);
                     setTxType('chi');
                     setSelectedPreset(quickExpensePresets[0].label);
                     setCustomDescription(quickExpensePresets[0].label);
                     setAmountStr((quickExpensePresets[0].defaultAmount || 20000).toString());
-                    setModalVisible(true);
+                    if (!isWide) {
+                      setModalVisible(true);
+                    }
                   }}
                   accessibilityRole="button"
                   accessibilityLabel="Lập phiếu thu chi"
@@ -1513,12 +2352,17 @@ export default function SoQuyScreen() {
             }
           />
 
-          {/* 🌟 DÃY 1: PRIMARY UNDERLINE TAB BAR (Cấp 1 - Màu chân Jade rộng rãi, thoáng đãng - Trượt Ngang) */}
           {/* 🌟 DÃY 1: PRIMARY UNDERLINE TAB BAR (Cấp 1 - Underline Tabs 46px) */}
           <Tier1Tabs
             tabs={soQuyTabs}
             activeTab={activeMainTab}
-            onTabChange={setActiveMainTab}
+            onTabChange={(tab) => {
+              setActiveMainTab(tab as any);
+              if (isWide) {
+                if (tab === 'cashbook') setSelectedSoldItemDetail(null);
+                if (tab === 'user_shift') setSelectedTxDetail(null);
+              }
+            }}
             backgroundColor={theme.status.warningBg}
           />
 
@@ -1671,6 +2515,7 @@ export default function SoQuyScreen() {
                     const isChi = tx.type === 'chi';
                     const isVoided = tx.status === 'voided';
                     const isCash = tx.paymentMethod === 'tien_mat' || !tx.paymentMethod;
+                    const isSelected = isWide && selectedTxDetail?.id === tx.id;
 
                     return (
                       <View
@@ -1687,11 +2532,18 @@ export default function SoQuyScreen() {
                               } catch {}
                             }
                             setSelectedTxDetail(tx);
+                            if (isWide) {
+                              setSelectedSoldItemDetail(null);
+                            }
                           }}
                           style={[
                             s.txRow,
                             {
-                              backgroundColor: theme.surface.card,
+                              backgroundColor: isSelected
+                                ? (isDark ? 'rgba(180, 83, 9, 0.16)' : '#FEF3C7')
+                                : theme.surface.card,
+                              borderLeftWidth: isSelected ? 4 : 0,
+                              borderLeftColor: theme.brand.accent,
                               opacity: isVoided ? 0.65 : 1,
                             },
                           ]}
@@ -1838,177 +2690,186 @@ export default function SoQuyScreen() {
               </Animated.ScrollView>
             </View>
 
-            {/* Right Pane (50% on 24-inch, 44% on Tablet/Web): Sticky Quick Cash Entry Form + Recent Transactions */}
+            {/* Right Pane (50% on 24-inch, 44% on Tablet/Web): Dynamic Master-Detail Workspace */}
             {isWide && (
               <View style={[s.rightPane, { flex: 1, backgroundColor: theme.surface.app, borderLeftWidth: StyleSheet.hairlineWidth, borderLeftColor: theme.border.subtle }]}>
-                <View style={[s.stickyFormHeader, { backgroundColor: theme.surface.card, borderBottomColor: theme.border.subtle, borderBottomWidth: StyleSheet.hairlineWidth }]}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                      <View style={[s.formIconSquircle, { backgroundColor: theme.brand.primaryBg }]}>
-                        <Icon name="book-edit-outline" size={18} color={theme.brand.primary} />
-                      </View>
-                      <View>
-                        <AppText variant="md" weight="medium" color={theme.text.primary}>
-                          Ghi Nhanh Sổ Quỹ (3s)
-                        </AppText>
-                        <AppText variant="xs" color={theme.text.muted}>
-                          Chi chợ & thu tiền mặt tức thì
-                        </AppText>
-                      </View>
-                    </View>
+                {selectedSoldItemDetail ? (
+                  renderWideSoldItemDetail(selectedSoldItemDetail)
+                ) : selectedTxDetail ? (
+                  renderWideTxDetail(selectedTxDetail)
+                ) : (
+                  <>
+                    <View style={[s.stickyFormHeader, { backgroundColor: theme.surface.card, borderBottomColor: theme.border.subtle, borderBottomWidth: StyleSheet.hairlineWidth }]}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                          <View style={[s.formIconSquircle, { backgroundColor: theme.brand.primaryBg }]}>
+                            <Icon name="book-edit-outline" size={18} color={theme.brand.primary} />
+                          </View>
+                          <View>
+                            <AppText variant="md" weight="medium" color={theme.text.primary}>
+                              Ghi Nhanh Sổ Quỹ (3s)
+                            </AppText>
+                            <AppText variant="xs" color={theme.text.muted}>
+                              Chi chợ & thu tiền mặt tức thì
+                            </AppText>
+                          </View>
+                        </View>
 
-                    {/* Quick Shift Summary Pill */}
-                    <View style={[s.headerBadge, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle }]}>
-                      <AppText variant="xs" color={theme.text.muted}>
-                        Két: <AppText variant="xs" weight="medium" color={theme.brand.primary} tabularNums>{formatCurrency(actualDrawerCash)} đ</AppText>
-                      </AppText>
-                    </View>
-                  </View>
-                </View>
-
-                <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }} showsVerticalScrollIndicator={false}>
-                  {/* Card Form Ghi Nhanh */}
-                  <View
-                    style={[
-                      s.formCardContainer,
-                      {
-                        backgroundColor: theme.surface.card,
-                        borderColor: theme.border.subtle,
-                        borderWidth: StyleSheet.hairlineWidth,
-                        borderRadius: 12,
-                        padding: 16,
-                      },
-                    ]}
-                  >
-                    <QuickCashFormContent
-                      txType={txType}
-                      setTxType={setTxType}
-                      selectedPreset={selectedPreset}
-                      setSelectedPreset={setSelectedPreset}
-                      customDescription={customDescription}
-                      setCustomDescription={setCustomDescription}
-                      amountStr={amountStr}
-                      setAmountStr={setAmountStr}
-                      onSubmit={handleCreateTx}
-                      currentDrawerCash={actualDrawerCash}
-                      paymentMethod={paymentMethod}
-                      setPaymentMethod={setPaymentMethod}
-                      expenseType={expenseType}
-                      setExpenseType={setExpenseType}
-                      isWide
-                    />
-                  </View>
-
-                  {/* Card Lịch Sử Thu Chi Gần Đây (Lấp đầy khoảng trống, đồng bộ realtime) */}
-                  <View
-                    style={[
-                      s.recentTxContainer,
-                      {
-                        backgroundColor: theme.surface.card,
-                        borderColor: theme.border.subtle,
-                        borderWidth: StyleSheet.hairlineWidth,
-                        borderRadius: 12,
-                        overflow: 'hidden',
-                      },
-                    ]}
-                  >
-                    <View
-                      style={[
-                        s.recentTxHeader,
-                        {
-                          backgroundColor: theme.surface.header,
-                          borderBottomColor: theme.border.subtle,
-                          borderBottomWidth: StyleSheet.hairlineWidth,
-                        },
-                      ]}
-                    >
-                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                        <Icon name="history" size={16} color={theme.brand.primary} />
-                        <AppText variant="xs" weight="medium" color={theme.text.primary}>
-                          PHIẾU THU CHI VỪA LẬP ({transactions.length})
-                        </AppText>
-                      </View>
-                      {transactions.length > 0 && (
-                        <TouchableOpacity
-                          activeOpacity={0.7}
-                          onPress={() => {
-                            playTapSound();
-                            setActiveMainTab('cashbook');
-                          }}
-                        >
-                          <AppText variant="xs" color={theme.brand.primary}>
-                            Xem tất cả ›
+                        {/* Quick Shift Summary Pill */}
+                        <View style={[s.headerBadge, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle }]}>
+                          <AppText variant="xs" color={theme.text.muted}>
+                            Két: <AppText variant="xs" weight="medium" color={theme.brand.primary} tabularNums>{formatCurrency(actualDrawerCash)} đ</AppText>
                           </AppText>
-                        </TouchableOpacity>
-                      )}
+                        </View>
+                      </View>
                     </View>
 
-                    {transactions.length === 0 ? (
-                      <View style={{ padding: 24, alignItems: 'center', justifyContent: 'center' }}>
-                        <Icon name="notebook-outline" size={32} color={theme.text.muted} />
-                        <AppText variant="sm" color={theme.text.muted} style={{ marginTop: 8 }}>
-                          Chưa có khoản thu chi nào hôm nay
-                        </AppText>
-                        <AppText variant="xs" color={theme.text.subtle} style={{ marginTop: 2 }}>
-                          Chọn mẫu chi chợ phía trên và bấm "Lưu Phiếu" để ghi nhận tức thì.
-                        </AppText>
+                    <ScrollView contentContainerStyle={{ padding: 16, gap: 16 }} showsVerticalScrollIndicator={false}>
+                      {/* Card Form Ghi Nhanh */}
+                      <View
+                        style={[
+                          s.formCardContainer,
+                          {
+                            backgroundColor: theme.surface.card,
+                            borderColor: theme.border.subtle,
+                            borderWidth: StyleSheet.hairlineWidth,
+                            borderRadius: 12,
+                            padding: 16,
+                          },
+                        ]}
+                      >
+                        <QuickCashFormContent
+                          txType={txType}
+                          setTxType={setTxType}
+                          selectedPreset={selectedPreset}
+                          setSelectedPreset={setSelectedPreset}
+                          customDescription={customDescription}
+                          setCustomDescription={setCustomDescription}
+                          amountStr={amountStr}
+                          setAmountStr={setAmountStr}
+                          onSubmit={handleCreateTx}
+                          currentDrawerCash={actualDrawerCash}
+                          paymentMethod={paymentMethod}
+                          setPaymentMethod={setPaymentMethod}
+                          expenseType={expenseType}
+                          setExpenseType={setExpenseType}
+                          isWide
+                        />
                       </View>
-                    ) : (
-                      transactions.slice(0, 8).map((tx, idx) => {
-                        const isChi = tx.type === 'chi';
-                        const isLast = idx === Math.min(transactions.length, 8) - 1;
-                        return (
-                          <TouchableOpacity
-                            key={tx.id}
-                            activeOpacity={0.7}
-                            onPress={() => {
-                              playTapSound();
-                              setSelectedTxDetail(tx);
-                            }}
-                            style={[
-                              s.recentTxRow,
-                              !isLast && {
-                                borderBottomWidth: StyleSheet.hairlineWidth,
-                                borderBottomColor: theme.border.subtle,
-                              },
-                            ]}
-                          >
-                            <View
-                              style={[
-                                s.recentTxDot,
-                                {
-                                  backgroundColor: isChi ? theme.brand.danger : theme.brand.success,
-                                },
-                              ]}
-                            />
-                            <View style={{ flex: 1, paddingRight: 8 }}>
-                              <AppText variant="sm" weight="medium" color={theme.text.primary} numberOfLines={1}>
-                                {tx.description}
+
+                      {/* Card Lịch Sử Thu Chi Gần Đây (Lấp đầy khoảng trống, đồng bộ realtime) */}
+                      <View
+                        style={[
+                          s.recentTxContainer,
+                          {
+                            backgroundColor: theme.surface.card,
+                            borderColor: theme.border.subtle,
+                            borderWidth: StyleSheet.hairlineWidth,
+                            borderRadius: 12,
+                            overflow: 'hidden',
+                          },
+                        ]}
+                      >
+                        <View
+                          style={[
+                            s.recentTxHeader,
+                            {
+                              backgroundColor: theme.surface.header,
+                              borderBottomColor: theme.border.subtle,
+                              borderBottomWidth: StyleSheet.hairlineWidth,
+                            },
+                          ]}
+                        >
+                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                            <Icon name="history" size={16} color={theme.brand.primary} />
+                            <AppText variant="xs" weight="medium" color={theme.text.primary}>
+                              PHIẾU THU CHI VỪA LẬP ({transactions.length})
+                            </AppText>
+                          </View>
+                          {transactions.length > 0 && (
+                            <TouchableOpacity
+                              activeOpacity={0.7}
+                              onPress={() => {
+                                playTapSound();
+                                setActiveMainTab('cashbook');
+                              }}
+                            >
+                              <AppText variant="xs" color={theme.brand.primary}>
+                                Xem tất cả ›
                               </AppText>
-                              <AppText variant="xs" color={theme.text.muted} tabularNums style={{ marginTop: 2 }}>
-                                {tx.time} · {tx.performedBy || 'Chủ Quán'}
-                              </AppText>
-                            </View>
-                            <View style={{ alignItems: 'flex-end' }}>
-                              <AppText
-                                variant="sm"
-                                weight="medium"
-                                color={isChi ? theme.brand.danger : theme.brand.success}
-                                tabularNums
+                            </TouchableOpacity>
+                          )}
+                        </View>
+
+                        {transactions.length === 0 ? (
+                          <View style={{ padding: 24, alignItems: 'center', justifyContent: 'center' }}>
+                            <Icon name="notebook-outline" size={32} color={theme.text.muted} />
+                            <AppText variant="sm" color={theme.text.muted} style={{ marginTop: 8 }}>
+                              Chưa có khoản thu chi nào hôm nay
+                            </AppText>
+                            <AppText variant="xs" color={theme.text.subtle} style={{ marginTop: 2 }}>
+                              Chọn mẫu chi chợ phía trên và bấm "Lưu Phiếu" để ghi nhận tức thì.
+                            </AppText>
+                          </View>
+                        ) : (
+                          transactions.slice(0, 8).map((tx, idx) => {
+                            const isChi = tx.type === 'chi';
+                            const isLast = idx === Math.min(transactions.length, 8) - 1;
+                            return (
+                              <TouchableOpacity
+                                key={tx.id}
+                                activeOpacity={0.7}
+                                onPress={() => {
+                                  playTapSound();
+                                  setSelectedTxDetail(tx);
+                                  setSelectedSoldItemDetail(null);
+                                }}
+                                style={[
+                                  s.recentTxRow,
+                                  !isLast && {
+                                    borderBottomWidth: StyleSheet.hairlineWidth,
+                                    borderBottomColor: theme.border.subtle,
+                                  },
+                                ]}
                               >
-                                {isChi ? '-' : '+'}{formatCurrency(tx.amount)} đ
-                              </AppText>
-                              <AppText variant="xxs" color={theme.text.subtle} style={{ marginTop: 2 }}>
-                                {isChi ? 'Chi chợ' : 'Thu ngoài'}
-                              </AppText>
-                            </View>
-                            <Icon name="chevron-right" size={16} color={theme.text.muted} style={{ marginLeft: 6 }} />
-                          </TouchableOpacity>
-                        );
-                      })
-                    )}
-                  </View>
-                </ScrollView>
+                                <View
+                                  style={[
+                                    s.recentTxDot,
+                                    {
+                                      backgroundColor: isChi ? theme.brand.danger : theme.brand.success,
+                                    },
+                                  ]}
+                                />
+                                <View style={{ flex: 1, paddingRight: 8 }}>
+                                  <AppText variant="sm" weight="medium" color={theme.text.primary} numberOfLines={1}>
+                                    {tx.description}
+                                  </AppText>
+                                  <AppText variant="xs" color={theme.text.muted} tabularNums style={{ marginTop: 2 }}>
+                                    {tx.time} · {tx.performedBy || 'Chủ Quán'}
+                                  </AppText>
+                                </View>
+                                <View style={{ alignItems: 'flex-end' }}>
+                                  <AppText
+                                    variant="sm"
+                                    weight="medium"
+                                    color={isChi ? theme.brand.danger : theme.brand.success}
+                                    tabularNums
+                                  >
+                                    {isChi ? '-' : '+'}{formatCurrency(tx.amount)} đ
+                                  </AppText>
+                                  <AppText variant="xxs" color={theme.text.subtle} style={{ marginTop: 2 }}>
+                                    {isChi ? 'Chi chợ' : 'Thu ngoài'}
+                                  </AppText>
+                                </View>
+                                <Icon name="chevron-right" size={16} color={theme.text.muted} style={{ marginLeft: 6 }} />
+                              </TouchableOpacity>
+                            );
+                          })
+                        )}
+                      </View>
+                    </ScrollView>
+                  </>
+                )}
               </View>
             )}
           </View>
@@ -2314,6 +3175,12 @@ const s = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 14,
     borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  stickyFormFooter: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    padding: 12,
+    flexDirection: 'row',
+    gap: 10,
   },
   formIconSquircle: {
     width: 36,

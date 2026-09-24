@@ -60,13 +60,27 @@ export default function GiaoCaScreen() {
   const [activeTab, setActiveTab] = useState<'current' | 'denoms' | 'history'>('current');
 
   const shiftTabs = useMemo<Tier1TabItem<'current' | 'denoms' | 'history'>[]>(
-    () => [
-      { id: 'current', label: 'Ca Hiện Tại', icon: 'cash-register' },
-      { id: 'denoms', label: 'Bảng Đếm Tờ (9)', icon: 'calculator-variant-outline' },
-      { id: 'history', label: 'Lịch Sử Ca', icon: 'history', badge: shiftHistory.length },
-    ],
-    [shiftHistory.length]
+    () =>
+      isWide
+        ? [
+            { id: 'current', label: 'Ca Hiện Tại & Đếm Két', icon: 'cash-register' },
+            { id: 'history', label: 'Lịch Sử Ca', icon: 'history', badge: shiftHistory.length },
+          ]
+        : [
+            { id: 'current', label: 'Ca Hiện Tại', icon: 'cash-register' },
+            { id: 'denoms', label: 'Bảng Đếm Tờ (9)', icon: 'calculator-variant-outline' },
+            { id: 'history', label: 'Lịch Sử Ca', icon: 'history', badge: shiftHistory.length },
+          ],
+    [isWide, shiftHistory.length]
   );
+
+  const handleTabChange = (tab: 'current' | 'denoms' | 'history') => {
+    playTapSound();
+    setActiveTab(tab);
+    if (tab === 'history' && !selectedReceiptShift && shiftHistory.length > 0) {
+      setSelectedReceiptShift(shiftHistory[0]);
+    }
+  };
 
   // Kiểm Két State
   const [actualCashStr, setActualCashStr] = useState('');
@@ -181,6 +195,16 @@ export default function GiaoCaScreen() {
       return;
     }
 
+    // 🚨 Chống gian lận: Nếu lệch két >= 50.000đ, bắt buộc nhập ghi chú giải trình lý do
+    if (Math.abs(diffAmount) >= 50000 && !note.trim()) {
+      showToast({
+        title: 'Cần ghi chú giải trình',
+        message: `Lệch ${Math.abs(diffAmount).toLocaleString('vi-VN')} đ: vui lòng nhập lý do vào ô Ghi chú`,
+        type: 'warning',
+      });
+      return;
+    }
+
     isSubmittingShiftRef.current = true;
     setTimeout(() => { isSubmittingShiftRef.current = false; }, 600);
 
@@ -285,11 +309,251 @@ export default function GiaoCaScreen() {
   const renderPrimaryTabs = () => (
     <Tier1Tabs
       tabs={shiftTabs}
-      activeTab={activeTab}
-      onTabChange={(id) => setActiveTab(id as any)}
+      activeTab={isWide && activeTab === 'denoms' ? 'current' : activeTab}
+      onTabChange={(id) => handleTabChange(id as any)}
       backgroundColor={theme.status.warningBg}
     />
   );
+
+  // 3. Chi tiết ca đối soát cột phải trên Desktop (Master-Detail)
+  const renderWideHistoryShiftDetail = () => {
+    if (!selectedReceiptShift) {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 }}>
+          <EmptyState
+            icon="history"
+            message="Chưa Chọn Ca Đối Soát"
+            description="Bấm vào một ca từ danh sách bên trái để xem bảng kê đối soát két và in lại hóa đơn giao ca K80."
+          />
+        </View>
+      );
+    }
+
+    const isMatch = selectedReceiptShift.differenceAmount === 0;
+    const isOver = selectedReceiptShift.differenceAmount > 0;
+    const diffAbs = Math.abs(selectedReceiptShift.differenceAmount);
+    const keepNext = selectedReceiptShift.cashToKeepForNextShift !== undefined
+      ? selectedReceiptShift.cashToKeepForNextShift
+      : selectedReceiptShift.startingCash;
+    const remitOwner = selectedReceiptShift.cashToRemitToOwner !== undefined
+      ? selectedReceiptShift.cashToRemitToOwner
+      : Math.max(0, selectedReceiptShift.actualEndingCash - keepNext);
+
+    return (
+      <View style={{ flex: 1, backgroundColor: theme.surface.app }}>
+        {/* Sticky Header */}
+        <View style={[s.stickyFormHeader, { backgroundColor: theme.surface.card, borderBottomColor: theme.border.subtle }]}>
+          <View style={s.rightHeaderRow}>
+            <View style={s.rightHeaderTitleBlock}>
+              <View style={[s.formIconSquircle, { backgroundColor: theme.brand.primaryBg }]}>
+                <Icon name="printer-pos" size={18} color={theme.brand.accent} />
+              </View>
+              <View>
+                <AppText variant="md" weight="bold" color={theme.text.primary}>
+                  Chi Tiết Ca: {selectedReceiptShift.shiftName}
+                </AppText>
+                <AppText variant="xs" color={theme.text.muted}>
+                  {selectedReceiptShift.closedAt} · Thu ngân: {selectedReceiptShift.cashierName}
+                </AppText>
+              </View>
+            </View>
+
+            <StatusDotBadge
+              status={isMatch ? 'balanced' : isOver ? 'over' : 'short'}
+              label={
+                isMatch
+                  ? 'Khớp két 100%'
+                  : isOver
+                  ? `Thừa +${formatCurrency(diffAbs)} đ`
+                  : `Thiếu -${formatCurrency(diffAbs)} đ`
+              }
+              size="md"
+            />
+          </View>
+        </View>
+
+        <ScrollView contentContainerStyle={{ padding: 16, gap: 14 }} showsVerticalScrollIndicator={false}>
+          {/* Card 1: Dòng tiền bóc tách */}
+          <View style={[s.wideHistoryCard, { backgroundColor: theme.surface.card, borderColor: theme.border.subtle }]}>
+            <AppText variant="md" weight="bold" color={theme.text.primary}>
+              BẢNG KÊ DÒNG TIỀN CA
+            </AppText>
+
+            <View style={{ gap: 8 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <AppText variant="sm" color={theme.text.muted}>Đầu ca nhận két:</AppText>
+                <AppText variant="sm" weight="bold" color={theme.text.primary} tabularNums>
+                  {formatCurrency(selectedReceiptShift.startingCash)} đ
+                </AppText>
+              </View>
+
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <AppText variant="sm" color={theme.text.muted}>Doanh thu tiền mặt:</AppText>
+                <AppText variant="sm" weight="bold" color={theme.brand.success} tabularNums>
+                  +{formatCurrency(selectedReceiptShift.totalCashSales)} đ
+                </AppText>
+              </View>
+
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <AppText variant="sm" color={theme.text.muted}>Doanh thu VietQR (về TK):</AppText>
+                <AppText variant="sm" weight="medium" color={theme.brand.primary} tabularNums>
+                  +{formatCurrency(selectedReceiptShift.totalVietQRSales)} đ
+                </AppText>
+              </View>
+
+              {(selectedReceiptShift.totalCashIn || 0) > 0 && (
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <AppText variant="sm" color={theme.text.muted}>Thu ngoài sổ quỹ:</AppText>
+                  <AppText variant="sm" weight="bold" color={theme.brand.success} tabularNums>
+                    +{formatCurrency(selectedReceiptShift.totalCashIn || 0)} đ
+                  </AppText>
+                </View>
+              )}
+
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <AppText variant="sm" color={theme.text.muted}>Chi chợ / chi ngoài:</AppText>
+                <AppText variant="sm" weight="bold" color={theme.brand.danger} tabularNums>
+                  -{formatCurrency(selectedReceiptShift.totalCashOut || 0)} đ
+                </AppText>
+              </View>
+
+              <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: theme.border.subtle, marginVertical: 4 }} />
+
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <AppText variant="sm" weight="bold" color={theme.text.primary}>Két lý thuyết:</AppText>
+                <AppText variant="md" weight="bold" color={theme.brand.primary} tabularNums>
+                  {formatCurrency(selectedReceiptShift.expectedEndingCash)} đ
+                </AppText>
+              </View>
+
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <AppText variant="sm" weight="bold" color={theme.text.primary}>Thực đếm cuối ca:</AppText>
+                <AppText variant="md" weight="bold" color={theme.text.primary} tabularNums>
+                  {formatCurrency(selectedReceiptShift.actualEndingCash)} đ
+                </AppText>
+              </View>
+
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <AppText variant="sm" weight="bold" color={isMatch ? theme.brand.success : isOver ? theme.brand.warning : theme.brand.danger}>
+                  Chênh lệch đối soát:
+                </AppText>
+                <AppText
+                  variant="md"
+                  weight="bold"
+                  color={isMatch ? theme.brand.success : isOver ? theme.brand.warning : theme.brand.danger}
+                  tabularNums
+                >
+                  {isMatch ? '0 đ (Khớp 100%)' : isOver ? `+${formatCurrency(diffAbs)} đ` : `-${formatCurrency(diffAbs)} đ`}
+                </AppText>
+              </View>
+            </View>
+          </View>
+
+          {/* Card 2: Phân bổ tiền két */}
+          <View style={[s.wideHistoryCard, { backgroundColor: theme.surface.card, borderColor: theme.border.subtle }]}>
+            <AppText variant="md" weight="bold" color={theme.text.primary}>
+              PHÂN BỔ TIỀN KÉT
+            </AppText>
+
+            <View style={{ gap: 8 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <AppText variant="sm" color={theme.text.muted}>Để lại ca sau:</AppText>
+                <AppText variant="sm" weight="bold" color={theme.text.primary} tabularNums>
+                  {formatCurrency(keepNext)} đ
+                </AppText>
+              </View>
+
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <AppText variant="sm" weight="bold" color={theme.text.primary}>Nộp chủ quán:</AppText>
+                <AppText variant="md" weight="bold" color={theme.brand.accent} tabularNums>
+                  {formatCurrency(remitOwner)} đ
+                </AppText>
+              </View>
+            </View>
+          </View>
+
+          {/* Card 3: Ghi chú giải trình (nếu có) */}
+          {selectedReceiptShift.note ? (
+            <View style={[s.wideHistoryCard, { backgroundColor: theme.surface.card, borderColor: theme.border.subtle }]}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <Icon name="note-text-outline" size={16} color={theme.brand.primary} />
+                <AppText variant="md" weight="bold" color={theme.text.primary}>
+                  Ghi Chú Giải Trình
+                </AppText>
+              </View>
+              <AppText variant="sm" color={theme.text.primary}>
+                {selectedReceiptShift.note}
+              </AppText>
+            </View>
+          ) : null}
+
+          {/* Card 4: Bảng kê chi tiết tờ tiền (nếu có) */}
+          {selectedReceiptShift.denomCounts && Object.values(selectedReceiptShift.denomCounts).some((c) => c > 0) ? (
+            <View style={[s.wideHistoryCard, { backgroundColor: theme.surface.card, borderColor: theme.border.subtle }]}>
+              <AppText variant="md" weight="bold" color={theme.text.primary}>
+                BẢNG KÊ TIỀN ĐẾM THEO MỆNH GIÁ
+              </AppText>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                {CASH_DENOMINATIONS.filter((d) => (selectedReceiptShift.denomCounts?.[d] || 0) > 0).map((denom) => {
+                  const count = selectedReceiptShift.denomCounts![denom];
+                  return (
+                    <View
+                      key={denom}
+                      style={{
+                        width: '48.5%',
+                        padding: 10,
+                        borderRadius: 8,
+                        backgroundColor: theme.surface.header,
+                        borderWidth: StyleSheet.hairlineWidth,
+                        borderColor: theme.border.subtle,
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <View>
+                        <AppText variant="xs" color={theme.text.muted}>
+                          {formatCurrency(denom)} đ
+                        </AppText>
+                        <AppText variant="sm" weight="bold" color={theme.brand.primary} tabularNums>
+                          {count} tờ
+                        </AppText>
+                      </View>
+                      <AppText variant="sm" weight="medium" color={theme.text.primary} tabularNums>
+                        {formatCurrency(denom * count)} đ
+                      </AppText>
+                    </View>
+                  );
+                })}
+              </View>
+            </View>
+          ) : null}
+        </ScrollView>
+
+        {/* Sticky Footer Actions */}
+        <View style={[s.wideStickyFooter, { backgroundColor: theme.surface.card, borderTopColor: theme.border.subtle }]}>
+          <Button
+            size="lg"
+            variant="outline"
+            title="Báo Cáo P&L"
+            leadingIcon={<Icon name="chart-box-outline" size={18} color={theme.text.primary} />}
+            onPress={() => {
+              playTapSound();
+              router.push('/bao-cao-loi-nhuan' as any);
+            }}
+            style={{ flex: 1, height: 48, borderRadius: 12 }}
+          />
+          <Button
+            size="lg"
+            title="In Phiếu K80"
+            leadingIcon={<Icon name="printer" size={18} color={theme.text.onBrand} />}
+            onPress={() => handlePrintSlip(selectedReceiptShift)}
+            style={{ flex: 1.2, height: 48, borderRadius: 12, backgroundColor: theme.brand.accent }}
+          />
+        </View>
+      </View>
+    );
+  };
 
   return (
     <View style={[s.container, { backgroundColor: theme.surface.app }]}>
@@ -507,7 +771,7 @@ export default function GiaoCaScreen() {
 
                   {/* Input Tiền Thực Đếm */}
                   <View style={[s.inputRow, { borderBottomColor: theme.border.subtle, borderBottomWidth: StyleSheet.hairlineWidth }]}>
-                    <AppText variant="md" weight="medium" color={theme.text.muted} style={{ width: 110 }}>
+                    <AppText variant="md" weight="medium" color={theme.text.muted} style={s.formRowLabel}>
                       Thực đếm:
                     </AppText>
                     <TextInput
@@ -575,7 +839,7 @@ export default function GiaoCaScreen() {
 
                   {/* 4. PHÂN BỔ TIỀN KÉT (Nghiệp Vụ F&B Thực Chiến) */}
                   <View style={[s.seamlessRow, { borderBottomColor: theme.border.subtle, borderBottomWidth: StyleSheet.hairlineWidth }]}>
-                    <AppText variant="md" color={theme.text.muted} style={{ width: 110 }}>
+                    <AppText variant="md" color={theme.text.muted} style={s.formRowLabel}>
                       Để lại ca sau:
                     </AppText>
                     <TextInput
@@ -590,17 +854,17 @@ export default function GiaoCaScreen() {
                   </View>
 
                   <View style={[s.seamlessRow, { borderBottomColor: theme.border.subtle, borderBottomWidth: StyleSheet.hairlineWidth }]}>
-                    <AppText variant="md" weight="bold" color={theme.text.primary}>
+                    <AppText variant="md" weight="bold" color={theme.text.primary} style={s.formRowLabel}>
                       Nộp chủ quán:
                     </AppText>
-                    <AppText variant="md" weight="bold" color={theme.brand.primary} tabularNums>
+                    <AppText variant="md" weight="bold" color={theme.brand.accent} tabularNums>
                       {formatCurrency(cashToRemit)} đ
                     </AppText>
                   </View>
 
                   {/* Input Ghi Chú */}
                   <View style={s.inputRow}>
-                    <AppText variant="md" color={theme.text.muted} style={{ width: 110 }}>
+                    <AppText variant="md" color={theme.text.muted} style={s.formRowLabel}>
                       Ghi chú:
                     </AppText>
                     <TextInput
@@ -619,8 +883,9 @@ export default function GiaoCaScreen() {
                   {!isClosed ? (
                     <Button
                       size="lg"
+                      variant="accent"
                       title="Chốt Ca"
-                      style={s.closeShiftBtn}
+                      style={[s.closeShiftBtn, { backgroundColor: theme.brand.accent }]}
                       leadingIcon={<Icon name="lock-check-outline" size={20} color={theme.text.onBrand} />}
                       onPress={handleCloseShift}
                     />
@@ -816,6 +1081,8 @@ export default function GiaoCaScreen() {
                       const isOver = item.differenceAmount > 0;
                       const diffAbs = Math.abs(item.differenceAmount);
 
+                      const isSelected = isWide && selectedReceiptShift?.id === item.id;
+
                       return (
                         <TouchableOpacity
                           key={item.id}
@@ -824,14 +1091,20 @@ export default function GiaoCaScreen() {
                           onPress={() => {
                             playTapSound();
                             setSelectedReceiptShift(item);
-                            setReceiptModalVisible(true);
+                            if (!isWide) {
+                              setReceiptModalVisible(true);
+                            }
                           }}
                           style={[
                             s.shiftHistoryItem,
                             {
-                              backgroundColor: theme.surface.card,
+                              backgroundColor: isSelected
+                                ? (isDark ? 'rgba(180, 83, 9, 0.18)' : '#FEF3C7')
+                                : theme.surface.card,
                               borderBottomColor: theme.border.subtle,
                               borderBottomWidth: StyleSheet.hairlineWidth,
+                              borderLeftWidth: isSelected ? 4 : 0,
+                              borderLeftColor: theme.brand.accent,
                             },
                           ]}
                         >
@@ -905,65 +1178,72 @@ export default function GiaoCaScreen() {
           </ScrollView>
         </View>
 
-        {/* CỘT PHẢI (TABLET/WEB): BẢNG ĐẾM TỜ 9 MỆNH GIÁ */}
+        {/* CỘT PHẢI (TABLET/WEB): MASTER-DETAIL DYNAMIC WORKSPACE */}
         {isWide && (
           <View style={[s.rightPane, { flex: 1, backgroundColor: theme.surface.app }]}>
-            <View style={[s.stickyFormHeader, { backgroundColor: theme.surface.card, borderBottomColor: theme.border.subtle }]}>
-              <View style={s.rightHeaderRow}>
-                <View style={s.rightHeaderTitleBlock}>
-                  <View style={[s.formIconSquircle, { backgroundColor: theme.brand.primaryBg }]}>
-                    <Icon name="calculator-variant-outline" size={18} color={theme.brand.primary} />
-                  </View>
-                  <View>
-                    <AppText variant="md" weight="bold" color={theme.text.primary}>
-                      Đếm Tiền Két (9 Mệnh Giá)
-                    </AppText>
-                    <AppText variant="xs" color={theme.text.muted} tabularNums>
-                      Tổng thực đếm: {formatCurrency(actualCash)} đ
-                    </AppText>
+            {activeTab === 'history' ? (
+              renderWideHistoryShiftDetail()
+            ) : (
+              <>
+                <View style={[s.stickyFormHeader, { backgroundColor: theme.surface.card, borderBottomColor: theme.border.subtle }]}>
+                  <View style={s.rightHeaderRow}>
+                    <View style={s.rightHeaderTitleBlock}>
+                      <View style={[s.formIconSquircle, { backgroundColor: theme.brand.primaryBg }]}>
+                        <Icon name="calculator-variant-outline" size={18} color={theme.brand.primary} />
+                      </View>
+                      <View>
+                        <AppText variant="md" weight="bold" color={theme.text.primary}>
+                          Đếm Tiền Két (9 Mệnh Giá)
+                        </AppText>
+                        <AppText variant="xs" color={theme.text.muted} tabularNums>
+                          Tổng thực đếm: {formatCurrency(actualCash)} đ
+                        </AppText>
+                      </View>
+                    </View>
+
+                    <TouchableOpacity
+                      onPress={resetDenomCounter}
+                      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                      style={[s.resetBtn, { backgroundColor: theme.status.dangerBg }]}
+                    >
+                      <Icon name="refresh" size={16} color={theme.brand.danger} />
+                      <AppText variant="sm" weight="bold" color={theme.brand.danger}>
+                        Đặt Lại
+                      </AppText>
+                    </TouchableOpacity>
                   </View>
                 </View>
 
-                <TouchableOpacity
-                  onPress={resetDenomCounter}
-                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                  style={[s.resetBtn, { backgroundColor: theme.status.dangerBg }]}
-                >
-                  <Icon name="refresh" size={16} color={theme.brand.danger} />
-                  <AppText variant="sm" weight="bold" color={theme.brand.danger}>
-                    Đặt Lại
-                  </AppText>
-                </TouchableOpacity>
-              </View>
-            </View>
+                <ScrollView contentContainerStyle={{ padding: 16, gap: 14 }} showsVerticalScrollIndicator={false}>
+                  <DenomCounterGrid
+                    denomCounts={denomCounts}
+                    onUpdate={updateDenomCount}
+                    isClosed={isClosed}
+                    isWide={isWide}
+                    isDesktopLarge={isDesktopLarge}
+                  />
 
-            <ScrollView contentContainerStyle={{ padding: 16, gap: 14 }} showsVerticalScrollIndicator={false}>
-              <DenomCounterGrid
-                denomCounts={denomCounts}
-                onUpdate={updateDenomCount}
-                isClosed={isClosed}
-                isDesktopLarge={isDesktopLarge}
-              />
-
-              {/* Nhập nhanh tổng tiền */}
-              <View style={[s.glassInputCard, { backgroundColor: theme.surface.card, borderColor: theme.border.subtle }]}>
-                <AppText variant="md" weight="bold" color={theme.text.primary} style={{ marginBottom: 6 }}>
-                  Hoặc Nhập Nhanh Tiền Mặt
-                </AppText>
-                <TextInput
-                  value={actualCashStr ? Number(actualCashStr).toLocaleString('vi-VN') : ''}
-                  onChangeText={(val) => {
-                    const raw = val.replace(/\D/g, '');
-                    setActualCashStr(raw);
-                  }}
-                  keyboardType="numeric"
-                  editable={!isClosed}
-                  placeholder="Nhập số tiền..."
-                  placeholderTextColor={theme.text.muted}
-                  style={[s.cashInputWide, { color: theme.brand.primary, borderBottomColor: theme.brand.primary }]}
-                />
-              </View>
-            </ScrollView>
+                  {/* Nhập nhanh tổng tiền */}
+                  <View style={[s.glassInputCard, { backgroundColor: theme.surface.card, borderColor: theme.border.subtle }]}>
+                    <AppText variant="md" weight="bold" color={theme.text.primary} style={{ marginBottom: 6 }}>
+                      Hoặc Nhập Nhanh Tiền Mặt
+                    </AppText>
+                    <TextInput
+                      value={actualCashStr ? Number(actualCashStr).toLocaleString('vi-VN') : ''}
+                      onChangeText={(val) => {
+                        const raw = val.replace(/\D/g, '');
+                        setActualCashStr(raw);
+                      }}
+                      keyboardType="numeric"
+                      editable={!isClosed}
+                      placeholder="Nhập số tiền..."
+                      placeholderTextColor={theme.text.muted}
+                      style={[s.cashInputWide, { color: theme.brand.primary, borderBottomColor: theme.brand.primary }]}
+                    />
+                  </View>
+                </ScrollView>
+              </>
+            )}
           </View>
         )}
       </View>
@@ -1245,5 +1525,21 @@ const s = StyleSheet.create({
     fontWeight: '600',
     paddingVertical: 8,
     borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  formRowLabel: {
+    width: 135,
+    flexShrink: 0,
+  },
+  wideHistoryCard: {
+    padding: 16,
+    borderRadius: 14,
+    borderWidth: StyleSheet.hairlineWidth,
+    gap: 12,
+  },
+  wideStickyFooter: {
+    padding: 14,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    gap: 10,
   },
 });

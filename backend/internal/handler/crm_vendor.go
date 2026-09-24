@@ -85,16 +85,24 @@ func CreateCustomer(c *gin.Context) {
 		return
 	}
 
-	// Kiểm tra xem số điện thoại đã tồn tại chưa
+	tenantID := GetTenantID(c)
+	if tenantID == "" {
+		tenantID = req.TenantID
+	}
+	if tenantID == "" {
+		tenantID = "tenant_ongchu"
+	}
+
+	// Kiểm tra xem số điện thoại đã tồn tại chưa trong Tenant này
 	var existing models.Customer
-	if err := database.DB.Where("tenant_id = ? AND phone = ?", req.TenantID, req.Phone).First(&existing).Error; err == nil {
+	if err := database.DB.Where("tenant_id = ? AND phone = ?", tenantID, req.Phone).First(&existing).Error; err == nil {
 		c.JSON(http.StatusOK, existing)
 		return
 	}
 
 	customer := models.Customer{
 		ID:            uuid.New().String(),
-		TenantID:      req.TenantID,
+		TenantID:      tenantID,
 		BranchID:      req.BranchID,
 		Name:          req.Name,
 		Phone:         req.Phone,
@@ -160,9 +168,17 @@ func CreateVendor(c *gin.Context) {
 		return
 	}
 
+	tenantID := GetTenantID(c)
+	if tenantID == "" {
+		tenantID = req.TenantID
+	}
+	if tenantID == "" {
+		tenantID = "tenant_ongchu"
+	}
+
 	vendor := models.Vendor{
 		ID:            uuid.New().String(),
-		TenantID:      req.TenantID,
+		TenantID:      tenantID,
 		BranchID:      req.BranchID,
 		Name:          req.Name,
 		Phone:         req.Phone,

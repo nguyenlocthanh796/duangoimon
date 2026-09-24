@@ -26,6 +26,7 @@ export interface PayslipDetailViewProps {
   record: PayrollRecord;
   shiftLogs?: StaffShiftLog[];
   isWide?: boolean;
+  isInline?: boolean;
   onBack: () => void;
 }
 
@@ -33,6 +34,7 @@ export function PayslipDetailView({
   record,
   shiftLogs = [],
   isWide,
+  isInline,
   onBack,
 }: PayslipDetailViewProps) {
   const { theme } = useTheme();
@@ -115,7 +117,8 @@ export function PayslipDetailView({
     <View style={[s.container, { backgroundColor: theme.surface.app }]}>
       {/* 1. App Header chuẩn, liền màu 100% Status Bar */}
       <AppHeader
-        showBack
+        showBack={!isInline}
+        showHamburger={false}
         onBack={() => {
           playTapSound();
           onBack();

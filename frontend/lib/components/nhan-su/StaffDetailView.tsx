@@ -26,6 +26,7 @@ export interface StaffDetailViewProps {
   staff: StaffMember;
   shiftLogs?: StaffShiftLog[];
   isWide?: boolean;
+  isInline?: boolean;
   onBack: () => void;
   onEdit: (staff: StaffMember) => void;
   onLogShift: (staff: StaffMember) => void;
@@ -37,6 +38,7 @@ export function StaffDetailView({
   staff,
   shiftLogs = [],
   isWide,
+  isInline,
   onBack,
   onEdit,
   onLogShift,
@@ -68,7 +70,8 @@ export function StaffDetailView({
     <View style={[s.container, { backgroundColor: theme.surface.app }]}>
       {/* 1. Header chuẩn, hòa màu 100% StatusBar */}
       <AppHeader
-        showBack
+        showBack={!isInline}
+        showHamburger={false}
         onBack={() => {
           playTapSound();
           onBack();

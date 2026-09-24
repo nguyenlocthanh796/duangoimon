@@ -26,6 +26,7 @@ interface StaffPayrollDetailViewProps {
   staff: StaffMember;
   shiftLogs?: StaffShiftLog[];
   isWide?: boolean;
+  isInline?: boolean;
   onBack: () => void;
   onOpenAdvance: (staff: StaffMember) => void;
   onOpenBonusDeduction: (staff: StaffMember) => void;
@@ -37,6 +38,7 @@ export function StaffPayrollDetailView({
   staff,
   shiftLogs = [],
   isWide,
+  isInline,
   onBack,
   onOpenAdvance,
   onOpenBonusDeduction,
@@ -67,7 +69,7 @@ export function StaffPayrollDetailView({
       <AppHeader
         title="Chi Tiết Lương"
         subtitle={`${staff.name} · ${roleInfo.label}`}
-        showBack
+        showBack={!isInline}
         onBack={onBack}
         showHamburger={false}
         rightCustom={

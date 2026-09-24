@@ -16,7 +16,6 @@ import { AppText } from '../../../lib/components/ui/AppText';
 import {
   useAuthStore,
   DeviceRole,
-  SAAS_MASTER_KEY_DEFAULT,
   KNOWN_PHONE_TENANTS,
   cleanPhoneNumber,
   normalizeStoreName,
@@ -123,31 +122,32 @@ export const SaaSAccountForm: React.FC<SaaSAccountFormProps> = ({ onSuccess }) =
     }
 
     const rawIdent = identifier.trim();
+    if (!rawIdent) {
+      setErrorMessage('Vui lòng nhập Mã Quán hoặc Số Điện Thoại');
+      return;
+    }
     const cleanPhone = rawIdent.replace(/[\s\-\.]/g, '');
+    const effectivePass = password.trim();
+    if (!effectivePass) {
+      setErrorMessage('Vui lòng nhập Mật Khẩu');
+      return;
+    }
 
     let resolvedTenantCode = rawIdent.toLowerCase();
-    let resolvedUsername = rawIdent || 'owner';
+    let resolvedUsername = rawIdent;
 
     if (KNOWN_PHONE_TENANTS[cleanPhone]) {
       resolvedTenantCode = KNOWN_PHONE_TENANTS[cleanPhone].code;
       resolvedUsername = KNOWN_PHONE_TENANTS[cleanPhone].defaultUser;
+    } else if (cleanPhone === '0392387165') {
+      resolvedTenantCode = 'quanchebuoiangiang';
+      resolvedUsername = '0392387165';
     } else if (isProjectAdmin) {
       resolvedTenantCode = 'saas';
       resolvedUsername = 'nguyenlocthanh291097';
     }
 
-    if (!identifier.trim()) {
-      setErrorMessage('Nhập Số Điện Thoại Quán hoặc Tài Khoản');
-      return;
-    }
-    if (!password) {
-      setErrorMessage('Nhập Mật Khẩu');
-      return;
-    }
-
-    const effectiveMasterKey = isProjectAdmin
-      ? (masterKey.trim() || SAAS_MASTER_KEY_DEFAULT)
-      : masterKey;
+    const effectiveMasterKey = masterKey.trim();
 
     setLoading(true);
     setErrorMessage('');
@@ -160,12 +160,17 @@ export const SaaSAccountForm: React.FC<SaaSAccountFormProps> = ({ onSuccess }) =
       const result = await loginWithCredentials(
         resolvedTenantCode,
         resolvedUsername,
-        password,
+        effectivePass,
         branchToPass,
         effectiveMasterKey
       );
 
       if (result.success) {
+        useAuthStore.setState({
+          isAuthenticated: true,
+          currentRole: isProjectAdmin ? 'super_admin' : (useAuthStore.getState().currentRole || 'owner'),
+          _hasHydrated: true,
+        });
         AsyncStorage.setItem('ongchu_last_login_identifier', rawIdent).catch(() => {});
         if (Platform.OS !== 'web') {
           try {
@@ -404,6 +409,70 @@ export const SaaSAccountForm: React.FC<SaaSAccountFormProps> = ({ onSuccess }) =
               />
             </TouchableOpacity>
           </View>
+
+          {/* 3. Ô Nhập Khóa Root 64 ký tự (Chỉ hiện khi nhận diện Quản Trị Hệ Thống SaaS) */}
+          {isProjectAdmin && (
+            <View style={{ gap: 5 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 2 }}>
+                <AppText variant="xs" weight="medium" color={theme.text.muted}>
+                  Khóa Bảo Mật Root (Master Key 64 ký tự)
+                </AppText>
+                <AppText
+                  variant="xs"
+                  tabularNums
+                  weight="bold"
+                  color={masterKey.trim().length === 64 ? theme.brand.success : theme.brand.danger}
+                >
+                  {masterKey.trim().length}/64
+                </AppText>
+              </View>
+              <View
+                style={[
+                  s.inputWrapper,
+                  {
+                    backgroundColor: focusedField === 'masterKey' ? (isDark ? 'rgba(180,83,9,0.12)' : 'rgba(180,83,9,0.05)') : theme.surface.card,
+                    borderColor: focusedField === 'masterKey' ? theme.brand.accent : (masterKey.trim().length === 64 ? theme.brand.success : theme.border.default),
+                    borderWidth: focusedField === 'masterKey' ? 1.5 : 1,
+                  },
+                ]}
+              >
+                <Icon
+                  name="shield-key-outline"
+                  size={18}
+                  color={focusedField === 'masterKey' ? theme.brand.accent : theme.text.muted}
+                  style={s.inputIcon}
+                />
+                <TextInput
+                  value={masterKey}
+                  onChangeText={(val) => {
+                    setMasterKey(val);
+                    if (errorMessage) setErrorMessage('');
+                  }}
+                  onFocus={() => setFocusedField('masterKey')}
+                  onBlur={() => setFocusedField(null)}
+                  returnKeyType="go"
+                  onSubmitEditing={handleNextStep}
+                  placeholder="Dán chuỗi khóa bảo mật 64 ký tự..."
+                  placeholderTextColor={theme.text.muted}
+                  secureTextEntry={!showMasterKey}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  style={[s.textInput, { color: theme.text.primary }]}
+                />
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={() => setShowMasterKey(!showMasterKey)}
+                  style={s.eyeBtn}
+                >
+                  <Icon
+                    name={showMasterKey ? 'eye-off-outline' : 'eye-outline'}
+                    size={18}
+                    color={theme.text.muted}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
 
           {/* Hàng Tiện Ích: Cứu Hộ & Quên Mật Khẩu */}
           <View style={s.optionsRow}>
@@ -656,30 +725,6 @@ export const SaaSAccountForm: React.FC<SaaSAccountFormProps> = ({ onSuccess }) =
                 Mở Quán Mới (30s Dùng Thử Miễn Phí)
               </AppText>
             </TouchableOpacity>
-          </View>
-
-          {/* Trust Badges Minimalist Row */}
-          <View style={s.trustBadgesRow}>
-            <View style={s.trustItem}>
-              <Icon name="lightning-bolt" size={13} color={theme.brand.accent} />
-              <AppText variant="xxs" color={theme.text.muted}>
-                Offline 0ms
-              </AppText>
-            </View>
-            <AppText variant="xxs" color={theme.border.default}>·</AppText>
-            <View style={s.trustItem}>
-              <Icon name="printer-pos-outline" size={13} color={theme.brand.success} />
-              <AppText variant="xxs" color={theme.text.muted}>
-                In Nhiệt 9100
-              </AppText>
-            </View>
-            <AppText variant="xxs" color={theme.border.default}>·</AppText>
-            <View style={s.trustItem}>
-              <Icon name="shield-check-outline" size={13} color={theme.brand.accent} />
-              <AppText variant="xxs" color={theme.text.muted}>
-                An Toàn Két
-              </AppText>
-            </View>
           </View>
         </>
       ) : (

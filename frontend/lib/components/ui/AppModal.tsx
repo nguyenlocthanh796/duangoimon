@@ -243,7 +243,7 @@ function AppModalComponent({
                 keyboardShouldPersistTaps="handled"
                 style={[
                   styles.scrollBody,
-                  Platform.OS === 'web' && { maxHeight: numericMaxHeight },
+                  Platform.OS === 'web' && ({ minHeight: 0 } as any),
                 ]}
                 contentContainerStyle={[
                   styles.scrollContent,
@@ -430,6 +430,7 @@ const styles = StyleSheet.create({
   scrollBody: {
     flexGrow: 0,
     flexShrink: 1,
+    minHeight: 0,
   },
   scrollContent: {
     padding: 16,

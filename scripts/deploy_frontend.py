@@ -9,7 +9,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 HOST = os.getenv("VPS_HOST", "116.118.3.48")
 PORT = 22
 USER = "root"
-PASS = os.getenv("VPS_PASSWORD", "")
+PASS = os.getenv("VPS_PASSWORD", "Danh26062002")
 
 LOCAL_DIST = r"d:\duanpos-ongchu\frontend\dist"
 LOCAL_BACKEND = r"d:\duanpos-ongchu\backend"
@@ -67,7 +67,11 @@ def main():
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     print("1. Kết nối SSH tới VPS...")
-    ssh.connect(HOST, PORT, USER, PASS, timeout=15, banner_timeout=60)
+    if PASS:
+        ssh.connect(HOST, PORT, USER, PASS, timeout=15, banner_timeout=60)
+    else:
+        KEY_PATH = os.getenv("VPS_SSH_KEY", os.path.expanduser("~/.ssh/id_ed25519"))
+        ssh.connect(HOST, PORT, USER, key_filename=KEY_PATH, timeout=15, banner_timeout=60)
     sftp = ssh.open_sftp()
     print("   ✓ SSH kết nối thành công.")
 
@@ -77,8 +81,15 @@ def main():
     upload_dir(ssh, sftp, LOCAL_DIST, REMOTE_APP)
 
     # 2. Create legacy entry symlink to guarantee no 404 for cached clients
-    new_entry = "entry-77541012693c77cce58cece3d7d92edb.js"
+    web_js_dir = os.path.join(LOCAL_DIST, "_expo", "static", "js", "web")
+    entry_files = [f for f in os.listdir(web_js_dir) if f.startswith("entry-") and f.endswith(".js")]
+    new_entry = entry_files[0] if entry_files else "entry-652b609f35eef159f756182a6eecd970.js"
+    print(f"   ✓ Identified current entry bundle: {new_entry}")
+
     legacy_hashes = [
+        "entry-652b609f35eef159f756182a6eecd970.js",
+        "entry-877dde00ba31ab9a7884cf3887e4dd5a.js",
+        "entry-77541012693c77cce58cece3d7d92edb.js",
         "entry-9a0933b185db84229492fade16022a9e.js",
         "entry-9bb747ac94483377d4070b945a899925.js",
         "entry-d5ce8f0ce89e0a14e5e32123d7939edd.js",
@@ -97,7 +108,7 @@ def main():
         "entry-a4aa85e71eb04ce45deeec96c6773d82.js",
         "entry-25e5abd88a2f5c451c02be22e4f1b9c6.js",
     ]
-    symlink_parts = " && ".join([f"ln -sf {new_entry} {h}" for h in legacy_hashes])
+    symlink_parts = " && ".join([f"ln -sf {new_entry} {h}" for h in legacy_hashes if h != new_entry])
     legacy_symlink_cmd = f"cd {REMOTE_APP}/_expo/static/js/web && {symlink_parts} || true"
     ssh.exec_command(legacy_symlink_cmd)
 

@@ -160,18 +160,21 @@ func (p Product) MarshalJSON() ([]byte, error) {
 
 // Ingredient nguyên vật liệu thực tế (Trà, Sữa, Phô Mai, Đá, Rau, Thịt...)
 type Ingredient struct {
-	ID           string    `gorm:"primaryKey;size:36" json:"id"`
-	TenantID     string    `gorm:"size:36;index;not null" json:"tenant_id"`
-	BranchID     string    `gorm:"size:36;index;not null" json:"branch_id"`
-	Name         string    `gorm:"size:255;not null" json:"name"` // Tên: Cốt Trà Đen, Sữa Đặc Ông Thọ, Đá Cây
-	Unit         string    `gorm:"size:50;not null" json:"unit"`  // gram, ml, quả, cây, bịch
-	CurrentStock float64   `gorm:"type:numeric(15,2);default:0" json:"current_stock"`
-	MinStock     float64   `gorm:"type:numeric(15,2);default:0" json:"min_stock"` // Mức báo động sắp hết
-	AvgCostPrice float64   `gorm:"type:numeric(15,2);default:0" json:"avg_cost_price"` // Giá mua chợ bình quân
-	YieldRate    float64   `gorm:"type:numeric(5,2);default:100" json:"yield_rate"` // % Thành phẩm sau sơ chế (VD: 75% thịt, 85% rau)
-	EffectiveCostPrice float64 `gorm:"type:numeric(15,2);default:0" json:"effective_cost_price"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	ID                 string    `gorm:"primaryKey;size:36" json:"id"`
+	TenantID           string    `gorm:"size:36;index;not null" json:"tenant_id"`
+	BranchID           string    `gorm:"size:36;index;not null" json:"branch_id"`
+	SKU                string    `gorm:"size:50" json:"sku"`
+	Name               string    `gorm:"size:255;not null" json:"name"` // Tên: Cốt Trà Đen, Sữa Đặc Ông Thọ, Đá Cây
+	Category           string    `gorm:"size:50;default:'nguyen_lieu'" json:"category"` // nguyen_lieu, dong_goi, hang_hoa_ban_ngay
+	Unit               string    `gorm:"size:50;not null" json:"unit"`  // gram, ml, quả, cây, bịch, kg
+	CurrentStock       float64   `gorm:"type:numeric(15,2);default:0" json:"current_stock"`
+	MinStock           float64   `gorm:"type:numeric(15,2);default:0" json:"min_stock"` // Mức báo động sắp hết
+	AvgCostPrice       float64   `gorm:"type:numeric(15,2);default:0" json:"avg_cost_price"` // Giá mua chợ bình quân
+	YieldRate          float64   `gorm:"type:numeric(5,2);default:100" json:"yield_rate"` // % Thành phẩm sau sơ chế (VD: 75% thịt, 85% rau)
+	EffectiveCostPrice float64   `gorm:"type:numeric(15,2);default:0" json:"effective_cost_price"`
+	SupplierName       string    `gorm:"size:255" json:"supplier_name"`
+	CreatedAt          time.Time `json:"created_at"`
+	UpdatedAt          time.Time `json:"updated_at"`
 }
 
 // RecipeItem định mức nguyên liệu cho 1 món
@@ -617,7 +620,17 @@ type SaaSPlanConfig struct {
 	UpdatedAt     time.Time `json:"updated_at"`
 }
 
-func (SaaSPlanConfig) TableName() string {
-	return "saas_plan_configs"
+// PaymentIdempotencyKey khóa chống trùng lặp và replay cho các giao dịch ngân hàng / webhook
+type PaymentIdempotencyKey struct {
+	ID            string    `gorm:"primaryKey;size:64" json:"id"`
+	TenantID      string    `gorm:"size:36;index;not null" json:"tenant_id"`
+	ReferenceCode string    `gorm:"size:100;uniqueIndex;not null" json:"reference_code"`
+	Amount        float64   `gorm:"type:numeric(15,2);not null" json:"amount"`
+	Status        string    `gorm:"size:50;not null;default:'PROCESSED'" json:"status"`
+	CreatedAt     time.Time `json:"created_at"`
+}
+
+func (PaymentIdempotencyKey) TableName() string {
+	return "payment_idempotency_keys"
 }
 

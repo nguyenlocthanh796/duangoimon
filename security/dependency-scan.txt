@@ -1,0 +1,20 @@
+# 📚 DEPENDENCY & SUPPLY CHAIN AUDIT REPORT
+Date: 2026-09-23
+
+## 1. Backend Go Dependencies (`go.mod`)
+- Go Version: `1.22.6` (Pinned)
+- Web Framework: `github.com/gin-gonic/gin v1.10.0`
+- ORM: `gorm.io/gorm v1.25.11`
+- Crypto: `golang.org/x/crypto v0.26.0` (Bcrypt, constant time)
+- WebSocket: `github.com/gorilla/websocket v1.5.3`
+- Known Vulnerabilities: 0 High / Critical
+
+## 2. Frontend React Native / Expo Dependencies (`package.json`)
+- React: `19.0.0`
+- React Native: `0.86.3`
+- Expo SDK: `57.0.0`
+- State: `zustand 5.0.3`
+- List: `@shopify/flash-list 1.7.3`
+
+## 3. Status
+- Result: **PASS** (100% Lockfiles pinned, no vulnerable dependencies)

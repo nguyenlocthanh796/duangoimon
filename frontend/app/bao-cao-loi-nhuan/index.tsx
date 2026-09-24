@@ -143,46 +143,55 @@ export default function BaoCaoScreen() {
       const res = await apiClient.getOrders();
       if (res.success && Array.isArray(res.data) && res.data.length > 0) {
         const currentHistory = usePOSStore.getState().orderHistory || [];
-        const existingIds = new Set(currentHistory.map((h: any) => h.id || h.orderCode));
-        const newFromBackend = res.data
-          .filter((o: any) => !existingIds.has(o.id) && !existingIds.has(o.order_code))
-          .map((o: any) => ({
-            id: o.id,
-            orderCode: o.order_code || o.id,
-            tableId: o.table_id || 'takeaway',
-            tableName: o.table_name || (o.table_id ? `Bàn ${o.table_id}` : 'Mang về'),
-            createdAt: o.created_at || new Date().toISOString(),
+        const existingMap = new Map(currentHistory.map((h: any) => [h.id || h.orderCode, h]));
+        const backendOrders = res.data.map((o: any) => {
+          const ordId = o.id || o.order_code;
+          const ordCode = o.order_code || o.code || (o.id ? `HD-${String(o.id).slice(-6)}` : 'HD-POS');
+          const existing = existingMap.get(ordId) || existingMap.get(ordCode);
+          return {
+            ...(existing || {}),
+            id: ordId,
+            orderCode: ordCode,
+            tableId: o.table_id || o.tableId || 'takeaway',
+            tableName: o.table_name || o.tableName || (o.table_id ? `Bàn ${o.table_id}` : 'Mang về'),
+            createdAt: o.created_at || o.createdAt || (existing?.createdAt) || new Date().toISOString(),
             subtotal: o.subtotal || o.total_amount || 0,
             finalTotal: o.final_amount || o.total_amount || 0,
             discountAmount: o.discount_amount || 0,
             paidAmount: o.paid_amount || o.final_amount || o.total_amount || 0,
             changeAmount: o.change_amount || 0,
-            guestCount: o.guest_count || 1,
-            cashierName: o.cashier_name || 'Thu Ngân',
-            paymentMethod: (o.payment_method || 'tien_mat') as any,
-            status: o.status === 'voided' ? ('voided' as const) : ('paid' as const),
-            branchId: o.branch_id || 'branch_01',
-            items: (o.items || []).map((it: any) => ({
-              cartItemId: it.id || `ci_${Date.now()}`,
-              item: {
-                id: it.product_id,
-                name: it.product_name || 'Món',
-                price: it.unit_price || 0,
-                costPrice: 0,
-                unit: 'Phần',
-                category: 'Món',
-                station: 'bar',
-              },
-              qty: it.quantity || 1,
-              unitPrice: it.unit_price || 0,
-              sentToKitchen: true,
-            })),
-          }));
-        if (newFromBackend.length > 0) {
-          usePOSStore.setState({
-            orderHistory: [...newFromBackend, ...currentHistory],
-          });
-        }
+            guestCount: o.guest_count || o.guestCount || 1,
+            cashierName: o.cashier_name || o.created_by || 'Thu Ngân',
+            paymentMethod: (o.payment_method === 'chuyen_khoan_vietqr' ? 'vietqr' : (o.payment_method || 'tien_mat')) as any,
+            status: o.status === 'da_huy' || o.status === 'voided' ? ('voided' as const) : ('paid' as const),
+            branchId: o.branch_id || o.branchId,
+            items: (o.items && o.items.length > 0)
+              ? o.items.map((it: any) => ({
+                  cartItemId: it.id || `ci_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+                  item: {
+                    id: it.product_id || it.productId || it.id,
+                    name: it.product_name || it.productName || it.name || 'Món',
+                    price: it.unit_price || it.unitPrice || it.price || 0,
+                    costPrice: it.cost_price || 0,
+                    unit: it.unit || 'Phần',
+                    category: it.category || 'Món',
+                    station: it.station || 'bar',
+                  },
+                  qty: it.quantity || it.qty || 1,
+                  unitPrice: it.unit_price || it.unitPrice || it.price || 0,
+                  selectedSize: it.selected_size || it.selectedSize,
+                  note: it.note || '',
+                  sentToKitchen: true,
+                }))
+              : (existing?.items || []),
+          };
+        });
+
+        const backendIds = new Set(backendOrders.map((b: any) => b.id));
+        const localOnly = currentHistory.filter((h: any) => !backendIds.has(h.id) && !backendIds.has(h.orderCode));
+        usePOSStore.setState({
+          orderHistory: [...backendOrders, ...localOnly],
+        });
       }
     } catch (_) {}
   }, []);
@@ -272,6 +281,24 @@ export default function BaoCaoScreen() {
 
   const maxSoldQty = Math.max(...currentSoldProducts.map((p) => p.qtySold), 1);
 
+  // Desktop wide: tự động chọn hóa đơn đầu tiên nếu có danh sách và chưa chọn
+  useEffect(() => {
+    if (isWide && activeTab === 'invoices' && filteredInvoices.length > 0) {
+      if (!selectedInvoice || !filteredInvoices.some((inv) => inv.id === selectedInvoice.id)) {
+        setSelectedInvoice(filteredInvoices[0]);
+      }
+    }
+  }, [isWide, activeTab, filteredInvoices, selectedInvoice]);
+
+  // Desktop wide: tự động chọn món đầu tiên nếu có danh sách và chưa chọn
+  useEffect(() => {
+    if (isWide && activeTab === 'sold_items' && filteredProducts.length > 0) {
+      if (!selectedSoldProduct || !filteredProducts.some((p) => p.id === selectedSoldProduct.id)) {
+        setSelectedSoldProduct(filteredProducts[0]);
+      }
+    }
+  }, [isWide, activeTab, filteredProducts, selectedSoldProduct]);
+
   const handleReprintReceipt = (inv: InvoiceRecord) => {
     playTapSound();
     if (Platform.OS !== 'web') {
@@ -333,6 +360,343 @@ export default function BaoCaoScreen() {
     </View>
   );
 
+  const renderWideInvoiceDetail = () => {
+    if (!selectedInvoice) {
+      return (
+        <View
+          style={[
+            s.detailCard,
+            {
+              backgroundColor: theme.surface.card,
+              borderColor: theme.border.subtle,
+              borderRadius: 16,
+              borderWidth: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 40,
+              minHeight: 400,
+            },
+          ]}
+        >
+          <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: theme.surface.header, alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+            <Icon name="receipt-text-outline" size={32} color={theme.text.muted} />
+          </View>
+          <AppText variant="md" weight="bold" color={theme.text.primary}>
+            Chi Tiết Hóa Đơn
+          </AppText>
+          <AppText variant="sm" color={theme.text.muted} style={{ marginTop: 6, textAlign: 'center', maxWidth: 280 }}>
+            Chọn một hóa đơn từ danh sách bên trái để đối soát và in lại hóa đơn.
+          </AppText>
+        </View>
+      );
+    }
+
+    return (
+      <View style={{ gap: 12 }}>
+        {/* Hero Financial Card */}
+        <View
+          style={[
+            s.detailCard,
+            {
+              backgroundColor: theme.surface.card,
+              borderColor: theme.border.subtle,
+              borderRadius: 16,
+              borderWidth: 1,
+              padding: 16,
+            },
+          ]}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <AppText variant="lg" weight="bold" color={theme.text.primary} tabularNums>
+              {selectedInvoice.id}
+            </AppText>
+            <View
+              style={[
+                s.statusPillLarge,
+                {
+                  backgroundColor:
+                    selectedInvoice.payMethod === 'vietqr'
+                      ? isDark ? 'rgba(251, 146, 60, 0.18)' : 'rgba(234, 88, 12, 0.12)'
+                      : isDark ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.12)',
+                },
+              ]}
+            >
+              <AppText
+                variant="xs"
+                weight="bold"
+                color={selectedInvoice.payMethod === 'vietqr' ? theme.brand.accent : theme.brand.success}
+              >
+                {selectedInvoice.payMethod === 'vietqr' ? 'VietQR (Đã thanh toán)' : 'Tiền Mặt (Đã thu vào két)'}
+              </AppText>
+            </View>
+          </View>
+
+          <AppText variant="xs" color={theme.text.muted} style={{ marginTop: 4 }}>
+            {selectedInvoice.tableName} · {selectedInvoice.time} · Thu ngân: {selectedInvoice.cashier}
+          </AppText>
+
+          <View style={{ marginTop: 14, paddingTop: 12, borderTopColor: theme.border.subtle, borderTopWidth: StyleSheet.hairlineWidth }}>
+            <AppText variant="sm" color={theme.text.muted}>
+              Tổng tiền thanh toán:
+            </AppText>
+            <AppText variant="xl" weight="bold" color={theme.brand.primary} tabularNums style={{ marginTop: 2 }}>
+              {formatCurrency(selectedInvoice.totalAmount)} đ
+            </AppText>
+          </View>
+        </View>
+
+        {/* Bóc Tách Tài Chính */}
+        <View
+          style={[
+            s.detailCard,
+            {
+              backgroundColor: theme.surface.card,
+              borderColor: theme.border.subtle,
+              borderRadius: 16,
+              borderWidth: 1,
+              padding: 16,
+            },
+          ]}
+        >
+          <AppText variant="md" weight="bold" color={theme.text.primary} style={{ marginBottom: 10 }}>
+            Bóc Tách Tài Chính
+          </AppText>
+          <View style={s.financeDetailRow}>
+            <AppText variant="md" color={theme.text.muted}>Tạm tính trước giảm:</AppText>
+            <AppText variant="md" color={theme.text.primary} tabularNums>
+              {formatCurrency(selectedInvoice.subTotal)} đ
+            </AppText>
+          </View>
+          {selectedInvoice.discountAmount > 0 && (
+            <View style={s.financeDetailRow}>
+              <AppText variant="md" color={theme.brand.danger}>
+                Chiết khấu {selectedInvoice.discountNote ? `(${selectedInvoice.discountNote})` : ''}:
+              </AppText>
+              <AppText variant="md" color={theme.brand.danger} tabularNums>
+                -{formatCurrency(selectedInvoice.discountAmount)} đ
+              </AppText>
+            </View>
+          )}
+          <View style={[s.financeDetailRow, { borderTopColor: theme.border.subtle, borderTopWidth: StyleSheet.hairlineWidth, marginTop: 4, paddingTop: 8 }]}>
+            <AppText variant="md" weight="bold" color={theme.text.primary}>Thực thu:</AppText>
+            <AppText variant="md" weight="bold" color={theme.brand.primary} tabularNums>
+              {formatCurrency(selectedInvoice.totalAmount)} đ
+            </AppText>
+          </View>
+        </View>
+
+        {/* Danh Sách Món */}
+        <View
+          style={[
+            s.detailCard,
+            {
+              backgroundColor: theme.surface.card,
+              borderColor: theme.border.subtle,
+              borderRadius: 16,
+              borderWidth: 1,
+              padding: 16,
+            },
+          ]}
+        >
+          <AppText variant="md" weight="bold" color={theme.text.primary} style={{ marginBottom: 10 }}>
+            Danh Sách Món ({selectedInvoice.items.length})
+          </AppText>
+          {selectedInvoice.items.map((it, itemIdx) => (
+            <View
+              key={itemIdx}
+              style={[
+                s.financeDetailRow,
+                itemIdx > 0 && { borderTopColor: theme.border.subtle, borderTopWidth: StyleSheet.hairlineWidth },
+              ]}
+            >
+              <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <View style={[s.itemQtyBadge, { backgroundColor: theme.surface.header }]}>
+                  <AppText variant="xs" weight="medium" color={theme.brand.primary} tabularNums>
+                    {it.qty}x
+                  </AppText>
+                </View>
+                <AppText variant="md" color={theme.text.primary} numberOfLines={1}>
+                  {it.name}
+                </AppText>
+              </View>
+              <AppText variant="md" weight="bold" color={theme.text.primary} tabularNums>
+                {formatCurrency(it.price * it.qty)} đ
+              </AppText>
+            </View>
+          ))}
+        </View>
+
+        {/* Action Button: In Bill K80 */}
+        <TouchableOpacity
+          activeOpacity={0.75}
+          onPress={() => {
+            playTapSound();
+            if (Platform.OS !== 'web') {
+              try {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              } catch {}
+            }
+            showToast({
+              title: 'Đã In Lại',
+              message: `Đã in hóa đơn ${selectedInvoice.id}`,
+              type: 'success',
+            });
+          }}
+          style={[
+            s.fullPageBtnPrimary,
+            {
+              backgroundColor: theme.brand.accent,
+              height: 48,
+              borderRadius: 12,
+            },
+          ]}
+        >
+          <Icon name="printer" size={18} color={theme.text.onBrand} />
+          <AppText variant="md" weight="bold" color={theme.text.onBrand} numberOfLines={1}>
+            In Lại Bill K80
+          </AppText>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+
+  const renderWideSoldProductDetail = () => {
+    if (!selectedSoldProduct) {
+      return (
+        <View
+          style={[
+            s.detailCard,
+            {
+              backgroundColor: theme.surface.card,
+              borderColor: theme.border.subtle,
+              borderRadius: 16,
+              borderWidth: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: 40,
+              minHeight: 400,
+            },
+          ]}
+        >
+          <View style={{ width: 64, height: 64, borderRadius: 32, backgroundColor: theme.surface.header, alignItems: 'center', justifyContent: 'center', marginBottom: 12 }}>
+            <Icon name="silverware-fork-knife" size={32} color={theme.text.muted} />
+          </View>
+          <AppText variant="md" weight="bold" color={theme.text.primary}>
+            Chi Tiết Món Ăn
+          </AppText>
+          <AppText variant="sm" color={theme.text.muted} style={{ marginTop: 6, textAlign: 'center', maxWidth: 280 }}>
+            Chọn một món từ danh sách bên trái để xem hiệu suất bán hàng & tỷ trọng doanh thu.
+          </AppText>
+        </View>
+      );
+    }
+
+    const revenueShare = rangeConfig.revenue > 0
+      ? ((selectedSoldProduct.revenue / rangeConfig.revenue) * 100).toFixed(1)
+      : '0';
+
+    return (
+      <View style={{ gap: 12 }}>
+        {/* Hero Card */}
+        <View
+          style={[
+            s.detailCard,
+            {
+              backgroundColor: theme.surface.card,
+              borderColor: theme.border.subtle,
+              borderRadius: 16,
+              borderWidth: 1,
+              padding: 16,
+            },
+          ]}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <AppText variant="lg" weight="bold" color={theme.text.primary} numberOfLines={1} style={{ flex: 1 }}>
+              {selectedSoldProduct.name}
+            </AppText>
+            <View style={[s.statusPillLarge, { backgroundColor: `${theme.brand.primary}18` }]}>
+              <AppText variant="xs" weight="medium" color={theme.brand.primary}>
+                {selectedSoldProduct.category}
+              </AppText>
+            </View>
+          </View>
+
+          <View style={{ marginTop: 14, paddingTop: 12, borderTopColor: theme.border.subtle, borderTopWidth: StyleSheet.hairlineWidth }}>
+            <AppText variant="sm" color={theme.text.muted}>
+              Tổng doanh thu món:
+            </AppText>
+            <AppText variant="xl" weight="bold" color={theme.brand.primary} tabularNums style={{ marginTop: 2 }}>
+              {formatCurrency(selectedSoldProduct.revenue)} đ
+            </AppText>
+            <AppText variant="xs" color={theme.text.muted} tabularNums style={{ marginTop: 4 }}>
+              Đã bán {selectedSoldProduct.qtySold} phần
+            </AppText>
+          </View>
+        </View>
+
+        {/* Chỉ Số Hiệu Suất */}
+        <View
+          style={[
+            s.detailCard,
+            {
+              backgroundColor: theme.surface.card,
+              borderColor: theme.border.subtle,
+              borderRadius: 16,
+              borderWidth: 1,
+              padding: 16,
+            },
+          ]}
+        >
+          <AppText variant="md" weight="bold" color={theme.text.primary} style={{ marginBottom: 12 }}>
+            Chỉ Số Hiệu Suất Món
+          </AppText>
+
+          <View style={s.financeDetailRow}>
+            <AppText variant="md" color={theme.text.muted}>Đơn giá trung bình:</AppText>
+            <AppText variant="md" weight="bold" color={theme.text.primary} tabularNums>
+              {formatCurrency(selectedSoldProduct.qtySold > 0 ? Math.round(selectedSoldProduct.revenue / selectedSoldProduct.qtySold) : 0)} đ
+            </AppText>
+          </View>
+
+          <View style={s.financeDetailRow}>
+            <AppText variant="md" color={theme.text.muted}>Tỷ trọng doanh thu:</AppText>
+            <AppText variant="md" weight="bold" color={theme.brand.accent} tabularNums>
+              {revenueShare}%
+            </AppText>
+          </View>
+
+          <View style={[s.financeDetailRow, { borderTopColor: theme.border.subtle, borderTopWidth: StyleSheet.hairlineWidth, marginTop: 4, paddingTop: 8 }]}>
+            <AppText variant="md" color={theme.text.muted}>Đóng góp lãi gộp ước tính:</AppText>
+            <AppText variant="md" weight="bold" color={theme.brand.success} tabularNums>
+              +{formatCurrency(selectedSoldProduct.revenue * 0.65)} đ
+            </AppText>
+          </View>
+        </View>
+
+        {/* Action Button: Điều Hướng Thực Đơn */}
+        <TouchableOpacity
+          activeOpacity={0.75}
+          onPress={() => {
+            playTapSound();
+            router.push('/thuc-don');
+          }}
+          style={[
+            s.fullPageBtnPrimary,
+            {
+              backgroundColor: theme.brand.accent,
+              height: 48,
+              borderRadius: 12,
+            },
+          ]}
+        >
+          <Icon name="silverware-fork-knife" size={18} color={theme.text.onBrand} />
+          <AppText variant="md" weight="bold" color={theme.text.onBrand} numberOfLines={1}>
+            Quản Lý Món Trong Thực Đơn
+          </AppText>
+        </TouchableOpacity>
+      </View>
+    );
+  };
 
   // Route Guard: Nếu nhân viên không có quyền truy cập, hiển thị màn hình khóa
   if (!canAccess) {
@@ -377,7 +741,7 @@ export default function BaoCaoScreen() {
 
   return (
     <View style={[s.container, { backgroundColor: theme.surface.app }]}>
-      {selectedInvoice ? (
+      {!isWide && selectedInvoice ? (
         <View style={{ flex: 1 }}>
           <AppHeader
             title={selectedInvoice.id}
@@ -564,7 +928,7 @@ export default function BaoCaoScreen() {
             </TouchableOpacity>
           </View>
         </View>
-      ) : selectedSoldProduct ? (
+      ) : !isWide && selectedSoldProduct ? (
         <View style={{ flex: 1 }}>
           <AppHeader
             title={selectedSoldProduct.name}
@@ -798,26 +1162,65 @@ export default function BaoCaoScreen() {
               )}
 
               {activeTab === 'invoices' && (
-                <ReportInvoicesTab
-                  invoiceSearch={invoiceSearch}
-                  onSetInvoiceSearch={setInvoiceSearch}
-                  invoicePayFilter={invoicePayFilter}
-                  onSetInvoicePayFilter={setInvoicePayFilter}
-                  filteredInvoices={filteredInvoices}
-                  onSelectInvoice={setSelectedInvoice}
-                />
+                isWide ? (
+                  <View style={{ flexDirection: 'row', gap: 16, alignItems: 'flex-start' }}>
+                    <View style={{ flex: 1 }}>
+                      <ReportInvoicesTab
+                        invoiceSearch={invoiceSearch}
+                        onSetInvoiceSearch={setInvoiceSearch}
+                        invoicePayFilter={invoicePayFilter}
+                        onSetInvoicePayFilter={setInvoicePayFilter}
+                        filteredInvoices={filteredInvoices}
+                        onSelectInvoice={setSelectedInvoice}
+                        selectedInvoice={selectedInvoice}
+                      />
+                    </View>
+                    <View style={{ flex: 1.15 }}>
+                      {renderWideInvoiceDetail()}
+                    </View>
+                  </View>
+                ) : (
+                  <ReportInvoicesTab
+                    invoiceSearch={invoiceSearch}
+                    onSetInvoiceSearch={setInvoiceSearch}
+                    invoicePayFilter={invoicePayFilter}
+                    onSetInvoicePayFilter={setInvoicePayFilter}
+                    filteredInvoices={filteredInvoices}
+                    onSelectInvoice={setSelectedInvoice}
+                  />
+                )
               )}
 
               {activeTab === 'sold_items' && (
-                <ReportSoldItemsTab
-                  categoryFilter={categoryFilter}
-                  onSetCategoryFilter={setCategoryFilter}
-                  sortBy={sortBy}
-                  onSetSortBy={setSortBy}
-                  filteredProducts={filteredProducts}
-                  maxSoldQty={maxSoldQty}
-                  onSelectProduct={setSelectedSoldProduct}
-                />
+                isWide ? (
+                  <View style={{ flexDirection: 'row', gap: 16, alignItems: 'flex-start' }}>
+                    <View style={{ flex: 1 }}>
+                      <ReportSoldItemsTab
+                        categoryFilter={categoryFilter}
+                        onSetCategoryFilter={setCategoryFilter}
+                        sortBy={sortBy}
+                        onSetSortBy={setSortBy}
+                        filteredProducts={filteredProducts}
+                        maxSoldQty={maxSoldQty}
+                        onSelectProduct={setSelectedSoldProduct}
+                        selectedProduct={selectedSoldProduct}
+                      />
+                    </View>
+                    <View style={{ flex: 1.1 }}>
+                      {renderWideSoldProductDetail()}
+                    </View>
+                  </View>
+                ) : (
+                  <ReportSoldItemsTab
+                    categoryFilter={categoryFilter}
+                    onSetCategoryFilter={setCategoryFilter}
+                    sortBy={sortBy}
+                    onSetSortBy={setSortBy}
+                    filteredProducts={filteredProducts}
+                    maxSoldQty={maxSoldQty}
+                    onSelectProduct={setSelectedSoldProduct}
+                  />
+                )
               )}
             </Animated.ScrollView>
           </View>

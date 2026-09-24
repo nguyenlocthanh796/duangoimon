@@ -7,7 +7,7 @@ import { useRouter, usePathname } from 'expo-router';
 import { useTheme } from '../../theme';
 import { AppText } from './AppText';
 import { PressableScale } from './PressableScale';
-import { usePOSStore, useStoreSettings, useTableList, useKDSOrders, useOrderHistory, CartItem } from '../../store/usePOSStore';
+import { usePOSStore, useStoreSettings, useTableList, useKDSOrders, useOrderHistory, useTodayOrderHistoryCount, CartItem } from '../../store/usePOSStore';
 import { useAuthStore, checkRoutePermission } from '../../store/useAuthStore';
 import { playTapSound } from '../../utils/sound';
 
@@ -46,7 +46,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
     [kdsOrders, enableKds]
   );
   const orderHistory = useOrderHistory();
-  const orderHistoryCount = orderHistory.length;
+  const todayOrdersCount = useTodayOrderHistoryCount();
 
   const viewMode = usePOSStore((s) => s.viewMode);
   const setViewMode = usePOSStore((s) => s.setViewMode);
@@ -321,8 +321,8 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
                 ? totalQty
                 : item.key === 'kds' && pendingKdsCount > 0
                 ? pendingKdsCount
-                : item.key === 'hoa-don' && orderHistoryCount > 0
-                ? orderHistoryCount
+                : item.key === 'hoa-don' && todayOrdersCount > 0
+                ? todayOrdersCount
                 : undefined;
 
             const activeColor = theme.brand.accent;
@@ -344,8 +344,8 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
                 ? `Bếp bar, ${pendingKdsCount} đơn chờ`
                 : 'Bếp bar'
               : item.key === 'hoa-don'
-              ? orderHistoryCount > 0
-                ? `Sổ đơn, ${orderHistoryCount} đơn đã bán`
+              ? todayOrdersCount > 0
+                ? `Sổ đơn, ${todayOrdersCount} đơn hôm nay`
                 : 'Sổ đơn'
               : item.key === 'bao-cao'
               ? 'Báo cáo lợi nhuận 3 số vàng'

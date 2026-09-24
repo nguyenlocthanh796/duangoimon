@@ -24,6 +24,7 @@ type CreateOrderRequest struct {
 	TableID        *string            `json:"table_id"`
 	CashierName    string             `json:"cashier_name"`
 	CustomerName   string             `json:"customer_name"`
+	CustomerID     *string            `json:"customer_id"`
 	OrderType      string             `json:"order_type"`
 	DiscountAmount float64            `json:"discount_amount"`
 	ShiftID        *string            `json:"shift_id"`
@@ -72,6 +73,31 @@ func CreateOrder(c *gin.Context) {
 	} else {
 		orderCode = fmt.Sprintf("HD-%s", orderID[:6])
 	}
+	tenantID := GetTenantID(c)
+	if tenantID == "" {
+		tenantID = req.TenantID
+	}
+	if tenantID == "" {
+		tenantID = "tenant_ongchu"
+	}
+
+	// Xác thực Cross-Tenant FK: Bàn và Khách hàng phải thuộc Tenant hiện tại
+	if database.DB != nil {
+		if req.TableID != nil && *req.TableID != "" {
+			var tbl models.DiningTable
+			if err := database.DB.Where("id = ? AND tenant_id = ?", *req.TableID, tenantID).First(&tbl).Error; err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Bàn không tồn tại hoặc không thuộc quyền sở hữu của quán này"})
+				return
+			}
+		}
+		if req.CustomerID != nil && *req.CustomerID != "" {
+			var cust models.Customer
+			if err := database.DB.Where("id = ? AND tenant_id = ?", *req.CustomerID, tenantID).First(&cust).Error; err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Khách hàng không tồn tại hoặc không thuộc quán này"})
+				return
+			}
+		}
+	}
 
 	var totalAmount float64
 	var subtotal float64
@@ -101,20 +127,23 @@ func CreateOrder(c *gin.Context) {
 		station := it.Station
 		if database.DB != nil && it.ProductID != nil && *it.ProductID != "" {
 			var prod models.Product
-			if err := database.DB.First(&prod, "id = ?", *it.ProductID).Error; err == nil {
-				if prod.IsOutOfStock {
-					c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Món '%s' đã hết hàng (86), không thể nhận order", prod.Name)})
-					return
-				}
-				if pName == "" {
-					pName = prod.Name
-				}
-				if station == "" && prod.Station != "" {
-					station = prod.Station
-				}
-				if itemCost == 0 {
-					itemCost = prod.CostPrice * qty
-				}
+			// Xác thực Cross-Tenant FK: Món ăn phải thuộc Tenant hiện tại
+			if err := database.DB.Where("id = ? AND tenant_id = ?", *it.ProductID, tenantID).First(&prod).Error; err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Món '%s' không tồn tại hoặc không thuộc thực đơn của quán này", *it.ProductID)})
+				return
+			}
+			if prod.IsOutOfStock {
+				c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Món '%s' đã hết hàng (86), không thể nhận order", prod.Name)})
+				return
+			}
+			if pName == "" {
+				pName = prod.Name
+			}
+			if station == "" && prod.Station != "" {
+				station = prod.Station
+			}
+			if itemCost == 0 {
+				itemCost = prod.CostPrice * qty
 			}
 		}
 		if pName == "" {
@@ -153,15 +182,21 @@ func CreateOrder(c *gin.Context) {
 		totalAmount = 0
 	}
 
+	branchID := c.GetString("branch_id")
+	if branchID == "" {
+		branchID = req.BranchID
+	}
+
 	order := models.Order{
 		ID:             orderID,
-		TenantID:       req.TenantID,
-		BranchID:       req.BranchID,
+		TenantID:       tenantID,
+		BranchID:       branchID,
 		ClientOrderID:  req.ClientOrderID,
 		OrderCode:      orderCode,
 		TableID:        req.TableID,
 		CashierName:    req.CashierName,
 		CustomerName:   req.CustomerName,
+		CustomerID:     req.CustomerID,
 		OrderType:      req.OrderType,
 		Status:         "dang_xu_ly",
 		Subtotal:       subtotal,
@@ -180,7 +215,7 @@ func CreateOrder(c *gin.Context) {
 				return err
 			}
 			if req.TableID != nil && *req.TableID != "" {
-				if err := tx.Model(&models.DiningTable{}).Where("id = ?", *req.TableID).Updates(map[string]interface{}{
+				if err := tx.Model(&models.DiningTable{}).Where("id = ? AND (tenant_id = ? OR tenant_id = '')", *req.TableID, tenantID).Updates(map[string]interface{}{
 					"status":          "dang_phuc_vu",
 					"active_order_id": orderID,
 				}).Error; err != nil {
@@ -196,11 +231,7 @@ func CreateOrder(c *gin.Context) {
 	}
 
 	// Broadcast update to WebSocket Hub (KDS, CFD, POS) - Phân lập theo đúng quán (Tenant)
-	targetTenant := req.TenantID
-	if targetTenant == "" {
-		targetTenant = "tenant_ongchu"
-	}
-	websocket.GlobalHub.BroadcastToTenant(targetTenant, "order_created", gin.H{
+	websocket.GlobalHub.BroadcastToTenant(tenantID, "order_created", gin.H{
 		"order_id":    orderID,
 		"order_code":  orderCode,
 		"total":       totalAmount,
@@ -286,13 +317,10 @@ func checkManagerPin(pin string, tenantID string) (bool, string, string) {
 			query = ScopeTenant(query, tenantID)
 		}
 		if err := query.First(&user).Error; err == nil {
-			if user.Role == "owner" || user.Role == "manager" {
+			if user.Role == "owner" || user.Role == "manager" || user.Role == "superadmin" || user.Role == "saas_admin" {
 				return true, user.FullName, user.Role
 			}
 		}
-	}
-	if pin == "8888" || pin == "9999" {
-		return true, "Quản lý", "manager"
 	}
 	return false, "", ""
 }
@@ -300,19 +328,27 @@ func checkManagerPin(pin string, tenantID string) (bool, string, string) {
 // VoidOrder hủy đơn hàng có kiểm tra mã duyệt PIN quản lý và ghi nhật ký an ninh
 func VoidOrder(c *gin.Context) {
 	orderID := c.Param("id")
+	tenantID := GetTenantID(c)
 	var req VoidOrderRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Cần cung cấp mã PIN và lý do hủy đơn"})
 		return
 	}
 
-	valid, authorizedBy, _ := checkManagerPin(req.Pin, "")
-	if !valid {
-		c.JSON(http.StatusForbidden, gin.H{
-			"error":   "Mã PIN không chính xác hoặc không có quyền quản lý",
-			"success": false,
-		})
-		return
+	userRole := c.GetString("role")
+	userName := c.GetString("username")
+	authorizedBy := userName
+
+	if userRole != "owner" && userRole != "manager" && userRole != "superadmin" {
+		valid, mgrName, _ := checkManagerPin(req.Pin, tenantID)
+		if !valid {
+			c.JSON(http.StatusForbidden, gin.H{
+				"error":   "Mã PIN không chính xác hoặc không có quyền quản lý trong quán này",
+				"success": false,
+			})
+			return
+		}
+		authorizedBy = mgrName
 	}
 
 	now := time.Now()
@@ -321,7 +357,11 @@ func VoidOrder(c *gin.Context) {
 
 	if database.DB != nil {
 		err := database.DB.Transaction(func(tx *gorm.DB) error {
-			if err := tx.Preload("Items").First(&order, "id = ?", orderID).Error; err != nil {
+			q := tx.Preload("Items").Where("id = ?", orderID)
+			if tenantID != "" {
+				q = ScopeTenant(q, tenantID)
+			}
+			if err := q.First(&order).Error; err != nil {
 				return err
 			}
 
@@ -390,8 +430,7 @@ func VoidOrder(c *gin.Context) {
 
 	service.GlobalTelegramAlert.AlertVoidAfterPrint(tableName, order.OrderCode, order.TotalAmount, order.VoidedBy)
 
-	websocket.GlobalHub.BroadcastJSON(gin.H{
-		"type":       "order_voided",
+	websocket.GlobalHub.BroadcastToTenant(tenantID, "order_voided", gin.H{
 		"order_id":   order.ID,
 		"order_code": order.OrderCode,
 		"reason":     req.Reason,
@@ -415,6 +454,7 @@ type VoidOrderItemRequest struct {
 // VoidOrderItem hủy món đã báo bếp sau khi được quản lý phê duyệt PIN
 func VoidOrderItem(c *gin.Context) {
 	orderID := c.Param("id")
+	tenantID := GetTenantID(c)
 	var req VoidOrderItemRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -426,12 +466,19 @@ func VoidOrderItem(c *gin.Context) {
 		pin = req.Pin
 	}
 
-	valid, authorizedBy, _ := checkManagerPin(pin, "")
-	if !valid {
-		c.JSON(http.StatusForbidden, gin.H{
-			"error": "Cần mã duyệt Quản lý để hủy món đã báo bếp",
-		})
-		return
+	userRole := c.GetString("role")
+	userName := c.GetString("username")
+	authorizedBy := userName
+
+	if userRole != "owner" && userRole != "manager" && userRole != "superadmin" {
+		valid, mgrName, _ := checkManagerPin(pin, tenantID)
+		if !valid {
+			c.JSON(http.StatusForbidden, gin.H{
+				"error": "Cần mã duyệt Quản lý của quán để hủy món đã báo bếp",
+			})
+			return
+		}
+		authorizedBy = mgrName
 	}
 
 	var item models.OrderItem
@@ -515,8 +562,7 @@ func VoidOrderItem(c *gin.Context) {
 
 	service.GlobalTelegramAlert.AlertVoidAfterPrint(tableName, item.ProductName, item.TotalPrice, cashier)
 
-	websocket.GlobalHub.BroadcastJSON(gin.H{
-		"type":      "kds_item_voided",
+	websocket.GlobalHub.BroadcastToTenant(tenantID, "kds_item_voided", gin.H{
 		"order_id":  orderID,
 		"item_id":   req.ItemID,
 		"reason":    req.Reason,

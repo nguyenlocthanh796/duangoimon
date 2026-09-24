@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/ongchu/pos-backend/internal/auth"
 )
 
 const DefaultSaasMasterKey = "ongchu_saas_master_root_key_202696febcef886f40d280e4a909a3a56085"
@@ -31,7 +32,18 @@ func SaaSAdminAuthMiddleware() gin.HandlerFunc {
 			}
 		}
 
-		// Constant-time comparison chống Timing Attack
+		// 1. Kiểm tra nếu là JWT Bearer Token hợp lệ với Role super_admin
+		if reqKey != "" {
+			if claims, err := auth.VerifyAccessToken(reqKey); err == nil && claims.Role == "super_admin" {
+				c.Set("role", "super_admin")
+				c.Set("user_id", claims.UserID)
+				c.Set("tenant_id", claims.TenantID)
+				c.Next()
+				return
+			}
+		}
+
+		// 2. Constant-time comparison với Master Key chống Timing Attack
 		if reqKey == "" || subtle.ConstantTimeCompare([]byte(reqKey), []byte(adminKey)) != 1 {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"success": false,

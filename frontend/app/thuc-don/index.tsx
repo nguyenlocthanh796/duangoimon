@@ -43,6 +43,38 @@ import { CategoryManagementTab, ProductFormModal, ToppingManagementTab } from '.
 
 const CHIP_BAR_HEIGHT = 48;
 
+interface SafeImageProps {
+  uri?: string;
+  style: any;
+  resizeMode?: 'cover' | 'contain';
+  fallbackIcon?: keyof typeof Icon.glyphMap;
+  iconSize?: number;
+}
+
+const SafeImage: React.FC<SafeImageProps> = ({
+  uri,
+  style,
+  resizeMode = 'cover',
+  fallbackIcon = 'food',
+  iconSize = 22,
+}) => {
+  const { theme } = useTheme();
+  const [hasError, setHasError] = useState(false);
+
+  if (!uri || hasError) {
+    return <Icon name={fallbackIcon} size={iconSize} color={theme.text.muted} />;
+  }
+
+  return (
+    <Image
+      source={{ uri }}
+      style={style}
+      resizeMode={resizeMode}
+      onError={() => setHasError(true)}
+    />
+  );
+};
+
 export default function MenuManagementScreen() {
   const { theme, isDark } = useTheme();
   const { isWide, isDesktop, isDesktopLarge } = useResponsive();
@@ -288,8 +320,23 @@ export default function MenuManagementScreen() {
 
 
 
-  // 🌟 NẾU ĐANG CHỌN MÓN ĂN: HIỂN THỊ TRANG MỚI TOÀN MÀN HÌNH (ZERO POPUP, ZERO ACCORDION)
-  if (selectedProductDetail) {
+  // Menu Health KPI metrics
+  const itemsWithCost = useMemo(() => menuItems.filter((m) => m.costPrice && m.costPrice > 0), [menuItems]);
+  const avgMargin = useMemo(() => {
+    if (itemsWithCost.length === 0) return 0;
+    const totalMargin = itemsWithCost.reduce(
+      (acc, m) => acc + ((m.price - (m.costPrice || 0)) / m.price) * 100,
+      0
+    );
+    return Math.round(totalMargin / itemsWithCost.length);
+  }, [itemsWithCost]);
+  const avgPrice = useMemo(() => {
+    if (menuItems.length === 0) return 0;
+    return Math.round(menuItems.reduce((acc, m) => acc + m.price, 0) / menuItems.length);
+  }, [menuItems]);
+
+  // 🌟 NẾU ĐANG CHỌN MÓN ĂN TRÊN MOBILE: HIỂN THỊ TRANG MỚI TOÀN MÀN HÌNH (ZERO POPUP, ZERO ACCORDION)
+  if (selectedProductDetail && !isWide) {
     const isOutOfStock = outOfStockIds.includes(selectedProductDetail.id);
     const catName = categories.find((c) => c.id === selectedProductDetail.category)?.name || selectedProductDetail.category || 'Chung';
 
@@ -335,15 +382,11 @@ export default function MenuManagementScreen() {
                   },
                 ]}
               >
-                {selectedProductDetail.image ? (
-                  <Image
-                    source={{ uri: selectedProductDetail.image }}
-                    style={s.detailImage}
-                    resizeMode="cover"
-                  />
-                ) : (
-                  <Icon name="food" size={32} color={theme.text.muted} />
-                )}
+                <SafeImage
+                  uri={selectedProductDetail.image}
+                  style={s.detailImage}
+                  iconSize={32}
+                />
               </View>
 
               <View style={{ flex: 1, justifyContent: 'center' }}>
@@ -641,6 +684,667 @@ export default function MenuManagementScreen() {
     );
   }
 
+  // Menu Health KPI Bar (Chỉ số quản trị thực đơn chuẩn Vị Chủ Quán)
+  const renderMenuKPIBar = () => {
+    return (
+      <View
+        style={{
+          flexDirection: 'row',
+          paddingHorizontal: 16,
+          paddingVertical: 10,
+          backgroundColor: theme.surface.card,
+          borderBottomWidth: StyleSheet.hairlineWidth,
+          borderBottomColor: theme.border.subtle,
+          gap: 12,
+        }}
+      >
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: theme.surface.header,
+            borderRadius: 10,
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+            borderWidth: StyleSheet.hairlineWidth,
+            borderColor: theme.border.subtle,
+          }}
+        >
+          <AppText variant="xxs" color={theme.text.muted} weight="medium">
+            TỔNG MÓN ĂN
+          </AppText>
+          <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 4, marginTop: 2 }}>
+            <AppText variant="md" weight="bold" color={theme.text.primary} tabularNums>
+              {menuItems.length}
+            </AppText>
+            <AppText variant="xs" color={theme.text.muted} tabularNums>
+              ({categories.length} nhóm)
+            </AppText>
+          </View>
+        </View>
+
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: theme.surface.header,
+            borderRadius: 10,
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+            borderWidth: StyleSheet.hairlineWidth,
+            borderColor: theme.border.subtle,
+          }}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: theme.brand.success }} />
+            <AppText variant="xxs" color={theme.text.muted} weight="medium">
+              ĐANG MỞ BÁN
+            </AppText>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 4, marginTop: 2 }}>
+            <AppText variant="md" weight="bold" color={theme.brand.success} tabularNums>
+              {availableCount}
+            </AppText>
+            <AppText variant="xs" color={theme.text.muted} tabularNums>
+              ({menuItems.length > 0 ? Math.round((availableCount / menuItems.length) * 100) : 0}%)
+            </AppText>
+          </View>
+        </View>
+
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: theme.surface.header,
+            borderRadius: 10,
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+            borderWidth: StyleSheet.hairlineWidth,
+            borderColor: theme.border.subtle,
+          }}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+            <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: theme.brand.danger }} />
+            <AppText variant="xxs" color={theme.text.muted} weight="medium">
+              TẠM HẾT (86)
+            </AppText>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 4, marginTop: 2 }}>
+            <AppText variant="md" weight="bold" color={outOfStockCount > 0 ? theme.brand.danger : theme.text.muted} tabularNums>
+              {outOfStockCount}
+            </AppText>
+            <AppText variant="xs" color={theme.text.muted}>
+              món
+            </AppText>
+          </View>
+        </View>
+
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: theme.surface.header,
+            borderRadius: 10,
+            paddingHorizontal: 12,
+            paddingVertical: 8,
+            borderWidth: StyleSheet.hairlineWidth,
+            borderColor: theme.border.subtle,
+          }}
+        >
+          <AppText variant="xxs" color={theme.text.muted} weight="medium">
+            LÃI GỘP TRUNG BÌNH
+          </AppText>
+          <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 4, marginTop: 2 }}>
+            <AppText variant="md" weight="bold" color={theme.brand.accent} tabularNums>
+              ~{avgMargin}%
+            </AppText>
+            <AppText variant="xs" color={theme.text.muted} tabularNums>
+              ({itemsWithCost.length}/{menuItems.length} có COGS)
+            </AppText>
+          </View>
+        </View>
+      </View>
+    );
+  };
+
+  // Sticky Detail Panel trên màn hình rộng Desktop
+  const renderWideDetailPanel = (item: MenuItemWithModifiers) => {
+    const isOutOfStock = outOfStockIds.includes(item.id);
+    const catName = categories.find((c) => c.id === item.category)?.name || item.category || 'Chung';
+
+    return (
+      <View style={{ flex: 1, backgroundColor: theme.surface.card }}>
+        {/* Panel Header */}
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+            borderBottomWidth: StyleSheet.hairlineWidth,
+            borderBottomColor: theme.border.subtle,
+            backgroundColor: theme.surface.header,
+          }}
+        >
+          <View style={{ flex: 1, marginRight: 8 }}>
+            <AppText variant="md" weight="bold" color={theme.text.primary} numberOfLines={1}>
+              {item.name}
+            </AppText>
+            <AppText variant="xs" color={theme.text.muted} numberOfLines={1}>
+              {catName} · SKU: {item.code || 'Chưa cài'}
+            </AppText>
+          </View>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => {
+              playTapSound();
+              setSelectedProductDetail(null);
+            }}
+            style={[s.iconHeaderBtn, { borderColor: theme.border.subtle }]}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Icon name="close" size={18} color={theme.text.muted} />
+          </TouchableOpacity>
+        </View>
+
+        {/* Panel Scroll Content */}
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{ padding: 16, gap: 14 }}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Hero Thumbnail + Price & Status Card */}
+          <View
+            style={{
+              flexDirection: 'row',
+              gap: 12,
+              alignItems: 'center',
+              backgroundColor: theme.surface.header,
+              borderRadius: 12,
+              padding: 12,
+              borderWidth: StyleSheet.hairlineWidth,
+              borderColor: theme.border.subtle,
+            }}
+          >
+            <View
+              style={{
+                width: 72,
+                height: 72,
+                borderRadius: 10,
+                overflow: 'hidden',
+                backgroundColor: theme.surface.card,
+                borderColor: theme.border.subtle,
+                borderWidth: StyleSheet.hairlineWidth,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <SafeImage uri={item.image} style={{ width: '100%', height: '100%' }} iconSize={28} />
+            </View>
+
+            <View style={{ flex: 1, justifyContent: 'center' }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                <AppText variant="xs" color={theme.text.muted}>
+                  Giá niêm yết
+                </AppText>
+                <View
+                  style={{
+                    backgroundColor: isOutOfStock ? theme.status.dangerBg : theme.status.readyBg,
+                    paddingHorizontal: 8,
+                    paddingVertical: 3,
+                    borderRadius: 12,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 4,
+                  }}
+                >
+                  <Icon
+                    name={isOutOfStock ? 'alert-circle-outline' : 'check-circle-outline'}
+                    size={12}
+                    color={isOutOfStock ? theme.brand.danger : theme.brand.success}
+                  />
+                  <AppText
+                    variant="xxs"
+                    weight="bold"
+                    color={isOutOfStock ? theme.brand.danger : theme.brand.success}
+                  >
+                    {isOutOfStock ? 'HẾT MÓN (86)' : 'ĐANG BÁN'}
+                  </AppText>
+                </View>
+              </View>
+
+              <AppText
+                variant="xl"
+                weight="bold"
+                color={isOutOfStock ? theme.text.muted : theme.brand.accent}
+                tabularNums
+              >
+                {formatCurrency(item.price)} đ
+              </AppText>
+            </View>
+          </View>
+
+          {/* Profit Breakdown (if cost price exists) */}
+          {item.costPrice !== undefined && item.costPrice > 0 ? (
+            <View
+              style={{
+                backgroundColor: theme.surface.header,
+                borderRadius: 12,
+                padding: 12,
+                borderWidth: StyleSheet.hairlineWidth,
+                borderColor: theme.border.subtle,
+              }}
+            >
+              <AppText variant="xs" weight="bold" color={theme.text.muted} style={{ marginBottom: 8, textTransform: 'uppercase' }}>
+                Phân Tích Lợi Nhuận (COGS)
+              </AppText>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
+                <AppText variant="xs" color={theme.text.muted}>Giá vốn ước tính:</AppText>
+                <AppText variant="xs" weight="bold" color={theme.text.primary} tabularNums>
+                  {formatCurrency(item.costPrice)} đ
+                </AppText>
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
+                <AppText variant="xs" color={theme.text.muted}>Lãi gộp trên đơn vị:</AppText>
+                <AppText variant="xs" weight="bold" color={theme.brand.primary} tabularNums>
+                  {formatCurrency(item.price - item.costPrice)} đ
+                </AppText>
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <AppText variant="xs" color={theme.text.muted}>Biên lợi nhuận gộp:</AppText>
+                <AppText variant="xs" weight="bold" color={theme.brand.accent} tabularNums>
+                  {Math.round(((item.price - item.costPrice) / item.price) * 100)}%
+                </AppText>
+              </View>
+            </View>
+          ) : null}
+
+          {/* Configuration Metadata */}
+          <View
+            style={{
+              backgroundColor: theme.surface.header,
+              borderRadius: 12,
+              padding: 12,
+              borderWidth: StyleSheet.hairlineWidth,
+              borderColor: theme.border.subtle,
+              gap: 8,
+            }}
+          >
+            <AppText variant="xs" weight="bold" color={theme.text.muted} style={{ textTransform: 'uppercase' }}>
+              Thông Tin Chi Tiết
+            </AppText>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <AppText variant="xs" color={theme.text.muted}>Mã SKU:</AppText>
+              <AppText variant="xs" weight="medium" color={theme.text.primary} tabularNums>
+                {item.code || '---'}
+              </AppText>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <AppText variant="xs" color={theme.text.muted}>Đơn vị tính:</AppText>
+              <AppText variant="xs" weight="medium" color={theme.text.primary}>
+                {item.unit || 'Phần / Ly'}
+              </AppText>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <AppText variant="xs" color={theme.text.muted}>Danh mục:</AppText>
+              <AppText variant="xs" weight="medium" color={theme.text.primary}>
+                {catName}
+              </AppText>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <AppText variant="xs" color={theme.text.muted}>Trạm chế biến:</AppText>
+              <AppText variant="xs" weight="medium" color={theme.text.primary}>
+                {item.station === 'bar' ? 'Quầy Bar' : item.station === 'kitchen' ? 'Bếp Nóng' : 'Ăn Vặt'}
+              </AppText>
+            </View>
+          </View>
+
+          {/* Sizes / Kích cỡ */}
+          {item.sizes && item.sizes.length > 0 && (
+            <View
+              style={{
+                backgroundColor: theme.surface.header,
+                borderRadius: 12,
+                padding: 12,
+                borderWidth: StyleSheet.hairlineWidth,
+                borderColor: theme.border.subtle,
+              }}
+            >
+              <AppText variant="xs" weight="bold" color={theme.text.muted} style={{ marginBottom: 8, textTransform: 'uppercase' }}>
+                Kích Cỡ ({item.sizes.length})
+              </AppText>
+              <View style={{ gap: 6 }}>
+                {item.sizes.map((sz, idx) => (
+                  <View key={idx} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <AppText variant="xs" color={theme.text.primary}>Size {sz.name}</AppText>
+                    <AppText variant="xs" weight="bold" color={theme.brand.primary} tabularNums>
+                      {sz.priceDelta > 0 ? `+${formatCurrency(sz.priceDelta)} đ` : 'Mặc định (0đ)'}
+                    </AppText>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* Toppings / Món kèm */}
+          {item.toppings && item.toppings.length > 0 && (
+            <View
+              style={{
+                backgroundColor: theme.surface.header,
+                borderRadius: 12,
+                padding: 12,
+                borderWidth: StyleSheet.hairlineWidth,
+                borderColor: theme.border.subtle,
+              }}
+            >
+              <AppText variant="xs" weight="bold" color={theme.text.muted} style={{ marginBottom: 8, textTransform: 'uppercase' }}>
+                Topping / Món Kèm ({item.toppings.length})
+              </AppText>
+              <View style={{ gap: 6 }}>
+                {item.toppings.map((top, idx) => (
+                  <View key={idx} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <AppText variant="xs" color={theme.text.primary}>{top.name}</AppText>
+                    <AppText variant="xs" weight="bold" color={theme.brand.primary} tabularNums>
+                      +{formatCurrency(top.priceDelta)} đ
+                    </AppText>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* Quick link to SOP */}
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => {
+              playTapSound();
+              router.push('/so-cong-thuc' as any);
+            }}
+            style={{
+              backgroundColor: theme.status.warningBg,
+              borderColor: theme.brand.accent,
+              borderRadius: 12,
+              borderWidth: 1,
+              flexDirection: 'row',
+              alignItems: 'center',
+              padding: 12,
+              gap: 10,
+            }}
+          >
+            <Icon name="book-open-page-variant" size={20} color={theme.brand.accent} />
+            <View style={{ flex: 1 }}>
+              <AppText variant="xs" weight="bold" color={theme.brand.accent}>
+                Sổ Công Thức & SOP
+              </AppText>
+              <AppText variant="xxs" color={theme.text.muted}>
+                Định lượng nguyên liệu & quy trình pha chế
+              </AppText>
+            </View>
+            <Icon name="chevron-right" size={16} color={theme.brand.accent} />
+          </TouchableOpacity>
+        </ScrollView>
+
+        {/* Panel Sticky Bottom Action Dock */}
+        <View
+          style={{
+            flexDirection: 'row',
+            padding: 12,
+            gap: 8,
+            borderTopWidth: StyleSheet.hairlineWidth,
+            borderTopColor: theme.border.subtle,
+            backgroundColor: theme.surface.card,
+          }}
+        >
+          {/* Nút Xóa */}
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => handleDeleteProduct(item)}
+            style={{
+              width: 44,
+              height: 44,
+              borderRadius: 10,
+              borderWidth: StyleSheet.hairlineWidth,
+              borderColor: theme.brand.danger,
+              backgroundColor: isDark ? 'rgba(239, 68, 68, 0.15)' : 'rgba(239, 68, 68, 0.08)',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Icon name="trash-can-outline" size={18} color={theme.brand.danger} />
+          </TouchableOpacity>
+
+          {/* Nút Báo Hết / Mở Bán */}
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => handleToggleStock(item)}
+            style={{
+              flex: 1,
+              height: 44,
+              borderRadius: 10,
+              borderWidth: 1,
+              borderColor: isOutOfStock ? theme.brand.success : theme.brand.danger,
+              backgroundColor: isOutOfStock
+                ? (isDark ? 'rgba(34, 197, 94, 0.15)' : '#F0FDF4')
+                : (isDark ? 'rgba(239, 68, 68, 0.15)' : '#FEF2F2'),
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 6,
+            }}
+          >
+            <Icon
+              name={isOutOfStock ? 'check-circle-outline' : 'close-circle-outline'}
+              size={16}
+              color={isOutOfStock ? theme.brand.success : theme.brand.danger}
+            />
+            <AppText
+              variant="xs"
+              weight="bold"
+              color={isOutOfStock ? theme.brand.success : theme.brand.danger}
+            >
+              {isOutOfStock ? 'Mở Bán Lại' : 'Báo Hết (86)'}
+            </AppText>
+          </TouchableOpacity>
+
+          {/* Nút Sửa Món */}
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => handleOpenFullEdit(item)}
+            style={{
+              flex: 1.2,
+              height: 44,
+              borderRadius: 10,
+              backgroundColor: theme.brand.primary,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 6,
+            }}
+          >
+            <Icon name="pencil" size={16} color={theme.text.onBrand} />
+            <AppText variant="xs" weight="bold" color={theme.text.onBrand}>
+              Sửa Món
+            </AppText>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
+  // Right Panel: Tổng quan sức khỏe thực đơn khi chưa chọn món
+  const renderWideMenuHealthPanel = () => {
+    return (
+      <View style={{ flex: 1, backgroundColor: theme.surface.card }}>
+        {/* Panel Header */}
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 8,
+            paddingHorizontal: 16,
+            paddingVertical: 14,
+            borderBottomWidth: StyleSheet.hairlineWidth,
+            borderBottomColor: theme.border.subtle,
+            backgroundColor: theme.surface.header,
+          }}
+        >
+          <Icon name="silverware-fork-knife" size={20} color={theme.brand.accent} />
+          <View style={{ flex: 1 }}>
+            <AppText variant="md" weight="bold" color={theme.text.primary}>
+              Tổng Quan Thực Đơn
+            </AppText>
+            <AppText variant="xs" color={theme.text.muted}>
+              {menuItems.length} món trong hệ thống
+            </AppText>
+          </View>
+        </View>
+
+        {/* Panel Scroll Content */}
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{ padding: 16, gap: 14 }}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Tip Callout */}
+          <View
+            style={{
+              backgroundColor: isDark ? 'rgba(180, 83, 9, 0.15)' : '#FFFBEB',
+              borderRadius: 12,
+              borderWidth: 1,
+              borderColor: theme.brand.accent,
+              padding: 12,
+              flexDirection: 'row',
+              gap: 10,
+              alignItems: 'center',
+            }}
+          >
+            <Icon name="cursor-default-click-outline" size={20} color={theme.brand.accent} />
+            <AppText variant="xs" color={theme.brand.accent} style={{ flex: 1 }}>
+              Chạm vào bất kỳ món nào bên trái để xem nhanh giá vốn, biên lãi và thao tác chỉnh sửa.
+            </AppText>
+          </View>
+
+          {/* Category Distribution Breakdown */}
+          <View
+            style={{
+              backgroundColor: theme.surface.header,
+              borderRadius: 12,
+              padding: 14,
+              borderWidth: StyleSheet.hairlineWidth,
+              borderColor: theme.border.subtle,
+              gap: 10,
+            }}
+          >
+            <AppText variant="xs" weight="bold" color={theme.text.muted} style={{ textTransform: 'uppercase' }}>
+              Cơ Cấu Nhóm Món ({categories.length} Nhóm)
+            </AppText>
+
+            {categories.map((cat) => {
+              const count = menuItems.filter((m) => m.category === cat.name || m.category === cat.id).length;
+              const pct = menuItems.length > 0 ? Math.round((count / menuItems.length) * 100) : 0;
+              return (
+                <View key={cat.id} style={{ gap: 4 }}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <AppText variant="xs" weight="medium" color={theme.text.primary}>
+                      {cat.name}
+                    </AppText>
+                    <AppText variant="xs" color={theme.text.muted} tabularNums>
+                      {count} món ({pct}%)
+                    </AppText>
+                  </View>
+                  <View
+                    style={{
+                      height: 6,
+                      borderRadius: 3,
+                      backgroundColor: theme.border.subtle,
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <View
+                      style={{
+                        height: '100%',
+                        width: `${pct}%`,
+                        backgroundColor: theme.brand.primary,
+                        borderRadius: 3,
+                      }}
+                    />
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+
+          {/* Quick Operations Summary */}
+          <View
+            style={{
+              backgroundColor: theme.surface.header,
+              borderRadius: 12,
+              padding: 14,
+              borderWidth: StyleSheet.hairlineWidth,
+              borderColor: theme.border.subtle,
+              gap: 8,
+            }}
+          >
+            <AppText variant="xs" weight="bold" color={theme.text.muted} style={{ textTransform: 'uppercase' }}>
+              Chất Lượng Dữ Liệu Thực Đơn
+            </AppText>
+
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <AppText variant="xs" color={theme.text.muted}>Món có ảnh chụp:</AppText>
+              <AppText variant="xs" weight="bold" color={theme.text.primary} tabularNums>
+                {menuItems.filter((m) => !!m.image).length}/{menuItems.length} món
+              </AppText>
+            </View>
+
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <AppText variant="xs" color={theme.text.muted}>Món có giá vốn (COGS):</AppText>
+              <AppText variant="xs" weight="bold" color={theme.brand.accent} tabularNums>
+                {itemsWithCost.length}/{menuItems.length} món
+              </AppText>
+            </View>
+
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <AppText variant="xs" color={theme.text.muted}>Giá bán trung bình:</AppText>
+              <AppText variant="xs" weight="bold" color={theme.brand.primary} tabularNums>
+                {formatCurrency(avgPrice)} đ
+              </AppText>
+            </View>
+          </View>
+        </ScrollView>
+
+        {/* Bottom CTA */}
+        <View
+          style={{
+            padding: 12,
+            borderTopWidth: StyleSheet.hairlineWidth,
+            borderTopColor: theme.border.subtle,
+            backgroundColor: theme.surface.card,
+          }}
+        >
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => {
+              playTapSound();
+              setEditingProduct(null);
+              setIsProductFormOpen(true);
+            }}
+            style={{
+              height: 44,
+              borderRadius: 10,
+              backgroundColor: theme.brand.accent,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+            }}
+          >
+            <Icon name="plus" size={18} color={theme.text.onBrand} />
+            <AppText variant="md" weight="bold" color={theme.text.onBrand}>
+              Thêm Món Mới
+            </AppText>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
   return (
     <View style={[s.container, { backgroundColor: theme.surface.app }]}>
       {/* Top Header: Hamburger Drawer + Tiêu đề + Tìm Kiếm + Sắp Xếp + Thêm Nhanh theo Tab (Chuẩn Apple HIG) */}
@@ -769,8 +1473,13 @@ export default function MenuManagementScreen() {
           />
         </View>
       ) : (
-        <View style={{ flex: 1 }}>
-          {/* Menu Items List with Pull-to-Refresh */}
+        <View style={{ flex: 1, flexDirection: isWide ? 'row' : 'column' }}>
+          {/* CỘT TRÁI: MASTER LIST (FLEX: 1) */}
+          <View style={{ flex: 1, borderRightWidth: isWide ? 1 : 0, borderRightColor: theme.border.subtle }}>
+            {/* Menu KPI Summary Bar on Wide */}
+            {isWide && renderMenuKPIBar()}
+
+            {/* Menu Items List with Pull-to-Refresh */}
           <Animated.ScrollView
             scrollEventThrottle={16}
             refreshControl={
@@ -835,6 +1544,7 @@ export default function MenuManagementScreen() {
               /* Flat Seamless Product Rows (2-Line Layout) */
               filteredItems.map((item) => {
                 const isOutOfStock = outOfStockIds.includes(item.id);
+                const isSelected = isWide && selectedProductDetail?.id === item.id;
                 const itemIndex = menuItems.findIndex((m) => m.id === item.id);
                 const isFirstItem = itemIndex <= 0;
                 const isLastItem = itemIndex >= menuItems.length - 1;
@@ -851,14 +1561,18 @@ export default function MenuManagementScreen() {
                     style={[
                       s.productRow,
                       isWide && {
-                        width: isDesktopLarge ? '24.2%' : isDesktop ? '32.3%' : '49.2%',
+                        width: isDesktopLarge ? '31.8%' : '48.8%',
                         borderRadius: 12,
-                        borderWidth: 1,
+                        borderWidth: isSelected ? 2 : 1,
                       },
                       {
-                        backgroundColor: theme.surface.card,
+                        backgroundColor: isSelected
+                          ? (isDark ? 'rgba(180, 83, 9, 0.12)' : '#FFFBEB')
+                          : theme.surface.card,
                         borderBottomColor: theme.border.subtle,
-                        borderColor: isWide ? theme.border.subtle : undefined,
+                        borderColor: isSelected
+                          ? theme.brand.accent
+                          : (isWide ? theme.border.subtle : undefined),
                       },
                     ]}
                   >
@@ -866,11 +1580,7 @@ export default function MenuManagementScreen() {
                       /* Reorder Mode: Thumbnail + Tên món + Giá + Nút Lên/Xuống */
                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                         <View style={[s.reorderThumbBox, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle }]}>
-                          {item.image ? (
-                            <Image source={{ uri: item.image }} style={s.reorderThumb} resizeMode="cover" />
-                          ) : (
-                            <Icon name="food" size={18} color={theme.text.muted} />
-                          )}
+                          <SafeImage uri={item.image} style={s.reorderThumb} iconSize={18} />
                         </View>
 
                         <View style={{ flex: 1, minWidth: 0 }}>
@@ -949,11 +1659,7 @@ export default function MenuManagementScreen() {
                       <View style={s.wideRowContent}>
                         {/* Thumbnail */}
                         <View style={[s.wideThumbBox, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle }]}>
-                          {item.image ? (
-                            <Image source={{ uri: item.image }} style={s.wideThumb} resizeMode="cover" />
-                          ) : (
-                            <Icon name="food" size={24} color={theme.text.muted} />
-                          )}
+                          <SafeImage uri={item.image} style={s.wideThumb} iconSize={24} />
                         </View>
 
                         {/* Middle Info */}
@@ -1047,11 +1753,7 @@ export default function MenuManagementScreen() {
                       <View style={s.compactRowContent}>
                         {/* Thumbnail */}
                         <View style={[s.mobileThumbBox, { backgroundColor: theme.surface.header, borderColor: theme.border.subtle }]}>
-                          {item.image ? (
-                            <Image source={{ uri: item.image }} style={s.mobileThumb} resizeMode="cover" />
-                          ) : (
-                            <Icon name="food" size={20} color={theme.text.muted} />
-                          )}
+                          <SafeImage uri={item.image} style={s.mobileThumb} iconSize={20} />
                         </View>
 
                         <View style={s.compactLeftCol}>
@@ -1115,6 +1817,25 @@ export default function MenuManagementScreen() {
               })
             )}
           </Animated.ScrollView>
+          </View>
+
+          {/* CỘT PHẢI: STICKY DETAIL PANEL ON WIDE (WIDTH: 400) */}
+          {isWide && (
+            <View
+              style={{
+                width: 400,
+                backgroundColor: theme.surface.card,
+                borderLeftWidth: 1,
+                borderLeftColor: theme.border.subtle,
+              }}
+            >
+              {selectedProductDetail ? (
+                renderWideDetailPanel(selectedProductDetail)
+              ) : (
+                renderWideMenuHealthPanel()
+              )}
+            </View>
+          )}
         </View>
       )}
 

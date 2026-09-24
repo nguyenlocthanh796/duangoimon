@@ -49,9 +49,17 @@ func CreateCashTransaction(c *gin.Context) {
 		et = "hoat_dong"
 	}
 
+	tenantID := GetTenantID(c)
+	if tenantID == "" {
+		tenantID = req.TenantID
+	}
+	if tenantID == "" {
+		tenantID = "tenant_ongchu"
+	}
+
 	tx := models.CashTransaction{
 		ID:            uuid.New().String(),
-		TenantID:      req.TenantID,
+		TenantID:      tenantID,
 		BranchID:      req.BranchID,
 		ShiftID:       req.ShiftID,
 		Type:          req.Type,
@@ -67,14 +75,13 @@ func CreateCashTransaction(c *gin.Context) {
 
 	if database.DB != nil {
 		err := database.DB.Transaction(func(dbTx *gorm.DB) error {
-			if err := dbTx.Create(&tx).Error; err != nil {
-				return err
-			}
-
 			// Cập nhật dòng tiền vào ca làm việc hiện tại nếu là TIỀN MẶT
-			if req.ShiftID != nil && *req.ShiftID != "" && pm == "tien_mat" {
+			if req.ShiftID != nil && *req.ShiftID != "" {
 				var shift models.CashShift
-				if err := dbTx.First(&shift, "id = ?", *req.ShiftID).Error; err == nil {
+				if err := dbTx.Where("id = ? AND tenant_id = ?", *req.ShiftID, tenantID).First(&shift).Error; err != nil {
+					return fmt.Errorf("ca làm việc không tồn tại hoặc không thuộc quyền sở hữu của quán này")
+				}
+				if pm == "tien_mat" {
 					if req.Type == "thu" {
 						shift.TotalCashIn += req.Amount
 					} else {
@@ -86,10 +93,14 @@ func CreateCashTransaction(c *gin.Context) {
 					}
 				}
 			}
+
+			if err := dbTx.Create(&tx).Error; err != nil {
+				return err
+			}
 			return nil
 		})
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Lỗi ghi nhận sổ quỹ: %v", err)})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 	}

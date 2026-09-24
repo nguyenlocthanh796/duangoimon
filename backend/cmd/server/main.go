@@ -2,11 +2,8 @@ package main
 
 import (
 	"log"
-	"net"
 	"net/http"
 	"os"
-	"regexp"
-	"runtime/debug"
 	"strings"
 	"time"
 
@@ -19,82 +16,67 @@ import (
 	"github.com/ongchu/pos-backend/internal/websocket"
 )
 
-// lanOriginRe: match http(s)://<ip>:port cho CORS LAN allowlist
-var lanOriginRe = regexp.MustCompile(`^https?://([0-9.]+)(?::\d+)?$`)
-
 func main() {
-	// ⚡ Tối ưu hóa Bộ Nhớ RAM Go Runtime (<15MB RAM, trả RAM nhanh về OS)
-	if os.Getenv("GOMEMLIMIT") == "" {
-		debug.SetMemoryLimit(32 * 1024 * 1024) // 32MB soft cap
-	}
-	if os.Getenv("GOGC") == "" {
-		debug.SetGCPercent(50) // Thu dọn rác bộ nhớ chủ động hơn
-	}
-
 	cfg := config.LoadConfig()
 
-	// Khởi tạo Database PostgreSQL
+	// Khởi tạo CSDL Dual-Engine (PostgreSQL với SQLite WAL Fallback)
 	database.InitDB(cfg)
 
-	// Khởi động WebSocket Hub chạy nền
+	// Khởi động WebSocket Hub Goroutine
 	go websocket.GlobalHub.Run()
 
-	// Thiết lập Gin Engine ở chế độ tối ưu bộ nhớ (<15MB RAM)
-	if os.Getenv("GIN_MODE") == "" {
-		gin.SetMode(gin.ReleaseMode)
+	r := gin.Default()
+
+	// Cấu hình CORS chặt chẽ theo Origin
+	allowedOrigins := []string{
+		"http://localhost:8080",
+		"http://localhost:8081",
+		"http://localhost:8082",
+		"http://localhost:8085",
+		"http://localhost:19006",
+		"https://ongchu.cloud",
+		"https://www.ongchu.cloud",
+		"https://app.ongchu.cloud",
 	}
 
-	r := gin.New()
-	r.Use(gin.Recovery())
-	r.Use(func(c *gin.Context) {
-		c.Header("X-Content-Type-Options", "nosniff")
-		c.Header("X-Frame-Options", "DENY")
-		c.Header("X-XSS-Protection", "1; mode=block")
-		c.Header("Referrer-Policy", "strict-origin-when-cross-origin")
-		c.Header("Server", "") // Xóa chữ ký Web Server
-		c.Next()
-	})
-	r.Use(middleware.RateLimiterMiddleware(30, time.Second))
-	if gin.Mode() != gin.ReleaseMode {
-		r.Use(gin.Logger())
+	if customOrigins := os.Getenv("ALLOWED_CORS_ORIGINS"); customOrigins != "" {
+		for _, o := range strings.Split(customOrigins, ",") {
+			trimmed := strings.TrimSpace(o)
+			if trimmed != "" {
+				allowedOrigins = append(allowedOrigins, trimmed)
+			}
+		}
 	}
 
-	// Cấu hình CORS đa nền tảng (Web, Mobile, Desktop)
-	// ponytail: gioi han origin LAN/localhost thay vi `return true`.
-	// Mobile native khong gui Origin nen van duoc phep. Add when: co domain
-	// production that -> them vao ALLOWED_CORS_ORIGINS env (comma-separated).
-	r.Use(cors.New(cors.Config{
-		AllowOriginFunc: func(origin string) bool {
-			if origin == "" {
-				return true // native app / curl / backend-to-backend
-			}
-			if strings.HasPrefix(origin, "http://localhost") || strings.HasPrefix(origin, "http://127.0.0.1") {
-				return true
-			}
-			if strings.Contains(origin, "ongchu.cloud") || strings.Contains(origin, "116.118.3.48") {
-				return true
-			}
-			for _, allowed := range strings.Split(os.Getenv("ALLOWED_CORS_ORIGINS"), ",") {
-				if allowed != "" && origin == strings.TrimSpace(allowed) {
-					return true
-				}
-			}
-			// LAN subnet (POS ket noi may in/CFD tren mang noi bo)
-			if m := lanOriginRe.FindStringSubmatch(origin); m != nil {
-				ip := net.ParseIP(m[1])
-				if ip != nil && (ip.IsPrivate() || ip.IsLoopback()) {
-					return true
-				}
-			}
-			return true
-		},
+	corsConfig := cors.Config{
+		AllowOrigins:     allowedOrigins,
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Tenant-ID", "X-Device-ID", "X-Branch-ID"},
-		ExposeHeaders:    []string{"Content-Length"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Tenant-ID", "X-Branch-ID", "X-Admin-Key", "X-Webhook-Token", "X-Device-ID"},
+		ExposeHeaders:    []string{"Content-Length", "X-Total-Count"},
 		AllowCredentials: true,
-	}))
+		MaxAge:           12 * time.Hour,
+	}
 
-	// Health check
+	// Cho phép LAN IPs cho thiết bị POS nội bộ
+	corsConfig.AllowOriginFunc = func(origin string) bool {
+		if strings.HasPrefix(origin, "http://192.168.") ||
+			strings.HasPrefix(origin, "http://10.") ||
+			strings.HasPrefix(origin, "http://172.16.") ||
+			strings.HasPrefix(origin, "http://localhost") ||
+			strings.HasPrefix(origin, "http://127.0.0.1") {
+			return true
+		}
+		for _, o := range allowedOrigins {
+			if strings.EqualFold(origin, o) {
+				return true
+			}
+		}
+		return os.Getenv("GIN_MODE") != "release"
+	}
+
+	r.Use(cors.New(corsConfig))
+	r.Use(middleware.RateLimiterMiddleware(30, 60))
+
 	healthHandler := func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"status":  "healthy",
@@ -117,7 +99,9 @@ func main() {
 
 		// 🏢 SaaS Multi-Tenant Authentication & Self-Serve Registration
 		public.POST("/login", handler.SaaSLogin)
+		public.POST("/saas-login", handler.SaaSAdminLogin)
 		public.POST("/register", handler.RegisterTenant)
+		public.POST("/refresh-token", handler.RefreshToken)
 		public.POST("/staff-pin", middleware.PinBruteForceMiddleware(5, 2*time.Minute), handler.StaffPinLogin)
 		public.GET("/tenant/:code", handler.GetTenantInfo)
 
@@ -125,48 +109,55 @@ func main() {
 		public.GET("/bills/:code", handler.GetPublicBillJSON)
 	}
 
-	// 🧾 Cổng tra cứu hóa đơn điện tử công khai cho khách hàng (Check Bill Portal)
+	// 🧾 Cổng tra cứu hóa đơn điện tử công khai cho khách hàng
 	r.GET("/b", handler.RenderCheckBillPortal)
 	r.GET("/bill", handler.RenderCheckBillPortal)
 	r.GET("/check-bill", handler.RenderCheckBillPortal)
 	r.GET("/tra-cuu", handler.RenderCheckBillPortal)
-
-	// 🧾 Tra cứu nhanh chi tiết hóa đơn điện tử theo mã đơn
 	r.GET("/b/:code", handler.RenderPublicBill)
 	r.GET("/bill/:code", handler.RenderPublicBill)
 
-	// POS & Order APIs
+	// Webhook ngân hàng (Xác thực qua X-Webhook-Token độc lập)
+	r.POST("/api/v1/webhook/bank-transfer", handler.HandleBankTransferWebhook)
+	r.POST("/api/v1/webhook/simulate-bank-transfer", handler.SimulateBankTransfer)
+
+	// Protected POS & Order APIs (Yêu cầu JWT Bearer Token + Quota Check)
 	api := r.Group("/api/v1")
+	api.Use(middleware.JWTAuthMiddleware())
 	api.Use(middleware.TenantQuotaMiddleware(database.DB))
 	{
+		// Đăng xuất
+		api.POST("/auth/logout", handler.Logout)
+
 		// Đăng ký & Heartbeat thiết bị POS / KDS / CFD
 		api.POST("/devices/register", handler.RegisterOrHeartbeatDevice)
 
 		// Đơn hàng & Thanh toán
-		api.GET("/orders", handler.GetOrders)
-		api.GET("/orders/:id", handler.GetOrderByID)
-		api.POST("/orders", handler.CreateOrder)
-		api.POST("/orders/:id/pay", handler.PayOrder)
+		api.GET("/orders", middleware.RequirePermission("orders.read"), handler.GetOrders)
+		api.GET("/orders/:id", middleware.RequirePermission("orders.read"), handler.GetOrderByID)
+		api.POST("/orders", middleware.RequirePermission("orders.create"), handler.CreateOrder)
+		api.POST("/orders/:id/pay", middleware.RequirePermission("orders.pay"), handler.PayOrder)
 		api.POST("/orders/:id/pre-print", handler.PrePrintOrder)
-		api.POST("/orders/:id/void", handler.VoidOrder)
-		api.POST("/orders/:id/void-item", handler.VoidOrderItem)
+		api.POST("/orders/:id/void", middleware.RequirePermission("orders.void"), handler.VoidOrder)
+		api.POST("/orders/:id/void-item", middleware.RequirePermission("orders.void"), handler.VoidOrderItem)
 		api.GET("/orders/:id/vietqr", handler.GetOrderVietQR)
 
-		// 🪑 Sơ đồ bàn ăn & Khu vực (CRUD / Sắp xếp / Tách / Ghép / Chuyển bàn)
+		// 🪑 Sơ đồ bàn ăn & Khu vực
 		api.GET("/tables", handler.GetTables)
-		api.POST("/tables", handler.CreateTable)
-		api.PUT("/tables/:id", handler.UpdateTable)
-		api.DELETE("/tables/:id", handler.DeleteTable)
-		api.POST("/tables/reorder", handler.ReorderTables)
+		api.POST("/tables", middleware.RequirePermission("tables.manage"), handler.CreateTable)
+		api.PUT("/tables/:id", middleware.RequirePermission("tables.manage"), handler.UpdateTable)
+		api.DELETE("/tables/:id", middleware.RequirePermission("tables.manage"), handler.DeleteTable)
+		api.POST("/tables/reorder", middleware.RequirePermission("tables.manage"), handler.ReorderTables)
 		api.POST("/tables/:id/pre-print", handler.PrePrintTable)
 		api.POST("/tables/move", handler.MoveTable)
 		api.POST("/tables/merge", handler.MergeTable)
 		api.POST("/tables/split", handler.SplitTable)
+
 		api.GET("/areas", handler.GetAreas)
-		api.POST("/areas", handler.CreateArea)
-		api.PUT("/areas/:id", handler.UpdateArea)
-		api.DELETE("/areas/:id", handler.DeleteArea)
-		api.POST("/areas/reorder", handler.ReorderAreas)
+		api.POST("/areas", middleware.RequirePermission("areas.manage"), handler.CreateArea)
+		api.PUT("/areas/:id", middleware.RequirePermission("areas.manage"), handler.UpdateArea)
+		api.DELETE("/areas/:id", middleware.RequirePermission("areas.manage"), handler.DeleteArea)
+		api.POST("/areas/reorder", middleware.RequirePermission("areas.manage"), handler.ReorderAreas)
 
 		// 🍳 Bếp & Quầy Pha Chế (KDS)
 		api.GET("/kds/orders", handler.GetKDSOrders)
@@ -177,55 +168,58 @@ func main() {
 
 		// 📋 Thực đơn, Danh mục, Toppings & Sắp xếp
 		api.GET("/categories", handler.GetCategories)
-		api.POST("/categories", handler.CreateCategory)
-		api.PUT("/categories/:id", handler.UpdateCategory)
-		api.DELETE("/categories/:id", handler.DeleteCategory)
-		api.POST("/categories/reorder", handler.ReorderCategories)
+		api.POST("/categories", middleware.RequirePermission("categories.manage"), handler.CreateCategory)
+		api.PUT("/categories/:id", middleware.RequirePermission("categories.manage"), handler.UpdateCategory)
+		api.DELETE("/categories/:id", middleware.RequirePermission("categories.manage"), handler.DeleteCategory)
+		api.POST("/categories/reorder", middleware.RequirePermission("categories.manage"), handler.ReorderCategories)
 
 		api.GET("/products", handler.GetProducts)
-		api.POST("/products", handler.CreateProduct)
-		api.PUT("/products/:id", handler.UpdateProduct)
-		api.DELETE("/products/:id", handler.DeleteProduct)
-		api.POST("/products/reorder", handler.ReorderProducts)
+		api.POST("/products", middleware.RequirePermission("products.create"), handler.CreateProduct)
+		api.PUT("/products/:id", middleware.RequirePermission("products.update"), handler.UpdateProduct)
+		api.DELETE("/products/:id", middleware.RequirePermission("products.delete"), handler.DeleteProduct)
+		api.POST("/products/reorder", middleware.RequirePermission("products.update"), handler.ReorderProducts)
 		api.POST("/products/:id/toggle-86", handler.Toggle86)
-		api.PATCH("/products/:id/price", handler.UpdateProductPrice)
+		api.PATCH("/products/:id/price", middleware.RequirePermission("products.price.update"), handler.UpdateProductPrice)
 
 		api.GET("/toppings", handler.GetToppings)
-		api.POST("/toppings", handler.CreateTopping)
-		api.PUT("/toppings/:id", handler.UpdateTopping)
-		api.DELETE("/toppings/:id", handler.DeleteTopping)
-		api.POST("/toppings/reorder", handler.ReorderToppings)
+		api.POST("/toppings", middleware.RequirePermission("products.create"), handler.CreateTopping)
+		api.PUT("/toppings/:id", middleware.RequirePermission("products.update"), handler.UpdateTopping)
+		api.DELETE("/toppings/:id", middleware.RequirePermission("products.delete"), handler.DeleteTopping)
+		api.POST("/toppings/reorder", middleware.RequirePermission("products.update"), handler.ReorderToppings)
 
 		// 🌿 Kho & Định Lượng BOM & Nhập Hàng NCC
 		api.GET("/inventory/ingredients", handler.GetIngredients)
+		api.POST("/inventory/ingredients", handler.CreateIngredient)
+		api.PUT("/inventory/ingredients/:id", handler.UpdateIngredient)
+		api.DELETE("/inventory/ingredients/:id", handler.DeleteIngredient)
 		api.GET("/inventory/low-stock", handler.GetLowStockIngredients)
 		api.GET("/inventory/purchase-orders", handler.GetPurchaseOrders)
 		api.POST("/inventory/purchase-orders", handler.CreatePurchaseOrder)
-		api.POST("/inventory/adjust", handler.CreateInventoryAdjustment)
+		api.POST("/inventory/adjust", middleware.RequirePermission("inventory.adjust"), handler.CreateInventoryAdjustment)
 
 		// 👥 Nhân Sự, Chấm Công & Bảng Lương (Staff & Payroll)
-		api.GET("/staff", handler.GetStaff)
-		api.POST("/staff", handler.CreateStaff)
-		api.PUT("/staff/:id", handler.UpdateStaff)
-		api.DELETE("/staff/:id", handler.DeleteStaff)
+		api.GET("/staff", middleware.RequirePermission("staff.manage"), handler.GetStaff)
+		api.POST("/staff", middleware.RequireRole("owner", "manager"), handler.CreateStaff)
+		api.PUT("/staff/:id", middleware.RequireRole("owner", "manager"), handler.UpdateStaff)
+		api.DELETE("/staff/:id", middleware.RequireRole("owner"), handler.DeleteStaff)
 		api.POST("/staff/:id/clock-in", handler.ClockInStaff)
 		api.POST("/staff/:id/clock-out", handler.ClockOutStaff)
-		api.POST("/staff/:id/shifts/manual", handler.ManualLogStaffShift)
-		api.POST("/staff/:id/advances", handler.RecordStaffAdvance)
-		api.GET("/staff/:id/calculate-salary", handler.CalculateStaffSalary)
-		api.POST("/staff/:id/pay-salary", handler.PayStaffSalary)
+		api.POST("/staff/:id/shifts/manual", middleware.RequireRole("owner", "manager"), handler.ManualLogStaffShift)
+		api.POST("/staff/:id/advances", middleware.RequireRole("owner", "manager"), handler.RecordStaffAdvance)
+		api.GET("/staff/:id/calculate-salary", middleware.RequireRole("owner", "manager"), handler.CalculateStaffSalary)
+		api.POST("/staff/:id/pay-salary", middleware.RequireRole("owner"), middleware.RequirePermission("staff.pay"), handler.PayStaffSalary)
 
 		// ⚙️ Cài Đặt Cửa Hàng, Ngân Hàng VietQR & Mẫu Bill In Nhiệt
 		api.GET("/settings", handler.GetSettings)
-		api.PUT("/settings", handler.UpdateSettings)
-		api.POST("/settings/test-telegram", handler.TestTelegramAlert)
+		api.PUT("/settings", middleware.RequireRole("owner"), middleware.RequirePermission("settings.update"), handler.UpdateSettings)
+		api.POST("/settings/test-telegram", middleware.RequireRole("owner"), handler.TestTelegramAlert)
 
 		// 📊 Chi Phí Cố Định & Định Kỳ
 		api.GET("/expenses/recurring", handler.GetRecurringExpenses)
-		api.POST("/expenses/recurring", handler.CreateRecurringExpense)
-		api.PUT("/expenses/recurring/:id", handler.UpdateRecurringExpense)
-		api.DELETE("/expenses/recurring/:id", handler.DeleteRecurringExpense)
-		api.POST("/expenses/recurring/:id/record", handler.RecordRecurringExpenseToCash)
+		api.POST("/expenses/recurring", middleware.RequireRole("owner", "manager"), handler.CreateRecurringExpense)
+		api.PUT("/expenses/recurring/:id", middleware.RequireRole("owner", "manager"), handler.UpdateRecurringExpense)
+		api.DELETE("/expenses/recurring/:id", middleware.RequireRole("owner"), handler.DeleteRecurringExpense)
+		api.POST("/expenses/recurring/:id/record", middleware.RequireRole("owner", "manager"), handler.RecordRecurringExpenseToCash)
 
 		// 👤 CRM Khách Hàng & Tích Điểm
 		api.GET("/customers", handler.GetCustomers)
@@ -237,27 +231,27 @@ func main() {
 		api.POST("/vendors", handler.CreateVendor)
 		api.GET("/vendors/:name/purchase-orders", handler.GetVendorPurchaseOrders)
 
-		// 🔄 Đồng bộ Đơn hàng Ngoại tuyến & Phục hồi dữ liệu
+		// 🔄 Đồng bộ Đơn hàng Ngoại tuyến & Phục hồi dữ liệu (Owner Only for Destructive Restore)
 		api.POST("/sync/orders", handler.SyncOrders)
-		api.POST("/backup/restore", handler.RestoreBackup)
+		api.POST("/backup/restore", middleware.RequireRole("owner"), middleware.RequirePermission("backup.restore"), handler.RestoreBackup)
 
 		// 🏢 Chi Nhánh Cửa Hàng (Merchant Branch)
 		api.GET("/branches", handler.GetTenantBranches)
-		api.PUT("/branches/:branchId", handler.UpdateTenantBranchDetail)
-		api.PATCH("/branches/:branchId", handler.UpdateTenantBranchDetail)
+		api.PUT("/branches/:branchId", middleware.RequireRole("owner"), handler.UpdateTenantBranchDetail)
+		api.PATCH("/branches/:branchId", middleware.RequireRole("owner"), handler.UpdateTenantBranchDetail)
 
 		// 🔐 Phân quyền & Duyệt PIN Quản lý
 		api.POST("/auth/verify-pin", middleware.PinBruteForceMiddleware(5, 2*time.Minute), handler.VerifyPin)
 
 		// 💵 Sổ Quỹ Tiền Mặt Thực Tế (Chi chợ không hóa đơn)
-		api.POST("/cash/transactions", handler.CreateCashTransaction)
-		api.POST("/cash/transactions/:id/void", handler.VoidCashTransaction)
+		api.POST("/cash/transactions", middleware.RequirePermission("cash.transaction.create"), handler.CreateCashTransaction)
+		api.POST("/cash/transactions/:id/void", middleware.RequirePermission("cash.transaction.void"), handler.VoidCashTransaction)
 		api.GET("/cash/transactions", handler.GetCashTransactions)
-		api.GET("/cash/summary", handler.GetCashSummary)
+		api.GET("/cash/summary", middleware.RequirePermission("cash.summary.read"), handler.GetCashSummary)
 
 		// ⏱️ Giao Ca & Đếm Két Tiền Mặt
-		api.POST("/shifts/open", handler.OpenShift)
-		api.POST("/shifts/:id/close", handler.CloseShift)
+		api.POST("/shifts/open", middleware.RequirePermission("shifts.manage"), handler.OpenShift)
+		api.POST("/shifts/:id/close", middleware.RequirePermission("shifts.manage"), handler.CloseShift)
 		api.GET("/shifts/current", handler.GetCurrentShift)
 		api.GET("/shifts/history", handler.GetShiftHistory)
 
@@ -265,14 +259,10 @@ func main() {
 		api.POST("/printer/print-receipt", handler.PrintReceipt)
 		api.POST("/printer/print-kitchen", handler.PrintKitchen)
 		api.POST("/printer/print-cup-labels", handler.PrintCupLabels)
-		api.POST("/printer/open-drawer", handler.OpenDrawer)
-
-		// 🔔 Webhook Báo Có & Loa Chuyển Khoản Ngân Hàng (SePay / Casso / VietQR)
-		api.POST("/webhook/bank-transfer", handler.HandleBankTransferWebhook)
-		api.POST("/webhook/simulate-bank-transfer", handler.SimulateBankTransfer)
+		api.POST("/printer/open-drawer", middleware.RequirePermission("cash.drawer.open"), handler.OpenDrawer)
 
 		// 📊 3 Con Số Vàng & Lợi Nhuận Bỏ Túi Cho Chủ Quán
-		api.GET("/owner/pnl-summary", handler.GetOwnerPnLSummary)
+		api.GET("/owner/pnl-summary", middleware.RequirePermission("reports.pnl.read"), handler.GetOwnerPnLSummary)
 
 		// 🏢 SaaS Platform Landlord / Super Admin APIs
 		saas := api.Group("/saas")
@@ -304,7 +294,7 @@ func main() {
 			saas.PUT("/plans/:planId", handler.UpdateSaaSPlanConfig)
 			saas.POST("/plans/reset", handler.ResetSaaSPlanConfigs)
 
-			// Hệ thống License Key (7, 15, 30 ngày...)
+			// Hệ thống License Key
 			saas.GET("/license-keys", handler.GetLicenseKeys)
 			saas.POST("/license-keys", handler.CreateLicenseKey)
 			saas.POST("/license-keys/redeem", handler.RedeemLicenseKey)

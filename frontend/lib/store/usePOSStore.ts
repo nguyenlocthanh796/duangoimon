@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
 import { Platform } from 'react-native';
 import { useCallback } from 'react';
-import { TableItem, MenuItemWithModifiers, SelectedModifierData, ModifierOption } from '../components/pos';
+import type { TableItem, MenuItemWithModifiers, SelectedModifierData, ModifierOption } from '../components/pos';
 import { isSameModifierConfig, getModifierConfigSignature } from '../utils/cartAlgorithms';
 import {
   CategoryItem,
@@ -307,6 +307,7 @@ export interface StoreSettings {
   enableVoiceAlert?: boolean;
   voiceAlertVolume?: number;
   voiceAlertRate?: number;
+  voiceAlertPitch?: number;
   autoCompleteOrderOnTransfer?: boolean;
   autoPrintBillOnTransfer?: boolean;
   webhookApiKey?: string;
@@ -319,6 +320,11 @@ export interface StoreSettings {
   kdsAutoCleanupMinutes: number;
 
   // Sales & Operations Rules
+  enableTableService?: boolean;
+  enableTakeaway?: boolean;
+  enableDelivery?: boolean;
+  enableVat?: boolean;
+  enableServiceFee?: boolean;
   defaultOrderChannel?: 'dine_in' | 'takeaway';
   autoPrintOnPayment?: boolean;
   requireTableSelection?: boolean;
@@ -458,7 +464,7 @@ export { UNASSIGNED_TABLE };
 export const usePOSStore = create<POSState>()(
   persist(
     (set, get) => ({
-      tenantId: 'tenant_ongchu',
+      tenantId: 'tenant_87fb90f7',
       ...createMenuCatalogSlice(set, get),
       ...createCartSlice(set, get),
       ...createKDSSlice(set, get),
@@ -562,17 +568,40 @@ export const usePOSStore = create<POSState>()(
     const orderCode = `HD-${new Date().toISOString().slice(2, 10).replace(/-/g, '')}-${String(orderIndex).padStart(3, '0')}`;
     const invoiceTime = new Date().toISOString();
 
-    const auditData = generateOrderAuditData({
-      createdAt: invoiceTime,
-      tableName: selectedTable.name,
-      guestCount: selectedTable.guestCount || 1,
-      items: currentCart,
-      paymentMethod,
-      paidAmount,
-      changeAmount,
-      finalTotal,
-      status: 'paid',
-    });
+    const auditData = {
+      openedAt: invoiceTime,
+      printedAt: invoiceTime,
+      paidAt: invoiceTime,
+      rounds: [
+        {
+          roundIndex: 1,
+          orderedAt: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+          items: currentCart.map((c) => ({
+            name: c.item?.name || 'Món',
+            qty: c.qty,
+            unitPrice: c.unitPrice,
+            selectedSize: c.selectedSize,
+            note: c.note,
+          })),
+        },
+      ],
+      auditLogs: [
+        {
+          id: `log_open_${Date.now()}`,
+          time: new Date().toLocaleTimeString('vi-VN'),
+          action: `MỞ BÀN: ${selectedTable.name} (${selectedTable.guestCount || 1} khách)`,
+          actor: 'Phục Vụ',
+          type: 'info' as const,
+        },
+        {
+          id: `log_pay_${Date.now()}`,
+          time: new Date().toLocaleTimeString('vi-VN'),
+          action: `THANH TOÁN: ${finalTotal.toLocaleString('vi-VN')}đ (${paymentMethod})`,
+          actor: 'Thu Ngân',
+          type: 'success' as const,
+        },
+      ],
+    };
 
     const tableVoids = (get().tableVoidLogs || {})[selectedTable.id] || [];
     const customVoidAuditLogs: OrderAuditLog[] = tableVoids.map((v, idx) => ({
@@ -789,32 +818,85 @@ export const usePOSStore = create<POSState>()(
 
   fetchMasterCatalog: async () => {
     if (isCatalogFetching) return false;
-    const tid = get().tenantId;
-    if (!tid || tid === 'saas_master' || tid === 'tenant_saas' || tid === 'tenant_saas_root' || tid === 'unbound') {
+    let tid = get().tenantId;
+    let hasValidToken = false;
+    try {
+      const { useAuthStore } = await import('./useAuthStore');
+      const auth = useAuthStore?.getState?.() || {};
+      if (auth._hasHydrated === false) {
+        isCatalogFetching = false;
+        return false;
+      }
+      if (!tid) {
+        tid = auth.tenant?.id || auth.deviceBinding?.tenantId || get().tenantId || '';
+        if (tid) set({ tenantId: tid });
+      }
+      hasValidToken = Boolean(auth.isAuthenticated && auth.token && !auth.token.startsWith('offline_token_'));
+    } catch {}
+
+    if (!tid) {
+      isCatalogFetching = false;
+      return false;
+    }
+    // 🛡️ Không gửi request tới backend được bảo vệ khi chưa đăng nhập / không có token hợp lệ
+    if (!hasValidToken) {
+      isCatalogFetching = false;
       return false;
     }
     isCatalogFetching = true;
     try {
       const { apiClient } = await import('../api/apiClient');
       const { mapBackendToStoreSettings } = await import('./settingsMapper');
-      const [catRes, prodRes, tableRes, ingRes, areaRes, topRes, setRes] = await Promise.all([
-        apiClient.getCategories().catch(() => ({ success: false, data: null, status: 0 })),
-        apiClient.getProducts().catch(() => ({ success: false, data: null, status: 0 })),
-        apiClient.getTables().catch(() => ({ success: false, data: null, status: 0 })),
-        apiClient.getIngredients().catch(() => ({ success: false, data: null, status: 0 })),
-        apiClient.getAreas().catch(() => ({ success: false, data: null, status: 0 })),
-        apiClient.getToppings().catch(() => ({ success: false, data: null, status: 0 })),
-        apiClient.getSettings().catch(() => ({ success: false, data: null, status: 0 })),
+      const [catRes, prodRes, tableRes, ingRes, areaRes, topRes, setRes, orderRes, cashRes, shiftRes, branchRes] = await Promise.all([
+        apiClient.getCategories().catch((e) => ({ success: false, data: null, status: 0, error: String(e) })),
+        apiClient.getProducts().catch((e) => ({ success: false, data: null, status: 0, error: String(e) })),
+        apiClient.getTables().catch((e) => ({ success: false, data: null, status: 0, error: String(e) })),
+        apiClient.getIngredients().catch((e) => ({ success: false, data: null, status: 0, error: String(e) })),
+        apiClient.getAreas().catch((e) => ({ success: false, data: null, status: 0, error: String(e) })),
+        apiClient.getToppings().catch((e) => ({ success: false, data: null, status: 0, error: String(e) })),
+        apiClient.getSettings().catch((e) => ({ success: false, data: null, status: 0, error: String(e) })),
+        apiClient.getOrders().catch((e) => ({ success: false, data: null, status: 0, error: String(e) })),
+        apiClient.getCashTransactions().catch((e) => ({ success: false, data: null, status: 0, error: String(e) })),
+        apiClient.getCurrentShift().catch((e) => ({ success: false, data: null, status: 0, error: String(e) })),
+        apiClient.get('/api/v1/branches').catch((e) => ({ success: false, data: null, status: 0, error: String(e) })),
       ]);
 
-      // Nếu tenant không tồn tại trên VPS (404 Not Found), tự động dọn session cũ
-      if (catRes.status === 404 || prodRes.status === 404 || setRes.status === 404) {
+      const extractArray = (res: any) => {
+        if (!res || !res.success) return [];
+        if (Array.isArray(res.data)) return res.data;
+        if (res.data && Array.isArray(res.data.data)) return res.data.data;
+        if (res.data && Array.isArray(res.data.branches)) return res.data.branches;
+        return [];
+      };
+
+      const rawCats = extractArray(catRes);
+      const rawProds = extractArray(prodRes);
+      const rawTables = extractArray(tableRes);
+      const rawIngs = extractArray(ingRes);
+      const rawAreas = extractArray(areaRes);
+      const rawTops = extractArray(topRes);
+      const rawOrders = extractArray(orderRes);
+      const rawCash = extractArray(cashRes);
+      const rawBranches = extractArray(branchRes);
+
+      if (rawBranches.length > 0) {
         try {
           const { useAuthStore } = await import('./useAuthStore');
-          useAuthStore.getState().logout?.();
-        } catch {}
-        set({ tenantId: '' });
-        return false;
+          const mappedBranches = rawBranches.map((b: any) => ({
+            id: b.id,
+            code: b.code || b.id,
+            name: b.name,
+            address: b.address || '',
+            phone: b.phone || '',
+            managerName: b.manager_name || '',
+          }));
+          const curActiveBranchId = useAuthStore.getState().activeBranchId;
+          const matchedBranch = mappedBranches.find((b: any) => b.id === curActiveBranchId) || mappedBranches[0];
+          useAuthStore.setState({
+            branches: mappedBranches,
+            activeBranchId: matchedBranch.id,
+          });
+        } catch (_) {}
       }
 
       const updates: any = {};
@@ -823,8 +905,94 @@ export const usePOSStore = create<POSState>()(
         updates.storeSettings = mapBackendToStoreSettings(setRes.data, get().storeSettings);
       }
 
-      if (catRes.success && Array.isArray(catRes.data) && catRes.data.length > 0) {
-        updates.categories = catRes.data.map((c: any) => ({
+      if (rawOrders.length > 0) {
+        const mappedOrders = rawOrders.map((o: any) => ({
+          id: o.id || o.code,
+          orderCode: o.order_code || o.code || (o.id ? `HD-${String(o.id).slice(-6)}` : 'HD-POS'),
+          tableId: o.table_id || o.tableId || 'takeaway',
+          tableName: o.table_name || o.tableName || (o.table_id ? `Bàn ${o.table_id}` : 'Mang Về'),
+          guestCount: o.guest_count || o.guestCount || 1,
+          items: (o.items || []).map((it: any) => ({
+            cartItemId: it.id || `ci_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+            item: {
+              id: it.product_id || it.productId || it.id,
+              name: it.product_name || it.productName || it.name || 'Món',
+              price: it.unit_price || it.unitPrice || it.price || 0,
+              costPrice: it.cost_price || it.costPrice || 0,
+              unit: it.unit || 'Phần',
+              category: it.category || 'Món',
+              station: it.station || 'bar',
+            },
+            qty: it.quantity || it.qty || 1,
+            unitPrice: it.unit_price || it.unitPrice || it.price || 0,
+            selectedSize: it.selected_size || it.selectedSize,
+            selectedToppings: it.selected_toppings || it.selectedToppings || [],
+            note: it.note || '',
+            sentToKitchen: true,
+          })),
+          subtotal: o.subtotal || o.total_amount || 0,
+          discountAmount: o.discount_amount || 0,
+          vatAmount: o.vat_amount || 0,
+          finalTotal: o.final_amount || o.total_amount || 0,
+          paidAmount: o.paid_amount || o.final_amount || o.total_amount || 0,
+          changeAmount: o.change_amount || 0,
+          paymentMethod: (o.payment_method === 'chuyen_khoan_vietqr' ? 'vietqr' : (o.payment_method || 'tien_mat')) as any,
+          status: o.status === 'da_huy' || o.status === 'voided' ? ('voided' as const) : ('paid' as const),
+          createdAt: o.created_at || o.createdAt || new Date().toISOString(),
+          cashierName: o.cashier_name || o.created_by || 'Thu Ngân',
+          branchId: o.branch_id || o.branchId,
+        }));
+        // Deduplicating merge: ưu tiên bản ghi mới nhất từ server nhưng giữ lại đơn local chưa sync
+        const currentOrders = get().orderHistory || [];
+        const orderMap = new Map<string, any>();
+        currentOrders.forEach((ord: any) => orderMap.set(ord.id, ord));
+        mappedOrders.forEach((ord: any) => orderMap.set(ord.id, ord));
+        updates.orderHistory = Array.from(orderMap.values());
+      }
+
+      if (rawCash.length > 0) {
+        const mappedCash = rawCash.map((c: any) => ({
+          id: c.id,
+          type: c.type || (c.amount >= 0 ? 'thu' : 'chi'),
+          amount: Math.abs(c.amount || 0),
+          category: c.category || 'Chi Chợ',
+          description: c.description || c.reason || c.note || '',
+          performedBy: c.performed_by || c.created_by || c.performedBy || 'Chủ Quán',
+          createdAt: c.created_at || c.timestamp || new Date().toISOString(),
+          time: c.created_at ? new Date(c.created_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : '08:00',
+          branchId: c.branch_id || c.branchId,
+          status: c.status || 'completed',
+          paymentMethod: c.payment_method || 'tien_mat',
+          expenseType: c.expense_type,
+          voidReason: c.void_reason,
+          voidedAt: c.voided_at,
+          voidedBy: c.voided_by,
+        }));
+        // Deduplicating merge: giữ cả giao dịch local và server
+        const currentCash = get().cashTransactions || [];
+        const cashMap = new Map<string, any>();
+        currentCash.forEach((tx: any) => cashMap.set(tx.id, tx));
+        mappedCash.forEach((tx: any) => cashMap.set(tx.id, tx));
+        updates.cashTransactions = Array.from(cashMap.values());
+      }
+
+      if (shiftRes && shiftRes.success && shiftRes.data) {
+        const s = shiftRes.data;
+        if (s && s.id && s.status === 'dang_mo') {
+          updates.activeShift = {
+            id: s.id,
+            shiftName: s.shift_name || 'Ca Sáng (07:00 - 14:30)',
+            cashierName: s.cashier_name || s.opened_by || 'Thu Ngân',
+            openedAt: s.opened_at ? new Date(s.opened_at).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }) : '07:00',
+            startingCash: s.starting_cash || s.initial_cash || 500000,
+            status: 'open',
+            note: s.note,
+          };
+        }
+      }
+
+      if (rawCats.length > 0) {
+        updates.categories = rawCats.map((c: any) => ({
           id: c.id,
           name: c.name,
           icon: c.icon || 'food-outline',
@@ -836,8 +1004,8 @@ export const usePOSStore = create<POSState>()(
       const catMap = new Map<string, string>();
       currentCats.forEach((c: any) => catMap.set(c.id, c.name));
 
-      if (prodRes.success && Array.isArray(prodRes.data) && prodRes.data.length > 0) {
-        updates.menuItems = prodRes.data.map((p: any) => {
+      if (rawProds.length > 0) {
+        updates.menuItems = rawProds.map((p: any) => {
           const resolvedCat = p.category || (p.category_id ? catMap.get(p.category_id) : undefined) || 'Khác';
           return {
             id: p.id,
@@ -856,9 +1024,9 @@ export const usePOSStore = create<POSState>()(
         });
       }
 
-      if (tableRes.success && Array.isArray(tableRes.data) && tableRes.data.length > 0) {
+      if (rawTables.length > 0) {
         const currentCarts = get().tableCarts || {};
-        updates.tables = tableRes.data.map((t: any) => {
+        updates.tables = rawTables.map((t: any) => {
           const cartForTable = currentCarts[t.id] || [];
           const hasCart = cartForTable.length > 0;
           const cartTotal = cartForTable.reduce((s: number, c: any) => s + (c.unitPrice || 0) * (c.qty || 1), 0);
@@ -882,10 +1050,7 @@ export const usePOSStore = create<POSState>()(
         });
       }
 
-      const rawAreas = Array.isArray(areaRes.data)
-        ? areaRes.data
-        : (Array.isArray(areaRes.data?.data) ? areaRes.data.data : []);
-      if (areaRes.success && rawAreas.length > 0) {
+      if (rawAreas.length > 0) {
         updates.areas = rawAreas.map((a: any) => ({
           id: a.id,
           name: a.name,
@@ -893,28 +1058,48 @@ export const usePOSStore = create<POSState>()(
         }));
       }
 
-      const rawToppings = Array.isArray(topRes.data)
-        ? topRes.data
-        : (Array.isArray(topRes.data?.data) ? topRes.data.data : []);
-      if (topRes.success && rawToppings.length > 0) {
-        updates.toppings = rawToppings.map((t: any) => ({
+      if (rawTops.length > 0) {
+        updates.toppings = rawTops.map((t: any) => ({
           id: t.id,
           name: t.name,
           priceDelta: t.price_delta ?? t.priceDelta ?? 0,
         }));
       }
 
-      if (ingRes.success && Array.isArray(ingRes.data) && ingRes.data.length > 0) {
-        updates.inventoryItems = ingRes.data.map((i: any) => ({
+      if (rawIngs.length > 0) {
+        updates.inventoryItems = rawIngs.map((i: any) => ({
           id: i.id,
-          sku: i.code || i.sku || i.id,
+          sku: i.sku || i.code || i.id,
           name: i.name,
           category: i.category || 'nguyen_lieu',
           unit: i.unit,
           currentStock: i.current_stock ?? i.currentStock ?? 0,
           minStockAlert: i.min_stock ?? i.minStockAlert ?? 0,
           costPrice: i.avg_cost_price ?? i.costPrice ?? 0,
+          lastCostPrice: i.last_cost_price ?? i.lastCostPrice ?? 0,
+          supplierName: i.supplier_name || i.supplierName || '',
         }));
+      }
+
+      if (!updates.menuItems || updates.menuItems.length === 0) {
+        const { INITIAL_MENU_ITEMS, INITIAL_CATEGORIES } = await import('../constants/menuData');
+        if ((get().menuItems || []).length === 0) {
+          updates.menuItems = INITIAL_MENU_ITEMS;
+          updates.categories = INITIAL_CATEGORIES;
+        }
+      }
+
+      if (!updates.tables || updates.tables.length === 0) {
+        if ((get().tables || []).length === 0) {
+          updates.tables = [
+            { id: 'tbl_01', name: 'Bàn 01', area: 'Tầng Trệt', capacity: 4, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+            { id: 'tbl_02', name: 'Bàn 02', area: 'Tầng Trệt', capacity: 4, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+            { id: 'tbl_03', name: 'Bàn 03', area: 'Tầng Trệt', capacity: 6, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+            { id: 'tbl_04', name: 'Bàn 04 (VIP)', area: 'Tầng Trệt', capacity: 8, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+            { id: 'tbl_05', name: 'Bàn Lầu 1', area: 'Lầu 1 (Máy Lạnh)', capacity: 4, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+            { id: 'tbl_06', name: 'Bàn Lầu 2', area: 'Lầu 1 (Máy Lạnh)', capacity: 4, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+          ];
+        }
       }
 
       if (Object.keys(updates).length > 0) {
@@ -1041,6 +1226,7 @@ export const usePOSStore = create<POSState>()(
               viewMode: 'tables',
               orderChannel: 'dine_in',
             });
+            get().fetchMasterCatalog().catch(() => {});
             return;
           }
         }
@@ -1049,6 +1235,7 @@ export const usePOSStore = create<POSState>()(
 
     // Brand new tenant or clean slate
     get().resetToCleanSlate(tenantId, tenantName);
+    get().fetchMasterCatalog().catch(() => {});
   },
 
   // 🔔 Webhook Báo Có & Loa Chuyển Khoản Ngân Hàng
@@ -1103,6 +1290,13 @@ export const usePOSStore = create<POSState>()(
       onRehydrateStorage: () => (state) => {
         if (!state) return;
 
+        // 🌟 Tự động nạp danh mục, món ăn và bàn ăn nếu chưa có
+        const currentTables = usePOSStore.getState().tables || [];
+        const currentMenuItems = usePOSStore.getState().menuItems || [];
+        if (currentTables.length === 0 || currentMenuItems.length === 0) {
+          usePOSStore.getState().populateSampleMenu?.();
+        }
+
         // 🌟 Khi khởi động/reload app: Luôn mở mặc định ở màn hình Sơ Đồ Bàn
         usePOSStore.setState({ viewMode: 'tables' });
 
@@ -1128,6 +1322,15 @@ export const usePOSStore = create<POSState>()(
         orderHistory: state.orderHistory,
         cashTransactions: state.cashTransactions,
         shiftHistory: state.shiftHistory,
+        activeShift: state.activeShift,
+        inventoryItems: state.inventoryItems,
+        inventoryTransactions: state.inventoryTransactions,
+        storeSettings: state.storeSettings,
+        tableCarts: state.tableCarts,
+        tableDiscounts: state.tableDiscounts,
+        tableVoidLogs: state.tableVoidLogs,
+        kdsOrders: state.kdsOrders,
+        customers: state.customers,
       }),
     }
   )
@@ -1198,6 +1401,19 @@ export const useOutOfStockProductIds = () => usePOSStore((s) => s.outOfStockProd
 export const useMenuItems = () => usePOSStore((s) => s.menuItems);
 export const useKDSOrders = () => usePOSStore((s) => s.kdsOrders);
 export const useOrderHistory = () => usePOSStore((s) => s.orderHistory);
+export const useTodayOrderHistoryCount = () =>
+  usePOSStore((s) => {
+    const now = new Date();
+    return s.orderHistory.filter((o) => {
+      if (!o.createdAt) return false;
+      const d = new Date(o.createdAt);
+      return (
+        d.getFullYear() === now.getFullYear() &&
+        d.getMonth() === now.getMonth() &&
+        d.getDate() === now.getDate()
+      );
+    }).length;
+  });
 export const useStoreSettings = () => usePOSStore((s) => s.storeSettings);
 export const useIsRailCollapsed = () => usePOSStore((s) => s.isRailCollapsed);
 export const usePinnedItemIds = () => usePOSStore((s) => s.pinnedItemIds);

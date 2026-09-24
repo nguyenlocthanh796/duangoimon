@@ -9,7 +9,7 @@ import {
 import { MaterialCommunityIcons as Icon } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../../theme';
-import { AppText, useAppToast } from '../../components/ui';
+import { AppText, useAppToast, EmptyState } from '../../components/ui';
 import {
   StaffMember,
   ROLE_CONFIG,
@@ -23,6 +23,9 @@ interface StaffPayrollTabProps {
   staffList: StaffMember[];
   isWide: boolean;
   isDesktopLarge?: boolean;
+  selectedStaffId?: string;
+  isMasterDetail?: boolean;
+  onOpenAdd?: () => void;
   onSelectStaff: (staff: StaffMember) => void;
   onOpenAdvance: (staff: StaffMember) => void;
   onOpenBonusDeduction: (staff: StaffMember) => void;
@@ -36,6 +39,9 @@ export function StaffPayrollTab({
   staffList,
   isWide,
   isDesktopLarge,
+  selectedStaffId,
+  isMasterDetail,
+  onOpenAdd,
   onSelectStaff,
   onOpenAdvance,
   onOpenBonusDeduction,
@@ -288,20 +294,38 @@ export function StaffPayrollTab({
       <View
         style={[
           s.listWrapper,
-          isWide && { flexDirection: 'row', flexWrap: 'wrap', gap: 12, paddingHorizontal: 16, paddingTop: 12 },
+          isWide && {
+            flexDirection: isMasterDetail ? 'column' : 'row',
+            flexWrap: isMasterDetail ? 'nowrap' : 'wrap',
+            gap: isMasterDetail ? 8 : 12,
+            paddingHorizontal: isMasterDetail ? 12 : 16,
+            paddingTop: 12,
+          },
         ]}
       >
         {filteredStaffList.length === 0 ? (
-          <View style={[s.emptyBox, { backgroundColor: theme.surface.card, borderColor: theme.border.subtle }]}>
-            <Icon name="cash-check" size={36} color={theme.text.muted} />
-            <AppText variant="sm" color={theme.text.muted} style={{ marginTop: 6 }}>
-              {filterType === 'unpaid' ? 'Đã chi hết lương cho nhân sự' : 'Không có dữ liệu bảng lương'}
-            </AppText>
-          </View>
+          staffList.length === 0 ? (
+            <EmptyState
+              style={{ width: '100%', paddingVertical: 24 }}
+              icon="cash-check"
+              message="Chưa có dữ liệu bảng lương"
+              description="Thêm nhân viên và ghi nhận công làm việc để tạo bảng lương"
+              actionText="+ Thêm Nhân Viên"
+              onAction={onOpenAdd}
+            />
+          ) : (
+            <View style={[s.emptyBox, { backgroundColor: theme.surface.card, borderColor: theme.border.subtle, width: '100%' }]}>
+              <Icon name="cash-check" size={36} color={theme.text.muted} />
+              <AppText variant="sm" color={theme.text.muted} style={{ marginTop: 6 }}>
+                {filterType === 'unpaid' ? 'Đã chi hết lương cho nhân sự' : 'Không có dữ liệu bảng lương'}
+              </AppText>
+            </View>
+          )
         ) : (
           filteredStaffList.map((staff) => {
             const roleInfo = ROLE_CONFIG[staff.role];
             const calc = calculateStaffSalary(staff);
+            const isSelected = selectedStaffId === staff.id;
 
             return (
               <TouchableOpacity
@@ -318,12 +342,22 @@ export function StaffPayrollTab({
                 }}
                 style={[
                   s.payrollCard,
-                  isWide && { width: isDesktopLarge ? '32.4%' : '49.2%', borderRadius: 12, borderWidth: 1 },
+                  isWide && {
+                    width: isMasterDetail ? '100%' : isDesktopLarge ? '32.4%' : '49.2%',
+                    borderRadius: 10,
+                    borderWidth: 1,
+                  },
                   {
-                    backgroundColor: theme.surface.card,
-                    borderColor: theme.border.subtle,
-                    borderBottomColor: theme.border.subtle,
-                    borderBottomWidth: StyleSheet.hairlineWidth,
+                    backgroundColor: isSelected
+                      ? isDark
+                        ? 'rgba(180, 83, 9, 0.15)'
+                        : '#FEF3C7'
+                      : theme.surface.card,
+                    borderColor: isSelected ? theme.brand.accent : theme.border.subtle,
+                    borderBottomColor: isSelected ? theme.brand.accent : theme.border.subtle,
+                    borderBottomWidth: isWide ? 1 : StyleSheet.hairlineWidth,
+                    borderLeftWidth: isSelected ? 4 : isWide ? 1 : 0,
+                    borderLeftColor: isSelected ? theme.brand.accent : theme.border.subtle,
                   },
                 ]}
               >
@@ -461,9 +495,9 @@ const s = StyleSheet.create({
     flexShrink: 0,
   },
   emptyBox: {
+    width: '100%',
     alignItems: 'center',
     paddingVertical: 28,
-    marginHorizontal: 16,
     marginTop: 12,
     borderRadius: 10,
     borderWidth: StyleSheet.hairlineWidth,

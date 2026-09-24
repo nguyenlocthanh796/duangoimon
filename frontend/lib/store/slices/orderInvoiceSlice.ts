@@ -73,6 +73,8 @@ export const DEFAULT_STORE_SETTINGS: StoreSettings = {
   requireTableSelection: false,
   allowNegativeStock: true,
   requirePinForVoid: true,
+  enableHaptics: true,
+  enableSound: true,
   highDiscountThreshold: 20,
   kdsAutoCleanupMinutes: 30,
   cfdWelcomeMessage: 'Kính Chào Quý Khách!',
@@ -115,6 +117,12 @@ export const createOrderInvoiceSlice = (set: any, get: any): OrderInvoiceSlice =
         : o
     );
     set({ orderHistory: updated });
+
+    // Đồng bộ hủy đơn xuống backend nếu đơn đã lưu trên server
+    import('../../api/apiClient').then(({ apiClient }) => {
+      apiClient.voidOrder(orderId, reason).catch(() => {});
+    }).catch(() => {});
+
     return true;
   },
 

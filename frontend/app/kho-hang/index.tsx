@@ -469,242 +469,260 @@ export default function InventoryScreen() {
               ref={formScrollRef}
               overScrollMode="never"
               contentContainerStyle={{
-                paddingHorizontal: isWide ? 16 : 14,
-                paddingTop: 16,
+                paddingHorizontal: isWide ? 24 : 14,
+                paddingTop: isWide ? 24 : 16,
                 paddingBottom: 110,
-                maxWidth: isWide ? 680 : undefined,
+                maxWidth: isWide ? 960 : undefined,
                 alignSelf: isWide ? 'center' : undefined,
                 width: '100%',
               }}
               showsVerticalScrollIndicator={false}
               keyboardShouldPersistTaps="handled"
             >
-              {/* PHẦN 1: THÔNG TIN MẶT HÀNG CƠ BẢN */}
-              <View style={{ marginBottom: 16 }}>
-                <AppText variant="xs" weight="bold" color="muted" style={{ letterSpacing: 0.5, marginBottom: 10 }}>
-                  THÔNG TIN MẶT HÀNG CƠ BẢN
-                </AppText>
-
-                {/* Tên mặt hàng */}
-                <View style={{ marginBottom: 14 }}>
-                  <AppText variant="md" weight="bold" color="primary" style={{ marginBottom: 6 }}>
-                    Tên mặt hàng / nguyên vật liệu *
-                  </AppText>
-                  <TextInput
-                    value={formName}
-                    onChangeText={setFormName}
-                    placeholder="VD: Cà Phê Hạt Mộc Arabica/Robusta"
-                    placeholderTextColor={theme.text.muted}
-                    style={[
-                      s.formInput,
-                      {
-                        backgroundColor: theme.surface.card,
-                        borderColor: theme.border.default,
-                        color: theme.text.primary,
-                      },
-                    ]}
-                  />
-                  <AppText variant="xs" color="muted" style={{ marginTop: 4 }}>
-                    Ví dụ: Cà Phê Hạt Mộc, Siro Đào, Ly Nhựa 500ml...
-                  </AppText>
-                </View>
-
-                {/* Phân loại mặt hàng */}
-                <View style={{ marginBottom: 14 }}>
-                  <AppText variant="md" weight="bold" color="primary" style={{ marginBottom: 6 }}>
-                    Phân Loại Mặt Hàng
-                  </AppText>
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
-                    {[
-                      { id: 'nguyen_lieu' as const, label: 'Nguyên Liệu' },
-                      { id: 'dong_goi' as const, label: 'Đóng Gói / Bao Bì' },
-                      { id: 'hang_hoa_ban_ngay' as const, label: 'Bán Liền' },
-                    ].map((p) => {
-                      const isSel = formCategory === p.id;
-                      return (
-                        <TouchableOpacity
-                          key={p.id}
-                          activeOpacity={0.7}
-                          onPress={() => {
-                            playTapSound();
-                            setFormCategory(p.id);
-                            if (!editingItem) {
-                              handleAutoGenerateSku(p.id);
-                            }
-                          }}
-                          style={[
-                            s.chipPill,
-                            {
-                              paddingHorizontal: 14,
-                              height: 40,
-                              backgroundColor: isSel ? theme.brand.primaryBg : theme.surface.card,
-                              borderColor: isSel ? theme.brand.accent : theme.border.subtle,
-                            },
-                          ]}
-                        >
-                          <AppText
-                            variant="sm"
-                            weight={isSel ? 'bold' : 'medium'}
-                            color={isSel ? 'accent' : 'primary'}
-                          >
-                            {p.label}
-                          </AppText>
-                        </TouchableOpacity>
-                      );
-                    })}
-                  </ScrollView>
-                </View>
-
-                {/* Hàng ghép SKU & ĐVT */}
-                <View style={{ flexDirection: 'row', gap: 10, marginBottom: 14 }}>
-                  <View style={{ flex: 1 }}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                      <AppText variant="md" weight="bold" color="primary">Mã SKU</AppText>
-                      <TouchableOpacity
-                        onPress={() => handleAutoGenerateSku(formCategory)}
-                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                        accessibilityRole="button"
-                        accessibilityLabel="Tạo mã SKU tự động"
-                        style={{
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          gap: 4,
-                          backgroundColor: theme.surface.card,
-                          paddingHorizontal: 8,
-                          height: 32,
-                          borderRadius: 6,
-                          borderWidth: 1,
-                          borderColor: theme.border.subtle,
-                        }}
-                      >
-                        <Icon name="dice-5-outline" size={14} color={theme.brand.accent} />
-                        <AppText variant="xs" weight="bold" color="accent">Tạo Mã</AppText>
-                      </TouchableOpacity>
-                    </View>
-                    <TextInput
-                      value={formSku}
-                      onChangeText={setFormSku}
-                      placeholder="VD: NL-355"
-                      placeholderTextColor={theme.text.muted}
-                      style={[s.formInput, { backgroundColor: theme.surface.card, borderColor: theme.border.default, color: theme.text.primary }]}
-                    />
-                  </View>
-
-                  <View style={{ flex: 1 }}>
-                    <AppText variant="md" weight="bold" color="primary" style={{ marginBottom: 6 }}>
-                      Đơn Vị Tính
+              <View
+                style={[
+                  isWide && {
+                    backgroundColor: theme.surface.card,
+                    borderRadius: 16,
+                    borderWidth: 1,
+                    borderColor: theme.border.subtle,
+                    padding: 24,
+                  },
+                ]}
+              >
+                {/* 2-Column Responsive Layout on Desktop */}
+                <View style={isWide ? { flexDirection: 'row', gap: 24 } : { flexDirection: 'column' }}>
+                  {/* CỘT 1: THÔNG TIN MẶT HÀNG CƠ BẢN */}
+                  <View style={isWide ? { flex: 1.15 } : { marginBottom: 16 }}>
+                    <AppText variant="xs" weight="bold" color="muted" style={{ letterSpacing: 0.5, marginBottom: 12 }}>
+                      THÔNG TIN MẶT HÀNG CƠ BẢN
                     </AppText>
-                    <TextInput
-                      value={formUnit}
-                      onChangeText={setFormUnit}
-                      placeholder="kg, lon, hộp..."
-                      placeholderTextColor={theme.text.muted}
-                      style={[s.formInput, { backgroundColor: theme.surface.card, borderColor: theme.border.default, color: theme.text.primary }]}
-                    />
-                  </View>
-                </View>
 
-                {/* ĐVT phổ biến */}
-                <View>
-                  <AppText variant="xs" color="muted" style={{ marginBottom: 6 }}>
-                    Chọn nhanh ĐVT phổ biến:
-                  </AppText>
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
-                    {['kg', 'g', 'hộp', 'lon', 'bọc', 'gói', 'cây', 'bao', 'chai', 'cái', 'lít', 'ml', 'thùng'].map((u) => (
-                      <TouchableOpacity
-                        key={u}
-                        activeOpacity={0.7}
-                        onPress={() => {
-                          playTapSound();
-                          setFormUnit(u);
-                        }}
+                    {/* Tên mặt hàng */}
+                    <View style={{ marginBottom: 14 }}>
+                      <AppText variant="md" weight="bold" color="primary" style={{ marginBottom: 6 }}>
+                        Tên mặt hàng / nguyên vật liệu *
+                      </AppText>
+                      <TextInput
+                        value={formName}
+                        onChangeText={setFormName}
+                        placeholder="VD: Cà Phê Hạt Mộc Arabica/Robusta"
+                        placeholderTextColor={theme.text.muted}
                         style={[
-                          s.unitChip,
+                          s.formInput,
                           {
-                            height: 36,
-                            paddingHorizontal: 12,
-                            backgroundColor: formUnit === u ? theme.brand.primaryBg : theme.surface.card,
-                            borderColor: formUnit === u ? theme.brand.accent : theme.border.subtle,
+                            backgroundColor: isWide ? theme.surface.header : theme.surface.card,
+                            borderColor: theme.border.default,
+                            color: theme.text.primary,
                           },
                         ]}
-                      >
-                        <AppText
-                          variant="sm"
-                          weight={formUnit === u ? 'bold' : 'normal'}
-                          color={formUnit === u ? 'accent' : 'primary'}
-                        >
-                          {u}
-                        </AppText>
-                      </TouchableOpacity>
-                    ))}
-                  </ScrollView>
-                </View>
-              </View>
-
-              {/* SEAMLESS DIVIDER */}
-              <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: theme.border.subtle, marginBottom: 16 }} />
-
-              {/* PHẦN 2: TỒN KHO & ĐƠN GIÁ VỐN */}
-              <View style={{ marginBottom: 16 }}>
-                <AppText variant="xs" weight="bold" color="muted" style={{ letterSpacing: 0.5, marginBottom: 10 }}>
-                  TỒN KHO & ĐƠN GIÁ VỐN
-                </AppText>
-
-                <View style={{ flexDirection: 'row', gap: 10, marginBottom: 14 }}>
-                  <View style={{ flex: 1 }}>
-                    <AppText variant="md" weight="bold" color="primary" style={{ marginBottom: 6 }}>
-                      Tồn Ban Đầu ({formUnit || 'đv'})
-                    </AppText>
-                    <TextInput
-                      value={formCurrentStock}
-                      onChangeText={setFormCurrentStock}
-                      keyboardType="numeric"
-                      style={[s.formInput, { backgroundColor: theme.surface.card, borderColor: theme.border.default, color: theme.text.primary }]}
-                    />
-                  </View>
-
-                  <View style={{ flex: 1 }}>
-                    <AppText variant="md" weight="bold" color="primary" style={{ marginBottom: 6 }}>
-                      Ngưỡng Báo Hết
-                    </AppText>
-                    <TextInput
-                      value={formMinStockAlert}
-                      onChangeText={setFormMinStockAlert}
-                      keyboardType="numeric"
-                      style={[s.formInput, { backgroundColor: theme.surface.card, borderColor: theme.border.default, color: theme.text.primary }]}
-                    />
-                  </View>
-                </View>
-
-                <View style={{ flexDirection: 'row', gap: 10 }}>
-                  <View style={{ flex: 1 }}>
-                    <AppText variant="md" weight="bold" color="primary" style={{ marginBottom: 6 }}>
-                      Đơn Giá Nhập (VND)
-                    </AppText>
-                    <TextInput
-                      value={formCostPrice}
-                      onChangeText={setFormCostPrice}
-                      keyboardType="numeric"
-                      style={[s.formInput, { backgroundColor: theme.surface.card, borderColor: theme.border.default, color: theme.text.primary }]}
-                    />
-                    {formCostPrice ? (
-                      <AppText variant="sm" weight="medium" color="accent" tabularNums style={{ marginTop: 4 }}>
-                        = {formatCurrency(parseInt(formCostPrice.replace(/\D/g, ''), 10) || 0)} đ / {formUnit || 'đv'}
+                      />
+                      <AppText variant="xs" color="muted" style={{ marginTop: 4 }}>
+                        Ví dụ: Cà Phê Hạt Mộc, Siro Đào, Ly Nhựa 500ml...
                       </AppText>
-                    ) : null}
+                    </View>
+
+                    {/* Phân loại mặt hàng */}
+                    <View style={{ marginBottom: 14 }}>
+                      <AppText variant="md" weight="bold" color="primary" style={{ marginBottom: 6 }}>
+                        Phân Loại Mặt Hàng
+                      </AppText>
+                      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+                        {[
+                          { id: 'nguyen_lieu' as const, label: 'Nguyên Liệu' },
+                          { id: 'dong_goi' as const, label: 'Đóng Gói / Bao Bì' },
+                          { id: 'hang_hoa_ban_ngay' as const, label: 'Bán Liền' },
+                        ].map((p) => {
+                          const isSel = formCategory === p.id;
+                          return (
+                            <TouchableOpacity
+                              key={p.id}
+                              activeOpacity={0.7}
+                              onPress={() => {
+                                playTapSound();
+                                setFormCategory(p.id);
+                                if (!editingItem) {
+                                  handleAutoGenerateSku(p.id);
+                                }
+                              }}
+                              style={[
+                                s.chipPill,
+                                {
+                                  paddingHorizontal: 14,
+                                  height: 40,
+                                  backgroundColor: isSel ? theme.brand.primaryBg : (isWide ? theme.surface.card : theme.surface.header),
+                                  borderColor: isSel ? theme.brand.accent : theme.border.subtle,
+                                },
+                              ]}
+                            >
+                              <AppText
+                                variant="sm"
+                                weight={isSel ? 'bold' : 'medium'}
+                                color={isSel ? 'accent' : 'primary'}
+                              >
+                                {p.label}
+                              </AppText>
+                            </TouchableOpacity>
+                          );
+                        })}
+                      </ScrollView>
+                    </View>
+
+                    {/* Hàng ghép SKU & ĐVT */}
+                    <View style={{ flexDirection: 'row', gap: 10, marginBottom: 14 }}>
+                      <View style={{ flex: 1.2 }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                          <AppText variant="md" weight="bold" color="primary">Mã SKU</AppText>
+                          <TouchableOpacity
+                            onPress={() => handleAutoGenerateSku(formCategory)}
+                            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                            accessibilityRole="button"
+                            accessibilityLabel="Tạo mã SKU tự động"
+                            style={{
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              gap: 4,
+                              backgroundColor: theme.surface.card,
+                              paddingHorizontal: 8,
+                              height: 30,
+                              borderRadius: 6,
+                              borderWidth: 1,
+                              borderColor: theme.border.subtle,
+                            }}
+                          >
+                            <Icon name="dice-5-outline" size={14} color={theme.brand.accent} />
+                            <AppText variant="xs" weight="bold" color="accent">Tạo Mã</AppText>
+                          </TouchableOpacity>
+                        </View>
+                        <TextInput
+                          value={formSku}
+                          onChangeText={setFormSku}
+                          placeholder="VD: NL-355"
+                          placeholderTextColor={theme.text.muted}
+                          style={[s.formInput, { backgroundColor: isWide ? theme.surface.header : theme.surface.card, borderColor: theme.border.default, color: theme.text.primary }]}
+                        />
+                      </View>
+
+                      <View style={{ flex: 1 }}>
+                        <AppText variant="md" weight="bold" color="primary" style={{ marginBottom: 6 }}>
+                          Đơn Vị Tính
+                        </AppText>
+                        <TextInput
+                          value={formUnit}
+                          onChangeText={setFormUnit}
+                          placeholder="kg, lon, hộp..."
+                          placeholderTextColor={theme.text.muted}
+                          style={[s.formInput, { backgroundColor: isWide ? theme.surface.header : theme.surface.card, borderColor: theme.border.default, color: theme.text.primary }]}
+                        />
+                      </View>
+                    </View>
+
+                    {/* ĐVT phổ biến */}
+                    <View>
+                      <AppText variant="xs" color="muted" style={{ marginBottom: 6 }}>
+                        Chọn nhanh ĐVT phổ biến:
+                      </AppText>
+                      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
+                        {['kg', 'g', 'hộp', 'lon', 'bọc', 'gói', 'cây', 'bao', 'chai', 'cái', 'lít', 'ml', 'thùng'].map((u) => (
+                          <TouchableOpacity
+                            key={u}
+                            activeOpacity={0.7}
+                            onPress={() => {
+                              playTapSound();
+                              setFormUnit(u);
+                            }}
+                            style={[
+                              s.unitChip,
+                              {
+                                height: 36,
+                                paddingHorizontal: 12,
+                                backgroundColor: formUnit === u ? theme.brand.primaryBg : (isWide ? theme.surface.card : theme.surface.header),
+                                borderColor: formUnit === u ? theme.brand.accent : theme.border.subtle,
+                              },
+                            ]}
+                          >
+                            <AppText
+                              variant="sm"
+                              weight={formUnit === u ? 'bold' : 'normal'}
+                              color={formUnit === u ? 'accent' : 'primary'}
+                            >
+                              {u}
+                            </AppText>
+                          </TouchableOpacity>
+                        ))}
+                      </ScrollView>
+                    </View>
                   </View>
 
-                  <View style={{ flex: 1 }}>
-                    <AppText variant="md" weight="bold" color="primary" style={{ marginBottom: 6 }}>
-                      Nhà Cung Cấp
+                  {/* CỘT 2: TỒN KHO & ĐƠN GIÁ VỐN */}
+                  <View style={isWide ? { flex: 1, borderLeftWidth: 1, borderLeftColor: theme.border.subtle, paddingLeft: 24 } : { marginBottom: 16 }}>
+                    <AppText variant="xs" weight="bold" color="muted" style={{ letterSpacing: 0.5, marginBottom: 12 }}>
+                      TỒN KHO & ĐƠN GIÁ VỐN
                     </AppText>
-                    <TextInput
-                      value={formSupplier}
-                      onChangeText={setFormSupplier}
-                      placeholder="VD: Vinamilk, Cozy..."
-                      placeholderTextColor={theme.text.muted}
-                      style={[s.formInput, { backgroundColor: theme.surface.card, borderColor: theme.border.default, color: theme.text.primary }]}
-                    />
+
+                    <View style={{ flexDirection: 'row', gap: 10, marginBottom: 14 }}>
+                      <View style={{ flex: 1 }}>
+                        <AppText variant="md" weight="bold" color="primary" style={{ marginBottom: 6 }}>
+                          Tồn Ban Đầu ({formUnit || 'đv'})
+                        </AppText>
+                        <TextInput
+                          value={formCurrentStock}
+                          onChangeText={setFormCurrentStock}
+                          keyboardType="numeric"
+                          style={[s.formInput, { backgroundColor: isWide ? theme.surface.header : theme.surface.card, borderColor: theme.border.default, color: theme.text.primary }]}
+                        />
+                      </View>
+
+                      <View style={{ flex: 1 }}>
+                        <AppText variant="md" weight="bold" color="primary" style={{ marginBottom: 6 }}>
+                          Ngưỡng Báo Hết
+                        </AppText>
+                        <TextInput
+                          value={formMinStockAlert}
+                          onChangeText={setFormMinStockAlert}
+                          keyboardType="numeric"
+                          style={[s.formInput, { backgroundColor: isWide ? theme.surface.header : theme.surface.card, borderColor: theme.border.default, color: theme.text.primary }]}
+                        />
+                      </View>
+                    </View>
+
+                    <View style={{ marginBottom: 14 }}>
+                      <AppText variant="md" weight="bold" color="primary" style={{ marginBottom: 6 }}>
+                        Đơn Giá Nhập (VND)
+                      </AppText>
+                      <TextInput
+                        value={formCostPrice}
+                        onChangeText={setFormCostPrice}
+                        keyboardType="numeric"
+                        placeholder="50000"
+                        placeholderTextColor={theme.text.muted}
+                        style={[s.formInput, { backgroundColor: isWide ? theme.surface.header : theme.surface.card, borderColor: theme.border.default, color: theme.text.primary }]}
+                      />
+                      {formCostPrice ? (
+                        <View style={{ marginTop: 8, padding: 10, borderRadius: 8, backgroundColor: theme.surface.header, borderWidth: 1, borderColor: theme.border.subtle }}>
+                          <AppText variant="xs" color="muted">Thành tiền quy đổi:</AppText>
+                          <AppText variant="sm" weight="bold" color="accent" tabularNums style={{ marginTop: 2 }}>
+                            = {formatCurrency(parseInt(formCostPrice.replace(/\D/g, ''), 10) || 0)} đ / {formUnit || 'đv'}
+                          </AppText>
+                          <AppText variant="xs" color="muted" tabularNums style={{ marginTop: 2 }}>
+                            Tổng giá trị ban đầu: {formatCurrency((parseFloat(formCurrentStock) || 0) * (parseInt(formCostPrice.replace(/\D/g, ''), 10) || 0))} đ
+                          </AppText>
+                        </View>
+                      ) : null}
+                    </View>
+
+                    <View style={{ marginBottom: 14 }}>
+                      <AppText variant="md" weight="bold" color="primary" style={{ marginBottom: 6 }}>
+                        Nhà Cung Cấp
+                      </AppText>
+                      <TextInput
+                        value={formSupplier}
+                        onChangeText={setFormSupplier}
+                        placeholder="VD: Vinamilk, Chợ Đầu Mối, Cozy..."
+                        placeholderTextColor={theme.text.muted}
+                        style={[s.formInput, { backgroundColor: isWide ? theme.surface.header : theme.surface.card, borderColor: theme.border.default, color: theme.text.primary }]}
+                      />
+                    </View>
                   </View>
                 </View>
               </View>
@@ -719,7 +737,7 @@ export default function InventoryScreen() {
                 backgroundColor: theme.surface.card,
                 borderTopColor: theme.border.subtle,
                 paddingBottom: Math.max(insets.bottom, 12),
-                maxWidth: isWide ? 680 : undefined,
+                maxWidth: isWide ? 960 : undefined,
                 alignSelf: isWide ? 'center' : undefined,
               },
             ]}
@@ -770,8 +788,8 @@ export default function InventoryScreen() {
           />
           <ScrollView
             contentContainerStyle={[
-              { padding: isWide ? 16 : 0, paddingBottom: 110 },
-              isWide && { maxWidth: 760, width: '100%', alignSelf: 'center' },
+              { padding: isWide ? 20 : 0, paddingBottom: 110 },
+              isWide && { maxWidth: 840, width: '100%', alignSelf: 'center' },
             ]}
             showsVerticalScrollIndicator={false}
           >
@@ -929,7 +947,7 @@ export default function InventoryScreen() {
                 backgroundColor: theme.surface.card,
                 borderTopColor: theme.border.subtle,
                 paddingBottom: Math.max(insets.bottom, 12),
-                maxWidth: isWide ? 680 : undefined,
+                maxWidth: isWide ? 840 : undefined,
                 alignSelf: isWide ? 'center' : undefined,
               },
             ]}
@@ -1027,128 +1045,382 @@ export default function InventoryScreen() {
           )}
 
           <View style={{ flex: 1 }}>
-            <Animated.ScrollView
-              scrollEventThrottle={16}
-              refreshControl={
-                <RefreshControl
-                  refreshing={refreshing}
-                  onRefresh={handleRefresh}
-                  colors={[theme.brand.primary]}
-                  tintColor={theme.brand.primary}
-                />
-              }
-              contentContainerStyle={[
-                s.listScroll,
-                {
-                  padding: isWide ? 16 : 0,
-                  paddingTop: isWide ? 16 : 4,
-                  paddingBottom: isWide ? 24 : 90 + insets.bottom,
-                },
-                isWide && { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-              ]}
-              showsVerticalScrollIndicator={false}
-            >
-              {!isWide && (
+            {isWide ? (
+              /* DESKTOP DATA TABLE VIEW (width >= 1024px) */
+              <View style={{ flex: 1, paddingHorizontal: 20, paddingTop: 12, paddingBottom: 24 }}>
+                <View
+                  style={{
+                    flex: 1,
+                    backgroundColor: theme.surface.card,
+                    borderRadius: 14,
+                    borderWidth: 1,
+                    borderColor: theme.border.subtle,
+                    overflow: 'hidden',
+                  }}
+                >
+                  {/* Table Header Row */}
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      backgroundColor: theme.surface.header,
+                      borderBottomWidth: 1,
+                      borderBottomColor: theme.border.subtle,
+                      paddingVertical: 12,
+                      paddingHorizontal: 16,
+                    }}
+                  >
+                    <View style={{ width: 110 }}>
+                      <AppText variant="xs" weight="bold" color="muted">MÃ SKU</AppText>
+                    </View>
+                    <View style={{ flex: 2.2, paddingRight: 10 }}>
+                      <AppText variant="xs" weight="bold" color="muted">TÊN MẶT HÀNG / NGUYÊN LIỆU</AppText>
+                    </View>
+                    <View style={{ width: 120 }}>
+                      <AppText variant="xs" weight="bold" color="muted">PHÂN LOẠI</AppText>
+                    </View>
+                    <View style={{ width: 60, alignItems: 'center' }}>
+                      <AppText variant="xs" weight="bold" color="muted">ĐVT</AppText>
+                    </View>
+                    <View style={{ width: 120, alignItems: 'flex-end', paddingRight: 8 }}>
+                      <AppText variant="xs" weight="bold" color="muted">TỒN KHO</AppText>
+                    </View>
+                    <View style={{ width: 120, alignItems: 'flex-end', paddingRight: 8 }}>
+                      <AppText variant="xs" weight="bold" color="muted">GIÁ VỐN</AppText>
+                    </View>
+                    <View style={{ width: 140, alignItems: 'flex-end', paddingRight: 12 }}>
+                      <AppText variant="xs" weight="bold" color="muted">GIÁ TRỊ TỒN</AppText>
+                    </View>
+                    <View style={{ width: 110, alignItems: 'center' }}>
+                      <AppText variant="xs" weight="bold" color="muted">TRẠNG THÁI</AppText>
+                    </View>
+                    <View style={{ width: 130, alignItems: 'center' }}>
+                      <AppText variant="xs" weight="bold" color="muted">THAO TÁC</AppText>
+                    </View>
+                  </View>
+
+                  {/* Table Body */}
+                  <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
+                    {filteredItems.length === 0 ? (
+                      <EmptyState
+                        icon="package-variant-closed"
+                        message={searchQuery ? 'Không tìm thấy mặt hàng phù hợp' : 'Kho hàng chưa có dữ liệu'}
+                        description={searchQuery ? 'Thử tìm với từ khóa khác' : 'Nhấn "+ Thêm Hàng" để tạo nguyên liệu mới'}
+                        actionText={!searchQuery ? '+ Thêm Hàng' : undefined}
+                        onAction={!searchQuery ? handleOpenAdd : undefined}
+                      />
+                    ) : (
+                      filteredItems.map((item, idx) => {
+                        const isLow = item.currentStock <= item.minStockAlert;
+                        const totalValue = item.currentStock * item.costPrice;
+                        const categoryLabel =
+                          item.category === 'nguyen_lieu'
+                            ? 'Nguyên Liệu'
+                            : item.category === 'dong_goi'
+                            ? 'Bao Bì'
+                            : 'Bán Liền';
+
+                        return (
+                          <View
+                            key={item.id}
+                            style={{
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              paddingVertical: 12,
+                              paddingHorizontal: 16,
+                              borderBottomWidth: StyleSheet.hairlineWidth,
+                              borderBottomColor: theme.border.subtle,
+                              backgroundColor: idx % 2 === 1 ? (isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.015)') : theme.surface.card,
+                            }}
+                          >
+                            {/* Cột 1: SKU */}
+                            <TouchableOpacity
+                              onPress={() => {
+                                playTapSound();
+                                setSelectedItemDetail(item);
+                              }}
+                              style={{ width: 110 }}
+                            >
+                              <AppText variant="sm" weight="bold" color="accent" tabularNums>
+                                {item.sku}
+                              </AppText>
+                            </TouchableOpacity>
+
+                            {/* Cột 2: Tên & NCC */}
+                            <TouchableOpacity
+                              onPress={() => {
+                                playTapSound();
+                                setSelectedItemDetail(item);
+                              }}
+                              style={{ flex: 2.2, paddingRight: 10 }}
+                            >
+                              <AppText variant="md" weight="medium" color={theme.text.primary} numberOfLines={1}>
+                                {item.name}
+                              </AppText>
+                              {item.supplierName ? (
+                                <AppText variant="xs" color="muted" numberOfLines={1} style={{ marginTop: 2 }}>
+                                  NCC: {item.supplierName}
+                                </AppText>
+                              ) : null}
+                            </TouchableOpacity>
+
+                            {/* Cột 3: Phân loại */}
+                            <View style={{ width: 120 }}>
+                              <View
+                                style={{
+                                  alignSelf: 'flex-start',
+                                  paddingHorizontal: 8,
+                                  paddingVertical: 3,
+                                  borderRadius: 6,
+                                  backgroundColor: theme.surface.header,
+                                  borderWidth: 1,
+                                  borderColor: theme.border.subtle,
+                                }}
+                              >
+                                <AppText variant="xs" weight="medium" color="primary">
+                                  {categoryLabel}
+                                </AppText>
+                              </View>
+                            </View>
+
+                            {/* Cột 4: ĐVT */}
+                            <View style={{ width: 60, alignItems: 'center' }}>
+                              <AppText variant="sm" color="muted">
+                                {item.unit}
+                              </AppText>
+                            </View>
+
+                            {/* Cột 5: Tồn kho */}
+                            <View style={{ width: 120, alignItems: 'flex-end', paddingRight: 8 }}>
+                              <AppText
+                                variant="md"
+                                weight="bold"
+                                color={isLow ? theme.brand.danger : theme.text.primary}
+                                tabularNums
+                              >
+                                {item.currentStock}
+                              </AppText>
+                              <AppText variant="xxs" color="muted" tabularNums>
+                                Ngưỡng: {item.minStockAlert}
+                              </AppText>
+                            </View>
+
+                            {/* Cột 6: Giá vốn */}
+                            <View style={{ width: 120, alignItems: 'flex-end', paddingRight: 8 }}>
+                              <AppText variant="sm" weight="medium" color={theme.text.primary} tabularNums>
+                                {formatCurrency(item.costPrice)} đ
+                              </AppText>
+                            </View>
+
+                            {/* Cột 7: Tổng giá trị tồn */}
+                            <View style={{ width: 140, alignItems: 'flex-end', paddingRight: 12 }}>
+                              <AppText variant="md" weight="bold" color="accent" tabularNums>
+                                {formatCurrency(totalValue)} đ
+                              </AppText>
+                            </View>
+
+                            {/* Cột 8: Trạng thái */}
+                            <View style={{ width: 110, alignItems: 'center' }}>
+                              <StatusDotBadge
+                                status={isLow ? 'low_stock' : 'in_stock'}
+                                label={isLow ? 'Sắp Hết' : 'An Toàn'}
+                                size="sm"
+                              />
+                            </View>
+
+                            {/* Cột 9: Thao tác nhanh */}
+                            <View style={{ width: 130, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                              <TouchableOpacity
+                                onPress={() => {
+                                  playTapSound();
+                                  handleOpenRestock(item);
+                                }}
+                                hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+                                accessibilityLabel="Nhập hàng"
+                                style={{
+                                  paddingHorizontal: 8,
+                                  height: 28,
+                                  borderRadius: 6,
+                                  backgroundColor: theme.brand.primaryBg,
+                                  borderWidth: 1,
+                                  borderColor: theme.brand.accent,
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                }}
+                              >
+                                <AppText variant="xs" weight="bold" color="accent">Nhập</AppText>
+                              </TouchableOpacity>
+
+                              <TouchableOpacity
+                                onPress={() => {
+                                  playTapSound();
+                                  handleOpenAdjust(item);
+                                }}
+                                hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+                                accessibilityLabel="Kiểm kê"
+                                style={{
+                                  paddingHorizontal: 6,
+                                  height: 28,
+                                  borderRadius: 6,
+                                  backgroundColor: theme.surface.header,
+                                  borderWidth: 1,
+                                  borderColor: theme.border.default,
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                }}
+                              >
+                                <AppText variant="xs" color="primary">Kiểm</AppText>
+                              </TouchableOpacity>
+
+                              <TouchableOpacity
+                                onPress={() => {
+                                  playTapSound();
+                                  handleOpenEdit(item);
+                                }}
+                                hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+                                accessibilityLabel="Sửa"
+                                style={{
+                                  width: 28,
+                                  height: 28,
+                                  borderRadius: 6,
+                                  backgroundColor: theme.surface.header,
+                                  borderWidth: 1,
+                                  borderColor: theme.border.default,
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                }}
+                              >
+                                <Icon name="pencil" size={14} color={theme.text.muted} />
+                              </TouchableOpacity>
+                            </View>
+                          </View>
+                        );
+                      })
+                    )}
+                  </ScrollView>
+                </View>
+              </View>
+            ) : (
+              /* MOBILE TOUCH LIST VIEW (width < 1024px) */
+              <Animated.ScrollView
+                scrollEventThrottle={16}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={handleRefresh}
+                    colors={[theme.brand.primary]}
+                    tintColor={theme.brand.primary}
+                  />
+                }
+                contentContainerStyle={[
+                  s.listScroll,
+                  {
+                    padding: 0,
+                    paddingTop: 4,
+                    paddingBottom: 90 + insets.bottom,
+                  },
+                ]}
+                showsVerticalScrollIndicator={false}
+              >
                 <View>
                   {renderKpiOverview()}
                   {renderSearchBar()}
                 </View>
-              )}
 
-              {filteredItems.length === 0 ? (
-                <EmptyState
-                  icon="package-variant-closed"
-                  message={searchQuery ? 'Không tìm thấy mặt hàng phù hợp' : 'Kho hàng chưa có dữ liệu'}
-                  description={searchQuery ? 'Thử tìm với từ khóa khác' : 'Nhấn "+ Thêm Hàng" để tạo nguyên liệu mới'}
-                  actionText={!searchQuery ? '+ Thêm Hàng' : undefined}
-                  onAction={!searchQuery ? handleOpenAdd : undefined}
-                />
-              ) : (
-                filteredItems.map((item) => {
-                  const isLow = item.currentStock <= item.minStockAlert;
-                  const totalValue = item.currentStock * item.costPrice;
+                {filteredItems.length === 0 ? (
+                  <EmptyState
+                    icon="package-variant-closed"
+                    message={searchQuery ? 'Không tìm thấy mặt hàng phù hợp' : 'Kho hàng chưa có dữ liệu'}
+                    description={searchQuery ? 'Thử tìm với từ khóa khác' : 'Nhấn "+ Thêm Hàng" để tạo nguyên liệu mới'}
+                    actionText={!searchQuery ? '+ Thêm Hàng' : undefined}
+                    onAction={!searchQuery ? handleOpenAdd : undefined}
+                  />
+                ) : (
+                  filteredItems.map((item) => {
+                    const isLow = item.currentStock <= item.minStockAlert;
+                    const totalValue = item.currentStock * item.costPrice;
 
-                  return (
-                    <View
-                      key={item.id}
-                      style={[
-                        s.itemRow,
-                        isWide && { width: isDesktopLarge ? '32.4%' : '49.2%', borderRadius: 12, borderWidth: 1 },
-                        {
-                          backgroundColor: theme.surface.card,
-                          borderColor: isLow ? theme.brand.danger : theme.border.subtle,
-                          borderBottomWidth: StyleSheet.hairlineWidth,
-                          borderBottomColor: isLow ? theme.brand.danger : theme.border.subtle,
-                        },
-                      ]}
-                    >
-                      <TouchableOpacity
-                        activeOpacity={0.7}
-                        onPress={() => {
-                          playTapSound();
-                          setSelectedItemDetail(item);
-                        }}
-                        style={s.rowMainContent}
+                    return (
+                      <View
+                        key={item.id}
+                        style={[
+                          s.itemRow,
+                          {
+                            backgroundColor: theme.surface.card,
+                            borderColor: isLow ? theme.brand.danger : theme.border.subtle,
+                            borderBottomWidth: StyleSheet.hairlineWidth,
+                            borderBottomColor: isLow ? theme.brand.danger : theme.border.subtle,
+                          },
+                        ]}
                       >
-                        <View style={s.rowInfoCol}>
-                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                            <AppText
-                              variant="md"
-                              weight="medium"
-                              color={theme.text.primary}
-                              numberOfLines={2}
-                              style={{ flexShrink: 1 }}
-                            >
-                              {item.name}
-                            </AppText>
-                            {isLow && (
-                              <StatusDotBadge status="low_stock" label="Sắp Hết" size="sm" />
-                            )}
-                          </View>
-
-                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 }}>
-                            <AppText variant="xs" color={theme.text.muted} tabularNums>
-                              {item.sku}
-                            </AppText>
-                            <AppText variant="xs" color={theme.text.muted} tabularNums>
-                              · {formatCurrency(item.costPrice)}đ/{item.unit}
-                            </AppText>
-                            {item.supplierName ? (
-                              <AppText variant="xs" color={theme.text.muted} numberOfLines={1} style={{ flexShrink: 1 }}>
-                                · {item.supplierName}
+                        <TouchableOpacity
+                          activeOpacity={0.7}
+                          onPress={() => {
+                            playTapSound();
+                            setSelectedItemDetail(item);
+                          }}
+                          style={s.rowMainContent}
+                        >
+                          <View style={s.rowInfoCol}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                              <AppText
+                                variant="md"
+                                weight="medium"
+                                color={theme.text.primary}
+                                numberOfLines={2}
+                                style={{ flexShrink: 1 }}
+                              >
+                                {item.name}
                               </AppText>
-                            ) : null}
-                          </View>
-                        </View>
+                              {isLow && (
+                                <StatusDotBadge status="low_stock" label="Sắp Hết" size="sm" />
+                              )}
+                            </View>
 
-                        <View style={[s.rowStockCol, { flexDirection: 'row', alignItems: 'center', gap: 8 }]}>
-                          <View style={{ alignItems: 'flex-end' }}>
-                            <AppText
-                              variant="md"
-                              weight="bold"
-                              color={isLow ? theme.brand.danger : theme.brand.success}
-                              tabularNums
-                              style={{ textAlign: 'right' }}
-                            >
-                              {item.currentStock} <AppText variant="xs" color={theme.text.muted}>{item.unit}</AppText>
-                            </AppText>
-                            <AppText
-                              variant="sm"
-                              weight="medium"
-                              color={theme.text.muted}
-                              tabularNums
-                              style={{ textAlign: 'right', marginTop: 2 }}
-                            >
-                              {formatCurrency(totalValue)} đ
-                            </AppText>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 }}>
+                              <AppText variant="xs" color={theme.text.muted} tabularNums>
+                                {item.sku}
+                              </AppText>
+                              <AppText variant="xs" color={theme.text.muted} tabularNums>
+                                · {formatCurrency(item.costPrice)}đ/{item.unit}
+                              </AppText>
+                              {item.supplierName ? (
+                                <AppText variant="xs" color={theme.text.muted} numberOfLines={1} style={{ flexShrink: 1 }}>
+                                  · {item.supplierName}
+                                </AppText>
+                              ) : null}
+                            </View>
                           </View>
-                        </View>
-                      </TouchableOpacity>
-                    </View>
-                  );
-                })
-              )}
-            </Animated.ScrollView>
+
+                          <View style={[s.rowStockCol, { flexDirection: 'row', alignItems: 'center', gap: 8 }]}>
+                            <View style={{ alignItems: 'flex-end' }}>
+                              <AppText
+                                variant="md"
+                                weight="bold"
+                                color={isLow ? theme.brand.danger : theme.brand.success}
+                                tabularNums
+                                style={{ textAlign: 'right' }}
+                              >
+                                {item.currentStock} <AppText variant="xs" color={theme.text.muted}>{item.unit}</AppText>
+                              </AppText>
+                              <AppText
+                                variant="sm"
+                                weight="medium"
+                                color={theme.text.muted}
+                                tabularNums
+                                style={{ textAlign: 'right', marginTop: 2 }}
+                              >
+                                {formatCurrency(totalValue)} đ
+                              </AppText>
+                            </View>
+                          </View>
+                        </TouchableOpacity>
+                      </View>
+                    );
+                  })
+                )}
+              </Animated.ScrollView>
+            )}
           </View>
         </View>
       )}

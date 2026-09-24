@@ -549,20 +549,20 @@ export function BranchesTab({ isWide: propIsWide }: BranchesTabProps) {
             style={[
               s.btnAddPill,
               {
-                backgroundColor: quota.isAtLimit ? theme.surface.header : theme.brand.primaryBg,
-                borderColor: quota.isAtLimit ? theme.border.subtle : theme.brand.primary,
+                backgroundColor: quota.isAtLimit ? theme.surface.header : theme.brand.accent,
+                borderColor: quota.isAtLimit ? theme.border.subtle : theme.brand.accent,
               },
             ]}
           >
             <Icon
               name={quota.isAtLimit ? 'crown-outline' : 'plus'}
               size={14}
-              color={quota.isAtLimit ? theme.brand.warning : theme.brand.primary}
+              color={quota.isAtLimit ? theme.brand.warning : theme.text.onBrand}
             />
             <AppText
               variant="xs"
-              weight="medium"
-              color={quota.isAtLimit ? theme.brand.warning : theme.brand.primary}
+              weight="bold"
+              color={quota.isAtLimit ? theme.brand.warning : theme.text.onBrand}
             >
               {quota.isAtLimit ? 'Mở Rộng Gói Chuỗi' : 'Thêm Chi Nhánh'}
             </AppText>

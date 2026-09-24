@@ -940,10 +940,10 @@ export const ReportOverviewTab: React.FC<ReportOverviewTabProps> = ({
     );
   };
 
-  if (isDesktopLarge) {
+  if (isWide || isDesktopLarge) {
     return (
       <View style={{ gap: 14 }}>
-        {/* 2-COLUMN DASHBOARD CHO MÀN HÌNH 24-INCH (1920x1080) */}
+        {/* 2-COLUMN DASHBOARD CHO MÀN HÌNH DESKTOP / TABLET WIDE */}
         <View style={{ flexDirection: 'row', gap: 16 }}>
           {/* CỘT TRÁI (52%): KPI LỢI NHUẬN + KÉT TIỀN + CHỈ SỐ VẬN HÀNH + BIỂU ĐỒ DOANH THU + AI INSIGHT */}
           <View style={{ flex: 1.08, gap: 14 }}>

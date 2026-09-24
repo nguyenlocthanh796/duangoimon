@@ -131,11 +131,13 @@ func TestPinBruteForceProtection(t *testing.T) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
 
+	testIP := "198.51.100.42:12345"
 	// Fail 3 times
 	for i := 0; i < 3; i++ {
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("POST", "/test/pin", bytes.NewBufferString(`{"pin": "wrong"}`))
 		req.Header.Set("Content-Type", "application/json")
+		req.RemoteAddr = testIP
 		r.ServeHTTP(w, req)
 		if w.Code != http.StatusForbidden {
 			t.Errorf("Attempt %d: expected 403, got %d", i+1, w.Code)
@@ -146,6 +148,7 @@ func TestPinBruteForceProtection(t *testing.T) {
 	w4 := httptest.NewRecorder()
 	req4, _ := http.NewRequest("POST", "/test/pin", bytes.NewBufferString(`{"pin": "correct_pin"}`))
 	req4.Header.Set("Content-Type", "application/json")
+	req4.RemoteAddr = testIP
 	r.ServeHTTP(w4, req4)
 	if w4.Code != http.StatusTooManyRequests {
 		t.Errorf("Expected 429 Too Many Requests after 3 failed attempts, got %d", w4.Code)

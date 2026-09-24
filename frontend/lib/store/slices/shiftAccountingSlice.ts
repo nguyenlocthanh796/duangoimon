@@ -5,6 +5,7 @@ import type {
   RecurringExpense,
 } from '../usePOSStore';
 import { wsClient } from '../../api/wsClient';
+import { apiClient } from '../../api/apiClient';
 
 export interface ShiftAccountingSlice {
   cashTransactions: CashTransaction[];
@@ -79,6 +80,20 @@ export const createShiftAccountingSlice = (set: any, get: any): ShiftAccountingS
     };
     set({ activeShift: newShift });
     wsClient.broadcastShiftOpened(newShift);
+
+    // Đồng bộ mở ca xuống Backend Go
+    apiClient.openShift({
+      shift_name: data.shiftName,
+      cashier_name: data.cashierName,
+      starting_cash: data.startingCash,
+      note: data.note || '',
+    }).then((res: any) => {
+      if (res?.shift?.id) {
+        set((state: any) => ({
+          activeShift: state.activeShift ? { ...state.activeShift, id: res.shift.id } : state.activeShift,
+        }));
+      }
+    }).catch(() => {});
   },
 
   closeShift: (data) => {
@@ -136,11 +151,20 @@ export const createShiftAccountingSlice = (set: any, get: any): ShiftAccountingS
     });
 
     wsClient.broadcastShiftClosed(record);
+
+    // Đồng bộ kết ca xuống Backend Go
+    if (activeShift?.id) {
+      apiClient.closeShift(activeShift.id, {
+        actual_ending_cash: data.actualEndingCash,
+        note: data.note || '',
+      }).catch(() => {});
+    }
+
     return record;
   },
 
   addCashTransaction: (tx: Omit<CashTransaction, 'id' | 'createdAt'>) => {
-    const { cashTransactions } = get();
+    const { cashTransactions, activeShift } = get();
     let branchId = tx.branchId;
     if (!branchId) {
       try {
@@ -160,6 +184,27 @@ export const createShiftAccountingSlice = (set: any, get: any): ShiftAccountingS
     };
     set({ cashTransactions: [newTx, ...cashTransactions] });
     wsClient.broadcastCashTxCreated(newTx);
+
+    // Đồng bộ phiếu thu/chi xuống Backend Go
+    apiClient.createCashTransaction({
+      branch_id: branchId,
+      shift_id: activeShift?.id || undefined,
+      type: tx.type,
+      category: tx.category,
+      amount: tx.amount,
+      description: tx.description || (tx as any).reason || '',
+      performed_by: tx.performedBy,
+      payment_method: tx.paymentMethod || 'tien_mat',
+      expense_type: tx.expenseType || (tx.type === 'chi' ? 'hoat_dong' : undefined),
+    }).then((res: any) => {
+      if (res?.transaction?.id) {
+        set((state: any) => ({
+          cashTransactions: state.cashTransactions.map((c: any) =>
+            c.id === newTx.id ? { ...c, id: res.transaction.id } : c
+          ),
+        }));
+      }
+    }).catch(() => {});
   },
 
   voidCashTransaction: (id: string, reason: string, voidedBy?: string) => {
@@ -179,6 +224,9 @@ export const createShiftAccountingSlice = (set: any, get: any): ShiftAccountingS
       ),
     });
     wsClient.broadcastCashTxVoided(id, reason, voidedBy);
+
+    // Đồng bộ hủy phiếu xuống Backend Go
+    apiClient.voidCashTransaction(id, reason || 'Chủ quán hủy phiếu').catch(() => {});
   },
 
   deleteCashTransaction: (id: string) => {

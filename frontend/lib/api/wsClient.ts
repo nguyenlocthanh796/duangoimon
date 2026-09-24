@@ -88,21 +88,34 @@ class POSWebSocketManager {
     this.isExplicitlyClosed = false;
     const baseHttp = getBaseUrl();
 
-    let activeTenantId = 'tenant_ongchu';
+    let activeTenantId = '';
     let activeBranchId = 'branch_01';
+    let authToken = '';
+    let isAuthenticated = false;
     try {
       const { useAuthStore } = require('../store/useAuthStore');
-      const authState = useAuthStore.getState();
-      if (authState.tenant?.id) activeTenantId = authState.tenant.id;
+      const authState = useAuthStore?.getState?.() || {};
+      const { usePOSStore } = require('../store/usePOSStore');
+      const posState = usePOSStore?.getState?.() || {};
+
+      activeTenantId = authState.tenant?.id || authState.deviceBinding?.tenantId || posState.tenantId || '';
       if (authState.activeBranchId) activeBranchId = authState.activeBranchId;
+      authToken = authState.token || '';
+      isAuthenticated = Boolean(authState.isAuthenticated && authToken && !authToken.startsWith('offline_token_'));
     } catch {}
 
     this.currentTenantId = activeTenantId;
 
+    // Không kết nối WebSocket khi chưa đăng nhập (tránh lỗi 401 connection refused trên production)
+    if (!urlOverride && !isAuthenticated && !baseHttp.includes('localhost') && !baseHttp.includes('127.0.0.1')) {
+      return;
+    }
+
+    const tokenQuery = authToken ? `&token=${encodeURIComponent(authToken)}` : '';
     const wsUrl =
       urlOverride ||
       baseHttp.replace(/^http/, 'ws') +
-        `/ws/pos?client_id=${this.clientId}&tenant_id=${encodeURIComponent(activeTenantId)}&branch_id=${encodeURIComponent(activeBranchId)}`;
+        `/ws/pos?client_id=${this.clientId}&tenant_id=${encodeURIComponent(activeTenantId)}&branch_id=${encodeURIComponent(activeBranchId)}${tokenQuery}`;
 
     try {
       this.ws = new WebSocket(wsUrl);

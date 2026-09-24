@@ -63,6 +63,20 @@ export function OwnerAccountTab({ isWide = false }: OwnerAccountTabProps) {
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const formatExpiryDate = (isoStr?: string) => {
+    if (!isoStr) return '31/12/2027';
+    try {
+      const d = new Date(isoStr);
+      if (isNaN(d.getTime())) return isoStr.split('T')[0];
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      return `${day}/${month}/${year}`;
+    } catch {
+      return isoStr.split('T')[0];
+    }
+  };
+
   const cardStyle = [
     s.card,
     {
@@ -343,7 +357,7 @@ export function OwnerAccountTab({ isWide = false }: OwnerAccountTabProps) {
               Thời Hạn Bản Quyền
             </AppText>
             <AppText variant="sm" weight="bold" color={theme.brand.success} tabularNums>
-              Còn {tenant?.licenseDaysLeft ?? 365} ngày ({tenant?.licenseExpiresAt || '2027-12-31'})
+              Còn {tenant?.licenseDaysLeft ?? 365} ngày ({formatExpiryDate(tenant?.licenseExpiresAt)})
             </AppText>
           </View>
         </View>
@@ -445,7 +459,7 @@ export function OwnerAccountTab({ isWide = false }: OwnerAccountTabProps) {
             activeOpacity={0.8}
             onPress={handleChangePassword}
             disabled={pwdLoading}
-            style={[s.btnSavePassword, { backgroundColor: theme.brand.primary }]}
+            style={[s.btnSavePassword, { backgroundColor: theme.brand.accent }]}
           >
             <Icon name="content-save-outline" size={18} color={theme.text.onBrand} />
             <AppText variant="md" weight="bold" color={theme.text.onBrand}>
@@ -498,11 +512,11 @@ export function OwnerAccountTab({ isWide = false }: OwnerAccountTabProps) {
                 }}
                 style={[
                   s.btnPinEdit,
-                  { backgroundColor: theme.brand.primaryBg, borderColor: theme.brand.primary },
+                  { backgroundColor: isDark ? 'rgba(180, 83, 9, 0.2)' : '#FEF3C7', borderColor: theme.brand.accent },
                 ]}
               >
-                <Icon name="pencil-outline" size={14} color={theme.brand.primary} />
-                <AppText variant="xs" weight="medium" color={theme.brand.primary}>
+                <Icon name="pencil-outline" size={14} color={theme.brand.accent} />
+                <AppText variant="xs" weight="bold" color={theme.brand.accent}>
                   Đổi PIN
                 </AppText>
               </TouchableOpacity>
@@ -549,11 +563,11 @@ export function OwnerAccountTab({ isWide = false }: OwnerAccountTabProps) {
                 }}
                 style={[
                   s.btnPinEdit,
-                  { backgroundColor: theme.brand.primaryBg, borderColor: theme.brand.accent },
+                  { backgroundColor: isDark ? 'rgba(180, 83, 9, 0.2)' : '#FEF3C7', borderColor: theme.brand.accent },
                 ]}
               >
                 <Icon name="pencil-outline" size={14} color={theme.brand.accent} />
-                <AppText variant="xs" weight="medium" color={theme.brand.accent}>
+                <AppText variant="xs" weight="bold" color={theme.brand.accent}>
                   Đổi PIN
                 </AppText>
               </TouchableOpacity>

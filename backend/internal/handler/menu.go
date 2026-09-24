@@ -24,7 +24,7 @@ func GetCategories(c *gin.Context) {
 	}
 
 	var categories []models.Category
-	query := ScopeTenant(database.DB.Model(&models.Category{}), tenantID)
+	query := ScopeTenant(database.DB.Where("is_active = ?", true).Model(&models.Category{}), tenantID)
 
 	if err := query.Order("sort_order ASC, name ASC").Find(&categories).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Lỗi tải danh mục: %v", err)})
@@ -46,7 +46,7 @@ func GetProducts(c *gin.Context) {
 	}
 
 	var products []models.Product
-	query := ScopeTenant(database.DB.Preload("Recipes.Ingredient").Model(&models.Product{}), tenantID)
+	query := ScopeTenant(database.DB.Where("is_active = ?", true).Preload("Recipes.Ingredient").Model(&models.Product{}), tenantID)
 	if categoryID != "" {
 		query = query.Where("category_id = ?", categoryID)
 	}
@@ -177,10 +177,12 @@ func CreateProduct(c *gin.Context) {
 // Toggle86 bật / tắt trạng thái hết món (86'd) tức thì
 func Toggle86(c *gin.Context) {
 	productID := c.Param("id")
+	tenantID := GetTenantID(c, "tenant_ongchu")
 
 	var product models.Product
 	if database.DB != nil {
-		if err := database.DB.First(&product, "id = ?", productID).Error; err != nil {
+		query := ScopeTenant(database.DB.Model(&models.Product{}), tenantID)
+		if err := query.First(&product, "id = ?", productID).Error; err != nil {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Không tìm thấy món ăn"})
 			return
 		}
@@ -217,6 +219,7 @@ type UpdateProductPriceRequest struct {
 // UpdateProductPrice đổi giá bán nhanh trong 1 chạm
 func UpdateProductPrice(c *gin.Context) {
 	productID := c.Param("id")
+	tenantID := GetTenantID(c, "tenant_ongchu")
 	var req UpdateProductPriceRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -225,7 +228,8 @@ func UpdateProductPrice(c *gin.Context) {
 
 	var product models.Product
 	if database.DB != nil {
-		if err := database.DB.First(&product, "id = ?", productID).Error; err != nil {
+		query := ScopeTenant(database.DB.Model(&models.Product{}), tenantID)
+		if err := query.First(&product, "id = ?", productID).Error; err != nil {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Không tìm thấy món ăn"})
 			return
 		}

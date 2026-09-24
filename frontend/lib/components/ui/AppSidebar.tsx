@@ -18,7 +18,7 @@ import * as Haptics from 'expo-haptics';
 import { useTheme } from '../../theme';
 import { AppText } from './AppText';
 import { RoleSwitcher } from './RoleSwitcher';
-import { useStoreSettings, usePOSStore } from '../../store/usePOSStore';
+import { useStoreSettings, usePOSStore, useTodayOrderHistoryCount } from '../../store/usePOSStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useUIStore } from '../../store/useUIStore';
 import { playTapSound } from '../../utils/sound';
@@ -132,7 +132,7 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
   const totalTables = usePOSStore((s) => s.tables.length);
   const pendingKdsCount = usePOSStore((s) => (enableKds ? s.kdsOrders.filter((o) => o.status === 'pending' || o.status === 'cooking').length : 0));
   const outOfStockCount = usePOSStore((s) => s.outOfStockProductIds.length);
-  const orderHistoryCount = usePOSStore((s) => s.orderHistory.length);
+  const todayOrdersCount = useTodayOrderHistoryCount();
   const lowStockCount = usePOSStore((s) => s.inventoryItems.filter((i) => i.currentStock <= i.minStockAlert).length);
 
   const [mounted, setMounted] = useState(isOpen);
@@ -258,8 +258,8 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
           ? { text: `${lowStockCount}`, isCount: true, color: theme.brand.danger }
           : null;
       case 'orderHistory':
-        return orderHistoryCount > 0
-          ? { text: `${orderHistoryCount}`, isCount: true, color: theme.brand.primary }
+        return todayOrdersCount > 0
+          ? { text: `${todayOrdersCount}`, isCount: true, color: theme.brand.primary }
           : null;
       default:
         return null; // Bỏ hoàn toàn text phụ tĩnh ở Mobile theo yêu cầu

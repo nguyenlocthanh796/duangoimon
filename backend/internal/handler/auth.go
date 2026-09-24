@@ -8,9 +8,30 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/ongchu/pos-backend/internal/auth"
 	"github.com/ongchu/pos-backend/internal/database"
 	"github.com/ongchu/pos-backend/internal/models"
+	"golang.org/x/crypto/bcrypt"
 )
+
+// HashPassword mã hóa mật khẩu người dùng với bcrypt cost 12
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 12)
+	return string(bytes), err
+}
+
+// CheckPasswordHash kiểm tra mật khẩu đã băm bằng Bcrypt, hỗ trợ fallback chuỗi gốc nếu chưa băm
+func CheckPasswordHash(password, hash string) bool {
+	if hash == "" || password == "" {
+		return false
+	}
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	if err == nil {
+		return true
+	}
+	// Fallback trường hợp dữ liệu cũ chưa qua băm bcrypt
+	return password == hash
+}
 
 // CleanPhoneNumber chuẩn hóa số điện thoại về dạng 10 số bắt đầu bằng 0
 func CleanPhoneNumber(phone string) string {
@@ -73,7 +94,7 @@ type VerifyPinRequest struct {
 	TenantID string `json:"tenant_id"`
 }
 
-// VerifyPin validates manager/owner PIN for sensitive operations
+// VerifyPin validates manager/owner PIN for sensitive operations (Strict Tenant-scoped DB check)
 func VerifyPin(c *gin.Context) {
 	var req VerifyPinRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -84,7 +105,8 @@ func VerifyPin(c *gin.Context) {
 		return
 	}
 
-	if req.Pin == "" {
+	cleanPin := strings.TrimSpace(req.Pin)
+	if cleanPin == "" {
 		c.JSON(http.StatusForbidden, gin.H{
 			"success": false,
 			"error":   "Mã PIN không được để trống",
@@ -92,15 +114,20 @@ func VerifyPin(c *gin.Context) {
 		return
 	}
 
-	// 1. Kiểm tra trong CSDL nếu DB đang hoạt động
+	tenantID := req.TenantID
+	if tenantID == "" {
+		tenantID = c.GetString("tenant_id")
+	}
+
+	// 1. Kiểm tra trong CSDL
 	if database.DB != nil {
 		var user models.User
-		query := database.DB.Where("pin_code = ? AND is_active = ?", req.Pin, true)
-		if req.TenantID != "" {
-			query = query.Where("tenant_id = ?", req.TenantID)
+		query := database.DB.Where("pin_code = ? AND is_active = ?", cleanPin, true)
+		if tenantID != "" {
+			query = query.Where("tenant_id = ?", tenantID)
 		}
 		if err := query.First(&user).Error; err == nil {
-			if user.Role == "owner" || user.Role == "manager" {
+			if user.Role == "owner" || user.Role == "manager" || user.Role == "superadmin" || user.Role == "saas_admin" {
 				c.JSON(http.StatusOK, gin.H{
 					"success":       true,
 					"authorized_by": user.FullName,
@@ -110,16 +137,6 @@ func VerifyPin(c *gin.Context) {
 				return
 			}
 		}
-	}
-
-	// 2. Không cho phép hardcoded PIN trên Production - Chỉ chấp nhận khi chạy Unit Test với PIN 123456
-	if (database.DB == nil || gin.Mode() == gin.TestMode) && req.Pin == "123456" {
-		c.JSON(http.StatusOK, gin.H{
-			"success":       true,
-			"authorized_by": "Test Manager",
-			"role":          "manager",
-		})
-		return
 	}
 
 	// PIN không hợp lệ hoặc không có quyền quản lý
@@ -138,7 +155,7 @@ type SaaSLoginRequest struct {
 	BranchID   string `json:"branch_id"`
 }
 
-// SaaSLogin xác thực đăng nhập tài khoản SaaS Chủ Quán / Quản Trị
+// SaaSLogin xác thực đăng nhập tài khoản SaaS Chủ Quán / Quản Trị và sinh Access Token JWT
 func SaaSLogin(c *gin.Context) {
 	var req SaaSLoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -154,48 +171,7 @@ func SaaSLogin(c *gin.Context) {
 	cleanUser := strings.ToLower(strings.TrimSpace(req.Username))
 	cleanPassword := strings.TrimSpace(req.Password)
 
-	// A. Xác thực Quản Trị Tối Cao (Super Admin)
-	if cleanUser == "nguyenlocthanh291097" || cleanCode == "nguyenlocthanh291097" || cleanUser == "saas" || cleanCode == "saas" {
-		if cleanPassword != "Danh@!26062002" {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"success": false,
-				"error":   "Mật khẩu tài khoản Quản Trị Tối Cao không chính xác",
-			})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{
-			"success": true,
-			"token":   "saas_master_token",
-			"tenant": gin.H{
-				"id":                "saas_master",
-				"name":              "Cổng Quản Trị SaaS Toàn Hệ Thống",
-				"code":              "saas",
-				"subscription_plan": "enterprise",
-				"license_days_left": 9999,
-				"configured_roles":  []string{"super_admin"},
-			},
-			"user": gin.H{
-				"id":        "usr_saas_superadmin",
-				"username":  "nguyenlocthanh291097",
-				"full_name": "Nguyễn Lộc Thành (Chủ Dự Án)",
-				"role":      "super_admin",
-			},
-		})
-		return
-	}
-
-	// Danh sách mật khẩu được phép
-	validPasswords := map[string]bool{
-		"123456":         true,
-		"secret123":      true,
-		"admin123":       true,
-		"demo123":        true,
-		"ongchu123":      true,
-		"Danh@!26062002": true,
-		"ChuQuan@2026":   true,
-	}
-
-	// 1. Kiểm tra CSDL nếu DB khả dụng (Production Mode - Bắt buộc có bản ghi)
+	// 1. Kiểm tra CSDL nếu DB khả dụng
 	if database.DB != nil {
 		var tenant models.Tenant
 		shortPhone := cleanPhone
@@ -225,7 +201,6 @@ func SaaSLogin(c *gin.Context) {
 		uQuery := database.DB.Where("tenant_id = ? AND (username = ? OR username = ? OR username = ? OR username = ? OR (role = 'owner' AND (? = 'owner' OR ? = '' OR ? = ?))) AND is_active = ?",
 			tenant.ID, cleanUser, cleanPhone, shortPhone, tenant.Phone, cleanUser, cleanUser, cleanPhone, tenant.Phone, true)
 		if err := uQuery.First(&user).Error; err != nil {
-			// Fallback: nếu quán chỉ có 1 tài khoản chủ quán (role owner), tự động lấy tài khoản đó
 			if errFallback := database.DB.Where("tenant_id = ? AND role = 'owner' AND is_active = ?", tenant.ID, true).First(&user).Error; errFallback != nil {
 				c.JSON(http.StatusUnauthorized, gin.H{
 					"success": false,
@@ -235,13 +210,8 @@ func SaaSLogin(c *gin.Context) {
 			}
 		}
 
-		isValidPass := false
-		if user.PasswordHash != "" && user.PasswordHash == cleanPassword {
-			isValidPass = true
-		} else if validPasswords[cleanPassword] || strings.HasPrefix(cleanPassword, "demo") {
-			isValidPass = true
-		}
-
+		// Xác thực mật khẩu bằng Bcrypt
+		isValidPass := CheckPasswordHash(cleanPassword, user.PasswordHash)
 		if !isValidPass {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"success": false,
@@ -250,13 +220,38 @@ func SaaSLogin(c *gin.Context) {
 			return
 		}
 
-		// Tìm danh sách chi nhánh hoạt động
+		branchID := "branch_01"
+		if user.BranchID != nil && *user.BranchID != "" {
+			branchID = *user.BranchID
+		} else if req.BranchID != "" {
+			branchID = req.BranchID
+		}
+
+		// Sinh JWT Access Token & Refresh Token
+		claims := &auth.TokenClaims{
+			UserID:      user.ID,
+			Username:    user.Username,
+			TenantID:    tenant.ID,
+			BranchID:    branchID,
+			Role:        user.Role,
+			Permissions: auth.DefaultPermissionsForRole(user.Role),
+		}
+		tokens, err := auth.CreateAuthTokenPair(claims)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Không thể khởi tạo phiên đăng nhập: " + err.Error()})
+			return
+		}
+
 		var branches []models.Branch
 		database.DB.Where("tenant_id = ? AND is_active = ?", tenant.ID, true).Find(&branches)
 
 		c.JSON(http.StatusOK, gin.H{
-			"success": true,
-			"token":   "jwt_token_" + user.ID,
+			"success":       true,
+			"token":         tokens.AccessToken,
+			"access_token":  tokens.AccessToken,
+			"refresh_token": tokens.RefreshToken,
+			"expires_in":    tokens.ExpiresInSeconds,
+			"token_type":    tokens.TokenType,
 			"tenant": gin.H{
 				"id":                tenant.ID,
 				"name":              tenant.Name,
@@ -277,109 +272,67 @@ func SaaSLogin(c *gin.Context) {
 		return
 	}
 
-	// 2. Chế độ Standalone / Offline Mock (CHỈ CHẠY KHI database.DB == nil)
-	validCodes := map[string]string{
-		"ongchu":    "OngChu Coffee & Tea HQ",
-		"quanquan":  "Quán Chè Bưởi",
-		"tiemtraan": "Tiệm Trà & Cafe An Nhiên",
-		"demo":      "Hệ Thống Trải Nghiệm Demo",
-	}
-
-	tenantName, exists := validCodes[cleanCode]
-	if !exists {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"error":   "Mã quán hoặc số điện thoại không tồn tại trên hệ thống",
-		})
-		return
-	}
-
-	if !validPasswords[cleanPassword] && !strings.HasPrefix(cleanPassword, "demo") {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"success": false,
-			"error":   "Mật khẩu tài khoản không chính xác",
-		})
-		return
-	}
-
-	// Xác thực tài khoản demo / offline
-	role := "owner"
-	fullName := "Chủ Quán (HQ Admin)"
-	if cleanUser == "quanquan" || cleanCode == "quanquan" {
-		role = "owner"
-		fullName = "Chủ Quán QUANQUAN"
-	} else if cleanUser == "chuquan_annhien" || cleanUser == "chuquan" || cleanCode == "tiemtraan" {
-		role = "owner"
-		fullName = "Trần An Nhiên (Chủ Quán)"
-	} else if cleanUser == "cashier" || cleanUser == "thungan" {
-		role = "cashier"
-		fullName = "Thu Ngân Ca Sáng"
-	} else if cleanUser == "manager" || cleanUser == "quanly" {
-		role = "manager"
-		fullName = "Quản Lý Chi Nhánh 1"
-	} else if cleanUser == "server" || cleanUser == "phucvu" {
-		role = "server"
-		fullName = "Nhân Viên Phục Vụ"
-	}
-
-	configuredRoles := []string{"cashier", "server", "manager", "owner"}
-	if cleanCode == "tiemtraan" || cleanUser == "chuquan_annhien" || cleanUser == "chuquan" {
-		configuredRoles = []string{"owner"}
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"token":   "demo_token_" + role,
-		"tenant": gin.H{
-			"id":                "tenant_" + cleanCode,
-			"name":              tenantName,
-			"code":              cleanCode,
-			"phone":             "0392387165",
-			"subscription_plan": "pro",
-			"license_days_left": 365,
-			"configured_roles":  configuredRoles,
-		},
-		"user": gin.H{
-			"id":        "usr_" + role,
-			"username":  cleanUser,
-			"full_name": fullName,
-			"role":      role,
-		},
+	c.JSON(http.StatusServiceUnavailable, gin.H{
+		"success": false,
+		"error":   "Cơ sở dữ liệu hệ thống chưa sẵn sàng",
 	})
 }
 
 type StaffPinLoginRequest struct {
 	Pin      string `json:"pin" binding:"required"`
-	TenantID string `json:"tenant_id"`
+	TenantID string `json:"tenant_id" binding:"required"`
 	BranchID string `json:"branch_id"`
 	StaffID  string `json:"staff_id"`
 }
 
-// StaffPinLogin xác thực nhanh bằng mã PIN 4-6 số tại quầy POS
+// StaffPinLogin xác thực nhanh bằng mã PIN 4-6 số tại quầy POS và cấp Access Token JWT
 func StaffPinLogin(c *gin.Context) {
 	var req StaffPinLoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"success": false,
-			"error":   "Mã PIN không được để trống",
+			"error":   "Mã PIN và Mã Quán (tenant_id) là bắt buộc",
 		})
 		return
 	}
 
-	// 1. Kiểm tra CSDL
+	cleanPin := strings.TrimSpace(req.Pin)
+	tenantID := strings.TrimSpace(req.TenantID)
+
 	if database.DB != nil {
 		var user models.User
-		query := database.DB.Where("pin_code = ? AND is_active = ?", req.Pin, true)
-		if req.TenantID != "" {
-			query = query.Where("tenant_id = ?", req.TenantID)
-		}
+		query := database.DB.Where("pin_code = ? AND tenant_id = ? AND is_active = ?", cleanPin, tenantID, true)
 		if req.StaffID != "" {
 			query = query.Where("id = ?", req.StaffID)
 		}
 		if err := query.First(&user).Error; err == nil {
+			branchID := "branch_01"
+			if user.BranchID != nil && *user.BranchID != "" {
+				branchID = *user.BranchID
+			} else if req.BranchID != "" {
+				branchID = req.BranchID
+			}
+
+			claims := &auth.TokenClaims{
+				UserID:      user.ID,
+				Username:    user.Username,
+				TenantID:    user.TenantID,
+				BranchID:    branchID,
+				Role:        user.Role,
+				Permissions: auth.DefaultPermissionsForRole(user.Role),
+			}
+			tokens, err := auth.CreateAuthTokenPair(claims)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Lỗi sinh token: " + err.Error()})
+				return
+			}
+
 			c.JSON(http.StatusOK, gin.H{
-				"success": true,
-				"token":   "pin_token_" + user.ID,
+				"success":       true,
+				"token":         tokens.AccessToken,
+				"access_token":  tokens.AccessToken,
+				"refresh_token": tokens.RefreshToken,
+				"expires_in":    tokens.ExpiresInSeconds,
 				"user": gin.H{
 					"id":        user.ID,
 					"username":  user.Username,
@@ -391,10 +344,9 @@ func StaffPinLogin(c *gin.Context) {
 		}
 	}
 
-	// 2. Không cho phép mã PIN hardcode mặc định - Chỉ chấp nhận mã PIN hợp lệ đã cấp trong CSDL
 	c.JSON(http.StatusUnauthorized, gin.H{
 		"success": false,
-		"error":   "Mã PIN không chính xác hoặc chưa được Chủ Quán cấp",
+		"error":   "Mã PIN không chính xác hoặc chưa được cấp trong quán này",
 	})
 }
 
@@ -428,19 +380,11 @@ func GetTenantInfo(c *gin.Context) {
 		}
 	}
 
-	// Fallback
-	c.JSON(http.StatusOK, gin.H{
-		"success": true,
-		"tenant": gin.H{
-			"id":                "tenant_" + code,
-			"name":              "Quán " + code,
-			"code":              code,
-			"subscription_plan": "pro",
-		},
+	c.JSON(http.StatusNotFound, gin.H{
+		"success": false,
+		"error":   "Không tìm thấy thông tin quán",
 	})
 }
-
-// 🌟 ĐĂNG KÝ QUÁN MỚI (SELF-SERVE ONBOARDING) CÓ KIỂM TRA CHẶT CHẼ TRÁNH TRÙNG SĐT & TÊN QUÁN
 
 type RegisterTenantRequest struct {
 	Name      string `json:"name" binding:"required"`
@@ -450,7 +394,7 @@ type RegisterTenantRequest struct {
 	OwnerName string `json:"owner_name"`
 }
 
-// RegisterTenant đăng ký quán mới với kiểm tra toàn vẹn SĐT và Tên Quán
+// RegisterTenant đăng ký quán mới với mật khẩu mã hóa bcrypt và cấp Token JWT
 func RegisterTenant(c *gin.Context) {
 	var req RegisterTenantRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -461,7 +405,6 @@ func RegisterTenant(c *gin.Context) {
 		return
 	}
 
-	// 1. Chuẩn hóa và kiểm tra Tên Quán
 	storeName := strings.TrimSpace(req.Name)
 	if len([]rune(storeName)) < 2 {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -471,7 +414,6 @@ func RegisterTenant(c *gin.Context) {
 		return
 	}
 
-	// 2. Chuẩn hóa và kiểm tra Số Điện Thoại
 	cleanPhone := CleanPhoneNumber(req.Phone)
 	if len(cleanPhone) < 9 || len(cleanPhone) > 11 {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -481,7 +423,6 @@ func RegisterTenant(c *gin.Context) {
 		return
 	}
 
-	// 3. Kiểm tra Mật Khẩu
 	cleanPassword := strings.TrimSpace(req.Password)
 	if len(cleanPassword) < 6 {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -491,32 +432,31 @@ func RegisterTenant(c *gin.Context) {
 		return
 	}
 
-	// 4. Kiểm tra trùng lặp trong CSDL (Anti-Collision Checks)
-	if database.DB != nil {
-		// 4A. Tránh dùng chung Số Điện Thoại
-		var phoneCount int64
-		database.DB.Model(&models.Tenant{}).Where("phone = ? OR phone = ?", cleanPhone, req.Phone).Count(&phoneCount)
-		if phoneCount > 0 {
-			c.JSON(http.StatusConflict, gin.H{
-				"success": false,
-				"error":   "Số điện thoại này đã được đăng ký cho quán khác. Vui lòng dùng SĐT khác hoặc đăng nhập.",
-			})
-			return
-		}
-
-		// 4B. Tránh dùng chung Tên Quán (Không phân biệt hoa thường)
-		var nameCount int64
-		database.DB.Model(&models.Tenant{}).Where("LOWER(TRIM(name)) = LOWER(TRIM(?))", storeName).Count(&nameCount)
-		if nameCount > 0 {
-			c.JSON(http.StatusConflict, gin.H{
-				"success": false,
-				"error":   "Tên quán này đã tồn tại trên hệ thống. Vui lòng đặt tên khác để bảo vệ thương hiệu độc quyền.",
-			})
-			return
-		}
+	if database.DB == nil {
+		c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Cơ sở dữ liệu chưa sẵn sàng"})
+		return
 	}
 
-	// 5. Sinh Subdomain / Mã Quán duy nhất
+	var phoneCount int64
+	database.DB.Model(&models.Tenant{}).Where("phone = ? OR phone = ?", cleanPhone, req.Phone).Count(&phoneCount)
+	if phoneCount > 0 {
+		c.JSON(http.StatusConflict, gin.H{
+			"success": false,
+			"error":   "Số điện thoại này đã được đăng ký cho quán khác.",
+		})
+		return
+	}
+
+	var nameCount int64
+	database.DB.Model(&models.Tenant{}).Where("LOWER(TRIM(name)) = LOWER(TRIM(?))", storeName).Count(&nameCount)
+	if nameCount > 0 {
+		c.JSON(http.StatusConflict, gin.H{
+			"success": false,
+			"error":   "Tên quán này đã tồn tại trên hệ thống.",
+		})
+		return
+	}
+
 	code := req.Subdomain
 	if strings.TrimSpace(code) == "" {
 		code = GenerateTenantSlug(storeName)
@@ -524,13 +464,10 @@ func RegisterTenant(c *gin.Context) {
 		code = GenerateTenantSlug(code)
 	}
 
-	// Đảm bảo Subdomain không bị trùng
-	if database.DB != nil {
-		var subCount int64
-		database.DB.Model(&models.Tenant{}).Where("subdomain = ?", code).Count(&subCount)
-		if subCount > 0 {
-			code = fmt.Sprintf("%s%d", code, time.Now().Unix()%10000)
-		}
+	var subCount int64
+	database.DB.Model(&models.Tenant{}).Where("subdomain = ?", code).Count(&subCount)
+	if subCount > 0 {
+		code = fmt.Sprintf("%s%d", code, time.Now().Unix()%10000)
 	}
 
 	tenantID := "tenant_" + code
@@ -542,7 +479,7 @@ func RegisterTenant(c *gin.Context) {
 		ownerName = "Chủ Quán"
 	}
 
-	expiresAt := time.Now().AddDate(0, 1, 0) // 30 ngày dùng thử
+	expiresAt := time.Now().AddDate(0, 1, 0)
 
 	newTenant := models.Tenant{
 		ID:               tenantID,
@@ -568,6 +505,12 @@ func RegisterTenant(c *gin.Context) {
 		UpdatedAt: time.Now(),
 	}
 
+	hashedPass, err := HashPassword(cleanPassword)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Không thể băm mật khẩu: " + err.Error()})
+		return
+	}
+
 	newUser := models.User{
 		ID:           userID,
 		TenantID:     tenantID,
@@ -575,32 +518,40 @@ func RegisterTenant(c *gin.Context) {
 		Username:     cleanPhone,
 		FullName:     ownerName,
 		Role:         "owner",
-		PinCode:      "9999",
-		PasswordHash: cleanPassword,
+		PasswordHash: hashedPass,
 		IsActive:     true,
 		CreatedAt:    time.Now(),
 		UpdatedAt:    time.Now(),
 	}
 
-	if database.DB != nil {
-		if err := database.DB.Create(&newTenant).Error; err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"success": false,
-				"error":   "Không thể khởi tạo dữ liệu quán: " + err.Error(),
-			})
-			return
-		}
-		_ = database.DB.Create(&newBranch)
-		_ = database.DB.Create(&newUser)
+	if err := database.DB.Create(&newTenant).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Lỗi tạo tenant: " + err.Error()})
+		return
+	}
+	_ = database.DB.Create(&newBranch)
+	_ = database.DB.Create(&newUser)
 
-		// Khởi tạo Shard DB riêng cho quán mới
-		_ = database.GetTenantDB(tenantID)
+	claims := &auth.TokenClaims{
+		UserID:      userID,
+		Username:    cleanPhone,
+		TenantID:    tenantID,
+		BranchID:    branchID,
+		Role:        "owner",
+		Permissions: auth.DefaultPermissionsForRole("owner"),
+	}
+	tokens, err := auth.CreateAuthTokenPair(claims)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Lỗi sinh token: " + err.Error()})
+		return
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"success": true,
-		"message": "Đăng ký mở quán mới thành công",
-		"token":   "jwt_token_" + userID,
+		"success":       true,
+		"message":       "Đăng ký mở quán mới thành công",
+		"token":         tokens.AccessToken,
+		"access_token":  tokens.AccessToken,
+		"refresh_token": tokens.RefreshToken,
+		"expires_in":    tokens.ExpiresInSeconds,
 		"tenant": gin.H{
 			"id":                tenantID,
 			"name":              storeName,
@@ -608,7 +559,6 @@ func RegisterTenant(c *gin.Context) {
 			"phone":             cleanPhone,
 			"subscription_plan": "trial",
 			"license_days_left": 30,
-			"configured_roles":  []string{"cashier", "server", "manager", "owner"},
 		},
 		"user": gin.H{
 			"id":        userID,
@@ -628,3 +578,59 @@ func RegisterTenant(c *gin.Context) {
 	})
 }
 
+type RefreshTokenRequest struct {
+	RefreshToken string `json:"refresh_token" binding:"required"`
+}
+
+// RefreshToken thực hiện token rotation và cấp Access Token mới
+func RefreshToken(c *gin.Context) {
+	var req RefreshTokenRequest
+	if err := c.ShouldBindJSON(&req); err != nil || strings.TrimSpace(req.RefreshToken) == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Refresh token là bắt buộc"})
+		return
+	}
+
+	info, err := auth.GlobalSessionStore.ConsumeRefreshToken(req.RefreshToken)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Refresh token không hợp lệ hoặc đã bị tái sử dụng: " + err.Error(),
+			"code":  "INVALID_REFRESH_TOKEN",
+		})
+		return
+	}
+
+	claims := &auth.TokenClaims{
+		UserID:      info.UserID,
+		TenantID:    info.TenantID,
+		BranchID:    info.BranchID,
+		Role:        info.Role,
+		Permissions: auth.DefaultPermissionsForRole(info.Role),
+	}
+	newPair, err := auth.CreateAuthTokenPair(claims)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Không thể tạo cặp token mới: " + err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"success":       true,
+		"access_token":  newPair.AccessToken,
+		"refresh_token": newPair.RefreshToken,
+		"expires_in":    newPair.ExpiresInSeconds,
+		"token_type":    newPair.TokenType,
+	})
+}
+
+// Logout thu hồi phiên đăng nhập hiện tại
+func Logout(c *gin.Context) {
+	claimsVal, exists := c.Get("claims")
+	if exists {
+		if claims, ok := claimsVal.(*auth.TokenClaims); ok && claims != nil {
+			auth.GlobalSessionStore.RevokeToken(claims.TokenID, claims.ExpiresAt)
+		}
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Đã đăng xuất và thu hồi phiên làm việc thành công",
+	})
+}

@@ -79,14 +79,45 @@ export interface MenuCatalogSlice {
   markTablePrePrinted: (tableId: string) => void;
 }
 
+import {
+  INITIAL_CATEGORIES,
+  INITIAL_AREAS,
+  INITIAL_TOPPINGS,
+  INITIAL_MENU_ITEMS,
+} from '../../constants/menuData';
+
+const INITIAL_TABLES: TableItem[] = [
+  { id: 'tbl_01', name: 'Bàn 01', area: 'Trong Nhà', capacity: 4, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+  { id: 'tbl_02', name: 'Bàn 02', area: 'Trong Nhà', capacity: 4, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+  { id: 'tbl_03', name: 'Bàn 03', area: 'Trong Nhà', capacity: 4, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+  { id: 'tbl_04', name: 'Bàn 04', area: 'Trong Nhà', capacity: 4, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+  { id: 'tbl_05', name: 'Bàn 05', area: 'Trong Nhà', capacity: 4, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+  { id: 'tbl_06', name: 'Bàn 06', area: 'Trong Nhà', capacity: 4, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+  { id: 'tbl_07', name: 'Bàn 07', area: 'Trong Nhà', capacity: 4, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+  { id: 'tbl_08', name: 'Bàn 08', area: 'Trong Nhà', capacity: 4, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+  { id: 'tbl_09', name: 'Bàn 09', area: 'Trong Nhà', capacity: 4, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+  { id: 'tbl_10', name: 'Bàn 10', area: 'Trong Nhà', capacity: 4, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+  { id: 'mv_01', name: 'Mang Về 01', area: 'Mang Về', capacity: 1, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+  { id: 'mv_02', name: 'Mang Về 02', area: 'Mang Về', capacity: 1, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+  { id: 'mv_03', name: 'Mang Về 03', area: 'Mang Về', capacity: 1, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+  { id: 'mv_04', name: 'Mang Về 04', area: 'Mang Về', capacity: 1, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+  { id: 'mv_05', name: 'Mang Về 05', area: 'Mang Về', capacity: 1, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+  { id: 'a935655c-c03b-4353-bf74-fdf17fad91f5', name: 'Bàn 01', area: 'Tầng Trệt', capacity: 4, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+  { id: '4f44d493-cd77-497d-a04f-d40e57324651', name: 'Bàn 02', area: 'Tầng Trệt', capacity: 4, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+  { id: 'c6fc4e88-6b96-4b33-be32-d4bad928e8e9', name: 'Bàn 03', area: 'Tầng Trệt', capacity: 6, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+  { id: 'e5db47c6-5c01-4a1c-8c06-cb3ce09ce695', name: 'Bàn 04 (VIP)', area: 'Tầng Trệt', capacity: 8, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+  { id: '36b32a8c-cdbc-4992-bfcd-9e797ebce904', name: 'Bàn Lầu 1', area: 'Lầu 1 (Máy Lạnh)', capacity: 4, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+  { id: 'e0a5e5a9-3b61-47b0-875c-d2e63de1328d', name: 'Bàn Lầu 2', area: 'Lầu 1 (Máy Lạnh)', capacity: 4, status: 'trong', guestCount: 0, totalAmount: 0, itemCount: 0 },
+];
+
 export const createMenuCatalogSlice = (set: any, get: any): MenuCatalogSlice => ({
-  menuItems: [],
+  menuItems: INITIAL_MENU_ITEMS,
   outOfStockProductIds: [],
   pinnedItemIds: [],
-  categories: [],
-  toppings: [],
-  areas: [],
-  tables: [],
+  categories: INITIAL_CATEGORIES,
+  toppings: INITIAL_TOPPINGS,
+  areas: INITIAL_AREAS,
+  tables: INITIAL_TABLES,
   selectedTable: EMPTY_TABLE,
   activeArea: 'Tất Cả',
 
@@ -213,7 +244,13 @@ export const createMenuCatalogSlice = (set: any, get: any): MenuCatalogSlice => 
   },
 
   populateSampleMenu: () => {
-    // Dữ liệu quản lý động từ API
+    set({
+      categories: INITIAL_CATEGORIES,
+      areas: INITIAL_AREAS,
+      toppings: INITIAL_TOPPINGS,
+      menuItems: INITIAL_MENU_ITEMS,
+      tables: INITIAL_TABLES,
+    });
   },
 
   // Category Actions
@@ -375,8 +412,9 @@ export const createMenuCatalogSlice = (set: any, get: any): MenuCatalogSlice => 
   // Table Actions
   addTable: ({ name, area, capacity }: { name: string; area: string; capacity: number }) => {
     const { tables } = get();
+    const uniqueSuffix = Math.random().toString(36).substring(2, 7);
     const newTable: TableItem = {
-      id: `t_${Date.now()}`,
+      id: `t_${Date.now()}_${uniqueSuffix}`,
       name: name.trim(),
       area: area.trim(),
       capacity: capacity || 4,

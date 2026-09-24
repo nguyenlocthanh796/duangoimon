@@ -23,6 +23,7 @@ import {
   usePOSStore,
   useIsRailCollapsed,
   useOrderHistory,
+  useTodayOrderHistoryCount,
   useStoreSettings,
 } from '../../store/usePOSStore';
 import { useAuthStore, checkRoutePermission } from '../../store/useAuthStore';
@@ -80,7 +81,7 @@ export const AppRailNav: React.FC = () => {
   const occupiedCount = tables.filter((t) => t.status === 'co_khach').length;
   const pendingKdsCount = enableKds ? kdsOrders.filter((o) => o.status === 'pending' || o.status === 'cooking').length : 0;
   const outOfStockCount = outOfStockIds.length;
-  const orderHistoryCount = orderHistory.length;
+  const todayOrdersCount = useTodayOrderHistoryCount();
 
   // Floating Drawer Overlay State
   const [drawerVisible, setDrawerVisible] = useState(false);
@@ -177,7 +178,7 @@ export const AppRailNav: React.FC = () => {
           subtitle: 'Soi đơn hủy, in lại bill & tra cứu',
           icon: 'receipt',
           metricText: 'Sổ đơn',
-          badge: orderHistoryCount > 0 ? orderHistoryCount : undefined,
+          badge: todayOrdersCount > 0 ? todayOrdersCount : undefined,
           badgeColor: theme.brand.primary,
         },
       ],
@@ -307,14 +308,18 @@ export const AppRailNav: React.FC = () => {
           icon: 'monitor-dashboard',
           metricText: 'VietQR',
         },
-        {
-          id: 'saas-admin',
-          route: '/saas-admin',
-          label: 'Quản Trị Hệ Thống',
-          subtitle: 'Cấu hình tenant, chuỗi & chi nhánh',
-          icon: 'cloud-lock-outline',
-          metricText: 'Chủ chuỗi',
-        },
+        ...(currentRole === 'super_admin'
+          ? [
+              {
+                id: 'saas-admin',
+                route: '/saas-admin',
+                label: 'Quản Trị Hệ Thống',
+                subtitle: 'Cấu hình tenant, chuỗi & chi nhánh',
+                icon: 'cloud-lock-outline' as const,
+                metricText: 'Chủ chuỗi',
+              },
+            ]
+          : []),
         {
           id: 'huong-dan',
           route: '/huong-dan',

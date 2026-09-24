@@ -11,23 +11,18 @@ export interface ApiResponse<T = any> {
   isOffline?: boolean;
 }
 
-const DEFAULT_PRODUCTION_CLOUD_URL = 'https://app.ongchu.cloud';
+const DEFAULT_PRODUCTION_CLOUD_URL =
+  process.env.EXPO_PUBLIC_API_URL ||
+  process.env.API_BASE_URL ||
+  'https://app.ongchu.cloud';
 
 export function getBaseUrl(): string {
-  // 0. Biến môi trường API_BASE_URL hoặc EXPO_PUBLIC_API_URL
-  if (process.env.API_BASE_URL) {
-    return process.env.API_BASE_URL;
-  }
-  if (process.env.EXPO_PUBLIC_API_URL) {
-    return process.env.EXPO_PUBLIC_API_URL;
-  }
-
   // 1. Môi trường kiểm thử tự động
   if (process.env.NODE_ENV === 'test') {
     return process.env.TEST_TARGET === 'vps' ? DEFAULT_PRODUCTION_CLOUD_URL : 'http://localhost:8080';
   }
 
-  // 1. Cấu hình IP thủ công trong Cài Đặt (hoặc đã lưu vào bộ nhớ máy)
+  // 2. Cấu hình IP/Domain thủ công từ Cài Đặt của quán (nếu có)
   try {
     const { usePOSStore } = require('../store/usePOSStore');
     const settings = usePOSStore?.getState?.()?.storeSettings;
@@ -36,34 +31,24 @@ export function getBaseUrl(): string {
     }
   } catch {}
 
-  // 2. Biến môi trường EXPO_PUBLIC_API_URL (nếu có)
+  // 3. Biến môi trường ép dùng Local Backend khi dev offline
+  if (process.env.EXPO_PUBLIC_USE_LOCAL_BACKEND === 'true') {
+    return 'http://localhost:8080';
+  }
+
+  // 4. Biến môi trường API URL tùy chỉnh
   if (process.env.EXPO_PUBLIC_API_URL) {
     return process.env.EXPO_PUBLIC_API_URL;
   }
 
-  // 3. Khi chạy trên Web trình duyệt:
-  if (typeof window !== 'undefined' && window.location) {
-    if (window.location.hostname.includes('ongchu.cloud')) {
+  // 5. Khi chạy trên Web trình duyệt: ưu tiên origin của trang hiện tại
+  if (typeof window !== 'undefined' && window.location && window.location.origin) {
+    if (!window.location.hostname.includes('localhost') && !window.location.hostname.includes('127.0.0.1')) {
       return window.location.origin;
     }
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-      return 'http://localhost:8080';
-    }
-    if (window.location.hostname) {
-      return `http://${window.location.hostname}:8080`;
-    }
   }
 
-  // 4. Tự động nhận diện IP máy chủ LAN qua Expo hostUri (khi test thiết bị thật cùng mạng Wi-Fi qua Expo Go)
-  const hostUri = Constants?.expoConfig?.hostUri;
-  if (hostUri) {
-    const host = hostUri.split(':')[0];
-    if (host && host !== 'localhost' && host !== '127.0.0.1') {
-      return `http://${host}:8080`;
-    }
-  }
-
-  // 5. Mặc định trên App Mobile Native / Standalone: trỏ về Máy Chủ Cloud Production
+  // 6. Mặc định toàn hệ thống trỏ về Cloud URL
   return DEFAULT_PRODUCTION_CLOUD_URL;
 }
 
@@ -72,37 +57,38 @@ export function getBaseUrl(): string {
  */
 export function getPublicBillUrl(orderCode: string): string {
   const cleanCode = (orderCode || '').trim();
-  if (typeof window !== 'undefined' && window.location) {
-    if (window.location.hostname.includes('ongchu.cloud')) {
-      return `https://ongchu.cloud/b/${cleanCode}`;
-    }
+  const customBillDomain = process.env.EXPO_PUBLIC_BILL_URL;
+  if (customBillDomain) {
+    return `${customBillDomain.replace(/\/+$/, '')}/b/${cleanCode}`;
+  }
+  if (typeof window !== 'undefined' && window.location && window.location.origin) {
     return `${window.location.origin}/b/${cleanCode}`;
   }
   const base = getBaseUrl();
-  if (base.includes('ongchu.cloud')) {
-    return `https://ongchu.cloud/b/${cleanCode}`;
-  }
-  return `${base}/b/${cleanCode}`;
+  return `${base.replace(/\/+$/, '')}/b/${cleanCode}`;
 }
 
 /**
- * Standard fetch with 500ms ultra-fast timeout and instant offline fallback
+ * Standard fetch with reliable network timeout and instant offline fallback
  */
 export async function requestWithTimeout<T = any>(
   path: string,
   options: RequestInit = {},
-  timeoutMs = 500
+  timeoutMs = 5000
 ): Promise<ApiResponse<T>> {
   const baseUrl = getBaseUrl();
   let url = path.startsWith('http') ? path : `${baseUrl}${path}`;
 
-  // Tự động gắn Tenant ID & Token để cách ly dữ liệu đa khách thuê (Zero Data Bleeding)
+  // Tự động gắn Tenant ID & Token động từ Auth/POS Store (Zero Data Bleeding)
   let activeTenantId = '';
   let authToken = '';
   try {
     const { useAuthStore } = require('../store/useAuthStore');
-    const authState = useAuthStore.getState();
-    activeTenantId = authState.tenant?.id || authState.deviceBinding?.tenantId || '';
+    const authState = useAuthStore?.getState?.() || {};
+    const { usePOSStore } = require('../store/usePOSStore');
+    const posState = usePOSStore?.getState?.() || {};
+
+    activeTenantId = authState.tenant?.id || authState.deviceBinding?.tenantId || posState.tenantId || '';
     authToken = authState.token || '';
   } catch {}
 
@@ -138,6 +124,19 @@ export async function requestWithTimeout<T = any>(
     }
 
     if (!res.ok) {
+      // 🛡️ Khi API trả về 401 Unauthorized: Phiên/token đã hết hạn hoặc không hợp lệ -> Dọn dẹp token rác
+      if (res.status === 401 && !url.includes('/api/v1/public/')) {
+        try {
+          const { useAuthStore } = require('../store/useAuthStore');
+          if (useAuthStore.getState().isAuthenticated || useAuthStore.getState().token) {
+            useAuthStore.setState({
+              isAuthenticated: false,
+              token: undefined,
+            });
+          }
+        } catch (_) {}
+      }
+
       const errorMsg =
         (data && typeof data === 'object' && (data.error || data.message)) ||
         (typeof data === 'string' && data) ||
@@ -236,6 +235,15 @@ export const apiClient = {
   getIngredients: () =>
     apiClient.get('/api/v1/inventory/ingredients'),
 
+  createIngredient: (data: any) =>
+    apiClient.post('/api/v1/inventory/ingredients', data),
+
+  updateIngredient: (id: string, data: any) =>
+    apiClient.put(`/api/v1/inventory/ingredients/${id}`, data),
+
+  deleteIngredient: (id: string) =>
+    apiClient.delete(`/api/v1/inventory/ingredients/${id}`),
+
   getLowStockIngredients: () =>
     apiClient.get('/api/v1/inventory/low-stock'),
 
@@ -302,6 +310,8 @@ export const apiClient = {
 
   // 💵 Sổ Quỹ & Giao Ca
   createCashTransaction: (tx: any) => apiClient.post('/api/v1/cash/transactions', tx),
+  voidCashTransaction: (id: string, reason: string) =>
+    apiClient.post(`/api/v1/cash/transactions/${id}/void`, { void_reason: reason }),
   getCashTransactions: () => apiClient.get('/api/v1/cash/transactions'),
   getCashSummary: () => apiClient.get('/api/v1/cash/summary'),
   openShift: (shiftData: any) => apiClient.post('/api/v1/shifts/open', shiftData),
